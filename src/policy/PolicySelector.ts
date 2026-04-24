@@ -6,6 +6,9 @@ export type PolicySelectionInput = {
   mode: RaxMode;
   risk: RiskScore;
   boundaryMode: BoundaryMode;
+  userInput?: string;
+  retrievedMemory?: unknown[];
+  correctionContext?: boolean;
 };
 
 export class PolicySelector {
@@ -16,11 +19,21 @@ export class PolicySelector {
       return policies;
     }
 
+    if (input.correctionContext || input.userInput?.toLowerCase().includes("correction")) {
+      return ["core_policy", "correction_policy", "evidence_policy", "uncertainty_policy"];
+    }
+
     const common = ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"];
-    if (input.mode === "planning") return [...common, "tool_policy"];
+    const text = input.userInput?.toLowerCase() ?? "";
+    const toolNeeded = /\b(file|folder|repo|repository|code|shell|write|read|git|project|implement|scaffold)\b/.test(text);
+    if (input.mode === "planning") {
+      return toolNeeded ? [...common, "tool_policy"] : common;
+    }
     if (input.mode === "stax_fitness") return [...common, "privacy_policy"];
     if (input.mode === "code_review") return [...common, "tool_policy"];
-    if (input.mode === "intake") return [...common, "memory_policy"];
+    if (input.mode === "intake") {
+      return input.retrievedMemory?.length ? [...common, "memory_policy"] : common;
+    }
     return common;
   }
 }

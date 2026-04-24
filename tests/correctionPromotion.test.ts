@@ -33,6 +33,7 @@ describe("correction promotion", () => {
     expect(promoted.approved).toBe(true);
     await expect(fs.stat(promoted.evalPath!)).resolves.toBeTruthy();
     await expect(fs.stat(promoted.trainingPath!)).resolves.toBeTruthy();
+    expect(promoted.trainingPath).toContain(path.join("training", "corrections"));
     await expect(fs.stat(promoted.goldenPath!)).resolves.toBeTruthy();
   });
 });

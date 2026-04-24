@@ -1,4 +1,6 @@
 export type ProviderType = "mock" | "ollama" | "openai";
+export type ProviderRole = "generator" | "critic" | "evaluator" | "classifier" | "formatter";
+export type ClassifierProviderType = ProviderType | "rules";
 
 export type RaxMode =
   | "intake"
@@ -31,6 +33,10 @@ export type RaxConfig = {
   };
   model: {
     provider: ProviderType;
+    generatorProvider: ProviderType;
+    criticProvider: ProviderType;
+    evaluatorProvider: ProviderType;
+    classifierProvider: ClassifierProviderType;
     generationModel: string;
     criticModel: string;
     evaluatorModel: string;
@@ -125,6 +131,10 @@ export const DEFAULT_CONFIG: RaxConfig = {
   },
   model: {
     provider: "mock",
+    generatorProvider: "mock",
+    criticProvider: "mock",
+    evaluatorProvider: "mock",
+    classifierProvider: "rules",
     generationModel: "mock-generator",
     criticModel: "mock-critic",
     evaluatorModel: "mock-evaluator",

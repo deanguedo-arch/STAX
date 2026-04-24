@@ -10,11 +10,17 @@ export type ReplayInput = {
 };
 
 export type ReplayResult = {
+  originalRunId: string;
+  replayRunId: string;
   runId: string;
   date: string;
+  provider: string;
   originalOutput: string;
   replayedOutput: string;
   exact: boolean;
+  outputDiffSummary: string;
+  traceDiffSummary: string;
+  reason?: string;
 };
 
 export async function findRunDate(rootDir: string, runId: string): Promise<string> {
@@ -57,12 +63,24 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
   const config = JSON.parse(rawConfig) as RaxConfig;
   const runtime = await createDefaultRuntime({ rootDir, config });
   const replayed = await runtime.run(originalInput);
+  const exact = originalOutput === replayed.output;
 
   return {
+    originalRunId: input.runId,
+    replayRunId: replayed.runId,
     runId: input.runId,
     date,
+    provider: config.model.provider,
     originalOutput,
     replayedOutput: replayed.output,
-    exact: originalOutput === replayed.output
+    exact,
+    outputDiffSummary: exact ? "exact match" : "final output differs",
+    traceDiffSummary:
+      config.model.provider === "mock"
+        ? exact
+          ? "mock replay deterministic output matched"
+          : "mock replay drift detected"
+        : "real provider replay may drift",
+    reason: exact ? undefined : "Replay output did not match original final.md"
   };
 }

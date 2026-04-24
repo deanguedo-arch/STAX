@@ -7,6 +7,7 @@ import type { PolicyBundle } from "../policy/policyTypes.js";
 import type { RiskScore } from "../schemas/RiskScore.js";
 import type { RunTrace } from "../schemas/RunLog.js";
 import type { BoundaryResult } from "../safety/BoundaryDecision.js";
+import type { CriticReview } from "../validators/CriticGate.js";
 
 export type RunLoggerPayload = {
   runId: string;
@@ -24,6 +25,7 @@ export type RunLoggerPayload = {
   routing?: Record<string, unknown>;
   primary?: AgentResult;
   critic?: AgentResult;
+  criticReview?: CriticReview;
   repair?: string;
   formatter?: string;
   final: string;
@@ -104,17 +106,36 @@ export class RunLogger {
       ),
       fs.writeFile(
         path.join(dir, "agent-output.md"),
-        payload.primary?.output ?? "",
+        payload.primary?.output ??
+          JSON.stringify({ status: "not_applicable", reason: "boundary stopped before agent" }, null, 2),
         "utf8"
       ),
-      fs.writeFile(path.join(dir, "critic.md"), payload.critic?.output ?? "", "utf8"),
+      fs.writeFile(
+        path.join(dir, "critic.md"),
+        payload.critic?.output ??
+          JSON.stringify({ status: "not_applicable", reason: "boundary stopped before critic" }, null, 2),
+        "utf8"
+      ),
       fs.writeFile(
         path.join(dir, "critic.json"),
-        JSON.stringify({ output: payload.critic?.output ?? "" }, null, 2),
+        JSON.stringify(
+          payload.criticReview ?? { status: "not_applicable", reason: "critic not run" },
+          null,
+          2
+        ),
         "utf8"
       ),
-      fs.writeFile(path.join(dir, "repair.md"), payload.repair ?? "", "utf8"),
-      fs.writeFile(path.join(dir, "formatter.md"), payload.formatter ?? payload.final, "utf8"),
+      fs.writeFile(
+        path.join(dir, "repair.md"),
+        payload.repair ?? JSON.stringify({ status: "not_applicable", reason: "no repair needed" }, null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "formatter.md"),
+        payload.formatter ??
+          JSON.stringify({ status: "not_applicable", reason: "boundary stopped before formatter" }, null, 2),
+        "utf8"
+      ),
       fs.writeFile(path.join(dir, "final.md"), payload.final, "utf8"),
       fs.writeFile(
         path.join(dir, "trace.json"),

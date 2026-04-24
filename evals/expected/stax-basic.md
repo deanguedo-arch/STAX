@@ -1,25 +1,24 @@
 ## Signal Units
 
 ### SU-001
-- Type: fitness
+- Type: training
 - Source: user
-- Timestamp: Unknown
-- Raw Input: Extract this as STAX signals: Dean trained jiu jitsu Saturday for 90 minutes.
-- Observed Fact: Dean trained jiu jitsu Saturday for 90 minutes.
+- Timestamp: Saturday
+- Raw Input: Dean trained jiu jitsu Saturday for 90 minutes
+- Observed Fact: Dean trained jiu jitsu for 90 minutes
 - Inference: Unknown
 - Confidence: medium
 
 ## Timeline
-- Unknown
+- Saturday: Dean trained jiu jitsu for 90 minutes
 
 ## Pattern Candidates
-- Unknown
+- Insufficient signals
 
 ## Deviations
-- Unknown
+- Insufficient baseline
 
 ## Unknowns
-- Exact timestamp
 - Supporting context
 
 ## Confidence Summary

@@ -19,6 +19,14 @@ export const DetailLevelSchema = z.enum([
   "surgical"
 ]);
 
+export const ProviderRoleSchema = z.enum([
+  "generator",
+  "critic",
+  "evaluator",
+  "classifier",
+  "formatter"
+]);
+
 export const ConfidenceSchema = z.enum(["low", "medium", "high"]);
 
 export const RiskScoreSchema = z.object({
@@ -107,11 +115,22 @@ export const AgentResultSchema = z.object({
 
 export const CriticReviewSchema = z.object({
   pass: z.boolean(),
+  severity: z.enum(["none", "minor", "major", "critical"]),
   issuesFound: z.array(z.string()),
   requiredFixes: z.array(z.string()),
   policyViolations: z.array(z.string()),
   schemaIssues: z.array(z.string()),
+  unsupportedClaims: z.array(z.string()),
+  forbiddenPhrases: z.array(z.string()),
   confidence: ConfidenceSchema
+});
+
+export const RepairResultSchema = z.object({
+  attempted: z.boolean(),
+  pass: z.boolean(),
+  repairedOutput: z.string(),
+  issuesRemaining: z.array(z.string()),
+  repairCount: z.number()
 });
 
 export const SignalUnitSchema = z.object({
@@ -151,8 +170,20 @@ export const EvalCaseSchema = z.object({
   expectedProperties: z.array(z.string()),
   forbiddenPatterns: z.array(z.string()),
   requiredSections: z.array(z.string()),
+  requiredSignals: z.array(z.string()).optional(),
+  minSignalUnits: z.number().optional(),
+  expectedBoundaryMode: z.enum(["allow", "constrain", "refuse", "redirect"]).optional(),
   critical: z.boolean(),
   tags: z.array(z.string())
+});
+
+export const EvalResultSchema = z.object({
+  total: z.number(),
+  passed: z.number(),
+  failed: z.number(),
+  passRate: z.number(),
+  criticalFailures: z.number(),
+  results: z.array(z.record(z.string(), z.unknown()))
 });
 
 export const CorrectionErrorTypeSchema = z.enum([
@@ -205,14 +236,39 @@ export const MemoryItemSchema = z.object({
 });
 
 export const ToolCallSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   tool: z.string(),
-  input: z.unknown(),
+  input: z.unknown().optional(),
   reason: z.string(),
   allowed: z.boolean(),
   resultSummary: z.string().optional(),
   error: z.string().optional()
 });
+
+export const ProviderRouteSchema = z.object({
+  role: ProviderRoleSchema,
+  provider: z.string(),
+  model: z.string()
+});
+
+export const TrainingExportRecordSchema = z.union([
+  z.object({
+    messages: z.array(
+      z.object({
+        role: z.enum(["system", "user", "assistant"]),
+        content: z.string().min(1)
+      })
+    ),
+    metadata: z.record(z.string(), z.unknown())
+  }),
+  z.object({
+    prompt: z.string().min(1),
+    chosen: z.string().min(1),
+    rejected: z.string().min(1),
+    reason: z.string().min(1),
+    metadata: z.record(z.string(), z.unknown())
+  })
+]);
 
 export const RunTraceSchema = z.object({
   runId: z.string(),
@@ -220,9 +276,13 @@ export const RunTraceSchema = z.object({
   runtimeVersion: z.string(),
   provider: z.string(),
   model: z.string(),
+  providerRoles: z.record(z.string(), z.string()),
   criticModel: z.string(),
+  evaluatorModel: z.string(),
+  classifierModel: z.string(),
   temperature: z.number(),
   criticTemperature: z.number(),
+  evalTemperature: z.number(),
   topP: z.number(),
   seed: z.number(),
   mode: RaxModeSchema,
@@ -236,7 +296,19 @@ export const RunTraceSchema = z.object({
   schemaRetries: z.number(),
   latencyMs: z.number(),
   toolCalls: z.array(ToolCallSchema),
-  errors: z.array(z.string())
+  errors: z.array(z.string()),
+  modelCalls: z.array(
+    z.object({
+      role: ProviderRoleSchema,
+      provider: z.string(),
+      model: z.string(),
+      tokens: z.number().optional(),
+      latencyMs: z.number()
+    })
+  ),
+  validation: z.record(z.string(), z.unknown()),
+  route: z.record(z.string(), z.unknown()),
+  replayable: z.boolean()
 });
 
 export const RaxOutputSchema = z.object({

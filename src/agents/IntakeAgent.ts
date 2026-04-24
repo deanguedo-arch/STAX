@@ -1,5 +1,6 @@
 import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
+import { extractStaxSignals } from "./StaxSignalExtractor.js";
 
 function observedFact(input: string): string {
   const cleaned = input
@@ -37,6 +38,7 @@ export class IntakeAgent implements Agent {
     const fact = input.mode === "stax_fitness" ? staxObservedFact(input.input) : observedFact(input.input);
 
     if (input.mode === "stax_fitness") {
+      const signals = extractStaxSignals(input.input);
       return {
         agent: this.name,
         schema: "stax_fitness",
@@ -45,26 +47,32 @@ export class IntakeAgent implements Agent {
         output: [
           "## Signal Units",
           "",
-          "### SU-001",
-          "- Type: fitness",
-          "- Source: user",
-          "- Timestamp: Unknown",
-          `- Raw Input: ${rawInput}`,
-          `- Observed Fact: ${fact}`,
-          "- Inference: Unknown",
-          "- Confidence: medium",
-          "",
+          ...signals.flatMap((signal) => [
+            `### ${signal.id}`,
+            `- Type: ${signal.type}`,
+            `- Source: ${signal.source}`,
+            `- Timestamp: ${signal.timestamp}`,
+            `- Raw Input: ${signal.rawInput}`,
+            `- Observed Fact: ${signal.observedFact}`,
+            `- Inference: ${signal.inference}`,
+            `- Confidence: ${signal.confidence}`,
+            ""
+          ]),
           "## Timeline",
-          "- Unknown",
+          ...signals.map((signal) =>
+            `- ${signal.timestamp}: ${signal.observedFact}`
+          ),
           "",
           "## Pattern Candidates",
-          "- Unknown",
+          "- Insufficient signals",
           "",
           "## Deviations",
-          "- Unknown",
+          "- Insufficient baseline",
           "",
           "## Unknowns",
-          "- Exact timestamp",
+          ...(signals.some((signal) => signal.timestamp === "Unknown")
+            ? ["- Exact timestamp"]
+            : []),
           "- Supporting context",
           "",
           "## Confidence Summary",

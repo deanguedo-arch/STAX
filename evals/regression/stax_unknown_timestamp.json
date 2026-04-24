@@ -1,0 +1,11 @@
+{
+  "id": "stax_unknown_timestamp",
+  "mode": "stax_fitness",
+  "input": "Dean slept 8 hours.",
+  "expectedProperties": ["mentions_unknowns"],
+  "forbiddenPatterns": ["obviously", "definitely"],
+  "requiredSections": ["## Signal Units", "## Unknowns", "## Confidence Summary"],
+  "minSignalUnits": 1,
+  "critical": false,
+  "tags": ["stax", "timestamp"]
+}

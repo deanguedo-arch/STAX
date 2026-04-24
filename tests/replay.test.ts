@@ -20,5 +20,9 @@ describe("replayRun", () => {
     expect(replayed.originalOutput).toBe(first.output);
     expect(replayed.replayedOutput).toBe(first.output);
     expect(replayed.exact).toBe(true);
+    expect(replayed.originalRunId).toBe(first.runId);
+    expect(replayed.replayRunId).not.toBe(first.runId);
+    expect(replayed.outputDiffSummary).toBe("exact match");
+    expect(replayed.traceDiffSummary).toContain("mock replay");
   });
 });

@@ -49,11 +49,19 @@ export async function loadConfig(
   const withFile = mergeConfig(DEFAULT_CONFIG, fileConfig);
   const withOverride = mergeConfig(withFile, override);
   const envProvider = process.env.RAX_PROVIDER as RaxConfig["model"]["provider"] | undefined;
+  const envGeneratorProvider = process.env.RAX_GENERATOR_PROVIDER as RaxConfig["model"]["generatorProvider"] | undefined;
+  const envCriticProvider = process.env.RAX_CRITIC_PROVIDER as RaxConfig["model"]["criticProvider"] | undefined;
+  const envEvaluatorProvider = process.env.RAX_EVALUATOR_PROVIDER as RaxConfig["model"]["evaluatorProvider"] | undefined;
+  const envClassifierProvider = process.env.RAX_CLASSIFIER_PROVIDER as RaxConfig["model"]["classifierProvider"] | undefined;
   const envLogRuns = process.env.RAX_LOG_RUNS;
 
   return mergeConfig(withOverride, {
     model: {
       provider: envProvider ?? withOverride.model.provider,
+      generatorProvider: envGeneratorProvider ?? withOverride.model.generatorProvider,
+      criticProvider: envCriticProvider ?? withOverride.model.criticProvider,
+      evaluatorProvider: envEvaluatorProvider ?? withOverride.model.evaluatorProvider,
+      classifierProvider: envClassifierProvider ?? withOverride.model.classifierProvider,
       ollamaBaseUrl: process.env.OLLAMA_BASE_URL ?? withOverride.model.ollamaBaseUrl,
       ollamaModel: process.env.OLLAMA_MODEL ?? withOverride.model.ollamaModel,
       openaiApiKey: process.env.OPENAI_API_KEY ?? withOverride.model.openaiApiKey,

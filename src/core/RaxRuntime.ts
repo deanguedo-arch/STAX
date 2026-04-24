@@ -19,6 +19,8 @@ import { RiskClassifier } from "../safety/RiskClassifier.js";
 import { safeRedirect } from "../safety/SafeRedirect.js";
 import { createRunId } from "../utils/ids.js";
 import { validateModeOutput } from "../utils/validators.js";
+import { CriticGate, type CriticReview } from "../validators/CriticGate.js";
+import { RepairController, type RepairResult } from "../validators/RepairController.js";
 import { ContextWindow } from "./ContextWindow.js";
 import { loadConfig, mergeConfig } from "./ConfigLoader.js";
 import { InstructionStack } from "./InstructionStack.js";
@@ -81,6 +83,12 @@ export class RaxRuntime {
       retrievedMemory,
       retrievedExamples: []
     });
+    const providerRoles = {
+      generator: this.config.model.generatorProvider,
+      critic: this.config.model.criticProvider,
+      evaluator: this.config.model.evaluatorProvider,
+      classifier: this.config.model.classifierProvider
+    };
 
     const boundaryStack = await this.instructionStack.build({
       userInput: input,
@@ -97,9 +105,13 @@ export class RaxRuntime {
         runtimeVersion: this.config.runtime.version,
         provider: this.provider.name,
         model: this.provider.model,
+        providerRoles,
         criticModel: this.config.model.criticModel,
+        evaluatorModel: this.config.model.evaluatorModel,
+        classifierModel: this.config.model.classifierModel,
         temperature: this.config.model.generationTemperature,
         criticTemperature: this.config.model.criticTemperature,
+        evalTemperature: this.config.model.evalTemperature,
         topP: this.config.model.topP,
         seed: this.config.model.seed,
         mode: effectiveMode,
@@ -114,6 +126,8 @@ export class RaxRuntime {
         latencyMs: Date.now() - startedAt,
         toolCalls: [],
         errors: [],
+        route: { agent: "boundary", mode: "boundary" },
+        replayable: this.provider.name === "mock",
         detailLevel,
         stack: boundaryStack.stack,
         agentSequence,
@@ -174,7 +188,7 @@ export class RaxRuntime {
       retrievedContext: trimmedContext
     });
 
-    const primary = await this.runAgent(effectiveRoute.agent, {
+    let primary = await this.runAgent("generator", effectiveRoute.agent, {
       input,
       system: stack.system,
       risk,
@@ -199,7 +213,32 @@ export class RaxRuntime {
       primary.output
     ].join("\n");
 
-    const criticResult = await this.runAgent(this.critic, {
+    const gate = new CriticGate();
+    let criticReview: CriticReview = gate.review({
+      mode: effectiveRoute.mode,
+      output: primary.output
+    });
+    let repairResult: RepairResult | undefined;
+    let repairPasses = 0;
+    if (!criticReview.pass && criticReview.severity !== "critical") {
+      repairResult = new RepairController(this.config.limits.maxRepairPasses).repair(
+        primary.output,
+        criticReview.issuesFound
+      );
+      repairPasses = repairResult.attempted ? repairResult.repairCount : 0;
+      if (repairResult.pass) {
+        primary = {
+          ...primary,
+          output: repairResult.repairedOutput
+        };
+        criticReview = gate.review({
+          mode: effectiveRoute.mode,
+          output: primary.output
+        });
+      }
+    }
+
+    const criticResult = await this.runAgent("critic", this.critic, {
       input: criticInput,
       system: stack.system,
       risk,
@@ -227,7 +266,7 @@ export class RaxRuntime {
       criticResult.output
     ].join("\n");
 
-    let formatterResult = await this.runAgent(this.formatter, {
+    let formatterResult = await this.runAgent("formatter", this.formatter, {
       input: formatterInput,
       system: stack.system,
       risk,
@@ -246,7 +285,7 @@ export class RaxRuntime {
 
     if (!validation.valid) {
       retries += 1;
-      formatterResult = await this.runAgent(this.formatter, {
+      formatterResult = await this.runAgent("formatter", this.formatter, {
         input: [
           formatterInput,
           "",
@@ -278,9 +317,13 @@ export class RaxRuntime {
       runtimeVersion: this.config.runtime.version,
       provider: this.provider.name,
       model: this.provider.model,
+      providerRoles,
       criticModel: this.config.model.criticModel,
+      evaluatorModel: this.config.model.evaluatorModel,
+      classifierModel: this.config.model.classifierModel,
       temperature: this.config.model.generationTemperature,
       criticTemperature: this.config.model.criticTemperature,
+      evalTemperature: this.config.model.evalTemperature,
       topP: this.config.model.topP,
       seed: this.config.model.seed,
       mode: effectiveRoute.mode,
@@ -289,12 +332,18 @@ export class RaxRuntime {
       selectedAgent: effectiveRoute.agent.name,
       policiesApplied: policyBundle.policiesApplied,
       criticPasses: 1,
-      repairPasses: 0,
+      repairPasses,
       formatterPasses: 1,
       schemaRetries: retries,
       latencyMs: Date.now() - startedAt,
       toolCalls: [],
-      errors: [],
+      errors: criticReview.pass ? [] : criticReview.issuesFound,
+      route: {
+        agent: effectiveRoute.agent.name,
+        mode: effectiveRoute.mode,
+        reason: route.reason
+      },
+      replayable: this.provider.name === "mock",
       detailLevel,
       stack: stack.stack,
       routingDecision: {
@@ -347,6 +396,10 @@ export class RaxRuntime {
       routing: trace.routingDecision,
       primary,
       critic: criticResult,
+      criticReview,
+      repair: repairResult
+        ? JSON.stringify(repairResult, null, 2)
+        : JSON.stringify({ status: "not_applicable", reason: "critic passed" }, null, 2),
       formatter: formatterResult.output,
       final: formatterResult.output,
       trace,
@@ -357,6 +410,7 @@ export class RaxRuntime {
   }
 
   private async runAgent(
+    role: "generator" | "critic" | "formatter",
     agent: Agent,
     input: Parameters<Agent["execute"]>[0],
     sequence: string[],
@@ -366,8 +420,13 @@ export class RaxRuntime {
     const before = Date.now();
     const result = await agent.execute(input);
     modelCalls.push({
+      role,
       provider: this.provider.name,
       model: this.provider.model,
+      tokens:
+        typeof result.metadata?.providerTokens === "number"
+          ? result.metadata.providerTokens
+          : undefined,
       latencyMs: Date.now() - before
     });
     return result;

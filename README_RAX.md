@@ -20,6 +20,8 @@ npm install
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes and slept 8 hours Sunday."
 ```
 
+STAX fitness mode now splits multiple observations into separate Signal Units.
+
 ## Ollama
 
 PowerShell:
@@ -44,6 +46,7 @@ OpenAI is optional and is required only when `RAX_PROVIDER=openai`.
 npm run rax -- eval
 npm run rax -- eval --redteam
 npm run rax -- eval --regression
+npm run rax -- eval --mode stax_fitness
 ```
 
 ## Replay
@@ -89,9 +92,15 @@ npm run rax -- run --mode stax_fitness --file examples/stax_input.txt
 
 - Shell is disabled by default.
 - File write is disabled by default.
+- Git mutation is approval-required and stubbed in v0.1.
 - Memory retrieval is approved-only.
 - Corrections are pending until promoted.
 - No embeddings or UI are included in v0.1.
+
+## Provider Roles
+
+Configured roles are `generator`, `critic`, `evaluator`, and `classifier`.
+Mock mode uses deterministic local providers for all model-like roles, while classifier defaults to rules.
 
 ## Troubleshooting
 
@@ -105,6 +114,7 @@ npm run rax -- run --mode stax_fitness --file examples/stax_input.txt
 - Memory retrieval is keyword-based; embeddings are intentionally out of v0.1.
 - The evaluator is deterministic and property-based, not a learned judge.
 - Tool execution remains deliberately narrow and disabled for writes/shell by default.
+- Critic repair is intentionally one-pass and conservative.
 
 ## Next Phase
 

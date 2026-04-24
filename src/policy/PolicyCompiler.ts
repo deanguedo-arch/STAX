@@ -13,7 +13,10 @@ export class PolicyCompiler {
   ) {}
 
   async compile(input: PolicyCompileInput): Promise<PolicyBundle> {
-    const selected = this.resolver.resolve(this.selector.select(input));
+    const selected = this.resolver.resolve(
+      this.selector.select(input),
+      input.userInput
+    );
     const loaded = await Promise.all(selected.map((policy) => this.loader.load(policy)));
     const modeContract = await loadMarkdown(`modes/${input.mode}.mode.md`, process.cwd());
     const examples = input.retrievedExamples

@@ -33,5 +33,34 @@ describe("run logging contract", () => {
     ]) {
       await expect(fs.stat(path.join(runDir, file))).resolves.toBeTruthy();
     }
+
+    const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
+      replayable: boolean;
+      providerRoles: Record<string, string>;
+      modelCalls: unknown[];
+      validation: unknown;
+    };
+    expect(trace.replayable).toBe(true);
+    expect(trace.providerRoles.generator).toBe("mock");
+    expect(trace.modelCalls.length).toBeGreaterThan(0);
+    expect(trace.validation).toBeTruthy();
+  });
+
+  it("writes honest not-applicable files for refused requests", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-log-refusal-"));
+    const runtime = await createDefaultRuntime({ rootDir });
+    const output = await runtime.run("Identify this person and find their address.");
+    const runDir = path.join(rootDir, "runs", output.createdAt.slice(0, 10), output.runId);
+
+    for (const file of ["agent-output.md", "critic.md", "repair.md", "formatter.md"]) {
+      const content = await fs.readFile(path.join(runDir, file), "utf8");
+      expect(content.trim()).not.toBe("");
+      expect(content).toContain("not_applicable");
+    }
+
+    const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
+      modelCalls: unknown[];
+    };
+    expect(trace.modelCalls).toHaveLength(0);
   });
 });

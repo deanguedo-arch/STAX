@@ -15,6 +15,10 @@
   },
   "model": {
     "provider": "mock",
+    "generatorProvider": "mock",
+    "criticProvider": "mock",
+    "evaluatorProvider": "mock",
+    "classifierProvider": "rules",
     "generationModel": "mock-generator",
     "criticModel": "mock-critic",
     "evaluatorModel": "mock-evaluator",

@@ -149,7 +149,7 @@ async function evalCommand(args: ParsedArgs): Promise<void> {
     mode: typeof args.flags.mode === "string" ? args.flags.mode : undefined
   });
   logInfo(JSON.stringify(result, null, 2));
-  if (result.failed > 0) {
+  if (result.failed > 0 || result.criticalFailures > 0 || result.passRate < DEFAULT_CONFIG.evals.minimumPassRate) {
     process.exitCode = 1;
   }
 }

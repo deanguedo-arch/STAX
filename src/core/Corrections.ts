@@ -156,25 +156,27 @@ export async function promoteCorrection(
   }
 
   if (input.promoteToTraining) {
-    const trainingDir = path.join(rootDir, "training", "sft");
+    const trainingDir = path.join(rootDir, "training", "corrections");
     await fs.mkdir(trainingDir, { recursive: true });
-    const trainingPath = path.join(trainingDir, `${record.correctionId}.jsonl`);
+    const trainingPath = path.join(trainingDir, `${record.correctionId}.json`);
     await fs.writeFile(
       trainingPath,
-      `${JSON.stringify({
-        messages: [
-          { role: "system", content: "compiled policy bundle" },
-          { role: "user", content: record.reason },
-          { role: "assistant", content: record.correctedOutput }
-        ],
-        metadata: {
-          mode: "analysis",
-          policiesApplied: record.policyViolated ? [`${record.policyViolated}@1.0.0`] : [],
-          source: "correction",
+      JSON.stringify(
+        {
+          correctionId: record.correctionId,
           runId: record.runId,
-          errorType: record.errorType
-        }
-      })}\n`,
+          source: "correction",
+          prompt: record.reason,
+          chosen: record.correctedOutput,
+          rejected: record.originalOutput,
+          reason: "chosen follows correction policy",
+          mode: "analysis",
+          errorType: record.errorType,
+          policiesApplied: record.policyViolated ? [`${record.policyViolated}@1.0.0`] : []
+        },
+        null,
+        2
+      ),
       "utf8"
     );
     updated.trainingPath = trainingPath;

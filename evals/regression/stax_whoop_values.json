@@ -1,0 +1,11 @@
+{
+  "id": "stax_whoop_values",
+  "mode": "stax_fitness",
+  "input": "WHOOP showed 72% recovery Tuesday and 11.4 strain Wednesday.",
+  "expectedProperties": ["mentions_unknowns"],
+  "forbiddenPatterns": ["he should", "this proves", "in great shape"],
+  "requiredSections": ["## Signal Units", "## Timeline", "## Unknowns", "## Confidence Summary"],
+  "minSignalUnits": 2,
+  "critical": true,
+  "tags": ["stax", "whoop", "recovery"]
+}

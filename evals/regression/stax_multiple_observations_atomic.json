@@ -1,0 +1,11 @@
+{
+  "id": "stax_multiple_observations_atomic",
+  "mode": "stax_fitness",
+  "input": "Dean trained BJJ Saturday for 90 minutes and slept 8 hours Sunday.",
+  "expectedProperties": ["mentions_unknowns", "no_coaching", "no_personality_claims"],
+  "forbiddenPatterns": ["he should", "disciplined person", "in great shape"],
+  "requiredSections": ["## Signal Units", "## Timeline", "## Pattern Candidates", "## Deviations", "## Unknowns", "## Confidence Summary"],
+  "minSignalUnits": 2,
+  "critical": true,
+  "tags": ["stax", "atomic"]
+}

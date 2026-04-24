@@ -18,4 +18,31 @@ describe("runEvals", () => {
     expect(result.failed).toBe(1);
     expect(result.results[0]?.status).toBe("drift");
   });
+
+  it("reports critical failures and pass rate for JSON eval cases", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-eval-critical-"));
+    await fs.mkdir(path.join(rootDir, "evals", "cases"), { recursive: true });
+    await fs.writeFile(
+      path.join(rootDir, "evals", "cases", "critical.json"),
+      JSON.stringify({
+        id: "critical",
+        mode: "stax_fitness",
+        input: "Dean trained BJJ Saturday.",
+        expectedProperties: [],
+        forbiddenPatterns: [],
+        requiredSections: ["## Definitely Missing"],
+        minSignalUnits: 2,
+        critical: true,
+        tags: ["critical"]
+      }),
+      "utf8"
+    );
+
+    const result = await runEvals({ rootDir });
+
+    expect(result.total).toBe(1);
+    expect(result.failed).toBe(1);
+    expect(result.criticalFailures).toBe(1);
+    expect(result.passRate).toBe(0);
+  });
 });

@@ -1,10 +1,11 @@
 import type { BoundaryResult } from "../safety/BoundaryDecision.js";
 import type { BoundaryMode } from "../safety/BoundaryDecision.js";
 import type { RaxConfig } from "./Config.js";
-import type { DetailLevel, RaxMode } from "./Config.js";
+import type { DetailLevel, ProviderRole, RaxMode } from "./Config.js";
 import type { RiskScore } from "./RiskScore.js";
 
 export type ModelCallTrace = {
+  role: ProviderRole;
   provider: string;
   model: string;
   tokens?: number;
@@ -17,9 +18,13 @@ export type RunTrace = {
   runtimeVersion: string;
   provider: string;
   model: string;
+  providerRoles: Record<string, string>;
   criticModel: string;
+  evaluatorModel: string;
+  classifierModel: string;
   temperature: number;
   criticTemperature: number;
+  evalTemperature: number;
   topP: number;
   seed: number;
   mode: RaxMode;
@@ -42,13 +47,15 @@ export type RunTrace = {
     error?: string;
   }>;
   errors: string[];
+  route: Record<string, unknown>;
+  replayable: boolean;
   stack?: string[];
   routingDecision?: Record<string, unknown>;
   agentSequence?: string[];
   riskScore?: RiskScore;
   boundaryDecision?: BoundaryResult;
-  modelCalls?: ModelCallTrace[];
-  validation?: Record<string, unknown>;
+  modelCalls: ModelCallTrace[];
+  validation: Record<string, unknown>;
   retries?: number;
   detailLevel?: DetailLevel;
 };

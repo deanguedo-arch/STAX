@@ -63,6 +63,47 @@ describe("policy engine", () => {
     );
 
     expect(result.policies).toEqual(["core_policy", "evidence_policy"]);
+    expect(result.conflictDetected).toBe(true);
     expect(result.conflicts[0]?.higherPriorityRule).toBe("evidence_policy");
+    expect(result.resolution).toContain("evidence_policy");
+  });
+
+  it("does not include memory policy unless memory exists", () => {
+    const selector = new PolicySelector();
+    const withoutMemory = selector.select({
+      mode: "intake",
+      risk: lowRisk,
+      boundaryMode: "allow",
+      userInput: "Extract this signal."
+    });
+    const withMemory = selector.select({
+      mode: "intake",
+      risk: lowRisk,
+      boundaryMode: "allow",
+      userInput: "Extract this signal.",
+      retrievedMemory: [{ id: "mem-1" }]
+    });
+
+    expect(withoutMemory).not.toContain("memory_policy");
+    expect(withMemory).toContain("memory_policy");
+  });
+
+  it("adds tool policy to planning only when project or tool context needs it", () => {
+    const selector = new PolicySelector();
+    const generic = selector.select({
+      mode: "planning",
+      risk: lowRisk,
+      boundaryMode: "allow",
+      userInput: "Plan my week."
+    });
+    const project = selector.select({
+      mode: "planning",
+      risk: lowRisk,
+      boundaryMode: "allow",
+      userInput: "Plan a repo implementation."
+    });
+
+    expect(generic).not.toContain("tool_policy");
+    expect(project).toContain("tool_policy");
   });
 });

@@ -11,12 +11,15 @@ export type EvalCaseResult = {
   actual: string;
   expected?: string;
   failReasons?: string[];
+  critical?: boolean;
 };
 
 export type EvalResult = {
   total: number;
   passed: number;
   failed: number;
+  passRate: number;
+  criticalFailures: number;
   results: EvalCaseResult[];
 };
 
@@ -27,6 +30,9 @@ export type EvalCase = {
   expectedProperties: string[];
   forbiddenPatterns: string[];
   requiredSections: string[];
+  requiredSignals?: string[];
+  minSignalUnits?: number;
+  expectedBoundaryMode?: "allow" | "constrain" | "refuse" | "redirect";
   critical: boolean;
   tags: string[];
 };
@@ -93,13 +99,19 @@ export async function runEvals(
         output: output.output,
         requiredSections: jsonCase.requiredSections,
         forbiddenPatterns: jsonCase.forbiddenPatterns,
-        expectedProperties: jsonCase.expectedProperties
+        expectedProperties: jsonCase.expectedProperties,
+        minSignalUnits: jsonCase.minSignalUnits,
+        critical: jsonCase.critical,
+        expectedBoundaryMode: jsonCase.expectedBoundaryMode,
+        actualBoundaryMode: output.mode,
+        providerCallCount: output.agent === "boundary" ? 0 : undefined
       });
       results.push({
         name: jsonCase.id,
         status: property.pass ? "pass" : "property_fail",
         actual: output.output,
-        failReasons: property.failReasons
+        failReasons: property.failReasons,
+        critical: jsonCase.critical
       });
       continue;
     }
@@ -125,11 +137,24 @@ export async function runEvals(
 
   const passed = results.filter((result) => result.status === "pass").length;
   const failed = results.length - passed;
-  await writeEvalResult(rootDir, { total: results.length, passed, failed, results });
+  const criticalFailures = results.filter(
+    (result) => result.critical && result.status !== "pass"
+  ).length;
+  const passRate = results.length ? passed / results.length : 1;
+  await writeEvalResult(rootDir, {
+    total: results.length,
+    passed,
+    failed,
+    passRate,
+    criticalFailures,
+    results
+  });
   return {
     total: results.length,
     passed,
     failed,
+    passRate,
+    criticalFailures,
     results
   };
 }

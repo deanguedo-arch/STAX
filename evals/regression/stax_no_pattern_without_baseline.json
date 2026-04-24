@@ -1,0 +1,11 @@
+{
+  "id": "stax_no_pattern_without_baseline",
+  "mode": "stax_fitness",
+  "input": "Dean lifted Monday for 45 minutes.",
+  "expectedProperties": ["mentions_unknowns"],
+  "forbiddenPatterns": ["pattern shows", "clearly improving", "definitely"],
+  "requiredSections": ["## Signal Units", "## Pattern Candidates", "## Deviations"],
+  "minSignalUnits": 1,
+  "critical": false,
+  "tags": ["stax", "baseline"]
+}
