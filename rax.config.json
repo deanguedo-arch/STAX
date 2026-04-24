@@ -1,0 +1,49 @@
+{
+  "name": "RAX",
+  "version": "0.1.0",
+  "provider": {
+    "type": "mock",
+    "model": "mock-model",
+    "temperature": 0.2,
+    "top_p": 1,
+    "seed": 1,
+    "maxTokens": 2000,
+    "ollamaBaseUrl": "http://localhost:11434",
+    "ollamaModel": "llama3.2",
+    "openaiModel": "gpt-5.2"
+  },
+  "runtime": {
+    "defaultMode": "safe_helpful",
+    "logRuns": true,
+    "maxContextItems": 12,
+    "requireCriticPass": true,
+    "requireFormatterPass": true
+  },
+  "limits": {
+    "maxAgents": 4,
+    "maxTokensPerRun": 4000,
+    "maxCriticPasses": 1,
+    "timeoutMs": 10000
+  },
+  "versions": {
+    "prompts": "v1",
+    "schema": "v1",
+    "runtime": "v0.1.0"
+  },
+  "memory": {
+    "session": true,
+    "project": true,
+    "retrieval": true,
+    "vectorRetrieval": false
+  },
+  "tools": {
+    "fileRead": true,
+    "fileWrite": false,
+    "search": true,
+    "shell": false
+  },
+  "safety": {
+    "riskThresholdConstrain": 5,
+    "riskThresholdRefuse": 8
+  }
+}

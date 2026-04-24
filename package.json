@@ -1,0 +1,29 @@
+{
+  "name": "rax",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "rax": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "run": "tsx src/cli.ts run",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "start": "node dist/src/cli.js"
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "openai": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}

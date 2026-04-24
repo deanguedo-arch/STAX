@@ -1,0 +1,4 @@
+{
+  "input": "Audit this project plan for unsupported assumptions.",
+  "expectedMode": "audit"
+}
