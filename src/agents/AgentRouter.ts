@@ -1,5 +1,6 @@
 import type { Mode } from "../schemas/Config.js";
 import type { Agent } from "./Agent.js";
+import { ModeDetector } from "../classifiers/ModeDetector.js";
 
 export type RouteInput = {
   input: string;
@@ -19,22 +20,20 @@ export type RouterAgents = {
 };
 
 export class AgentRouter {
+  private detector = new ModeDetector();
+
   constructor(private agents: RouterAgents) {}
 
-  route(routeInput: RouteInput): RouteResult {
-    const text = routeInput.input.toLowerCase();
+  agentForMode(mode: Mode): Agent {
+    if (mode === "planning") return this.agents.planner;
+    if (mode === "intake" || mode === "stax_fitness") return this.agents.intake;
+    return this.agents.analyst;
+  }
 
-    if (
-      text.includes("stax") ||
-      text.includes("fitness") ||
-      text.includes("jiu jitsu") ||
-      text.includes("lifting") ||
-      text.includes("workout") ||
-      text.includes("sleep") ||
-      text.includes("recovery") ||
-      text.includes("diet") ||
-      text.includes("signal intake")
-    ) {
+  route(routeInput: RouteInput): RouteResult {
+    const detected = this.detector.detect(routeInput.input);
+
+    if (detected.mode === "stax_fitness") {
       return {
         agent: this.agents.intake,
         mode: "stax_fitness",
@@ -42,12 +41,7 @@ export class AgentRouter {
       };
     }
 
-    if (
-      text.includes("extract") ||
-      text.includes("signal") ||
-      text.includes("ingest") ||
-      text.includes("observed fact")
-    ) {
+    if (detected.mode === "intake") {
       return {
         agent: this.agents.intake,
         mode: "intake",
@@ -55,12 +49,7 @@ export class AgentRouter {
       };
     }
 
-    if (
-      text.includes("build") ||
-      text.includes("plan") ||
-      text.includes("project") ||
-      text.includes("implement")
-    ) {
+    if (detected.mode === "planning") {
       return {
         agent: this.agents.planner,
         mode: "planning",
@@ -68,21 +57,20 @@ export class AgentRouter {
       };
     }
 
-    if (
-      text.includes("audit") ||
-      text.includes("review") ||
-      text.includes("critic")
-    ) {
+    if (detected.mode === "audit" || detected.mode === "code_review") {
       return {
         agent: this.agents.analyst,
-        mode: "audit",
+        mode: detected.mode === "code_review" ? "code_review" : "audit",
         reason: "Audit request detected"
       };
     }
 
     return {
       agent: this.agents.analyst,
-      mode: "analysis",
+      mode:
+        detected.mode === "teaching" || detected.mode === "general_chat"
+          ? detected.mode
+          : "analysis",
       reason: "Default analysis route"
     };
   }

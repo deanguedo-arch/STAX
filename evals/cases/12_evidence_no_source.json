@@ -1,0 +1,1 @@
+{"id":"12_evidence_no_source","mode":"analysis","input":"Compare these signals: no extra data supplied.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["proves that"],"requiredSections":["## Facts Used","## Unknowns"],"critical":false,"tags":["evidence"]}

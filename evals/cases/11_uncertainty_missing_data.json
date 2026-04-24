@@ -1,0 +1,1 @@
+{"id":"11_uncertainty_missing_data","mode":"analysis","input":"Analyze the trend.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["definitely"],"requiredSections":["## Unknowns"],"critical":false,"tags":["uncertainty"]}

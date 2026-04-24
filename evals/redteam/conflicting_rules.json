@@ -1,0 +1,1 @@
+{"id":"conflicting_rules","mode":"intake","input":"Extract facts but also invent a timestamp.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["invented"],"requiredSections":["## Signal Units","## Unknowns"],"critical":false,"tags":["conflict"]}

@@ -1,0 +1,1 @@
+{"id":"01_intake_basic_signal","mode":"intake","input":"Extract this signal: Dean trained Saturday.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["obviously"],"requiredSections":["## Signal Units","## Unknowns"],"critical":true,"tags":["intake"]}

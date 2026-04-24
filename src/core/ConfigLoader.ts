@@ -1,54 +1,36 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
-import { DEFAULT_CONFIG, type RaxConfig } from "../schemas/Config.js";
+import { DEFAULT_CONFIG, type DeepPartial, type RaxConfig } from "../schemas/Config.js";
 
-function mergeConfig(base: RaxConfig, override?: Partial<RaxConfig>): RaxConfig {
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function deepMerge<T extends Record<string, unknown>>(base: T, override?: DeepPartial<T>): T {
   if (!override) {
     return structuredClone(base);
   }
 
-  const baseVersions = base.versions ?? DEFAULT_CONFIG.versions!;
-
-  return {
-    ...base,
-    ...override,
-    provider: {
-      ...base.provider,
-      ...override.provider
-    },
-    runtime: {
-      ...base.runtime,
-      ...override.runtime
-    },
-    limits: {
-      ...base.limits,
-      ...override.limits
-    },
-    versions: {
-      ...baseVersions,
-      ...override.versions
-    },
-    memory: {
-      ...base.memory,
-      ...override.memory
-    },
-    tools: {
-      ...base.tools,
-      ...override.tools
-    },
-    safety: {
-      ...base.safety,
-      ...override.safety
+  const result = structuredClone(base) as Record<string, unknown>;
+  for (const [key, value] of Object.entries(override)) {
+    if (value === undefined) {
+      continue;
     }
-  };
+    if (isObject(result[key]) && isObject(value)) {
+      result[key] = deepMerge(result[key] as Record<string, unknown>, value);
+      continue;
+    }
+    result[key] = value;
+  }
+  return result as T;
 }
 
-async function readJsonConfig(rootDir: string): Promise<Partial<RaxConfig> | undefined> {
+async function readJsonConfig(rootDir: string): Promise<DeepPartial<RaxConfig> | undefined> {
   const configPath = path.join(rootDir, "rax.config.json");
   try {
     const raw = await fs.readFile(configPath, "utf8");
-    return JSON.parse(raw) as Partial<RaxConfig>;
+    return JSON.parse(raw) as DeepPartial<RaxConfig>;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       return undefined;
@@ -59,24 +41,23 @@ async function readJsonConfig(rootDir: string): Promise<Partial<RaxConfig> | und
 
 export async function loadConfig(
   rootDir = process.cwd(),
-  override?: Partial<RaxConfig>
+  override?: DeepPartial<RaxConfig>
 ): Promise<RaxConfig> {
   dotenv.config({ path: path.join(rootDir, ".env"), quiet: true });
 
   const fileConfig = await readJsonConfig(rootDir);
   const withFile = mergeConfig(DEFAULT_CONFIG, fileConfig);
   const withOverride = mergeConfig(withFile, override);
-
-  const envProvider = process.env.RAX_PROVIDER as RaxConfig["provider"]["type"] | undefined;
+  const envProvider = process.env.RAX_PROVIDER as RaxConfig["model"]["provider"] | undefined;
   const envLogRuns = process.env.RAX_LOG_RUNS;
 
   return mergeConfig(withOverride, {
-    provider: {
-      type: envProvider ?? withOverride.provider.type,
-      ollamaBaseUrl: process.env.OLLAMA_BASE_URL ?? withOverride.provider.ollamaBaseUrl,
-      ollamaModel: process.env.OLLAMA_MODEL ?? withOverride.provider.ollamaModel,
-      openaiApiKey: process.env.OPENAI_API_KEY ?? withOverride.provider.openaiApiKey,
-      openaiModel: process.env.OPENAI_MODEL ?? withOverride.provider.openaiModel
+    model: {
+      provider: envProvider ?? withOverride.model.provider,
+      ollamaBaseUrl: process.env.OLLAMA_BASE_URL ?? withOverride.model.ollamaBaseUrl,
+      ollamaModel: process.env.OLLAMA_MODEL ?? withOverride.model.ollamaModel,
+      openaiApiKey: process.env.OPENAI_API_KEY ?? withOverride.model.openaiApiKey,
+      openaiModel: process.env.OPENAI_MODEL ?? withOverride.model.openaiModel
     },
     runtime: {
       logRuns:
@@ -87,4 +68,9 @@ export async function loadConfig(
   });
 }
 
-export { mergeConfig };
+export function mergeConfig(
+  base: RaxConfig,
+  override?: DeepPartial<RaxConfig>
+): RaxConfig {
+  return deepMerge(base as unknown as Record<string, unknown>, override as DeepPartial<Record<string, unknown>>) as unknown as RaxConfig;
+}

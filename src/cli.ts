@@ -1,11 +1,20 @@
 #!/usr/bin/env node
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createCorrection } from "./core/Corrections.js";
+import { createCorrection, promoteCorrection } from "./core/Corrections.js";
+import { loadConfig, mergeConfig } from "./core/ConfigLoader.js";
 import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { MemoryStore } from "./memory/MemoryStore.js";
+import { PolicyCompiler } from "./policy/PolicyCompiler.js";
+import { PolicyLoader } from "./policy/PolicyLoader.js";
+import { PolicySelector } from "./policy/PolicySelector.js";
+import { RiskClassifier } from "./safety/RiskClassifier.js";
+import { BoundaryDecision } from "./safety/BoundaryDecision.js";
+import { DEFAULT_CONFIG, type DetailLevel, type RaxMode } from "./schemas/Config.js";
+import { TrainingExporter } from "./training/TrainingExporter.js";
+import { createRunId } from "./utils/ids.js";
 import { logError, logInfo } from "./utils/logger.js";
 
 type ParsedArgs = {
@@ -21,6 +30,10 @@ const knownCommands = new Set([
   "replay",
   "memory",
   "correct",
+  "corrections",
+  "train",
+  "policy",
+  "trace",
   "help"
 ]);
 
@@ -64,10 +77,17 @@ async function runCommand(args: ParsedArgs): Promise<void> {
   }
 
   const runtime = await createDefaultRuntime();
-  const output = await runtime.run(input);
+  const output = await runtime.run(input, [], {
+    mode: typeof args.flags.mode === "string" ? (args.flags.mode as RaxMode) : undefined,
+    detailLevel:
+      typeof args.flags.detail === "string"
+        ? (args.flags.detail as DetailLevel)
+        : undefined
+  });
   logInfo(output.output);
   logInfo("");
   logInfo(`Run: ${output.runId}`);
+  logInfo(`Run folder: ${path.join("runs", output.createdAt.slice(0, 10), output.runId)}`);
 }
 
 async function batchCommand(args: ParsedArgs): Promise<void> {
@@ -77,21 +97,57 @@ async function batchCommand(args: ParsedArgs): Promise<void> {
   }
 
   const runtime = await createDefaultRuntime();
-  const entries = await fs.readdir(folder);
+  const loaded = await loadConfig(process.cwd());
+  const config = mergeConfig(DEFAULT_CONFIG, loaded);
+  const entries = (await fs.readdir(folder))
+    .filter((entry) => /\.(txt|md|markdown)$/i.test(entry))
+    .slice(0, config.limits.maxBatchFiles);
+  const batchId = createRunId().replace(/^run-/, "batch-");
+  const createdAt = new Date().toISOString();
+  const summary: Array<{ file: string; runId?: string; error?: string }> = [];
   for (const entry of entries) {
     const fullPath = path.join(folder, entry);
     const stat = await fs.stat(fullPath);
     if (!stat.isFile()) {
       continue;
     }
-    const input = await fs.readFile(fullPath, "utf8");
-    const output = await runtime.run(input);
-    logInfo(`${entry}: ${output.runId}`);
+    try {
+      const input = await fs.readFile(fullPath, "utf8");
+      const output = await runtime.run(input, [], {
+        mode: typeof args.flags.mode === "string" ? (args.flags.mode as RaxMode) : undefined
+      });
+      summary.push({ file: entry, runId: output.runId });
+      logInfo(`${entry}: ${output.runId}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      summary.push({ file: entry, error: message });
+      logError(`${entry}: ${message}`);
+    }
   }
+  const summaryPath = path.join(
+    "runs",
+    createdAt.slice(0, 10),
+    `${batchId}.json`
+  );
+  await fs.mkdir(path.dirname(summaryPath), { recursive: true });
+  await fs.writeFile(
+    summaryPath,
+    JSON.stringify({ batchId, createdAt, folder, count: summary.length, results: summary }, null, 2),
+    "utf8"
+  );
+  logInfo(`Batch summary: ${summaryPath}`);
 }
 
-async function evalCommand(): Promise<void> {
-  const result = await runEvals();
+async function evalCommand(args: ParsedArgs): Promise<void> {
+  const folder = args.flags.redteam
+    ? "redteam"
+    : args.flags.regression
+      ? "regression"
+      : "cases";
+  const result = await runEvals({
+    folder,
+    mode: typeof args.flags.mode === "string" ? args.flags.mode : undefined
+  });
   logInfo(JSON.stringify(result, null, 2));
   if (result.failed > 0) {
     process.exitCode = 1;
@@ -112,26 +168,45 @@ async function replayCommand(args: ParsedArgs): Promise<void> {
 }
 
 async function memoryCommand(args: ParsedArgs): Promise<void> {
-  if (args.positional[0] !== "search") {
-    throw new Error('Usage: rax memory search "query"');
-  }
+  const action = args.positional[0];
   const query = args.positional.slice(1).join(" ");
   const store = new MemoryStore();
-  const results = await store.search(query);
-  logInfo(JSON.stringify(results, null, 2));
+  if (action === "search") {
+    const results = await store.search(query);
+    logInfo(JSON.stringify(results, null, 2));
+    return;
+  }
+  if (action === "list") {
+    const results = await store.search("");
+    logInfo(JSON.stringify(results, null, 2));
+    return;
+  }
+  if (action === "approve") {
+    logInfo(JSON.stringify(await store.approve(args.positional[1] ?? ""), null, 2));
+    return;
+  }
+  if (action === "reject") {
+    logInfo(JSON.stringify(await store.reject(args.positional[1] ?? ""), null, 2));
+    return;
+  }
+  throw new Error('Usage: rax memory search "query" | list | approve <id> | reject <id>');
 }
 
 async function correctCommand(args: ParsedArgs): Promise<void> {
   const runId = args.positional[0];
   const date = typeof args.flags.date === "string" ? args.flags.date : undefined;
   const outputFile =
-    typeof args.flags.output === "string" ? args.flags.output : undefined;
+    typeof args.flags.file === "string"
+      ? args.flags.file
+      : typeof args.flags.output === "string"
+        ? args.flags.output
+        : undefined;
   const reason =
-    typeof args.flags.reason === "string" ? args.flags.reason : "Manual correction";
+    typeof args.flags.reason === "string" ? args.flags.reason : "unspecified";
 
   if (!runId || !outputFile) {
     throw new Error(
-      "Usage: rax correct <run-id> --output corrected.md --reason \"...\""
+      "Usage: rax correct <run-id> --file corrected.md --reason \"...\""
     );
   }
 
@@ -140,9 +215,103 @@ async function correctCommand(args: ParsedArgs): Promise<void> {
     runId,
     date,
     correctedOutput,
-    reason
+    reason,
+    errorType:
+      typeof args.flags.errorType === "string"
+        ? (args.flags.errorType as never)
+        : undefined,
+    policyViolated:
+      typeof args.flags.policy === "string" ? args.flags.policy : undefined
   });
   logInfo(record.path);
+}
+
+async function correctionsCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0];
+  if (action === "list") {
+    const dirs = ["pending", "approved", "rejected"];
+    const records: unknown[] = [];
+    for (const dir of dirs) {
+      const full = path.join("corrections", dir);
+      try {
+        for (const entry of await fs.readdir(full)) {
+          if (entry.endsWith(".json")) {
+            records.push(JSON.parse(await fs.readFile(path.join(full, entry), "utf8")));
+          }
+        }
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      }
+    }
+    logInfo(JSON.stringify(records, null, 2));
+    return;
+  }
+  if (action === "promote") {
+    const correctionId = args.positional[1];
+    if (!correctionId) throw new Error("Usage: rax corrections promote <correction-id>");
+    const result = await promoteCorrection({
+      correctionId,
+      promoteToEval: Boolean(args.flags.eval),
+      promoteToTraining: Boolean(args.flags.training),
+      promoteToGolden: Boolean(args.flags.golden)
+    });
+    logInfo(JSON.stringify(result, null, 2));
+    return;
+  }
+  throw new Error("Usage: rax corrections list | promote <correction-id> --eval --training --golden");
+}
+
+async function trainCommand(args: ParsedArgs): Promise<void> {
+  if (args.positional[0] !== "export") {
+    throw new Error("Usage: rax train export --sft | --preference | --all");
+  }
+  const exporter = new TrainingExporter();
+  const results = [];
+  if (args.flags.sft || args.flags.all) results.push(await exporter.exportSft());
+  if (args.flags.preference || args.flags.all) results.push(await exporter.exportPreference());
+  logInfo(JSON.stringify(results, null, 2));
+}
+
+async function policyCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0];
+  if (action === "list") {
+    const entries = await fs.readdir("policies");
+    logInfo(entries.filter((entry) => entry.endsWith(".md")).join("\n"));
+    return;
+  }
+  if (action === "compile") {
+    const mode = (typeof args.flags.mode === "string" ? args.flags.mode : "analysis") as RaxMode;
+    const fileInput = typeof args.flags.file === "string" ? await fs.readFile(args.flags.file, "utf8") : args.positional.slice(1).join(" ");
+    const risk = new RiskClassifier().score(fileInput);
+    const boundary = new BoundaryDecision().decide(risk);
+    const bundle = await new PolicyCompiler(new PolicyLoader(), new PolicySelector()).compile({
+      mode,
+      risk,
+      boundaryMode: boundary.mode,
+      userInput: fileInput,
+      retrievedMemory: [],
+      retrievedExamples: []
+    });
+    logInfo(bundle.compiledSystemPrompt);
+    return;
+  }
+  throw new Error("Usage: rax policy list | compile --mode planning --file input.txt");
+}
+
+async function traceCommand(args: ParsedArgs): Promise<void> {
+  const runId = args.positional[0];
+  if (!runId) throw new Error("Usage: rax trace <run-id>");
+  const runsDir = path.join(process.cwd(), "runs");
+  for (const date of await fs.readdir(runsDir)) {
+    const candidate = path.join(runsDir, date, runId, "trace.json");
+    try {
+      logInfo(await fs.readFile(candidate, "utf8"));
+      return;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  throw new Error(`Trace not found: ${runId}`);
 }
 
 function help(): void {
@@ -151,10 +320,16 @@ function help(): void {
     '  rax run "input"',
     "  rax run --file input.txt",
     "  rax batch folder/",
-    "  rax eval",
+    "  rax eval [--mode stax_fitness] [--redteam] [--regression]",
     "  rax replay <run-id>",
-    '  rax memory search "query"',
-    '  rax correct <run-id> --output corrected.md --reason "..."'
+    '  rax memory search "query" | list | approve <id> | reject <id>',
+    '  rax correct <run-id> --file corrected.md --reason "..."',
+    "  rax corrections list",
+    "  rax corrections promote <correction-id> --eval --training --golden",
+    "  rax train export --sft | --preference | --all",
+    "  rax policy list",
+    "  rax policy compile --mode planning --file input.txt",
+    "  rax trace <run-id>"
   ].join("\n"));
 }
 
@@ -165,13 +340,21 @@ async function main(): Promise<void> {
   } else if (args.command === "batch") {
     await batchCommand(args);
   } else if (args.command === "eval") {
-    await evalCommand();
+    await evalCommand(args);
   } else if (args.command === "replay") {
     await replayCommand(args);
   } else if (args.command === "memory") {
     await memoryCommand(args);
   } else if (args.command === "correct") {
     await correctCommand(args);
+  } else if (args.command === "corrections") {
+    await correctionsCommand(args);
+  } else if (args.command === "train") {
+    await trainCommand(args);
+  } else if (args.command === "policy") {
+    await policyCommand(args);
+  } else if (args.command === "trace") {
+    await traceCommand(args);
   } else {
     help();
   }

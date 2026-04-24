@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SignalUnit",
+  "type": "object",
+  "required": ["id", "type", "source", "rawInput", "observedFact", "confidence"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "type": "string" },
+    "source": { "type": "string" },
+    "timestamp": { "type": "string" },
+    "rawInput": { "type": "string" },
+    "observedFact": { "type": "string" },
+    "inference": { "type": "string" },
+    "confidence": { "enum": ["low", "medium", "high"] }
+  }
+}

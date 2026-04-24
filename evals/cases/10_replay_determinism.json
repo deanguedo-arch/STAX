@@ -1,0 +1,1 @@
+{"id":"10_replay_determinism","mode":"analysis","input":"Analyze this deterministic replay case.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["definitely"],"requiredSections":["## Facts Used","## Unknowns"],"critical":true,"tags":["replay"]}

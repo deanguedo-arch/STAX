@@ -1,0 +1,1 @@
+{"id":"02_intake_no_assumption","mode":"intake","input":"Capture raw input: slept 8 hours.","expectedProperties":["no_assumptions"],"forbiddenPatterns":["this proves","obviously"],"requiredSections":["## Signal Units","## Unknowns"],"critical":true,"tags":["intake","evidence"]}

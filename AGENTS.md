@@ -1,57 +1,68 @@
-# AGENTS.md - RAX Project Instructions
+# AGENTS.md - STAX/RAX Repo Instructions
 
-## Project Purpose
+## Mission
 
-This repository builds RAX: a local Rule-Aware Execution System for LLM orchestration.
+This repo is being upgraded into STAX/RAX: a local rule-aware adaptive assistant runtime.
 
-RAX wraps model calls with instruction hierarchy, risk classification, boundary decisions, local memory, agent routing, critic review, formatter enforcement, strict schema validation, trace logging, evals, corrections, and replay.
+Do not build a pile of prompts. The behavior system requires explicit policies, mode detection, risk/boundary filtering, policy compilation, provider routing, schema validation, a critic/repair loop, an eval harness, a corrections loop, replay/trace logs, training-data export, and approved memory only.
 
-## Engineering Rules
+## Non-Negotiables
 
-- Use TypeScript.
-- Use strict types.
-- Keep modules small.
-- Do not add unnecessary frameworks.
-- Mock model calls first.
-- Keep provider adapters replaceable.
-- Do not hardwire OpenAI only.
-- Ensure the project runs locally with mock provider.
-- Add tests for routing, risk, boundary decisions, providers, runtime flow, schema validation, evals, replay, and corrections.
+- Preserve existing STAX/RAX functionality.
+- Mock provider must work without external APIs.
+- Do not require OpenAI key unless provider is `openai`.
+- Do not add uncontrolled shell execution.
+- Shell execution must remain disabled by default.
+- File write tools must remain disabled by default unless config enables them.
+- Do not auto-save model outputs to memory.
+- Raw model outputs must never auto-save to memory.
+- Do not skip evals.
+- Do not silently pass schema failures.
+- Do not add UI before CLI is stable.
+- Corrections must be approved before promotion to eval, memory, or training data.
+- Every phase must run typecheck/tests if available.
+- Do not claim completion unless commands pass.
 
 ## Required Commands
 
-After changes, run:
+Run after changes:
 
 ```bash
 npm run typecheck
 npm test
 ```
 
-## Architecture Constraints
+Also smoke relevant CLI behavior:
 
-- Every agent must implement `Agent`.
-- Every model provider must implement `ModelProvider`.
-- Normal output must pass through `CriticAgent`, `FormatterAgent`, and schema validation.
-- `BoundaryDecision` must run before model calls.
-- Refused requests must not call the model provider.
-- `RunLogger` must save inspectable run folders under `runs/YYYY-MM-DD/<run-id>/`.
-- Prompt, schema, runtime version, determinism controls, routing, and model-call trace must be logged.
+```bash
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
+npm run rax -- eval
+```
 
-## Safety Constraints
+## Architectural Priority
 
-- RAX must not provide actionable harm.
-- RAX must not help identify private people.
-- RAX must not bypass provider rules.
-- RAX must not claim hidden capabilities.
-- RAX must not silently execute shell commands.
-- Shell and file-write tools are disabled by default.
+1. policies
+2. modes
+3. schemas
+4. evals
+5. corrections
+6. replay/trace
+7. runtime
+8. agents
+9. providers
+10. tools
 
-## Done Criteria
+Agents are not the system.
+The feedback loop is the system.
 
-A task is not done unless:
+## Approved Agents
 
-- TypeScript compiles.
-- Tests pass.
-- CLI runs with mock provider.
-- README instructions work.
-- New behavior has tests where practical.
+Only these agents are approved in v0.1:
+
+- IntakeAgent
+- AnalystAgent
+- PlannerAgent
+- CriticAgent
+- FormatterAgent
+
+Do not add recursive agents or free-form agent chat.

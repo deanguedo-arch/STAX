@@ -20,6 +20,7 @@ describe("createCorrection", () => {
     });
 
     expect(correction.runId).toBe(run.runId);
+    expect(correction.errorType).toBe("schema_failure");
     await expect(fs.stat(correction.path)).resolves.toBeTruthy();
   });
 });

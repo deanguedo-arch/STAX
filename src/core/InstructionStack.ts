@@ -19,7 +19,10 @@ const agentPromptByMode: Record<Mode, string> = {
   analysis: "prompts/agents/analyst_agent.md",
   planning: "prompts/agents/planner_agent.md",
   audit: "prompts/agents/critic_agent.md",
-  stax_fitness: "prompts/agents/intake_agent.md"
+  stax_fitness: "prompts/agents/intake_agent.md",
+  code_review: "prompts/agents/critic_agent.md",
+  teaching: "prompts/agents/analyst_agent.md",
+  general_chat: "prompts/agents/analyst_agent.md"
 };
 
 const taskPromptByMode: Partial<Record<Mode, string>> = {
@@ -27,7 +30,8 @@ const taskPromptByMode: Partial<Record<Mode, string>> = {
   analysis: "prompts/tasks/pattern_analysis.md",
   planning: "prompts/tasks/project_planning.md",
   audit: "prompts/tasks/audit.md",
-  intake: "prompts/tasks/signal_extract.md"
+  intake: "prompts/tasks/signal_extract.md",
+  code_review: "prompts/tasks/code_review.md"
 };
 
 export class InstructionStack {

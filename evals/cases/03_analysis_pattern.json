@@ -1,0 +1,1 @@
+{"id":"03_analysis_pattern","mode":"analysis","input":"Analyze pattern: sleep was 8 hours twice.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["definitely"],"requiredSections":["## Facts Used","## Pattern Candidates","## Unknowns"],"critical":false,"tags":["analysis"]}

@@ -1,104 +1,198 @@
 export type ProviderType = "mock" | "ollama" | "openai";
 
-export type Mode = "intake" | "analysis" | "planning" | "audit" | "stax_fitness";
+export type RaxMode =
+  | "intake"
+  | "analysis"
+  | "planning"
+  | "audit"
+  | "stax_fitness"
+  | "code_review"
+  | "teaching"
+  | "general_chat";
+
+export type Mode = RaxMode;
+
+export type DetailLevel = "minimal" | "brief" | "standard" | "deep" | "surgical";
 
 export type RaxConfig = {
-  name?: string;
-  version?: string;
-  provider: {
-    type: ProviderType;
-    model?: string;
-    temperature?: number;
-    top_p?: number;
-    seed?: number;
-    maxTokens?: number;
-    ollamaBaseUrl?: string;
-    ollamaModel?: string;
-    openaiApiKey?: string;
-    openaiModel?: string;
-  };
   runtime: {
-    defaultMode?: Mode | "safe_helpful";
-    logRuns?: boolean;
-    maxContextItems?: number;
-    requireCriticPass?: boolean;
-    requireFormatterPass?: boolean;
+    version: string;
+    name: string;
+    defaultMode: RaxMode;
+    strictMode: boolean;
+    requirePolicyCompilation: boolean;
+    requireSchemaValidation: boolean;
+    requireCriticPass: boolean;
+    requireFormatterPass: boolean;
+    requireTraceLog: boolean;
+    requireReplayData: boolean;
+    logRuns: boolean;
+    replayEnabled: boolean;
+  };
+  model: {
+    provider: ProviderType;
+    generationModel: string;
+    criticModel: string;
+    evaluatorModel: string;
+    classifierModel: string;
+    generationTemperature: number;
+    criticTemperature: number;
+    evalTemperature: number;
+    topP: number;
+    seed: number;
+    maxOutputTokens: number;
+    timeoutMs: number;
+    ollamaBaseUrl: string;
+    ollamaModel: string;
+    openaiModel: string;
+    openaiApiKey?: string;
   };
   limits: {
-    maxAgents?: number;
-    maxTokensPerRun?: number;
-    maxCriticPasses?: number;
-    timeoutMs?: number;
+    maxAgentsPerRun: number;
+    maxToolCallsPerRun: number;
+    maxCriticPasses: number;
+    maxRepairPasses: number;
+    maxSchemaRetries: number;
+    maxRetrievedMemories: number;
+    maxRetrievedExamples: number;
+    maxPolicyTokens: number;
+    maxInputChars: number;
+    maxBatchFiles: number;
   };
-  versions?: {
-    prompts: string;
-    schema: string;
-    runtime: string;
+  risk: {
+    scale: "0-3";
+    constrainThreshold: number;
+    refuseThreshold: number;
+    hardStops: {
+      privacy: number;
+      systemIntegrity: number;
+      exploitation: number;
+      actionableHarm: {
+        harm: number;
+        actionability: number;
+      };
+    };
+    regulatedAdviceConstrainScore: number;
   };
-  memory?: {
-    session?: boolean;
-    project?: boolean;
-    retrieval?: boolean;
-    vectorRetrieval?: boolean;
+  evals: {
+    minimumPassRate: number;
+    criticalEvalPassRequired: boolean;
+    regressionTolerance: number;
+    goldenSimilarityWarning: number;
+    goldenSimilarityFail: number;
+    propertyEvalRequired: boolean;
   };
-  tools?: {
-    fileRead?: boolean;
-    fileWrite?: boolean;
-    search?: boolean;
-    shell?: boolean;
+  memory: {
+    autoSaveModelOutputs: boolean;
+    requireUserApprovedMemory: boolean;
+    defaultExpirationDays: number;
+    correctionsNeverExpire: boolean;
+    maxMemoryResults: number;
   };
-  safety?: {
-    riskThresholdConstrain?: number;
-    riskThresholdRefuse?: number;
+  tools: {
+    fileRead: "allowed" | "disabled";
+    fileWrite: "allowed" | "disabled";
+    shell: "allowed" | "disabled";
+    web: "allowed" | "disabled";
+    git: "approval_required" | "disabled" | "allowed";
+  };
+  training: {
+    enableSftExport: boolean;
+    enablePreferenceExport: boolean;
+    enableCorrectionExport: boolean;
+    autoPromoteCorrectionsToTraining: boolean;
   };
 };
 
+export type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
+
 export const DEFAULT_CONFIG: RaxConfig = {
-  name: "RAX",
-  version: "0.1.0",
-  provider: {
-    type: "mock",
-    model: "mock-model",
-    temperature: 0.2,
-    top_p: 1,
-    seed: 1,
-    maxTokens: 2000,
+  runtime: {
+    version: "0.1.0",
+    name: "STAX/RAX",
+    defaultMode: "analysis",
+    strictMode: true,
+    requirePolicyCompilation: true,
+    requireSchemaValidation: true,
+    requireCriticPass: true,
+    requireFormatterPass: true,
+    requireTraceLog: true,
+    requireReplayData: true,
+    logRuns: true,
+    replayEnabled: true
+  },
+  model: {
+    provider: "mock",
+    generationModel: "mock-generator",
+    criticModel: "mock-critic",
+    evaluatorModel: "mock-evaluator",
+    classifierModel: "rules",
+    generationTemperature: 0.2,
+    criticTemperature: 0.0,
+    evalTemperature: 0.0,
+    topP: 0.9,
+    seed: 42,
+    maxOutputTokens: 2000,
+    timeoutMs: 20000,
     ollamaBaseUrl: "http://localhost:11434",
     ollamaModel: "llama3.2",
     openaiModel: "gpt-5.2"
   },
-  runtime: {
-    defaultMode: "safe_helpful",
-    logRuns: true,
-    maxContextItems: 12,
-    requireCriticPass: true,
-    requireFormatterPass: true
-  },
   limits: {
-    maxAgents: 4,
-    maxTokensPerRun: 4000,
+    maxAgentsPerRun: 3,
+    maxToolCallsPerRun: 5,
     maxCriticPasses: 1,
-    timeoutMs: 10000
+    maxRepairPasses: 1,
+    maxSchemaRetries: 1,
+    maxRetrievedMemories: 5,
+    maxRetrievedExamples: 4,
+    maxPolicyTokens: 2500,
+    maxInputChars: 20000,
+    maxBatchFiles: 50
   },
-  versions: {
-    prompts: "v1",
-    schema: "v1",
-    runtime: "v0.1.0"
+  risk: {
+    scale: "0-3",
+    constrainThreshold: 5,
+    refuseThreshold: 8,
+    hardStops: {
+      privacy: 3,
+      systemIntegrity: 3,
+      exploitation: 3,
+      actionableHarm: {
+        harm: 3,
+        actionability: 2
+      }
+    },
+    regulatedAdviceConstrainScore: 2
+  },
+  evals: {
+    minimumPassRate: 0.9,
+    criticalEvalPassRequired: true,
+    regressionTolerance: 0.05,
+    goldenSimilarityWarning: 0.75,
+    goldenSimilarityFail: 0.6,
+    propertyEvalRequired: true
   },
   memory: {
-    session: true,
-    project: true,
-    retrieval: true,
-    vectorRetrieval: false
+    autoSaveModelOutputs: false,
+    requireUserApprovedMemory: true,
+    defaultExpirationDays: 90,
+    correctionsNeverExpire: true,
+    maxMemoryResults: 5
   },
   tools: {
-    fileRead: true,
-    fileWrite: false,
-    search: true,
-    shell: false
+    fileRead: "allowed",
+    fileWrite: "disabled",
+    shell: "disabled",
+    web: "disabled",
+    git: "approval_required"
   },
-  safety: {
-    riskThresholdConstrain: 5,
-    riskThresholdRefuse: 8
+  training: {
+    enableSftExport: true,
+    enablePreferenceExport: true,
+    enableCorrectionExport: true,
+    autoPromoteCorrectionsToTraining: false
   }
 };

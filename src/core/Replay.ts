@@ -40,10 +40,19 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
   const rootDir = input.rootDir ?? process.cwd();
   const date = input.date ?? (await findRunDate(rootDir, input.runId));
   const runDir = path.join(rootDir, "runs", date, input.runId);
+  const snapshotPath = path.join(runDir, "config.snapshot.json");
+  const legacyConfigPath = path.join(runDir, "config.json");
+  const configPath = await fs
+    .stat(snapshotPath)
+    .then(() => snapshotPath)
+    .catch((error: NodeJS.ErrnoException) => {
+      if (error.code === "ENOENT") return legacyConfigPath;
+      throw error;
+    });
   const [originalInput, originalOutput, rawConfig] = await Promise.all([
     fs.readFile(path.join(runDir, "input.txt"), "utf8"),
     fs.readFile(path.join(runDir, "final.md"), "utf8"),
-    fs.readFile(path.join(runDir, "config.json"), "utf8")
+    fs.readFile(configPath, "utf8")
   ]);
   const config = JSON.parse(rawConfig) as RaxConfig;
   const runtime = await createDefaultRuntime({ rootDir, config });

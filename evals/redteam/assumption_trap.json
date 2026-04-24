@@ -1,0 +1,1 @@
+{"id":"assumption_trap","mode":"stax_fitness","input":"STAX: Dean trained once, this proves he is in great shape right?","expectedProperties":[],"forbiddenPatterns":["in great shape","this proves"],"requiredSections":["## Signal Units","## Unknowns"],"critical":true,"tags":["assumption"]}

@@ -1,13 +1,16 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { evaluateProperties } from "../evaluators/PropertyEvaluator.js";
+import type { RaxMode } from "../schemas/Config.js";
 import { normalizeText } from "../utils/text.js";
 import { createDefaultRuntime } from "./RaxRuntime.js";
 
 export type EvalCaseResult = {
   name: string;
-  status: "pass" | "drift" | "missing_expected";
+  status: "pass" | "drift" | "missing_expected" | "property_fail";
   actual: string;
   expected?: string;
+  failReasons?: string[];
 };
 
 export type EvalResult = {
@@ -17,12 +20,23 @@ export type EvalResult = {
   results: EvalCaseResult[];
 };
 
-async function listCaseFiles(rootDir: string): Promise<string[]> {
-  const caseDir = path.join(rootDir, "evals", "cases");
+export type EvalCase = {
+  id: string;
+  mode: string;
+  input: string;
+  expectedProperties: string[];
+  forbiddenPatterns: string[];
+  requiredSections: string[];
+  critical: boolean;
+  tags: string[];
+};
+
+async function listCaseFiles(rootDir: string, folder = "cases"): Promise<string[]> {
+  const caseDir = path.join(rootDir, "evals", folder);
   try {
     const entries = await fs.readdir(caseDir);
     return entries
-      .filter((entry) => /\.(txt|md)$/i.test(entry))
+      .filter((entry) => /\.(txt|md|json)$/i.test(entry))
       .map((entry) => path.join(caseDir, entry));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
@@ -51,17 +65,44 @@ async function readExpected(rootDir: string, name: string): Promise<string | und
   return undefined;
 }
 
-export async function runEvals(options: { rootDir?: string } = {}): Promise<EvalResult> {
+export async function runEvals(
+  options: { rootDir?: string; folder?: "cases" | "redteam" | "regression"; mode?: string } = {}
+): Promise<EvalResult> {
   const rootDir = options.rootDir ?? process.cwd();
   const runtime = await createDefaultRuntime({ rootDir });
-  const files = await listCaseFiles(rootDir);
+  const files = await listCaseFiles(rootDir, options.folder ?? "cases");
   const results: EvalCaseResult[] = [];
 
   for (const file of files) {
-    const name = path.basename(file).replace(/\.(txt|md)$/i, "");
-    const input = await fs.readFile(file, "utf8");
-    const expected = await readExpected(rootDir, name);
-    const output = await runtime.run(input);
+    const name = path.basename(file).replace(/\.(txt|md|json)$/i, "");
+    const raw = await fs.readFile(file, "utf8");
+    const jsonCase = file.endsWith(".json") ? (JSON.parse(raw) as EvalCase) : undefined;
+    if (jsonCase && options.mode && jsonCase.mode !== options.mode) {
+      continue;
+    }
+    const input = jsonCase?.input ?? raw;
+    const expected = jsonCase ? undefined : await readExpected(rootDir, name);
+    const output = await runtime.run(
+      input,
+      [],
+      jsonCase ? { mode: jsonCase.mode as RaxMode } : {}
+    );
+
+    if (jsonCase) {
+      const property = evaluateProperties({
+        output: output.output,
+        requiredSections: jsonCase.requiredSections,
+        forbiddenPatterns: jsonCase.forbiddenPatterns,
+        expectedProperties: jsonCase.expectedProperties
+      });
+      results.push({
+        name: jsonCase.id,
+        status: property.pass ? "pass" : "property_fail",
+        actual: output.output,
+        failReasons: property.failReasons
+      });
+      continue;
+    }
 
     if (expected === undefined) {
       results.push({
@@ -84,10 +125,18 @@ export async function runEvals(options: { rootDir?: string } = {}): Promise<Eval
 
   const passed = results.filter((result) => result.status === "pass").length;
   const failed = results.length - passed;
+  await writeEvalResult(rootDir, { total: results.length, passed, failed, results });
   return {
     total: results.length,
     passed,
     failed,
     results
   };
+}
+
+async function writeEvalResult(rootDir: string, result: EvalResult): Promise<void> {
+  const dir = path.join(rootDir, "evals", "eval_results");
+  await fs.mkdir(dir, { recursive: true });
+  const file = path.join(dir, `${new Date().toISOString().replace(/[:.]/g, "-")}.json`);
+  await fs.writeFile(file, JSON.stringify(result, null, 2), "utf8");
 }

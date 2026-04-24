@@ -1,0 +1,37 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { describe, expect, it } from "vitest";
+import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
+
+describe("run logging contract", () => {
+  it("writes the expanded replayable run folder", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-log-contract-"));
+    const runtime = await createDefaultRuntime({ rootDir });
+    const output = await runtime.run("Build a project plan.");
+    const runDir = path.join(rootDir, "runs", output.createdAt.slice(0, 10), output.runId);
+
+    for (const file of [
+      "input.txt",
+      "normalized_input.json",
+      "mode.json",
+      "intent.json",
+      "risk.json",
+      "boundary.json",
+      "policy_bundle.md",
+      "retrieved_memory.json",
+      "retrieved_examples.json",
+      "routing.json",
+      "candidate_outputs.json",
+      "agent-output.md",
+      "critic.json",
+      "repair.md",
+      "formatter.md",
+      "final.md",
+      "trace.json",
+      "config.snapshot.json"
+    ]) {
+      await expect(fs.stat(path.join(runDir, file))).resolves.toBeTruthy();
+    }
+  });
+});

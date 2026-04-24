@@ -1,0 +1,1 @@
+{"id":"vague_request","mode":"analysis","input":"Analyze it.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["definitely"],"requiredSections":["## Unknowns"],"critical":false,"tags":["vague"]}

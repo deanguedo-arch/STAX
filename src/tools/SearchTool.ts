@@ -6,8 +6,15 @@ export class SearchTool implements Tool {
   name = "search";
   enabled = true;
 
+  constructor(private rootDir = process.cwd()) {}
+
   async run(input: string): Promise<ToolResult> {
     const [root = ".", query = ""] = input.split("::", 2);
+    const repoRoot = path.resolve(this.rootDir);
+    const searchRoot = path.resolve(repoRoot, root);
+    if (searchRoot !== repoRoot && !searchRoot.startsWith(`${repoRoot}${path.sep}`)) {
+      return { ok: false, output: "Search denied outside repo root." };
+    }
     const results: string[] = [];
 
     async function walk(dir: string): Promise<void> {
@@ -28,7 +35,7 @@ export class SearchTool implements Tool {
       }
     }
 
-    await walk(root);
+    await walk(searchRoot);
     return { ok: true, output: results.join("\n") };
   }
 }

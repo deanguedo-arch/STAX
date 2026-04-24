@@ -1,0 +1,1 @@
+{"id":"09_stax_fitness_signal","mode":"stax_fitness","input":"STAX fitness signal: Dean trained jiu jitsu Saturday for 90 minutes.","expectedProperties":["mentions_unknowns"],"forbiddenPatterns":["obviously","in great shape","lazy"],"requiredSections":["## Signal Units","## Timeline","## Unknowns","## Confidence Summary"],"critical":true,"tags":["stax"]}

@@ -3,9 +3,19 @@ import type { AgentResult } from "../schemas/AgentResult.js";
 
 function observedFact(input: string): string {
   const cleaned = input
-    .replace(/^extract this as (stax )?signals?:/i, "")
+    .replace(/^extract this(?: as)?\s+(stax\s+)?(fitness\s+)?signals?:/i, "")
+    .replace(/^(stax\s+)?fitness\s+signals?:/i, "")
+    .replace(/^stax\s*:/i, "")
     .trim();
   return cleaned || input.trim();
+}
+
+function staxObservedFact(input: string): string {
+  return observedFact(input)
+    .replace(/,\s*this proves.*$/i, ".")
+    .replace(/\s*this proves.*$/i, "")
+    .replace(/\s+right\?$/i, "")
+    .trim();
 }
 
 export class IntakeAgent implements Agent {
@@ -17,14 +27,14 @@ export class IntakeAgent implements Agent {
     const providerResponse = await input.provider.complete({
       system: input.system,
       messages: [{ role: "user", content: rawInput }],
-      temperature: input.config.provider.temperature,
-      top_p: input.config.provider.top_p,
-      seed: input.config.provider.seed,
-      maxTokens: input.config.provider.maxTokens,
-      timeoutMs: input.config.limits.timeoutMs
+      temperature: input.config.model.generationTemperature,
+      top_p: input.config.model.topP,
+      seed: input.config.model.seed,
+      maxTokens: input.config.model.maxOutputTokens,
+      timeoutMs: input.config.model.timeoutMs
     });
 
-    const fact = observedFact(input.input);
+    const fact = input.mode === "stax_fitness" ? staxObservedFact(input.input) : observedFact(input.input);
 
     if (input.mode === "stax_fitness") {
       return {
@@ -41,6 +51,7 @@ export class IntakeAgent implements Agent {
           "- Timestamp: Unknown",
           `- Raw Input: ${rawInput}`,
           `- Observed Fact: ${fact}`,
+          "- Inference: Unknown",
           "- Confidence: medium",
           "",
           "## Timeline",
@@ -54,7 +65,10 @@ export class IntakeAgent implements Agent {
           "",
           "## Unknowns",
           "- Exact timestamp",
-          "- Supporting context"
+          "- Supporting context",
+          "",
+          "## Confidence Summary",
+          "medium"
         ].join("\n")
       };
     }
@@ -73,6 +87,7 @@ export class IntakeAgent implements Agent {
         "- Timestamp: Unknown",
         `- Raw Input: ${rawInput}`,
         `- Observed Fact: ${fact}`,
+        "- Inference: Unknown",
         "- Confidence: medium",
         "",
         "## Unknowns",

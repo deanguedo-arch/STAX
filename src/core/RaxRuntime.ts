@@ -1,11 +1,19 @@
 import { AgentRouter } from "../agents/AgentRouter.js";
 import type { Agent } from "../agents/Agent.js";
 import { createAgentSet } from "../agents/agentFactory.js";
+import { DetailLevelController } from "../classifiers/DetailLevelController.js";
+import { IntentClassifier } from "../classifiers/IntentClassifier.js";
+import { ModeDetector } from "../classifiers/ModeDetector.js";
+import { MemoryStore } from "../memory/MemoryStore.js";
+import { PolicyCompiler } from "../policy/PolicyCompiler.js";
+import { PolicyLoader } from "../policy/PolicyLoader.js";
+import { PolicySelector } from "../policy/PolicySelector.js";
 import type { ModelProvider } from "../providers/ModelProvider.js";
 import { createProvider } from "../providers/ProviderFactory.js";
-import { DEFAULT_CONFIG, type RaxConfig } from "../schemas/Config.js";
+import { DEFAULT_CONFIG, type DeepPartial, type RaxConfig } from "../schemas/Config.js";
+import type { DetailLevel, RaxMode } from "../schemas/Config.js";
 import type { RaxOutput } from "../schemas/RaxOutput.js";
-import type { RunTrace } from "../schemas/RunLog.js";
+import type { ModelCallTrace, RunTrace } from "../schemas/RunLog.js";
 import { BoundaryDecision } from "../safety/BoundaryDecision.js";
 import { RiskClassifier } from "../safety/RiskClassifier.js";
 import { safeRedirect } from "../safety/SafeRedirect.js";
@@ -21,7 +29,7 @@ import { ValidationFailureError } from "./errors.js";
 export type RaxRuntimeOptions = {
   rootDir?: string;
   provider?: ModelProvider;
-  config?: Partial<RaxConfig>;
+  config?: DeepPartial<RaxConfig>;
 };
 
 export class RaxRuntime {
@@ -37,21 +45,46 @@ export class RaxRuntime {
     private formatter: Agent,
     private logger: RunLogger,
     private contextWindow: ContextWindow,
-    private pipeline: ResponsePipeline
+    private pipeline: ResponsePipeline,
+    private modeDetector = new ModeDetector(),
+    private detailLevelController = new DetailLevelController(),
+    private policyCompiler = new PolicyCompiler(new PolicyLoader(rootDir), new PolicySelector())
   ) {}
 
-  async run(input: string, context: string[] = []): Promise<RaxOutput> {
+  async run(
+    input: string,
+    context: string[] = [],
+    options: { mode?: RaxMode; detailLevel?: DetailLevel } = {}
+  ): Promise<RaxOutput> {
     const runId = createRunId();
     const createdAt = new Date().toISOString();
+    const startedAt = Date.now();
+    const intent = new IntentClassifier().classify(input);
     const risk = this.riskClassifier.score(input);
     const boundary = this.boundaryDecision.decide(risk);
     const agentSequence: string[] = [];
-    const modelCalls: RunTrace["modelCalls"] = [];
+    const modelCalls: ModelCallTrace[] = [];
     let retries = 0;
+    const detectedMode = this.modeDetector.detect(input);
+    const effectiveMode = options.mode ?? detectedMode.mode;
+    const detailLevel =
+      options.detailLevel ?? this.detailLevelController.select(effectiveMode, boundary.mode);
+    const retrievedMemory = (await new MemoryStore(this.rootDir).search(input)).slice(
+      0,
+      this.config.memory.maxMemoryResults
+    );
+    const policyBundle = await this.policyCompiler.compile({
+      mode: effectiveMode,
+      risk,
+      boundaryMode: boundary.mode,
+      userInput: input,
+      retrievedMemory,
+      retrievedExamples: []
+    });
 
     const boundaryStack = await this.instructionStack.build({
       userInput: input,
-      mode: "analysis",
+      mode: effectiveMode,
       retrievedContext: this.contextWindow.trim(context)
     });
 
@@ -59,6 +92,29 @@ export class RaxRuntime {
       const final = safeRedirect(boundary.reason);
       const validation = { valid: true, issues: [] };
       const trace: RunTrace = {
+        runId,
+        createdAt,
+        runtimeVersion: this.config.runtime.version,
+        provider: this.provider.name,
+        model: this.provider.model,
+        criticModel: this.config.model.criticModel,
+        temperature: this.config.model.generationTemperature,
+        criticTemperature: this.config.model.criticTemperature,
+        topP: this.config.model.topP,
+        seed: this.config.model.seed,
+        mode: effectiveMode,
+        modeConfidence: detectedMode.confidence,
+        boundaryMode: boundary.mode,
+        selectedAgent: "boundary",
+        policiesApplied: policyBundle.policiesApplied,
+        criticPasses: 0,
+        repairPasses: 0,
+        formatterPasses: 0,
+        schemaRetries: 0,
+        latencyMs: Date.now() - startedAt,
+        toolCalls: [],
+        errors: [],
+        detailLevel,
         stack: boundaryStack.stack,
         agentSequence,
         riskScore: risk,
@@ -76,7 +132,11 @@ export class RaxRuntime {
         risk,
         output: final,
         validation,
-        versions: this.config.versions ?? DEFAULT_CONFIG.versions!,
+        versions: {
+          runtime: this.config.runtime.version,
+          schema: "v1",
+          prompts: "v1"
+        },
         createdAt
       };
 
@@ -85,8 +145,13 @@ export class RaxRuntime {
         input,
         config: this.config,
         stack: boundaryStack.stack,
+        intent,
         risk,
         boundary,
+        mode: { ...detectedMode, mode: effectiveMode },
+        policyBundle,
+        retrievedMemory,
+        retrievedExamples: [],
         final,
         trace,
         createdAt
@@ -99,21 +164,29 @@ export class RaxRuntime {
       input,
       riskLabels: risk.labels
     });
+    const effectiveRoute = options.mode
+      ? { ...route, mode: options.mode, agent: this.router.agentForMode(options.mode) }
+      : route;
     const trimmedContext = this.contextWindow.trim(context);
     const stack = await this.instructionStack.build({
       userInput: input,
-      mode: route.mode,
+      mode: effectiveRoute.mode,
       retrievedContext: trimmedContext
     });
 
-    const primary = await this.runAgent(route.agent, {
+    const primary = await this.runAgent(effectiveRoute.agent, {
       input,
       system: stack.system,
       risk,
       context: trimmedContext,
       provider: this.provider,
       config: this.config,
-      mode: route.mode
+      mode: effectiveRoute.mode,
+      policyBundle,
+      boundary,
+      memory: retrievedMemory,
+      examples: [],
+      detailLevel
     }, agentSequence, modelCalls);
 
     const criticInput = [
@@ -133,7 +206,12 @@ export class RaxRuntime {
       context: trimmedContext,
       provider: this.provider,
       config: this.config,
-      mode: "audit"
+      mode: "audit",
+      policyBundle,
+      boundary,
+      memory: retrievedMemory,
+      examples: [],
+      detailLevel
     }, agentSequence, modelCalls);
 
     const formatterInput = [
@@ -156,10 +234,15 @@ export class RaxRuntime {
       context: trimmedContext,
       provider: this.provider,
       config: this.config,
-      mode: route.mode
+      mode: effectiveRoute.mode,
+      policyBundle,
+      boundary,
+      memory: retrievedMemory,
+      examples: [],
+      detailLevel
     }, agentSequence, modelCalls);
 
-    let validation = this.pipeline.validate(route.mode, formatterResult.output);
+    let validation = this.pipeline.validate(effectiveRoute.mode, formatterResult.output);
 
     if (!validation.valid) {
       retries += 1;
@@ -175,9 +258,14 @@ export class RaxRuntime {
         context: trimmedContext,
         provider: this.provider,
         config: this.config,
-        mode: route.mode
+        mode: effectiveRoute.mode,
+        policyBundle,
+        boundary,
+        memory: retrievedMemory,
+        examples: [],
+        detailLevel
       }, agentSequence, modelCalls);
-      validation = validateModeOutput(route.mode, formatterResult.output);
+      validation = validateModeOutput(effectiveRoute.mode, formatterResult.output);
     }
 
     if (!validation.valid) {
@@ -185,11 +273,38 @@ export class RaxRuntime {
     }
 
     const trace: RunTrace = {
+      runId,
+      createdAt,
+      runtimeVersion: this.config.runtime.version,
+      provider: this.provider.name,
+      model: this.provider.model,
+      criticModel: this.config.model.criticModel,
+      temperature: this.config.model.generationTemperature,
+      criticTemperature: this.config.model.criticTemperature,
+      topP: this.config.model.topP,
+      seed: this.config.model.seed,
+      mode: effectiveRoute.mode,
+      modeConfidence: detectedMode.confidence,
+      boundaryMode: boundary.mode,
+      selectedAgent: effectiveRoute.agent.name,
+      policiesApplied: policyBundle.policiesApplied,
+      criticPasses: 1,
+      repairPasses: 0,
+      formatterPasses: 1,
+      schemaRetries: retries,
+      latencyMs: Date.now() - startedAt,
+      toolCalls: [],
+      errors: [],
+      detailLevel,
       stack: stack.stack,
       routingDecision: {
-        agent: route.agent.name,
-        mode: route.mode,
-        reason: route.reason
+        agent: effectiveRoute.agent.name,
+        mode: effectiveRoute.mode,
+        reason: route.reason,
+        modeConfidence: detectedMode.confidence,
+        matchedTerms: detectedMode.matchedTerms,
+        detailLevel,
+        policiesApplied: policyBundle.policiesApplied
       },
       agentSequence,
       riskScore: risk,
@@ -202,14 +317,18 @@ export class RaxRuntime {
     const output: RaxOutput = {
       runId,
       mode: boundary.mode,
-      taskMode: route.mode,
-      agent: route.agent.name,
+      taskMode: effectiveRoute.mode,
+      agent: effectiveRoute.agent.name,
       risk,
       output: formatterResult.output,
       critic: criticResult.output,
       formatter: formatterResult.output,
       validation,
-      versions: this.config.versions ?? DEFAULT_CONFIG.versions!,
+      versions: {
+        runtime: this.config.runtime.version,
+        schema: "v1",
+        prompts: "v1"
+      },
       createdAt
     };
 
@@ -218,11 +337,17 @@ export class RaxRuntime {
       input,
       config: this.config,
       stack: stack.stack,
+      intent,
       risk,
       boundary,
+      mode: { ...detectedMode, mode: effectiveRoute.mode },
+      policyBundle,
+      retrievedMemory,
+      retrievedExamples: [],
       routing: trace.routingDecision,
       primary,
       critic: criticResult,
+      formatter: formatterResult.output,
       final: formatterResult.output,
       trace,
       createdAt
@@ -235,7 +360,7 @@ export class RaxRuntime {
     agent: Agent,
     input: Parameters<Agent["execute"]>[0],
     sequence: string[],
-    modelCalls: RunTrace["modelCalls"]
+    modelCalls: ModelCallTrace[]
   ) {
     sequence.push(agent.name);
     const before = Date.now();
@@ -255,7 +380,7 @@ export async function createDefaultRuntime(
   const rootDir = options.rootDir ?? process.cwd();
   const loaded = await loadConfig(rootDir, options.config);
   const config = mergeConfig(DEFAULT_CONFIG, loaded);
-  const provider = options.provider ?? createProvider(config.provider);
+  const provider = options.provider ?? createProvider(config.model);
   const agents = createAgentSet();
   const router = new AgentRouter({
     intake: agents.intake,
@@ -270,14 +395,14 @@ export async function createDefaultRuntime(
     new InstructionStack(rootDir),
     new RiskClassifier(),
     new BoundaryDecision(
-      config.safety?.riskThresholdConstrain,
-      config.safety?.riskThresholdRefuse
+      config.risk.constrainThreshold,
+      config.risk.refuseThreshold
     ),
     router,
     agents.critic,
     agents.formatter,
     new RunLogger(rootDir),
-    new ContextWindow(config.runtime.maxContextItems),
+    new ContextWindow(config.limits.maxRetrievedMemories),
     new ResponsePipeline()
   );
 }

@@ -1,0 +1,1 @@
+{"id":"13_mode_conflict_resolution","mode":"planning","input":"Analyze and plan this vague project.","expectedProperties":[],"forbiddenPatterns":["obviously"],"requiredSections":["## Objective","## Plan"],"critical":false,"tags":["mode"]}

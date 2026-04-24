@@ -5,7 +5,9 @@ import type { ModelProvider } from "./ModelProvider.js";
 
 export type ProviderConfig = {
   type?: "mock" | "ollama" | "openai";
+  provider?: "mock" | "ollama" | "openai";
   model?: string;
+  generationModel?: string;
   ollamaBaseUrl?: string;
   ollamaModel?: string;
   openaiApiKey?: string;
@@ -13,7 +15,7 @@ export type ProviderConfig = {
 };
 
 export function createProvider(config: ProviderConfig = {}): ModelProvider {
-  const type = config.type ?? "mock";
+  const type = config.type ?? config.provider ?? "mock";
 
   if (type === "mock") {
     return new MockProvider();
@@ -22,7 +24,7 @@ export function createProvider(config: ProviderConfig = {}): ModelProvider {
   if (type === "ollama") {
     return new OllamaProvider(
       config.ollamaBaseUrl ?? "http://localhost:11434",
-      config.ollamaModel ?? config.model ?? "llama3.2"
+      config.ollamaModel ?? config.model ?? config.generationModel ?? "llama3.2"
     );
   }
 
@@ -33,7 +35,7 @@ export function createProvider(config: ProviderConfig = {}): ModelProvider {
 
     return new OpenAIProvider(
       config.openaiApiKey,
-      config.openaiModel ?? config.model ?? "gpt-5.2"
+      config.openaiModel ?? config.model ?? config.generationModel ?? "gpt-5.2"
     );
   }
 

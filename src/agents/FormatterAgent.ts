@@ -21,11 +21,11 @@ export class FormatterAgent implements Agent {
     const providerResponse = await input.provider.complete({
       system: input.system,
       messages: [{ role: "user", content: input.input }],
-      temperature: input.config.provider.temperature,
-      top_p: input.config.provider.top_p,
-      seed: input.config.provider.seed,
-      maxTokens: input.config.provider.maxTokens,
-      timeoutMs: input.config.limits.timeoutMs
+      temperature: input.config.model.generationTemperature,
+      top_p: input.config.model.topP,
+      seed: input.config.model.seed,
+      maxTokens: input.config.model.maxOutputTokens,
+      timeoutMs: input.config.model.timeoutMs
     });
 
     const primaryOutput = extractPrimaryOutput(input.input);

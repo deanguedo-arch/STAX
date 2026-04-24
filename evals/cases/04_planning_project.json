@@ -1,0 +1,1 @@
+{"id":"04_planning_project","mode":"planning","input":"Build a project plan for a local CLI.","expectedProperties":[],"forbiddenPatterns":["obviously"],"requiredSections":["## Objective","## Plan","## Tests / Verification"],"critical":true,"tags":["planning"]}

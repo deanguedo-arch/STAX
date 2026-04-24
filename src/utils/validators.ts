@@ -18,8 +18,12 @@ const requiredHeadings: Record<Mode, string[]> = {
     "## Timeline",
     "## Pattern Candidates",
     "## Deviations",
-    "## Unknowns"
-  ]
+    "## Unknowns",
+    "## Confidence Summary"
+  ],
+  code_review: ["## Findings", "## Tests", "## Residual Risk"],
+  teaching: ["## Explanation", "## Example", "## Unknowns"],
+  general_chat: ["## Response"]
 };
 
 const interpretationPhrases = [
@@ -30,6 +34,19 @@ const interpretationPhrases = [
   "is improving",
   "motivated",
   "undisciplined"
+];
+
+const staxForbiddenPhrases = [
+  "he is clearly",
+  "this proves",
+  "he should",
+  "he must",
+  "obviously",
+  "definitely",
+  "in great shape",
+  "disciplined person",
+  "lazy",
+  "unmotivated"
 ];
 
 export function validateModeOutput(mode: Mode, output: string): ValidationResult {
@@ -47,9 +64,19 @@ export function validateModeOutput(mode: Mode, output: string): ValidationResult
   }
 
   if (mode === "intake" || mode === "stax_fitness") {
-    const lower = output.toLowerCase();
-    if (interpretationPhrases.some((phrase) => lower.includes(phrase))) {
+    const claimText = output
+      .split("\n")
+      .filter((line) => !line.trim().toLowerCase().startsWith("- raw input:"))
+      .join("\n")
+      .toLowerCase();
+    if (interpretationPhrases.some((phrase) => claimText.includes(phrase))) {
       issues.push("Intake mode forbids interpretation phrases.");
+    }
+    if (
+      mode === "stax_fitness" &&
+      staxForbiddenPhrases.some((phrase) => claimText.includes(phrase))
+    ) {
+      issues.push("STAX fitness output contains forbidden unsupported phrasing.");
     }
   }
 

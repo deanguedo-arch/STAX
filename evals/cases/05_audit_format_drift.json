@@ -1,0 +1,1 @@
+{"id":"05_audit_format_drift","mode":"audit","input":"Review this output for format drift.","expectedProperties":[],"forbiddenPatterns":["no issues at all guaranteed"],"requiredSections":["## Critic Review"],"critical":false,"tags":["audit"]}

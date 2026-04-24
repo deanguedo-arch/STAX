@@ -2,6 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { AgentResult } from "../schemas/AgentResult.js";
 import type { RaxConfig } from "../schemas/Config.js";
+import type { ModeDetection } from "../classifiers/ModeDetector.js";
+import type { PolicyBundle } from "../policy/policyTypes.js";
 import type { RiskScore } from "../schemas/RiskScore.js";
 import type { RunTrace } from "../schemas/RunLog.js";
 import type { BoundaryResult } from "../safety/BoundaryDecision.js";
@@ -11,11 +13,19 @@ export type RunLoggerPayload = {
   input: string;
   config: RaxConfig;
   stack: string[];
+  intent?: Record<string, unknown>;
   risk: RiskScore;
   boundary: BoundaryResult;
+  mode?: ModeDetection;
+  policyBundle?: PolicyBundle;
+  retrievedMemory?: unknown[];
+  retrievedExamples?: unknown[];
+  candidateOutputs?: unknown[];
   routing?: Record<string, unknown>;
   primary?: AgentResult;
   critic?: AgentResult;
+  repair?: string;
+  formatter?: string;
   final: string;
   trace: RunTrace;
   createdAt: string;
@@ -36,6 +46,26 @@ export class RunLogger {
         JSON.stringify(payload.config, null, 2),
         "utf8"
       ),
+      fs.writeFile(
+        path.join(dir, "config.snapshot.json"),
+        JSON.stringify(payload.config, null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "normalized_input.json"),
+        JSON.stringify({ input: payload.input.trim() }, null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "mode.json"),
+        JSON.stringify(payload.mode ?? {}, null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "intent.json"),
+        JSON.stringify(payload.intent ?? {}, null, 2),
+        "utf8"
+      ),
       fs.writeFile(path.join(dir, "stack.md"), payload.stack.join("\n\n"), "utf8"),
       fs.writeFile(
         path.join(dir, "risk.json"),
@@ -48,11 +78,43 @@ export class RunLogger {
         "utf8"
       ),
       fs.writeFile(
+        path.join(dir, "boundary.json"),
+        JSON.stringify(payload.boundary, null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "policy_bundle.md"),
+        payload.policyBundle?.compiledSystemPrompt ?? "",
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "retrieved_memory.json"),
+        JSON.stringify(payload.retrievedMemory ?? [], null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "retrieved_examples.json"),
+        JSON.stringify(payload.retrievedExamples ?? [], null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
+        path.join(dir, "candidate_outputs.json"),
+        JSON.stringify(payload.candidateOutputs ?? [], null, 2),
+        "utf8"
+      ),
+      fs.writeFile(
         path.join(dir, "agent-output.md"),
         payload.primary?.output ?? "",
         "utf8"
       ),
       fs.writeFile(path.join(dir, "critic.md"), payload.critic?.output ?? "", "utf8"),
+      fs.writeFile(
+        path.join(dir, "critic.json"),
+        JSON.stringify({ output: payload.critic?.output ?? "" }, null, 2),
+        "utf8"
+      ),
+      fs.writeFile(path.join(dir, "repair.md"), payload.repair ?? "", "utf8"),
+      fs.writeFile(path.join(dir, "formatter.md"), payload.formatter ?? payload.final, "utf8"),
       fs.writeFile(path.join(dir, "final.md"), payload.final, "utf8"),
       fs.writeFile(
         path.join(dir, "trace.json"),

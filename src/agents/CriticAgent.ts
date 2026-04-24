@@ -9,11 +9,11 @@ export class CriticAgent implements Agent {
     const providerResponse = await input.provider.complete({
       system: input.system,
       messages: [{ role: "user", content: input.input }],
-      temperature: input.config.provider.temperature,
-      top_p: input.config.provider.top_p,
-      seed: input.config.provider.seed,
-      maxTokens: input.config.provider.maxTokens,
-      timeoutMs: input.config.limits.timeoutMs
+      temperature: input.config.model.criticTemperature,
+      top_p: input.config.model.topP,
+      seed: input.config.model.seed,
+      maxTokens: input.config.model.maxOutputTokens,
+      timeoutMs: input.config.model.timeoutMs
     });
 
     const issues = /probably|clearly shows|proves that/i.test(input.input)

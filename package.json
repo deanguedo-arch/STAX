@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "tsx src/cli.ts",
+    "rax": "tsx src/cli.ts",
     "run": "tsx src/cli.ts run",
     "test": "vitest run",
     "test:watch": "vitest",

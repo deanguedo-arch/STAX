@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RaxOutput",
+  "type": "object",
+  "required": ["runId", "mode", "taskMode", "agent", "risk", "output", "validation", "createdAt"]
+}

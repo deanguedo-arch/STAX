@@ -1,7 +1,22 @@
+export type MemoryType =
+  | "session"
+  | "project"
+  | "user_preference"
+  | "correction"
+  | "golden"
+  | "example"
+  | "forbidden";
+
 export type MemoryRecord = {
   id: string;
-  scope: "session" | "project";
+  type: MemoryType;
+  scope?: "session" | "project";
+  content: string;
   text: string;
-  tags: string[];
+  sourceRunId?: string;
   createdAt: string;
+  expiresAt?: string;
+  confidence: "low" | "medium" | "high";
+  approved: boolean;
+  tags: string[];
 };
