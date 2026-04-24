@@ -18,6 +18,8 @@ export type ReplayResult = {
   originalOutput: string;
   replayedOutput: string;
   exact: boolean;
+  outputExact: boolean;
+  traceExact: boolean;
   outputDiffSummary: string;
   traceDiffSummary: string;
   reason?: string;
@@ -63,7 +65,12 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
   const config = JSON.parse(rawConfig) as RaxConfig;
   const runtime = await createDefaultRuntime({ rootDir, config });
   const replayed = await runtime.run(originalInput);
-  const exact = originalOutput === replayed.output;
+  const outputExact = originalOutput === replayed.output;
+  const originalTrace = await readTrace(runDir);
+  const replayTrace = await readTrace(path.join(rootDir, "runs", replayed.createdAt.slice(0, 10), replayed.runId));
+  const traceDiffs = compareReplayTrace(originalTrace, replayTrace);
+  const traceExact = traceDiffs.length === 0;
+  const exact = outputExact && traceExact;
 
   return {
     originalRunId: input.runId,
@@ -74,13 +81,68 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
     originalOutput,
     replayedOutput: replayed.output,
     exact,
-    outputDiffSummary: exact ? "exact match" : "final output differs",
-    traceDiffSummary:
-      config.model.provider === "mock"
-        ? exact
-          ? "mock replay deterministic output matched"
-          : "mock replay drift detected"
-        : "real provider replay may drift",
-    reason: exact ? undefined : "Replay output did not match original final.md"
+    outputExact,
+    traceExact,
+    outputDiffSummary: outputExact ? "exact match" : "final output differs",
+    traceDiffSummary: traceExact
+      ? config.model.provider === "mock"
+        ? "mock replay deterministic trace matched"
+        : "real provider replay trace matched for deterministic fields"
+      : `trace differs: ${traceDiffs.join(", ")}`,
+    reason: exact
+      ? undefined
+      : [
+          outputExact ? undefined : "Replay output did not match original final.md",
+          traceExact ? undefined : "Replay trace differed on deterministic fields"
+        ].filter(Boolean).join("; ")
   };
+}
+
+type ReplayTrace = {
+  mode?: unknown;
+  boundaryMode?: unknown;
+  selectedAgent?: unknown;
+  policiesApplied?: unknown;
+  modelCalls?: Array<{ role?: unknown; provider?: unknown; model?: unknown }>;
+  validation?: { valid?: unknown };
+  schemaRetries?: unknown;
+  repairPasses?: unknown;
+};
+
+async function readTrace(runDir: string): Promise<ReplayTrace> {
+  try {
+    return JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as ReplayTrace;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      throw new Error(`Replay trace missing: ${path.join(runDir, "trace.json")}`);
+    }
+    throw error;
+  }
+}
+
+function compareReplayTrace(original: ReplayTrace, replayed: ReplayTrace): string[] {
+  const diffs: string[] = [];
+  compareField("mode", original.mode, replayed.mode, diffs);
+  compareField("boundaryMode", original.boundaryMode, replayed.boundaryMode, diffs);
+  compareField("selectedAgent", original.selectedAgent, replayed.selectedAgent, diffs);
+  compareField("policiesApplied", original.policiesApplied, replayed.policiesApplied, diffs);
+  compareField("modelCall roles", modelCallRoles(original), modelCallRoles(replayed), diffs);
+  compareField("validation.valid", original.validation?.valid, replayed.validation?.valid, diffs);
+  compareField("schemaRetries", original.schemaRetries, replayed.schemaRetries, diffs);
+  compareField("repairPasses", original.repairPasses, replayed.repairPasses, diffs);
+  return diffs;
+}
+
+function modelCallRoles(trace: ReplayTrace): Array<{ role?: unknown; provider?: unknown; model?: unknown }> {
+  return trace.modelCalls?.map((call) => ({
+    role: call.role,
+    provider: call.provider,
+    model: call.model
+  })) ?? [];
+}
+
+function compareField(name: string, original: unknown, replayed: unknown, diffs: string[]): void {
+  if (JSON.stringify(original) !== JSON.stringify(replayed)) {
+    diffs.push(name);
+  }
 }

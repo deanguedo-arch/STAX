@@ -31,7 +31,7 @@ export class ProviderRouter {
   }
 
   formatter() {
-    return this.generator();
+    return this.providerFor("formatter");
   }
 
   routes(): Record<"generator" | "critic" | "evaluator" | "classifier", string> {
@@ -59,7 +59,15 @@ export class ProviderRouter {
 
     return createProvider({
       ...this.config.model,
-      provider
+      provider,
+      model: this.modelFor(role)
     });
+  }
+
+  private modelFor(role: ProviderRole): string {
+    if (role === "critic") return this.config.model.criticModel;
+    if (role === "evaluator") return this.config.model.evaluatorModel;
+    if (role === "classifier") return this.config.model.classifierModel;
+    return this.config.model.generationModel;
   }
 }

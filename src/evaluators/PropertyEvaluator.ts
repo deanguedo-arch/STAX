@@ -55,6 +55,9 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
     if (property === "zero_provider_calls" && input.providerCallCount !== 0) {
       failReasons.push("expected property failed: zero_provider_calls");
     }
+    if (property === "critic_failure" && !input.output.includes("## Critic Failure")) {
+      failReasons.push("expected property failed: critic_failure");
+    }
   }
 
   if (input.minSignalUnits !== undefined) {

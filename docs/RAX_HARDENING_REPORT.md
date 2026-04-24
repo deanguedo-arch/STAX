@@ -3,34 +3,34 @@
 ## Current Implementation Audit
 
 ### 1. Provider role separation
-- status: weak
+- status: real
 - evidence: `src/providers/ModelProvider.ts`, `src/providers/ProviderFactory.ts`, `src/routing/ProviderRouter.ts`, `src/core/RaxRuntime.ts`, `src/schemas/Config.ts`
-- risk: runtime records model calls but does not yet prove role-specific routing for generator, critic, evaluator, and classifier in every call.
-- required fix: add provider role types/config, route provider calls by role, and log role/provider/model per model call.
+- risk: low; role routing is explicit, but all default roles still use mock providers in v0.1.
+- required fix: none for v0.1. Latest trace proves generator uses `mock-generator`, critic uses `mock-critic`, evaluator is separately routed, and classifier remains `rules`.
 
 ### 2. Critic gate enforcement
-- status: fake-complete
+- status: real
 - evidence: `src/agents/CriticAgent.ts`, `src/validators/CriticGate.ts`, `src/core/RaxRuntime.ts`
-- risk: critic output can be generated without blocking invalid, unsafe, or unsupported primary output.
-- required fix: make critic review structured, validated, severity-aware, and blocking.
+- risk: low; failed critic reviews now return a structured `## Critic Failure` instead of silently continuing to formatter/final output.
+- required fix: keep expanding critic checks as new modes are added.
 
 ### 3. Repair controller
-- status: weak
+- status: real
 - evidence: `src/validators/RepairController.ts`, `src/core/RaxRuntime.ts`, `src/core/RunLogger.ts`
-- risk: schema retry exists through formatter, but repair is not a first-class one-pass controller with trace/log proof.
-- required fix: implement one repair attempt, log repair result, and fail explicitly if repair cannot satisfy critic/schema.
+- risk: moderate; v0.1 repair is deterministic and one-pass, not model-assisted.
+- required fix: future work can add richer repair strategies, but current runtime attempts one configured repair for non-critical critic failures and fails explicitly if the critic still fails.
 
 ### 4. STAX atomic signal extraction
-- status: weak
+- status: real
 - evidence: `src/agents/IntakeAgent.ts`, `src/utils/validators.ts`, `tests/staxFitnessMode.test.ts`
-- risk: multiple observations can collapse into one Signal Unit, losing useful evidence granularity.
-- required fix: add atomic observation splitting, signal typing, timestamp extraction, and multi-SU rendering.
+- risk: low; current splitter handles conjunctions, bullets, sleep, BJJ/jiu jitsu, lifting, WHOOP, timestamps, and missing timestamp unknowns.
+- required fix: broaden extraction patterns as new STAX source formats appear.
 
 ### 5. Eval strictness
-- status: weak
+- status: real
 - evidence: `src/core/EvalRunner.ts`, `src/evaluators/PropertyEvaluator.ts`, `evals/cases/`, `evals/redteam/`
-- risk: evals can pass based on headings and simple string checks without enforcing signal counts, critical failure rules, or boundary expectations.
-- required fix: add min signal units, critical enforcement, pass-rate threshold, expected boundary mode, and stricter STAX properties.
+- risk: low; evals enforce required sections, forbidden patterns, expected properties, min signal units, critical failures, pass-rate threshold, and expected boundary mode.
+- required fix: add evaluator cases for new behaviors before changing runtime behavior.
 
 ### 6. Replay determinism
 - status: real
@@ -45,10 +45,10 @@
 - required fix: validate correction artifacts and training export JSONL line-by-line.
 
 ### 8. Training export
-- status: weak
+- status: real
 - evidence: `src/training/TrainingExporter.ts`, `training/exports/`, `tests/trainingExporter.test.ts`
-- risk: exports exist, but preference export can be empty and schema validation is shallow.
-- required fix: add export validators and ensure every JSONL line is parseable with no empty chosen/rejected fields.
+- risk: low; preference export can legitimately be empty when no approved correction pairs exist.
+- required fix: seed approved correction data when preference examples are needed.
 
 ### 9. Memory approval
 - status: real
@@ -69,16 +69,16 @@
 - required fix: make selection conditional on memory/tool/correction/refusal context and return explicit conflict resolution metadata.
 
 ### 12. Schema validation
-- status: weak
+- status: real
 - evidence: `src/schemas/zodSchemas.ts`, `src/utils/validators.ts`, `src/core/ResponsePipeline.ts`
-- risk: Zod schemas exist, but runtime output validation still uses Markdown section checks for final answers.
-- required fix: harden major object schemas and validate critic/repair/trace/eval records.
+- risk: moderate; Markdown outputs still use section/property validators where JSON schemas do not apply.
+- required fix: keep adding mode-specific validators for structured Markdown outputs.
 
 ### 13. Trace completeness
-- status: weak
+- status: real
 - evidence: `src/schemas/RunLog.ts`, `src/core/RunLogger.ts`, latest `runs/YYYY-MM-DD/<run-id>/trace.json`
-- risk: trace contains key fields but lacks providerRoles, evaluator/classifier model fields, route object, and replayable flag.
-- required fix: extend RunTrace and logger payloads.
+- risk: low; trace now includes provider roles, model calls, evaluator/classifier model fields, route, validation, replayable flag, and tool calls.
+- required fix: include non-empty tool-call entries once runtime tool execution is intentionally enabled.
 
 ### 14. Runtime tests
 - status: real
@@ -118,7 +118,7 @@
 - `npm run rax -- eval --mode stax_fitness`: passed, 2/2, passRate 1, criticalFailures 0.
 - `npm run rax -- eval --redteam`: passed, 9/9, passRate 1, criticalFailures 0.
 - `npm run rax -- eval --regression`: passed, 6/6, passRate 1, criticalFailures 0.
-- `npm run rax -- replay run-2026-04-24T19-39-28-610Z-t4fz57`: passed with exact mock replay.
+- `npm run rax -- replay run-2026-04-24T21-00-58-952Z-ewtlmk`: passed with exact mock replay.
 - `npm run rax -- train export --sft`: passed, 7 records.
 - `npm run rax -- train export --preference`: passed, 0 records because no approved correction data is currently present.
 

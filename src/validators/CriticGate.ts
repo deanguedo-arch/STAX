@@ -78,10 +78,17 @@ export class CriticGate {
       ...unsupportedClaims.map((claim) => `Unsupported claim: ${claim}`)
     ];
 
+    const hasCriticalStaxFailure =
+      input.mode === "stax_fitness" &&
+      (forbiddenPhrases.length > 0 ||
+        policyViolations.includes("stax_no_coaching") ||
+        unsupportedClaims.length > 0);
     const severity =
-      policyViolations.some((issue) => issue.includes("safety")) ? "critical" :
-      policyViolations.length > 0 || unsupportedClaims.length > 0 || schemaIssues.length > 0 ? "major" :
-      "none";
+      policyViolations.some((issue) => issue.includes("safety")) || hasCriticalStaxFailure
+        ? "critical"
+        : policyViolations.length > 0 || unsupportedClaims.length > 0 || schemaIssues.length > 0
+          ? "major"
+          : "none";
 
     return {
       pass: issuesFound.length === 0,

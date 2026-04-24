@@ -9,6 +9,7 @@ corrections/**
 !corrections/pending/.gitkeep
 !corrections/approved/
 !corrections/approved/.gitkeep
+!corrections/approved/corr-stax-atomic-proof.json
 !corrections/rejected/
 !corrections/rejected/.gitkeep
 trace/**

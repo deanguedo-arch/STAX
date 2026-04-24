@@ -81,6 +81,7 @@ export class TrainingExporter {
           policiesApplied: correction.policyViolated ? [`${correction.policyViolated}@1.0.0`] : [],
           source: "correction",
           runId: correction.runId,
+          correctionId: correction.correctionId,
           errorType: correction.errorType
         }
       };
@@ -108,6 +109,8 @@ export class TrainingExporter {
             metadata: {
               mode: "analysis",
               source: "correction",
+              correctionId: correction.correctionId,
+              runId: correction.runId,
               errorType: correction.errorType
             }
           };

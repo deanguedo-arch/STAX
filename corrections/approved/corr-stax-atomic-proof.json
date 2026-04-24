@@ -1,0 +1,14 @@
+{
+  "correctionId": "corr-stax-atomic-proof",
+  "runId": "fixture-stax-merged-signal",
+  "createdAt": "2026-04-24T21:12:00.000Z",
+  "originalOutput": "## Signal Units\n\n### SU-001\n- Type: training\n- Source: user\n- Timestamp: Saturday/Sunday\n- Raw Input: Dean trained BJJ Saturday for 90 minutes and slept 8 hours Sunday.\n- Observed Fact: Dean trained BJJ Saturday for 90 minutes and slept 8 hours Sunday.\n- Inference: Unknown\n- Confidence: medium\n\n## Timeline\n- Saturday/Sunday: merged signal\n\n## Pattern Candidates\n- Insufficient signals\n\n## Deviations\n- Insufficient baseline\n\n## Unknowns\n- Supporting context\n\n## Confidence Summary\nmedium",
+  "correctedOutput": "## Signal Units\n\n### SU-001\n- Type: training\n- Source: user\n- Timestamp: Saturday\n- Raw Input: Dean trained BJJ Saturday for 90 minutes\n- Observed Fact: Dean trained BJJ for 90 minutes\n- Inference: Unknown\n- Confidence: medium\n\n### SU-002\n- Type: sleep\n- Source: user\n- Timestamp: Sunday\n- Raw Input: Dean slept 8 hours Sunday\n- Observed Fact: Dean slept 8 hours\n- Inference: Unknown\n- Confidence: medium\n\n## Timeline\n- Saturday: Dean trained BJJ for 90 minutes\n- Sunday: Dean slept 8 hours\n\n## Pattern Candidates\n- Insufficient signals\n\n## Deviations\n- Insufficient baseline\n\n## Unknowns\n- Supporting context\n\n## Confidence Summary\nmedium",
+  "reason": "Split merged BJJ training and sleep observations into separate STAX signal units.",
+  "errorType": "missing_signal",
+  "policyViolated": "evidence_policy",
+  "tags": ["stax", "atomic", "correction-pressure"],
+  "approved": true,
+  "promoteToEval": true,
+  "promoteToTraining": true
+}

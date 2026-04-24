@@ -9,7 +9,7 @@ import { PolicyCompiler } from "../policy/PolicyCompiler.js";
 import { PolicyLoader } from "../policy/PolicyLoader.js";
 import { PolicySelector } from "../policy/PolicySelector.js";
 import type { ModelProvider } from "../providers/ModelProvider.js";
-import { createProvider } from "../providers/ProviderFactory.js";
+import { ProviderRouter } from "../routing/ProviderRouter.js";
 import { DEFAULT_CONFIG, type DeepPartial, type RaxConfig } from "../schemas/Config.js";
 import type { DetailLevel, RaxMode } from "../schemas/Config.js";
 import type { RaxOutput } from "../schemas/RaxOutput.js";
@@ -31,6 +31,7 @@ import { ValidationFailureError } from "./errors.js";
 export type RaxRuntimeOptions = {
   rootDir?: string;
   provider?: ModelProvider;
+  roleProviders?: Partial<Record<"generator" | "critic" | "formatter" | "evaluator", ModelProvider>>;
   config?: DeepPartial<RaxConfig>;
 };
 
@@ -50,7 +51,8 @@ export class RaxRuntime {
     private pipeline: ResponsePipeline,
     private modeDetector = new ModeDetector(),
     private detailLevelController = new DetailLevelController(),
-    private policyCompiler = new PolicyCompiler(new PolicyLoader(rootDir), new PolicySelector())
+    private policyCompiler = new PolicyCompiler(new PolicyLoader(rootDir), new PolicySelector()),
+    private roleProviders: Partial<Record<"generator" | "critic" | "formatter" | "evaluator", ModelProvider>> = {}
   ) {}
 
   async run(
@@ -84,9 +86,9 @@ export class RaxRuntime {
       retrievedExamples: []
     });
     const providerRoles = {
-      generator: this.config.model.generatorProvider,
-      critic: this.config.model.criticProvider,
-      evaluator: this.config.model.evaluatorProvider,
+      generator: this.providerForRole("generator").name,
+      critic: this.providerForRole("critic").name,
+      evaluator: this.providerForRole("evaluator").name,
       classifier: this.config.model.classifierProvider
     };
 
@@ -253,6 +255,117 @@ export class RaxRuntime {
       detailLevel
     }, agentSequence, modelCalls);
 
+    if (!criticReview.pass) {
+      const safeIssues = this.safeCriticMessages(criticReview.issuesFound);
+      const safeFixes = this.safeCriticMessages(criticReview.requiredFixes);
+      const failureOutput = [
+        "## Critic Failure",
+        "",
+        "The output did not pass the local critic gate.",
+        "",
+        "## Issues",
+        ...safeIssues.map((issue) => `- ${issue}`),
+        "",
+        "## Required Fixes",
+        ...safeFixes.map((fix) => `- ${fix}`)
+      ].join("\n");
+      const validation = { valid: false, issues: safeIssues };
+      const trace: RunTrace = {
+        runId,
+        createdAt,
+        runtimeVersion: this.config.runtime.version,
+        provider: this.provider.name,
+        model: this.provider.model,
+        providerRoles,
+        criticModel: this.config.model.criticModel,
+        evaluatorModel: this.config.model.evaluatorModel,
+        classifierModel: this.config.model.classifierModel,
+        temperature: this.config.model.generationTemperature,
+        criticTemperature: this.config.model.criticTemperature,
+        evalTemperature: this.config.model.evalTemperature,
+        topP: this.config.model.topP,
+        seed: this.config.model.seed,
+        mode: effectiveRoute.mode,
+        modeConfidence: detectedMode.confidence,
+        boundaryMode: boundary.mode,
+        selectedAgent: effectiveRoute.agent.name,
+        policiesApplied: policyBundle.policiesApplied,
+        criticPasses: 1,
+        repairPasses,
+        formatterPasses: 0,
+        schemaRetries: retries,
+        latencyMs: Date.now() - startedAt,
+        toolCalls: [],
+        errors: safeIssues,
+        route: {
+          agent: effectiveRoute.agent.name,
+          mode: effectiveRoute.mode,
+          reason: route.reason
+        },
+        replayable: this.provider.name === "mock",
+        detailLevel,
+        stack: stack.stack,
+        routingDecision: {
+          agent: effectiveRoute.agent.name,
+          mode: effectiveRoute.mode,
+          reason: route.reason,
+          modeConfidence: detectedMode.confidence,
+          matchedTerms: detectedMode.matchedTerms,
+          detailLevel,
+          policiesApplied: policyBundle.policiesApplied
+        },
+        agentSequence,
+        riskScore: risk,
+        boundaryDecision: boundary,
+        modelCalls,
+        validation,
+        retries
+      };
+
+      const output: RaxOutput = {
+        runId,
+        mode: boundary.mode,
+        taskMode: effectiveRoute.mode,
+        agent: effectiveRoute.agent.name,
+        risk,
+        output: failureOutput,
+        critic: criticResult.output,
+        validation,
+        versions: {
+          runtime: this.config.runtime.version,
+          schema: "v1",
+          prompts: "v1"
+        },
+        createdAt
+      };
+
+      await this.logger.log({
+        runId,
+        input,
+        config: this.config,
+        stack: stack.stack,
+        intent,
+        risk,
+        boundary,
+        mode: { ...detectedMode, mode: effectiveRoute.mode },
+        policyBundle,
+        retrievedMemory,
+        retrievedExamples: [],
+        routing: trace.routingDecision,
+        primary,
+        critic: criticResult,
+        criticReview,
+        repair: repairResult
+          ? JSON.stringify(repairResult, null, 2)
+          : JSON.stringify({ status: "not_attempted_due_to_critical" }, null, 2),
+        final: failureOutput,
+        trace,
+        createdAt
+      });
+
+      return output;
+    }
+
     const formatterInput = [
       "Format the final output. Do not add new claims.",
       "",
@@ -417,12 +530,13 @@ export class RaxRuntime {
     modelCalls: ModelCallTrace[]
   ) {
     sequence.push(agent.name);
+    const provider = this.providerForRole(role);
     const before = Date.now();
-    const result = await agent.execute(input);
+    const result = await agent.execute({ ...input, provider });
     modelCalls.push({
       role,
-      provider: this.provider.name,
-      model: this.provider.model,
+      provider: provider.name,
+      model: provider.model,
       tokens:
         typeof result.metadata?.providerTokens === "number"
           ? result.metadata.providerTokens
@@ -430,6 +544,38 @@ export class RaxRuntime {
       latencyMs: Date.now() - before
     });
     return result;
+  }
+
+  private providerForRole(role: "generator" | "critic" | "formatter" | "evaluator"): ModelProvider {
+    return this.roleProviders[role] ?? this.provider;
+  }
+
+  private safeCriticMessages(messages: string[]): string[] {
+    return Array.from(new Set(messages.map((message) => this.safeCriticMessage(message))));
+  }
+
+  private safeCriticMessage(message: string): string {
+    const lower = message.toLowerCase();
+    const hasUnsupportedClaim = lower.includes("unsupported claim:");
+    const hasStaxForbiddenPhrase = lower.includes("stax_fitness_forbidden_phrase");
+
+    if (lower.startsWith("fix:") && hasUnsupportedClaim) {
+      return "Remove unsupported claim.";
+    }
+
+    if (lower.startsWith("fix:") && hasStaxForbiddenPhrase) {
+      return "Remove forbidden STAX phrasing.";
+    }
+
+    if (hasUnsupportedClaim) {
+      return "Unsupported claim detected.";
+    }
+
+    if (hasStaxForbiddenPhrase) {
+      return "STAX fitness forbidden phrasing detected.";
+    }
+
+    return message;
   }
 }
 
@@ -439,7 +585,25 @@ export async function createDefaultRuntime(
   const rootDir = options.rootDir ?? process.cwd();
   const loaded = await loadConfig(rootDir, options.config);
   const config = mergeConfig(DEFAULT_CONFIG, loaded);
-  const provider = options.provider ?? createProvider(config.model);
+  const providerRouter = new ProviderRouter(config);
+  const defaultRoleProviders = options.provider
+    ? {
+        generator: options.provider,
+        critic: options.provider,
+        formatter: options.provider,
+        evaluator: options.provider
+      }
+    : {
+        generator: providerRouter.generator(),
+        critic: providerRouter.critic(),
+        formatter: providerRouter.formatter(),
+        evaluator: providerRouter.evaluator()
+      };
+  const roleProviders = {
+    ...defaultRoleProviders,
+    ...options.roleProviders
+  };
+  const generatorProvider = roleProviders.generator;
   const agents = createAgentSet();
   const router = new AgentRouter({
     intake: agents.intake,
@@ -450,7 +614,7 @@ export async function createDefaultRuntime(
   return new RaxRuntime(
     rootDir,
     config,
-    provider,
+    generatorProvider,
     new InstructionStack(rootDir),
     new RiskClassifier(),
     new BoundaryDecision(
@@ -462,6 +626,10 @@ export async function createDefaultRuntime(
     agents.formatter,
     new RunLogger(rootDir),
     new ContextWindow(config.limits.maxRetrievedMemories),
-    new ResponsePipeline()
+    new ResponsePipeline(),
+    undefined,
+    undefined,
+    undefined,
+    roleProviders
   );
 }

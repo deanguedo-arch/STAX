@@ -134,17 +134,35 @@ export async function promoteCorrection(
     const evalDir = path.join(rootDir, "evals", "regression");
     await fs.mkdir(evalDir, { recursive: true });
     const evalPath = path.join(evalDir, `${record.correctionId}.json`);
+    const runInput = await readRunInput(rootDir, record);
+    const mode = await readRunMode(rootDir, record);
+    const minSignalUnits = countSignalUnits(record.correctedOutput);
+    const staxMode = mode === "stax_fitness";
     await fs.writeFile(
       evalPath,
       JSON.stringify(
         {
           id: record.correctionId,
-          mode: "analysis",
-          input: record.reason,
-          expectedProperties: ["mentions_unknowns"],
-          forbiddenPatterns: [],
-          requiredSections: [],
-          critical: false,
+          mode,
+          input: runInput,
+          expectedProperties: staxMode
+            ? ["mentions_unknowns", "no_coaching", "no_personality_claims"]
+            : ["mentions_unknowns"],
+          forbiddenPatterns: staxMode
+            ? ["he should", "this proves", "disciplined person", "in great shape"]
+            : [],
+          requiredSections: staxMode
+            ? [
+                "## Signal Units",
+                "## Timeline",
+                "## Pattern Candidates",
+                "## Deviations",
+                "## Unknowns",
+                "## Confidence Summary"
+              ]
+            : [],
+          ...(minSignalUnits > 0 ? { minSignalUnits } : {}),
+          critical: staxMode,
           tags: record.tags
         },
         null,
@@ -196,4 +214,28 @@ export async function promoteCorrection(
   await fs.writeFile(approvedPath, JSON.stringify(updated, null, 2), "utf8");
   await fs.rm(record.path, { force: true });
   return updated;
+}
+
+async function readRunInput(rootDir: string, record: CorrectionRecord): Promise<string> {
+  try {
+    return await fs.readFile(path.join(rootDir, "runs", record.date, record.runId, "input.txt"), "utf8");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    return record.reason;
+  }
+}
+
+async function readRunMode(rootDir: string, record: CorrectionRecord): Promise<string> {
+  try {
+    const raw = await fs.readFile(path.join(rootDir, "runs", record.date, record.runId, "trace.json"), "utf8");
+    const trace = JSON.parse(raw) as { mode?: string };
+    return trace.mode ?? "analysis";
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    return "analysis";
+  }
+}
+
+function countSignalUnits(output: string): number {
+  return output.match(/^### SU-\d{3}/gm)?.length ?? 0;
 }

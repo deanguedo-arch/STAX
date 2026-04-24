@@ -3,7 +3,7 @@ import { CriticGate } from "../src/validators/CriticGate.js";
 import { RepairController } from "../src/validators/RepairController.js";
 
 describe("CriticGate hardening", () => {
-  it("fails unsupported STAX personality claims with major severity", () => {
+  it("fails unsupported STAX personality claims with critical severity", () => {
     const review = new CriticGate().review({
       mode: "stax_fitness",
       output: [
@@ -25,7 +25,7 @@ describe("CriticGate hardening", () => {
     });
 
     expect(review.pass).toBe(false);
-    expect(review.severity).toBe("major");
+    expect(review.severity).toBe("critical");
     expect(review.forbiddenPhrases).toContain("he is clearly");
     expect(review.unsupportedClaims.join(" ")).toContain("disciplined person");
   });

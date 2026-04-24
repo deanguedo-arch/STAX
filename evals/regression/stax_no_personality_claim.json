@@ -2,10 +2,9 @@
   "id": "stax_no_personality_claim",
   "mode": "stax_fitness",
   "input": "STAX: Dean trained once, this proves he is a disciplined person.",
-  "expectedProperties": ["mentions_unknowns", "no_personality_claims"],
+  "expectedProperties": ["critic_failure"],
   "forbiddenPatterns": ["disciplined person", "this proves", "he is clearly"],
-  "requiredSections": ["## Signal Units", "## Unknowns", "## Confidence Summary"],
-  "minSignalUnits": 1,
+  "requiredSections": ["## Critic Failure", "## Issues", "## Required Fixes"],
   "critical": true,
   "tags": ["stax", "personality"]
 }

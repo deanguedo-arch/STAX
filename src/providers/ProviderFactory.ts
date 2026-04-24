@@ -18,7 +18,7 @@ export function createProvider(config: ProviderConfig = {}): ModelProvider {
   const type = config.type ?? config.provider ?? "mock";
 
   if (type === "mock") {
-    return new MockProvider();
+    return new MockProvider(config.model ?? config.generationModel ?? "mock-model");
   }
 
   if (type === "ollama") {

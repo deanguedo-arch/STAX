@@ -6,8 +6,9 @@ import type {
 
 export class MockProvider implements ModelProvider {
   name = "mock";
-  model = "mock-model";
   calls: CompleteRequest[] = [];
+
+  constructor(public model = "mock-model") {}
 
   async complete(request: CompleteRequest): Promise<CompleteResponse> {
     this.calls.push(request);
