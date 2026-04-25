@@ -15,7 +15,8 @@ export type RaxMode =
   | "codex_audit"
   | "prompt_factory"
   | "test_gap_audit"
-  | "policy_drift";
+  | "policy_drift"
+  | "learning_unit";
 
 export type Mode = RaxMode;
 
@@ -113,6 +114,14 @@ export type RaxConfig = {
     enableCorrectionExport: boolean;
     autoPromoteCorrectionsToTraining: boolean;
   };
+  learning: {
+    enabled: boolean;
+    hotRetentionDays: number;
+    compactTraceOnlyRuns: boolean;
+    preserveFailures: boolean;
+    preservePromotedArtifacts: boolean;
+    archiveFormat: "jsonl";
+  };
 };
 
 export type DeepPartial<T> = {
@@ -209,5 +218,13 @@ export const DEFAULT_CONFIG: RaxConfig = {
     enablePreferenceExport: true,
     enableCorrectionExport: true,
     autoPromoteCorrectionsToTraining: false
+  },
+  learning: {
+    enabled: true,
+    hotRetentionDays: 30,
+    compactTraceOnlyRuns: true,
+    preserveFailures: true,
+    preservePromotedArtifacts: true,
+    archiveFormat: "jsonl"
   }
 };

@@ -10,6 +10,13 @@ import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
+import { LearningEventSchema, LearningQueueTypeSchema } from "./learning/LearningEvent.js";
+import { LearningMetricsStore } from "./learning/LearningMetrics.js";
+import { LearningProposalGenerator } from "./learning/LearningProposalGenerator.js";
+import { LearningQueue } from "./learning/LearningQueue.js";
+import { LearningRecorder } from "./learning/LearningRecorder.js";
+import { LearningRetention } from "./learning/LearningRetention.js";
+import { PromotionGate, type PromotionTarget } from "./learning/PromotionGate.js";
 import { MemoryStore } from "./memory/MemoryStore.js";
 import { ModeRegistry } from "./modes/ModeRegistry.js";
 import { PolicyCompiler } from "./policy/PolicyCompiler.js";
@@ -42,6 +49,8 @@ const knownCommands = new Set([
   "chat",
   "codex-audit-local",
   "trace",
+  "show",
+  "learn",
   "help"
 ]);
 
@@ -92,6 +101,16 @@ async function runCommand(args: ParsedArgs): Promise<void> {
         ? (args.flags.detail as DetailLevel)
         : undefined
   });
+  if (args.flags.print === "json") {
+    logInfo(JSON.stringify(output, null, 2));
+    return;
+  }
+  if (args.flags.print === "summary") {
+    logInfo(`Run: ${output.runId}`);
+    logInfo(`Mode: ${output.taskMode}`);
+    logInfo(`Validation: ${output.validation.valid ? "passed" : "failed"}`);
+    return;
+  }
   logInfo(output.output);
   logInfo("");
   logInfo(`Run: ${output.runId}`);
@@ -157,6 +176,7 @@ async function evalCommand(args: ParsedArgs): Promise<void> {
     mode: typeof args.flags.mode === "string" ? args.flags.mode : undefined
   });
   logInfo(JSON.stringify(result, null, 2));
+  await recordCommandEvent("eval", args, result.failed === 0 && result.criticalFailures === 0, JSON.stringify(result));
   if (result.failed > 0 || result.criticalFailures > 0 || result.passRate < DEFAULT_CONFIG.evals.minimumPassRate) {
     process.exitCode = 1;
   }
@@ -170,6 +190,7 @@ async function replayCommand(args: ParsedArgs): Promise<void> {
   }
   const result = await replayRun({ runId, date });
   logInfo(JSON.stringify(result, null, 2));
+  await recordCommandEvent("replay", args, result.exact, JSON.stringify(result), [result.replayRunId]);
   if (!result.exact) {
     process.exitCode = 1;
   }
@@ -232,6 +253,7 @@ async function correctCommand(args: ParsedArgs): Promise<void> {
       typeof args.flags.policy === "string" ? args.flags.policy : undefined
   });
   logInfo(record.path);
+  await recordCommandEvent("correct", args, true, record.path, [record.path], runId);
 }
 
 async function correctionsCommand(args: ParsedArgs): Promise<void> {
@@ -264,6 +286,7 @@ async function correctionsCommand(args: ParsedArgs): Promise<void> {
       promoteToGolden: Boolean(args.flags.golden)
     });
     logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("corrections promote", args, true, JSON.stringify(result), [result.path], result.runId);
     return;
   }
   throw new Error("Usage: rax corrections list | promote <correction-id> --eval --training --golden");
@@ -278,6 +301,7 @@ async function trainCommand(args: ParsedArgs): Promise<void> {
   if (args.flags.sft || args.flags.all) results.push(await exporter.exportSft());
   if (args.flags.preference || args.flags.all) results.push(await exporter.exportPreference());
   logInfo(JSON.stringify(results, null, 2));
+  await recordCommandEvent("train export", args, true, JSON.stringify(results), results.map((item) => String(item)));
 }
 
 async function policyCommand(args: ParsedArgs): Promise<void> {
@@ -301,6 +325,7 @@ async function policyCommand(args: ParsedArgs): Promise<void> {
       retrievedExamples: []
     });
     logInfo(bundle.compiledSystemPrompt);
+    await recordCommandEvent("policy compile", args, true, bundle.compiledSystemPrompt);
     return;
   }
   throw new Error("Usage: rax policy list | compile --mode planning --file input.txt");
@@ -418,6 +443,206 @@ async function traceCommand(args: ParsedArgs): Promise<void> {
   throw new Error(`Trace not found: ${runId}`);
 }
 
+async function showCommand(args: ParsedArgs): Promise<void> {
+  const runId = args.positional[0] === "last" || !args.positional[0]
+    ? await latestRunId(process.cwd())
+    : args.positional[0];
+  const runDir = await findRunDir(process.cwd(), runId);
+  const final = await fs.readFile(path.join(runDir, "final.md"), "utf8");
+  const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
+    mode?: string;
+    validation?: { valid?: boolean };
+    learningEventId?: string;
+    learningQueues?: string[];
+  };
+  if (args.flags.summary) {
+    logInfo([
+      `Run: ${runId}`,
+      `Mode: ${trace.mode ?? "unknown"}`,
+      `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
+      `LearningEvent: ${trace.learningEventId ?? "none"}`,
+      `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
+      `Trace: ${path.relative(process.cwd(), path.join(runDir, "trace.json"))}`
+    ].join("\n"));
+    return;
+  }
+  logInfo([
+    final.trim(),
+    "",
+    `Run: ${runId}`,
+    `Mode: ${trace.mode ?? "unknown"}`,
+    `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
+    `LearningEvent: ${trace.learningEventId ?? "none"}`,
+    `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
+    `Trace: ${path.relative(process.cwd(), path.join(runDir, "trace.json"))}`
+  ].join("\n"));
+}
+
+async function learnCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0];
+  const queue = new LearningQueue();
+  if (action === "queue") {
+    const type = typeof args.flags.type === "string" ? LearningQueueTypeSchema.parse(args.flags.type) : undefined;
+    const items = await queue.list(type);
+    logInfo(items.length ? JSON.stringify(items, null, 2) : "[]");
+    return;
+  }
+  if (action === "inspect") {
+    const eventId = args.positional[1];
+    if (!eventId) throw new Error("Usage: rax learn inspect <event-id>");
+    logInfo(await fs.readFile(path.join("learning", "events", "hot", `${eventId}.json`), "utf8"));
+    return;
+  }
+  if (action === "event") {
+    const runId = args.positional[1];
+    if (!runId) throw new Error("Usage: rax learn event <run-id>");
+    const runDir = await findRunDir(process.cwd(), runId);
+    logInfo(await fs.readFile(path.join(runDir, "learning_event.json"), "utf8"));
+    return;
+  }
+  if (action === "propose") {
+    const runId = args.positional[1] === "last" || !args.positional[1]
+      ? await latestRunId(process.cwd())
+      : args.positional[1];
+    const runDir = await findRunDir(process.cwd(), runId);
+    const event = LearningEventSchema.parse(JSON.parse(await fs.readFile(path.join(runDir, "learning_event.json"), "utf8")));
+    const proposal = await new LearningProposalGenerator().generate(event);
+    await recordCommandEvent("learn propose", args, true, JSON.stringify(proposal ?? { status: "trace_only" }), proposal ? [proposal.path] : [], runId);
+    logInfo(proposal ? JSON.stringify(proposal, null, 2) : "No proposal needed for trace-only event.");
+    return;
+  }
+  if (action === "promote") {
+    const eventId = args.positional[1];
+    if (!eventId) throw new Error("Usage: rax learn promote <event-id> --eval|--correction|--memory|--training --reason \"...\"");
+    const target = promotionTarget(args);
+    const reason = typeof args.flags.reason === "string" ? args.flags.reason : "";
+    const result = await new PromotionGate().promote({
+      eventId,
+      target,
+      reason,
+      approveMemory: Boolean(args.flags["approve-memory"])
+    });
+    logInfo(JSON.stringify(result, null, 2));
+    return;
+  }
+  if (action === "reject") {
+    const eventId = args.positional[1];
+    const reason = typeof args.flags.reason === "string" ? args.flags.reason : "";
+    if (!eventId) throw new Error("Usage: rax learn reject <event-id> --reason \"...\"");
+    logInfo(JSON.stringify(await queue.reject(eventId, reason), null, 2));
+    return;
+  }
+  if (action === "metrics") {
+    logInfo(JSON.stringify(await new LearningMetricsStore().read(), null, 2));
+    return;
+  }
+  if (action === "failures") {
+    const mode = typeof args.flags.mode === "string" ? args.flags.mode : undefined;
+    const events = await learningEvents();
+    const failed = events.filter((event) => event.failureClassification.hasFailure && (!mode || event.output.mode === mode));
+    logInfo(JSON.stringify(failed, null, 2));
+    return;
+  }
+  if (action === "repeated") {
+    const events = await learningEvents();
+    const counts = new Map<string, number>();
+    for (const event of events) {
+      for (const failure of event.failureClassification.failureTypes) {
+        const key = `${event.output.mode}:${failure}`;
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    logInfo(JSON.stringify(Array.from(counts.entries()).filter(([, count]) => count > 1), null, 2));
+    return;
+  }
+  if (action === "retention") {
+    const result = await new LearningRetention().run({
+      apply: Boolean(args.flags.apply),
+      reason: typeof args.flags.reason === "string" ? args.flags.reason : undefined
+    });
+    logInfo(JSON.stringify(result, null, 2));
+    return;
+  }
+  throw new Error("Usage: rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated|retention");
+}
+
+function promotionTarget(args: ParsedArgs): PromotionTarget {
+  if (args.flags.eval) return "eval";
+  if (args.flags.correction) return "correction";
+  if (args.flags.memory) return "memory";
+  if (args.flags.training) return "training";
+  if (args.flags.policy_patch || args.flags.policy) return "policy_patch";
+  if (args.flags.schema_patch || args.flags.schema) return "schema_patch";
+  if (args.flags.mode_contract_patch || args.flags.mode) return "mode_contract_patch";
+  if (args.flags.golden) return "golden";
+  throw new Error("Promotion target required: --eval, --correction, --memory, --training, --policy, --schema, --mode, or --golden.");
+}
+
+async function learningEvents() {
+  const dir = path.join(process.cwd(), "learning", "events", "hot");
+  const events = [];
+  try {
+    for (const entry of await fs.readdir(dir)) {
+      if (!entry.endsWith(".json")) continue;
+      events.push(LearningEventSchema.parse(JSON.parse(await fs.readFile(path.join(dir, entry), "utf8"))));
+    }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  return events;
+}
+
+async function latestRunId(rootDir: string): Promise<string> {
+  const runsDir = path.join(rootDir, "runs");
+  let latest: { runId: string; mtime: number } | undefined;
+  for (const date of await fs.readdir(runsDir)) {
+    const dateDir = path.join(runsDir, date);
+    const stat = await fs.stat(dateDir);
+    if (!stat.isDirectory()) continue;
+    for (const runId of await fs.readdir(dateDir)) {
+      const runDir = path.join(dateDir, runId);
+      const runStat = await fs.stat(runDir);
+      if (!runStat.isDirectory()) continue;
+      if (!latest || runStat.mtimeMs > latest.mtime) latest = { runId, mtime: runStat.mtimeMs };
+    }
+  }
+  if (!latest) throw new Error("No runs found.");
+  return latest.runId;
+}
+
+async function findRunDir(rootDir: string, runId: string): Promise<string> {
+  const runsDir = path.join(rootDir, "runs");
+  for (const date of (await fs.readdir(runsDir)).sort().reverse()) {
+    const candidate = path.join(runsDir, date, runId);
+    try {
+      const stat = await fs.stat(candidate);
+      if (stat.isDirectory()) return candidate;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+  }
+  throw new Error(`Run not found: ${runId}`);
+}
+
+async function recordCommandEvent(
+  commandName: string,
+  args: ParsedArgs,
+  success: boolean,
+  outputSummary: string,
+  artifactPaths: string[] = [],
+  runId?: string
+): Promise<void> {
+  await new LearningRecorder().recordCommand({
+    commandName,
+    argsSummary: [args.command, ...args.positional].join(" "),
+    success,
+    outputSummary,
+    exitStatus: success ? 0 : 1,
+    artifactPaths,
+    runId
+  });
+}
+
 function help(): void {
   logInfo([
     "RAX commands:",
@@ -436,7 +661,9 @@ function help(): void {
     "  rax mode list | inspect <mode> | maturity",
     "  rax chat [--once \"message\"]",
     "  rax codex-audit-local --report report.md",
-    "  rax trace <run-id>"
+    "  rax trace <run-id>",
+    "  rax show <run-id>|last [--summary]",
+    "  rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated"
   ].join("\n"));
 }
 
@@ -468,6 +695,10 @@ async function main(): Promise<void> {
     await codexAuditLocalCommand(args);
   } else if (args.command === "trace") {
     await traceCommand(args);
+  } else if (args.command === "show") {
+    await showCommand(args);
+  } else if (args.command === "learn") {
+    await learnCommand(args);
   } else {
     help();
   }

@@ -8,6 +8,7 @@ import type { RiskScore } from "../schemas/RiskScore.js";
 import type { RunTrace } from "../schemas/RunLog.js";
 import type { BoundaryResult } from "../safety/BoundaryDecision.js";
 import type { CriticReview } from "../validators/CriticGate.js";
+import { LearningRecorder } from "../learning/LearningRecorder.js";
 
 export type RunLoggerPayload = {
   runId: string;
@@ -143,6 +144,8 @@ export class RunLogger {
         "utf8"
       )
     ]);
+
+    await new LearningRecorder(this.rootDir).recordRun(payload, dir);
 
     return dir;
   }

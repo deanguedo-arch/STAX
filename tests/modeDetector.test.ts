@@ -23,7 +23,24 @@ describe("ModeDetector", () => {
 
     expect(result.mode).toBe("stax_fitness");
     expect(result.matchedTerms).toEqual(
-      expect.arrayContaining(["stax", "fitness", "sleep"])
+      expect.arrayContaining(["fitness", "sleep"])
     );
+  });
+
+  it("does not treat STAX system prompts as fitness", () => {
+    const system = new ModeDetector().detect("STAX system improvement");
+    const learning = new ModeDetector().detect("STAX approved learning loop");
+    const policy = new ModeDetector().detect("STAX policy drift");
+
+    expect(system.mode).not.toBe("stax_fitness");
+    expect(learning.mode).toBe("learning_unit");
+    expect(policy.mode).toBe("policy_drift");
+  });
+
+  it("keeps explicit domain fitness routing", () => {
+    const result = new ModeDetector().detect("STAX BJJ sleep recovery");
+
+    expect(result.mode).toBe("stax_fitness");
+    expect(result.matchedTerms).toEqual(expect.arrayContaining(["bjj", "recovery"]));
   });
 });

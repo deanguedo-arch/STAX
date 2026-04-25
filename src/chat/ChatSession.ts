@@ -1,5 +1,10 @@
+import fs from "node:fs/promises";
+import path from "node:path";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
 import { collectLocalEvidence, formatLocalEvidence } from "../evidence/LocalEvidenceCollector.js";
+import { LearningMetricsStore } from "../learning/LearningMetrics.js";
+import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
+import { LearningQueue } from "../learning/LearningQueue.js";
 import { MemoryStore } from "../memory/MemoryStore.js";
 import type { RaxMode } from "../schemas/Config.js";
 
@@ -21,7 +26,8 @@ const VALID_MODES: RaxMode[] = [
   "codex_audit",
   "prompt_factory",
   "test_gap_audit",
-  "policy_drift"
+  "policy_drift",
+  "learning_unit"
 ];
 
 export class ChatSession {
@@ -86,6 +92,38 @@ export class ChatSession {
       return {
         output: this.runIds.length ? this.runIds.map((runId) => `- ${runId}`).join("\n") : "- No chat runs yet."
       };
+    }
+
+    if (command === "/show") {
+      const runId = arg && arg !== "last" ? arg : this.runIds.at(-1);
+      if (!runId) return { output: "No chat run is available to show." };
+      return { output: await this.showRun(runId) };
+    }
+
+    if (command === "/learn") {
+      const [learnAction = "", learnArg = ""] = arg.split(/\s+/);
+      if (learnAction === "queue") {
+        const items = await new LearningQueue(this.rootDir).list();
+        return {
+          output: items.length
+            ? items.map((item) => `- ${item.queueItemId} [${item.queueType}] ${item.reason}`).join("\n")
+            : "- No learning queue items."
+        };
+      }
+      if (learnAction === "metrics") {
+        return { output: JSON.stringify(await new LearningMetricsStore(this.rootDir).read(), null, 2) };
+      }
+      if (learnAction === "inspect" && learnArg) {
+        return { output: await this.inspectLearningEvent(learnArg) };
+      }
+      if (learnAction === "propose" && learnArg === "last") {
+        const runId = this.runIds.at(-1);
+        if (!runId) return { output: "No chat run is available to propose from." };
+        const event = JSON.parse(await fs.readFile(path.join(await this.findRunDir(runId), "learning_event.json"), "utf8"));
+        const proposal = await new LearningProposalGenerator(this.rootDir).generate(event);
+        return { output: proposal ? JSON.stringify(proposal, null, 2) : "No proposal needed for trace-only event." };
+      }
+      return { output: "Usage: /learn queue | metrics | inspect <event-id> | propose last" };
     }
 
     if (command === "/audit-last") {
@@ -188,7 +226,50 @@ export class ChatSession {
     if (/\b(policy drift|unsafe config|shell=allowed|filewrite=allowed)\b/i.test(input)) {
       return "policy_drift";
     }
+    if (/\b(learning unit|approved learning loop|learning event|learning queue|improve over time|adapt over time)\b/i.test(input)) {
+      return "learning_unit";
+    }
     return undefined;
+  }
+
+  private async showRun(runId: string): Promise<string> {
+    const runDir = await this.findRunDir(runId);
+    const final = await fs.readFile(path.join(runDir, "final.md"), "utf8");
+    const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
+      mode?: string;
+      validation?: { valid?: boolean };
+      learningEventId?: string;
+      learningQueues?: string[];
+    };
+    return [
+      final.trim(),
+      "",
+      `Run: ${runId}`,
+      `Mode: ${trace.mode ?? "unknown"}`,
+      `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
+      `LearningEvent: ${trace.learningEventId ?? "none"}`,
+      `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
+      `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`
+    ].join("\n");
+  }
+
+  private async inspectLearningEvent(eventId: string): Promise<string> {
+    const file = path.join(this.rootDir, "learning", "events", "hot", `${eventId}.json`);
+    return fs.readFile(file, "utf8");
+  }
+
+  private async findRunDir(runId: string): Promise<string> {
+    const runsDir = path.join(this.rootDir, "runs");
+    for (const date of (await fs.readdir(runsDir)).sort().reverse()) {
+      const candidate = path.join(runsDir, date, runId);
+      try {
+        const stat = await fs.stat(candidate);
+        if (stat.isDirectory()) return candidate;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      }
+    }
+    throw new Error(`Run not found: ${runId}`);
   }
 
   private helpText(): string {
@@ -204,6 +285,8 @@ export class ChatSession {
       "/test-gap <feature>",
       "/policy-drift <change>",
       "/audit-last",
+      "/show last|<run-id>",
+      "/learn queue|metrics|inspect <event-id>|propose last",
       "/runs",
       "/quit"
     ].join("\n");

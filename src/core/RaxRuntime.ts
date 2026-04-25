@@ -421,6 +421,89 @@ export class RaxRuntime {
     }
 
     if (!validation.valid) {
+      const failureOutput = [
+        "## Schema Failure",
+        "",
+        "The output did not pass schema validation after repair.",
+        "",
+        "## Issues",
+        ...validation.issues.map((issue) => `- ${issue}`)
+      ].join("\n");
+      const trace: RunTrace = {
+        runId,
+        createdAt,
+        runtimeVersion: this.config.runtime.version,
+        provider: this.provider.name,
+        model: this.provider.model,
+        providerRoles,
+        criticModel: this.config.model.criticModel,
+        evaluatorModel: this.config.model.evaluatorModel,
+        classifierModel: this.config.model.classifierModel,
+        temperature: this.config.model.generationTemperature,
+        criticTemperature: this.config.model.criticTemperature,
+        evalTemperature: this.config.model.evalTemperature,
+        topP: this.config.model.topP,
+        seed: this.config.model.seed,
+        mode: effectiveRoute.mode,
+        modeConfidence: detectedMode.confidence,
+        boundaryMode: boundary.mode,
+        selectedAgent: effectiveRoute.agent.name,
+        policiesApplied: policyBundle.policiesApplied,
+        criticPasses: 1,
+        repairPasses,
+        formatterPasses: 1,
+        schemaRetries: retries,
+        latencyMs: Date.now() - startedAt,
+        toolCalls: [],
+        errors: validation.issues,
+        route: {
+          agent: effectiveRoute.agent.name,
+          mode: effectiveRoute.mode,
+          reason: route.reason
+        },
+        replayable: this.provider.name === "mock",
+        detailLevel,
+        stack: stack.stack,
+        routingDecision: {
+          agent: effectiveRoute.agent.name,
+          mode: effectiveRoute.mode,
+          reason: route.reason,
+          modeConfidence: detectedMode.confidence,
+          matchedTerms: detectedMode.matchedTerms,
+          detailLevel,
+          policiesApplied: policyBundle.policiesApplied
+        },
+        agentSequence,
+        riskScore: risk,
+        boundaryDecision: boundary,
+        modelCalls,
+        validation,
+        retries
+      };
+      await this.logger.log({
+        runId,
+        input,
+        config: this.config,
+        stack: stack.stack,
+        intent,
+        risk,
+        boundary,
+        mode: { ...detectedMode, mode: effectiveRoute.mode },
+        policyBundle,
+        retrievedMemory,
+        retrievedExamples: [],
+        routing: trace.routingDecision,
+        primary,
+        critic: criticResult,
+        criticReview,
+        repair: repairResult
+          ? JSON.stringify(repairResult, null, 2)
+          : JSON.stringify({ status: "not_applicable", reason: "schema validation failed after formatter" }, null, 2),
+        formatter: formatterResult.output,
+        final: failureOutput,
+        trace,
+        createdAt
+      });
       throw new ValidationFailureError(validation.issues.join("; "));
     }
 

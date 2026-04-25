@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+.DS_Store
 runs/**
 !runs/.gitkeep
 corrections/**
@@ -36,3 +37,5 @@ evals/eval_results/**
 !evals/eval_results/.gitkeep
 training/exports/**
 !training/exports/.gitkeep
+learning/**
+!learning/.gitkeep

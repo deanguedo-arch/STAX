@@ -13,7 +13,6 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
   planning: ["build", "plan", "implement", "project", "scaffold", "roadmap", "architecture"],
   audit: ["review", "check", "critique", "validate", "inspect", "test", "find gaps"],
   stax_fitness: [
-    "stax",
     "fitness",
     "jiu jitsu",
     "jiujitsu",
@@ -23,6 +22,8 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
     "sleep",
     "recovery",
     "diet",
+    "nutrition",
+    "injury",
     "whoop",
     "training signal"
   ],
@@ -65,14 +66,56 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
     "disabled critic",
     "schema validation disabled",
     "unsafe tools"
+  ],
+  learning_unit: [
+    "learning unit",
+    "approved learning loop",
+    "learning loop",
+    "self organize",
+    "adapt over time",
+    "improve over time",
+    "gets better over time",
+    "learning event",
+    "learning queue",
+    "promotion gate",
+    "stax system",
+    "system improvement",
+    "runtime",
+    "schema",
+    "eval",
+    "correction",
+    "trace",
+    "queue",
+    "promotion"
   ]
 };
 
 export class ModeDetector {
   detect(input: string): ModeDetection {
     const text = input.toLowerCase();
+    const strongLearningTerms = [
+      "learning unit",
+      "approved learning loop",
+      "learning loop",
+      "learning event",
+      "learning queue",
+      "promotion gate",
+      "self organize",
+      "adapt over time",
+      "improve over time",
+      "gets better over time"
+    ];
+    const strongLearningMatches = strongLearningTerms.filter((term) => text.includes(term));
+    if (strongLearningMatches.length > 0) {
+      return {
+        mode: "learning_unit",
+        confidence: Math.min(0.95, 0.65 + strongLearningMatches.length * 0.1),
+        matchedTerms: strongLearningMatches,
+        fallbackUsed: false
+      };
+    }
+
     const staxStrongTerms = [
-      "stax",
       "fitness",
       "jiu jitsu",
       "jiujitsu",
@@ -81,6 +124,8 @@ export class ModeDetector {
       "workout",
       "recovery",
       "diet",
+      "nutrition",
+      "injury",
       "whoop",
       "training signal"
     ];
@@ -91,9 +136,7 @@ export class ModeDetector {
         confidence: Math.min(0.95, 0.55 + strongStaxMatches.length * 0.1),
         matchedTerms: [
           ...strongStaxMatches,
-          ...MODE_TERMS.stax_fitness.filter(
-            (term) => term === "sleep" && text.includes(term)
-          )
+          ...MODE_TERMS.stax_fitness.filter((term) => term === "sleep" && text.includes(term))
         ],
         fallbackUsed: false
       };
@@ -112,7 +155,8 @@ export class ModeDetector {
       analysis: 4,
       intake: 3,
       teaching: 2,
-      general_chat: 1
+      general_chat: 1,
+      learning_unit: 14
     };
 
     const ranked = Object.entries(MODE_TERMS)

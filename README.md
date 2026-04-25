@@ -1,6 +1,6 @@
-# RAX - Rule-Aware Execution System
+# STAX/RAX - Rule-Aware Adaptive Runtime
 
-RAX is a local TypeScript CLI for repeatable, inspectable LLM orchestration.
+STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used. `stax_fitness` is one explicit optional domain mode, not the product identity.
 
 It processes input through:
 
@@ -16,6 +16,8 @@ Input
 -> Formatter Agent
 -> Schema Validation
 -> Run Log
+-> LearningEvent
+-> Learning Queue / Proposal / Approval Gate
 -> Output
 ```
 
@@ -35,8 +37,10 @@ Copy-Item .env.example .env
 ## Run With Mock Provider
 
 ```bash
-npm run dev -- "Extract this as signals: Dean trained jiu jitsu Saturday for 90 minutes."
+npm run dev -- run --mode planning "Design the STAX approved learning loop."
 ```
+
+The mock provider works offline. OpenAI is required only when `RAX_PROVIDER=openai`.
 
 ## Run With Ollama
 
@@ -66,6 +70,9 @@ npm run dev -- run --file input.txt
 npm run dev -- batch examples/
 npm run dev -- eval
 npm run dev -- replay <run-id>
+npm run dev -- show last
+npm run dev -- learn queue
+npm run dev -- learn metrics
 npm run dev -- memory search "query"
 npm run dev -- correct <run-id> --output corrected.md --reason "reason"
 ```
@@ -92,6 +99,15 @@ runs/YYYY-MM-DD/<run-id>/
   critic.md
   final.md
   trace.json
+  learning_event.json
 ```
 
 `trace.json` includes routing, boundary, risk, agent sequence, validation, model-call metadata, and retry count.
+
+## Domain Compatibility
+
+`stax_fitness` remains available only as an explicit domain mode:
+
+```bash
+npm run dev -- run --mode stax_fitness "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
+```

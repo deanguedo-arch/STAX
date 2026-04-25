@@ -2,6 +2,7 @@ import type { BoundaryResult } from "../safety/BoundaryDecision.js";
 import type { BoundaryMode } from "../safety/BoundaryDecision.js";
 import type { RaxConfig } from "./Config.js";
 import type { DetailLevel, ProviderRole, RaxMode } from "./Config.js";
+import type { LearningQueueType } from "../learning/LearningEvent.js";
 import type { RiskScore } from "./RiskScore.js";
 
 export type ModelCallTrace = {
@@ -58,6 +59,8 @@ export type RunTrace = {
   validation: Record<string, unknown>;
   retries?: number;
   detailLevel?: DetailLevel;
+  learningEventId?: string;
+  learningQueues?: LearningQueueType[];
 };
 
 export type RunLog = {

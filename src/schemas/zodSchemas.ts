@@ -1,4 +1,14 @@
 import { z } from "zod";
+import {
+  LearningApprovalStateSchema,
+  LearningEventSchema,
+  LearningEventStatusSchema,
+  LearningFailureTypeSchema,
+  LearningProposalSchema,
+  LearningQualitySignalsSchema,
+  LearningQueueItemSchema,
+  LearningQueueTypeSchema
+} from "../learning/LearningEvent.js";
 
 export const RaxModeSchema = z.enum([
   "intake",
@@ -13,7 +23,8 @@ export const RaxModeSchema = z.enum([
   "codex_audit",
   "prompt_factory",
   "test_gap_audit",
-  "policy_drift"
+  "policy_drift",
+  "learning_unit"
 ]);
 
 export const DetailLevelSchema = z.enum([
@@ -160,12 +171,16 @@ export const StaxFitnessOutputSchema = z.object({
 
 export const PlannerOutputSchema = z.object({
   objective: z.string(),
-  assumptions: z.array(z.string()).default([]),
-  plan: z.array(z.string()),
+  currentState: z.array(z.string()).default([]),
+  concreteChangesRequired: z.array(z.string()),
   filesToCreateOrModify: z.array(z.string()).default([]),
-  tests: z.array(z.string()),
+  testsOrEvalsToAdd: z.array(z.string()),
+  commandsToRun: z.array(z.string()),
+  acceptanceCriteria: z.array(z.string()),
   risks: z.array(z.string()).default([]),
-  doneCriteria: z.array(z.string()).default([])
+  rollbackPlan: z.array(z.string()),
+  evidenceRequired: z.array(z.string()),
+  codexPrompt: z.string()
 });
 
 export const EvalCaseSchema = z.object({
@@ -323,7 +338,9 @@ export const RunTraceSchema = z.object({
   ),
   validation: z.record(z.string(), z.unknown()),
   route: z.record(z.string(), z.unknown()),
-  replayable: z.boolean()
+  replayable: z.boolean(),
+  learningEventId: z.string().optional(),
+  learningQueues: z.array(LearningQueueTypeSchema).optional()
 });
 
 export const RaxOutputSchema = z.object({
@@ -339,3 +356,14 @@ export const RaxOutputSchema = z.object({
   }),
   createdAt: z.string()
 });
+
+export {
+  LearningApprovalStateSchema,
+  LearningEventSchema,
+  LearningEventStatusSchema,
+  LearningFailureTypeSchema,
+  LearningProposalSchema,
+  LearningQualitySignalsSchema,
+  LearningQueueItemSchema,
+  LearningQueueTypeSchema
+};

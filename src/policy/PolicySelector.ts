@@ -33,7 +33,8 @@ export class PolicySelector {
       input.mode === "project_brain" ||
       input.mode === "codex_audit" ||
       input.mode === "test_gap_audit" ||
-      input.mode === "policy_drift"
+      input.mode === "policy_drift" ||
+      input.mode === "learning_unit"
     ) {
       return [...common, "tool_policy", "memory_policy"];
     }

@@ -2,10 +2,12 @@
 
 STAX/RAX is a local assistant behavior factory. It is not a ChatGPT clone and does not expose or bypass hidden model policies.
 
+STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used. `stax_fitness` is one explicit optional domain mode, not the product identity.
+
 It approximates high-quality assistant behavior with explicit local pieces:
 
 ```txt
-policies -> modes -> risk/boundary -> policy compiler -> provider -> critic -> formatter -> validators -> traces -> evals -> corrections -> training exports
+policies -> modes -> risk/boundary -> policy compiler -> provider -> critic -> formatter -> validators -> traces -> LearningEvent -> queue -> proposal -> approval -> evals/corrections/memory/training exports
 ```
 
 ## Setup
@@ -17,10 +19,10 @@ npm install
 ## Mock Provider
 
 ```bash
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes and slept 8 hours Sunday."
+npm run rax -- run --mode planning "Design the STAX approved learning loop."
 ```
 
-STAX fitness mode now splits multiple observations into separate Signal Units.
+The mock provider is offline-capable. General STAX prompts should route to system modes, not `stax_fitness`.
 
 ## Ollama
 
@@ -53,6 +55,9 @@ npm run rax -- eval --mode stax_fitness
 
 ```bash
 npm run rax -- replay <run-id>
+npm run rax -- show last
+npm run rax -- learn queue
+npm run rax -- learn metrics
 ```
 
 Mock replay should match exactly. Real providers may drift.
@@ -88,6 +93,8 @@ npm run rax -- train export --all
 npm run rax -- run --mode stax_fitness --file examples/stax_input.txt
 ```
 
+This is domain compatibility only; the word `STAX` alone is not a fitness trigger.
+
 ## Safety And Tool Limits
 
 - Shell is disabled by default.
@@ -96,6 +103,7 @@ npm run rax -- run --mode stax_fitness --file examples/stax_input.txt
 - Memory retrieval is approved-only.
 - Corrections are pending until promoted.
 - No embeddings or UI are included in v0.1.
+- Learning proposals require approval before durable promotion.
 
 ## Provider Roles
 
@@ -118,4 +126,4 @@ Mock mode uses deterministic local providers for all model-like roles, while cla
 
 ## Next Phase
 
-Strengthen evaluator quality and correction review before adding embeddings, UI, or more agents.
+Strengthen the approved learning loop, evaluator quality, and correction review before adding embeddings, UI, or more agents.

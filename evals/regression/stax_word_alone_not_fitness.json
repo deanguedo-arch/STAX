@@ -1,0 +1,1 @@
+{"id":"stax_word_alone_not_fitness","mode":"analysis","input":"STAX should organize project learning evidence.","expectedProperties":[],"forbiddenPatterns":["## Signal Units"],"requiredSections":["## Facts Used","## Pattern Candidates","## Unknowns"],"critical":true,"tags":["stax-system","routing"]}

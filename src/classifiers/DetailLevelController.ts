@@ -12,7 +12,8 @@ export class DetailLevelController {
       mode === "codex_audit" ||
       mode === "prompt_factory" ||
       mode === "test_gap_audit" ||
-      mode === "policy_drift"
+      mode === "policy_drift" ||
+      mode === "learning_unit"
     ) return "surgical";
     if (mode === "teaching") return "deep";
     return "standard";

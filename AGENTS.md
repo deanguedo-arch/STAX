@@ -4,6 +4,8 @@
 
 This repo is being upgraded into STAX/RAX: a local rule-aware adaptive assistant runtime.
 
+STAX is the adaptive rule-aware learning/runtime system. RAX is the internal rule-aware runtime name where still used. `stax_fitness` is one explicit optional domain/demo mode, not the product identity. The word `STAX` alone must never route to `stax_fitness`.
+
 Do not build a pile of prompts. The behavior system requires explicit policies, mode detection, risk/boundary filtering, policy compilation, provider routing, schema validation, a critic/repair loop, an eval harness, a corrections loop, replay/trace logs, training-data export, and approved memory only.
 
 ## Non-Negotiables
@@ -16,6 +18,8 @@ Do not build a pile of prompts. The behavior system requires explicit policies, 
 - File write tools must remain disabled by default unless config enables them.
 - Do not auto-save model outputs to memory.
 - Raw model outputs must never auto-save to memory.
+- Learning events may be recorded automatically, but memory/eval/training/policy/schema/mode promotion requires explicit approval.
+- Learning proposals are evidence, not authority; they must not directly edit durable system state.
 - Do not skip evals.
 - Do not silently pass schema failures.
 - Do not add UI before CLI is stable.
@@ -50,7 +54,8 @@ npm run rax -- eval
 7. runtime
 8. agents
 9. providers
-10. tools
+10. learning loop
+11. tools
 
 Agents are not the system.
 The feedback loop is the system.

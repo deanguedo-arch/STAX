@@ -79,6 +79,12 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
     if (property === "policy_drift_flag" && !/violation|reject|unsafe|disabled|enabled/i.test(input.output)) {
       failReasons.push("expected property failed: policy_drift_flag");
     }
+    if (property === "approval_required" && !/approval required|explicit approval|pending review/i.test(input.output)) {
+      failReasons.push("expected property failed: approval_required");
+    }
+    if (property === "candidate_queues" && !/candidate queues|eval_candidate|codex_prompt_candidate|mode_contract_patch_candidate/i.test(input.output)) {
+      failReasons.push("expected property failed: candidate_queues");
+    }
   }
 
   if (input.minSignalUnits !== undefined) {

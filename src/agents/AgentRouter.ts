@@ -37,7 +37,7 @@ export class AgentRouter {
       return {
         agent: this.agents.intake,
         mode: "stax_fitness",
-        reason: "STAX or fitness signal term detected"
+        reason: "Explicit fitness signal term detected"
       };
     }
 
@@ -69,7 +69,8 @@ export class AgentRouter {
       detected.mode === "project_brain" ||
       detected.mode === "codex_audit" ||
       detected.mode === "test_gap_audit" ||
-      detected.mode === "policy_drift"
+      detected.mode === "policy_drift" ||
+      detected.mode === "learning_unit"
     ) {
       return {
         agent: this.agents.analyst,

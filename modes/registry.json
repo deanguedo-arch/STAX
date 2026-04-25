@@ -116,6 +116,15 @@
       "goldens": ["goldens/policy_drift.md"],
       "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
       "maturity": "usable"
+    },
+    {
+      "mode": "learning_unit",
+      "schema": "LearningUnitOutput",
+      "validator": "LearningUnitValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": ["goldens/learning_unit_plan.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy", "correction_policy"],
+      "maturity": "usable"
     }
   ]
 }

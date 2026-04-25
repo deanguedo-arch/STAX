@@ -117,6 +117,63 @@ export class AnalystAgent implements Agent {
       };
     }
 
+    if (input.mode === "learning_unit") {
+      const runId = input.input.match(/run-[a-zA-Z0-9T.-]+/)?.[0];
+      return {
+        agent: this.name,
+        schema: "learning_unit",
+        confidence: "medium",
+        metadata: { providerText: providerResponse.text },
+        output: [
+          "## Run / Input Summary",
+          runId
+            ? `- Source run: ${runId}.`
+            : "- No run id was supplied; this is an input-level learning analysis.",
+          "- STAX should treat this as evidence for approved learning-loop improvement, not as autonomous promotion.",
+          "",
+          "## Weakness Detected",
+          "- The interaction should be checked for generic output, missing specificity, and missing approval boundaries.",
+          "",
+          "## Failure Type",
+          "- generic_output",
+          "- weak_plan",
+          "- missing_specificity",
+          "",
+          "## Root Cause",
+          "- The system needs a concrete LearningEvent, queue, proposal, and approval path whenever an answer is weak or under-specified.",
+          "",
+          "## Proposed LearningEvent",
+          "- Record input, output, route, policies, schema status, critic status, quality scores, trace/final links, and approval state.",
+          "",
+          "## Candidate Queues",
+          "- eval_candidate",
+          "- mode_contract_patch_candidate",
+          "- codex_prompt_candidate",
+          "",
+          "## Suggested Eval Candidate",
+          "- Add a regression eval requiring learning-unit output to include Candidate Queues and Approval Required.",
+          "",
+          "## Suggested Correction Candidate",
+          "- Create a pending correction only after a user supplies corrected output for the weak run.",
+          "",
+          "## Suggested Memory Candidate",
+          "- Create pending memory only for explicit stable user preferences or project decisions; do not store raw model output.",
+          "",
+          "## Suggested Policy Patch",
+          "- Add or preserve the rule that learning proposals are evidence, not authority, and cannot bypass approval.",
+          "",
+          "## Suggested Schema / Mode Patch",
+          "- Require learning-unit outputs to include concrete candidates, source links, and explicit approval boundaries.",
+          "",
+          "## Suggested Codex Prompt",
+          "Implement the approved learning-loop patch with behavior tests. Do not promote memory, evals, training, policies, schemas, modes, AGENTS.md, or config without explicit approval. Run npm run typecheck, npm test, npm run rax -- eval, and regression evals before claiming completion.",
+          "",
+          "## Approval Required",
+          "- Promotion requires explicit approval. The learning unit may propose updates only; it cannot approve, promote, or modify durable system state."
+        ].join("\n")
+      };
+    }
+
     if (input.mode === "project_brain") {
       const decisions = memoryLines(input, "decision");
       const knownFailures = memoryLines(input, "known_failure");

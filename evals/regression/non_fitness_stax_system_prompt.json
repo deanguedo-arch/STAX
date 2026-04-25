@@ -1,0 +1,1 @@
+{"id":"non_fitness_stax_system_prompt","mode":"planning","input":"STAX system improvement plan for the approved learning loop.","expectedProperties":[],"forbiddenPatterns":["## Signal Units"],"requiredSections":["## Objective","## Commands To Run","## Evidence Required"],"critical":true,"tags":["stax-system","routing"]}
