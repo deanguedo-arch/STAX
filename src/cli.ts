@@ -516,12 +516,20 @@ async function learnCommand(args: ParsedArgs): Promise<void> {
     if (!eventId) throw new Error("Usage: rax learn promote <event-id> --eval|--correction|--memory|--training --reason \"...\"");
     const target = promotionTarget(args);
     const reason = typeof args.flags.reason === "string" ? args.flags.reason : "";
-    const result = await new PromotionGate().promote({
-      eventId,
-      target,
-      reason,
-      approveMemory: Boolean(args.flags["approve-memory"])
-    });
+    let result;
+    try {
+      result = await new PromotionGate().promote({
+        eventId,
+        target,
+        reason,
+        approveMemory: Boolean(args.flags["approve-memory"])
+      });
+      await recordCommandEvent("learn promote", args, true, JSON.stringify(result), [result.targetArtifactPath], result.sourceRunId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await recordCommandEvent("learn promote", args, false, message);
+      throw error;
+    }
     logInfo(JSON.stringify(result, null, 2));
     return;
   }

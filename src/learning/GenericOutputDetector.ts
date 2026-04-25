@@ -36,6 +36,11 @@ export type GenericOutputAnalysis = {
   qualitySignals: LearningQualitySignals;
   failureTypes: LearningFailureType[];
   explanation: string;
+  genericOutputScore: number;
+  specificityScore: number;
+  missingRequirements: string[];
+  detectedGenericPhrases: string[];
+  pass: boolean;
 };
 
 export class GenericOutputDetector {
@@ -71,7 +76,12 @@ export class GenericOutputDetector {
       explanation:
         failureTypes.length > 0
           ? `Output specificity ${specificityScore}; missing ${missingSections.join(", ") || "concrete evidence"}`
-          : "Output meets the current specificity floor."
+          : "Output meets the current specificity floor.",
+      genericOutputScore,
+      specificityScore,
+      missingRequirements: missingSections,
+      detectedGenericPhrases: forbiddenPatterns,
+      pass: failureTypes.length === 0
     };
   }
 
@@ -145,4 +155,3 @@ export class GenericOutputDetector {
     return /candidate queues|eval_candidate|codex_prompt_candidate/i.test(output);
   }
 }
-

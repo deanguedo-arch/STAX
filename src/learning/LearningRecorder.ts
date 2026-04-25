@@ -12,6 +12,7 @@ import { LearningProposalGenerator } from "./LearningProposalGenerator.js";
 import { LearningQueue } from "./LearningQueue.js";
 
 export type CommandLearningInput = {
+  commandId?: string;
   commandName: string;
   argsSummary: string;
   success: boolean;
@@ -89,16 +90,18 @@ export class LearningRecorder {
   }
 
   async recordCommand(input: CommandLearningInput): Promise<LearningEvent> {
-    const runId = input.runId ?? `cmd-${this.hash([input.commandName, input.argsSummary, input.outputSummary].join("\n"))}`;
+    const commandId = input.commandId ?? `cmd-${this.hash([input.commandName, input.argsSummary, input.outputSummary].join("\n"))}`;
+    const runId = input.runId ?? commandId;
     const eventId = this.eventIdForRun(runId);
     const eventPath = path.join("learning", "events", "hot", `${eventId}.json`);
     const existing = await this.readEventFile(path.join(this.rootDir, eventPath));
     if (existing) return existing;
-    const status: LearningEventStatus = input.success ? "success" : input.commandName.includes("eval") ? "eval_failure" : "command_failure";
-    const failureTypes: LearningFailureType[] = input.success ? [] : [status === "eval_failure" ? "eval_failure" : "command_failure"];
+    const status = this.statusForCommand(input);
+    const failureTypes = this.failureTypesForCommand(status);
     const event: LearningEvent = {
       eventId,
       runId,
+      commandId,
       createdAt: new Date().toISOString(),
       command: {
         name: input.commandName,
@@ -130,6 +133,10 @@ export class LearningRecorder {
         providerRoles: {}
       },
       commands: {
+        commandName: input.commandName,
+        argsSummary: input.argsSummary,
+        success: input.success,
+        exitCode: input.exitStatus,
         requested: [input.commandName],
         allowed: input.success ? [input.commandName] : [],
         denied: input.success ? [] : [input.commandName]
@@ -147,7 +154,7 @@ export class LearningRecorder {
         hasFailure: failureTypes.length > 0,
         failureTypes,
         severity: failureTypes.length > 0 ? "major" : "none",
-        explanation: input.success ? "Command completed." : `${input.commandName} failed or reported a failing result.`
+        explanation: input.success ? "Command completed." : this.commandFailureExplanation(status, input.commandName)
       },
       proposedQueues: [],
       approvalState: "trace_only",
@@ -159,6 +166,29 @@ export class LearningRecorder {
     event.proposedQueues = new LearningClassifier().classify(event);
     event.approvalState = event.proposedQueues.length === 1 && event.proposedQueues[0] === "trace_only" ? "trace_only" : "pending_review";
     return this.persist(event);
+  }
+
+  private statusForCommand(input: CommandLearningInput): LearningEventStatus {
+    if (input.success) return "success";
+    const name = input.commandName.toLowerCase();
+    if (name.includes("eval")) return "eval_failure";
+    if (name.includes("replay")) return "replay_failure";
+    if (name.includes("promote")) return "promotion_failure";
+    return "command_failure";
+  }
+
+  private failureTypesForCommand(status: LearningEventStatus): LearningFailureType[] {
+    if (status === "success") return [];
+    if (status === "eval_failure") return ["eval_failure"];
+    if (status === "replay_failure") return ["replay_drift"];
+    if (status === "promotion_failure") return ["promotion_failure"];
+    return ["command_failure"];
+  }
+
+  private commandFailureExplanation(status: LearningEventStatus, commandName: string): string {
+    if (status === "replay_failure") return `${commandName} reported replay drift.`;
+    if (status === "promotion_failure") return `${commandName} failed promotion approval or artifact creation.`;
+    return `${commandName} failed or reported a failing result.`;
   }
 
   private async persist(event: LearningEvent, runDir?: string, trace?: RunTrace): Promise<LearningEvent> {
@@ -231,4 +261,3 @@ export class LearningRecorder {
     return "none";
   }
 }
-

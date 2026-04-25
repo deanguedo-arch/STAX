@@ -29,7 +29,15 @@ describe("learning event schemas and detectors", () => {
         policiesApplied: [],
         providerRoles: {}
       },
-      commands: { requested: [], allowed: [], denied: [] },
+      commands: {
+        commandName: "run",
+        argsSummary: "run planning",
+        success: true,
+        exitCode: 0,
+        requested: [],
+        allowed: [],
+        denied: []
+      },
       qualitySignals: {
         genericOutputScore: 0,
         specificityScore: 1,
@@ -91,8 +99,12 @@ describe("learning event schemas and detectors", () => {
     ].join("\n"));
 
     expect(generic.failureTypes).toContain("generic_output");
+    expect(generic.pass).toBe(false);
+    expect(generic.detectedGenericPhrases).toContain("confirm requirements");
+    expect(generic.missingRequirements).toContain("## Current State");
     expect(generic.qualitySignals.specificityScore).toBeLessThan(0.75);
     expect(concrete.failureTypes).not.toContain("generic_output");
+    expect(concrete.pass).toBe(true);
     expect(concrete.qualitySignals.specificityScore).toBeGreaterThanOrEqual(0.75);
   });
 

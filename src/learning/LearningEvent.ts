@@ -19,7 +19,9 @@ export const LearningFailureTypeSchema = z.enum([
   "fake_complete_risk",
   "eval_failure",
   "command_failure",
-  "promotion_failure"
+  "promotion_failure",
+  "replay_drift",
+  "provider_role_mismatch"
 ]);
 
 export const LearningQueueTypeSchema = z.enum([
@@ -48,6 +50,7 @@ export const LearningEventStatusSchema = z.enum([
   "refusal",
   "tool_failure",
   "eval_failure",
+  "replay_failure",
   "command_failure",
   "promotion_failure"
 ]);
@@ -65,6 +68,7 @@ export const LearningQualitySignalsSchema = z.object({
 export const LearningEventSchema = z.object({
   eventId: z.string().min(1),
   runId: z.string().min(1),
+  commandId: z.string().optional(),
   threadId: z.string().optional(),
   workspace: z.string().optional(),
   createdAt: z.string().min(1),
@@ -100,6 +104,10 @@ export const LearningEventSchema = z.object({
     providerRoles: z.record(z.string(), z.string())
   }),
   commands: z.object({
+    commandName: z.string().optional(),
+    argsSummary: z.string().optional(),
+    success: z.boolean().optional(),
+    exitCode: z.number().optional(),
     requested: z.array(z.string()),
     allowed: z.array(z.string()),
     denied: z.array(z.string())
@@ -126,6 +134,7 @@ export const LearningQueueItemSchema = z.object({
   queueItemId: z.string().min(1),
   eventId: z.string().min(1),
   runId: z.string().min(1),
+  commandId: z.string().optional(),
   queueType: LearningQueueTypeSchema,
   reason: z.string().min(1),
   sourceTracePath: z.string().min(1),
@@ -154,4 +163,3 @@ export type LearningQualitySignals = z.infer<typeof LearningQualitySignalsSchema
 export type LearningEvent = z.infer<typeof LearningEventSchema>;
 export type LearningQueueItem = z.infer<typeof LearningQueueItemSchema>;
 export type LearningProposal = z.infer<typeof LearningProposalSchema>;
-

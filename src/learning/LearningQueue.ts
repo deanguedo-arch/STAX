@@ -26,6 +26,7 @@ export class LearningQueue {
         queueItemId: `${event.eventId}-${queueType}`,
         eventId: event.eventId,
         runId: event.runId,
+        commandId: event.commandId,
         queueType,
         reason: this.reasonFor(event, queueType),
         sourceTracePath: event.links.tracePath,
@@ -103,4 +104,3 @@ export class LearningQueue {
     return `${queueType} created from ${failures}: ${event.failureClassification.explanation}`;
   }
 }
-
