@@ -5,7 +5,13 @@ export type MemoryType =
   | "correction"
   | "golden"
   | "example"
-  | "forbidden";
+  | "forbidden"
+  | "decision"
+  | "known_failure"
+  | "proven_working"
+  | "unproven_claim"
+  | "next_action"
+  | "risk";
 
 export type MemoryRecord = {
   id: string;

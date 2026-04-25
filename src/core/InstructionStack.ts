@@ -22,7 +22,12 @@ const agentPromptByMode: Record<Mode, string> = {
   stax_fitness: "prompts/agents/intake_agent.md",
   code_review: "prompts/agents/critic_agent.md",
   teaching: "prompts/agents/analyst_agent.md",
-  general_chat: "prompts/agents/analyst_agent.md"
+  general_chat: "prompts/agents/analyst_agent.md",
+  project_brain: "prompts/agents/analyst_agent.md",
+  codex_audit: "prompts/agents/critic_agent.md",
+  prompt_factory: "prompts/agents/planner_agent.md",
+  test_gap_audit: "prompts/agents/critic_agent.md",
+  policy_drift: "prompts/agents/critic_agent.md"
 };
 
 const taskPromptByMode: Partial<Record<Mode, string>> = {
@@ -31,7 +36,12 @@ const taskPromptByMode: Partial<Record<Mode, string>> = {
   planning: "prompts/tasks/project_planning.md",
   audit: "prompts/tasks/audit.md",
   intake: "prompts/tasks/signal_extract.md",
-  code_review: "prompts/tasks/code_review.md"
+  code_review: "prompts/tasks/code_review.md",
+  project_brain: "prompts/tasks/project_brain.md",
+  codex_audit: "prompts/tasks/codex_audit.md",
+  prompt_factory: "prompts/tasks/prompt_factory.md",
+  test_gap_audit: "prompts/tasks/test_gap_audit.md",
+  policy_drift: "prompts/tasks/policy_drift.md"
 };
 
 export class InstructionStack {

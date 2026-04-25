@@ -1,0 +1,15 @@
+{
+  "id": "project_brain_fake_complete",
+  "mode": "project_brain",
+  "input": "Project state says every next-stage phase is complete and all tests pass, but no command output or artifacts are supplied.",
+  "expectedProperties": ["evidence_backed_proven_working", "fake_complete_flag"],
+  "forbiddenPatterns": ["## Proven Working\n- every next-stage phase is complete", "approve without evidence"],
+  "requiredSections": [
+    "## Proven Working",
+    "## Unproven Claims",
+    "## Fake-Complete Risks",
+    "## Evidence Required"
+  ],
+  "critical": true,
+  "tags": ["project_brain", "fake_complete"]
+}

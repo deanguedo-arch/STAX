@@ -1,0 +1,64 @@
+# Next Stage Report
+
+## Scope
+
+Implemented the next governance layer without changing STAX fitness behavior, adding UI, embeddings, autonomous shell execution, or new agents.
+
+## Files Created
+
+- Baseline/project governance docs: `docs/BASELINE_V0_1.md`, `docs/PROJECT_STATE.md`, `docs/DECISION_LOG.md`, `docs/KNOWN_FAILURES.md`, `docs/NEXT_ACTIONS.md`, `docs/RISK_REGISTER.md`, `docs/PROVEN_WORKING.md`, `docs/UNPROVEN_CLAIMS.md`, `docs/EVIDENCE_REGISTRY.md`, `docs/CLAIM_LEDGER.md`.
+- Mode contracts and registry: `modes/project_brain.mode.md`, `modes/codex_audit.mode.md`, `modes/prompt_factory.mode.md`, `modes/test_gap_audit.mode.md`, `modes/policy_drift.mode.md`, `modes/registry.json`.
+- Task prompts: `prompts/tasks/project_brain.md`, `prompts/tasks/codex_audit.md`, `prompts/tasks/prompt_factory.md`, `prompts/tasks/test_gap_audit.md`, `prompts/tasks/policy_drift.md`.
+- Schemas/validators: `src/schemas/ProjectBrainOutput.ts`, `src/schemas/CodexAuditOutput.ts`, `src/schemas/PromptFactoryOutput.ts`, `src/schemas/TestGapAuditOutput.ts`, `src/schemas/PolicyDriftOutput.ts`, `src/validators/ProjectBrainValidator.ts`, `src/validators/CodexAuditValidator.ts`, `src/validators/PromptFactoryValidator.ts`, `src/validators/TestGapAuditValidator.ts`, `src/validators/PolicyDriftValidator.ts`, `src/validators/markdownSections.ts`.
+- Registry helpers: `src/evidence/EvidenceRegistry.ts`, `src/claims/ClaimLedger.ts`, `src/modes/ModeRegistry.ts`.
+- Regression evals/goldens: new Project Brain, Codex Audit, Prompt Factory, Test Gap, and Policy Drift fixtures under `evals/regression/` and `goldens/`.
+- Tests: `tests/governanceModes.test.ts`, `tests/evidenceClaimRegistry.test.ts`.
+
+## Files Modified
+
+- Runtime/mode plumbing: `src/schemas/Config.ts`, `src/schemas/zodSchemas.ts`, `src/classifiers/ModeDetector.ts`, `src/classifiers/DetailLevelController.ts`, `src/agents/AgentRouter.ts`, `src/core/InstructionStack.ts`, `src/policy/PolicySelector.ts`, `src/utils/validators.ts`, `src/evaluators/PropertyEvaluator.ts`.
+- Agent behavior: `src/agents/AnalystAgent.ts`, `src/agents/PlannerAgent.ts`.
+- Memory/CLI: `src/memory/memoryTypes.ts`, `src/memory/MemoryStore.ts`, `src/cli.ts`.
+
+## Commands Run
+
+- `npm install`: passed; restored local dev dependencies after initial `tsc: command not found`.
+- `npm run typecheck`: passed.
+- `npm test`: passed, 29 files and 77 tests.
+- `npm run rax -- eval`: passed, 16/16, passRate 1, criticalFailures 0.
+- `npm run rax -- eval --redteam`: passed, 9/9, passRate 1, criticalFailures 0.
+- `npm run rax -- eval --regression`: passed, 15/15, passRate 1, criticalFailures 0.
+- `npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."`: passed, run `run-2026-04-25T02-57-39-833Z-f91nud`.
+- `npm run rax -- run --mode project_brain --file docs/PROJECT_STATE.md`: passed, run `run-2026-04-25T02-57-43-114Z-g91ucx`.
+- `npm run rax -- run --mode codex_audit "Codex says all tests pass but provides no output."`: passed, run `run-2026-04-25T02-57-48-139Z-b32y5y`.
+- `npm run rax -- mode maturity`: passed.
+
+## Project Brain Example
+
+The Project Brain smoke output separates evidence-backed claims from unproven work:
+
+- Proven Working cites `ev_001` and `ev_002`.
+- Missing Tests now says Project Brain and Codex Audit have initial regression evals, but still need replay proof and correction-promotion cases before behavior-proven status.
+- Codex Prompt remains bounded to a smallest remaining governance-mode gap and requires typecheck, tests, evals, and smoke output.
+
+## Codex Audit Example
+
+For `Codex says all tests pass but provides no output.`, Codex Audit returned:
+
+- Evidence Found: none.
+- Missing Evidence: test/typecheck/eval output and modified files.
+- Fake-Complete Flags: claimed tests pass without output.
+- Approval Recommendation: reject until evidence is supplied.
+
+## Mode Maturity Result
+
+- `stax_fitness`: `behavior_proven`, no proof gaps.
+- `project_brain`, `codex_audit`, `prompt_factory`, `test_gap_audit`, `policy_drift`: `usable`, with replay proof and correction path still open.
+- `general_chat`: `draft`.
+
+## Remaining Limitations
+
+- Governance modes are usable, not behavior-proven. They still need replay drift proof and correction-promotion cases.
+- `EvidenceRegistry` and `ClaimLedger` currently parse markdown registries; they do not yet auto-write approved claims.
+- Codex Audit audits supplied text only. It does not yet inspect real git diffs or command logs.
+- Mode registry maturity rules are deterministic and conservative; they do not inspect every artifact deeply yet.

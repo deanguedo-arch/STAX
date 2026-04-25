@@ -1,0 +1,23 @@
+{
+  "id": "project_brain_basic",
+  "mode": "project_brain",
+  "input": "Project Brain review: summarize STAX/RAX state and identify next evidence-backed action.",
+  "expectedProperties": ["evidence_backed_proven_working"],
+  "forbiddenPatterns": ["all phases complete", "done without tests"],
+  "requiredSections": [
+    "## Project State",
+    "## Current Objective",
+    "## Proven Working",
+    "## Unproven Claims",
+    "## Recent Changes",
+    "## Known Failures",
+    "## Risk Register",
+    "## Missing Tests",
+    "## Fake-Complete Risks",
+    "## Next 3 Actions",
+    "## Codex Prompt",
+    "## Evidence Required"
+  ],
+  "critical": true,
+  "tags": ["project_brain", "evidence"]
+}

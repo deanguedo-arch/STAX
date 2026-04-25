@@ -1,0 +1,10 @@
+{
+  "id": "project_brain_codex_prompt",
+  "mode": "project_brain",
+  "input": "Project Brain: generate the next Codex prompt for governance mode hardening.",
+  "expectedProperties": ["bounded_prompt", "evidence_backed_proven_working"],
+  "forbiddenPatterns": ["fix everything", "add UI first"],
+  "requiredSections": ["## Codex Prompt", "## Evidence Required", "## Next 3 Actions"],
+  "critical": true,
+  "tags": ["project_brain", "codex_prompt"]
+}

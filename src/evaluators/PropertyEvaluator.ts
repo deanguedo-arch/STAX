@@ -58,6 +58,27 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
     if (property === "critic_failure" && !input.output.includes("## Critic Failure")) {
       failReasons.push("expected property failed: critic_failure");
     }
+    if (property === "evidence_backed_proven_working") {
+      const proven = section(input.output, "## Proven Working");
+      const unsupported = proven
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.startsWith("-"))
+        .filter((line) => !/^-\s+(none|no evidence-backed|not supplied)/i.test(line))
+        .filter((line) => !/\bev_\d{3,}\b/i.test(line));
+      if (unsupported.length > 0 || !proven.trim()) {
+        failReasons.push("expected property failed: evidence_backed_proven_working");
+      }
+    }
+    if (property === "fake_complete_flag" && !/fake-complete|claimed tests pass without output|missing evidence/i.test(input.output)) {
+      failReasons.push("expected property failed: fake_complete_flag");
+    }
+    if (property === "bounded_prompt" && /\bfix everything\b/i.test(input.output)) {
+      failReasons.push("expected property failed: bounded_prompt");
+    }
+    if (property === "policy_drift_flag" && !/violation|reject|unsafe|disabled|enabled/i.test(input.output)) {
+      failReasons.push("expected property failed: policy_drift_flag");
+    }
   }
 
   if (input.minSignalUnits !== undefined) {
@@ -84,4 +105,12 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
     failReasons,
     criticalFailure: Boolean(input.critical && failReasons.length > 0)
   };
+}
+
+function section(output: string, heading: string): string {
+  const start = output.indexOf(heading);
+  if (start === -1) return "";
+  const after = output.slice(start + heading.length);
+  const next = after.search(/\n##\s+/);
+  return next === -1 ? after : after.slice(0, next);
 }

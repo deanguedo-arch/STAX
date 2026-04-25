@@ -8,7 +8,12 @@ export const RaxModeSchema = z.enum([
   "stax_fitness",
   "code_review",
   "teaching",
-  "general_chat"
+  "general_chat",
+  "project_brain",
+  "codex_audit",
+  "prompt_factory",
+  "test_gap_audit",
+  "policy_drift"
 ]);
 
 export const DetailLevelSchema = z.enum([
@@ -197,7 +202,11 @@ export const CorrectionErrorTypeSchema = z.enum([
   "weak_plan",
   "wrong_tone",
   "missing_uncertainty",
-  "schema_failure"
+  "schema_failure",
+  "tool_policy_violation",
+  "memory_pollution",
+  "fake_complete_claim",
+  "provider_role_mismatch"
 ]);
 
 export const CorrectionItemSchema = z.object({
@@ -224,7 +233,13 @@ export const MemoryItemSchema = z.object({
     "correction",
     "golden",
     "example",
-    "forbidden"
+    "forbidden",
+    "decision",
+    "known_failure",
+    "proven_working",
+    "unproven_claim",
+    "next_action",
+    "risk"
   ]),
   content: z.string(),
   sourceRunId: z.string().optional(),

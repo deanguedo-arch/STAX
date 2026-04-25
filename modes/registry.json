@@ -1,0 +1,121 @@
+{
+  "modes": [
+    {
+      "mode": "intake",
+      "schema": "SignalUnit",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases"],
+      "goldens": ["goldens/intake_basic_signal.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "analysis",
+      "schema": "RaxOutput",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases"],
+      "goldens": ["goldens/uncertainty_missing_data.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "planning",
+      "schema": "PlannerOutput",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases"],
+      "goldens": ["goldens/project_plan.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "audit",
+      "schema": "CriticReview",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases", "evals/redteam"],
+      "goldens": ["goldens/critic_review.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "stax_fitness",
+      "schema": "StaxFitnessOutput",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases", "evals/regression"],
+      "goldens": ["goldens/stax_fitness_signal.md", "goldens/corr-stax-atomic-proof.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "privacy_policy"],
+      "maturity": "behavior_proven"
+    },
+    {
+      "mode": "code_review",
+      "schema": "RaxOutput",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases"],
+      "goldens": [],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "teaching",
+      "schema": "RaxOutput",
+      "validator": "validateModeOutput",
+      "evalFolders": ["evals/cases"],
+      "goldens": [],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "general_chat",
+      "schema": "RaxOutput",
+      "validator": "validateModeOutput",
+      "evalFolders": [],
+      "goldens": [],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"],
+      "maturity": "draft"
+    },
+    {
+      "mode": "project_brain",
+      "schema": "ProjectBrainOutput",
+      "validator": "ProjectBrainValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": ["goldens/project_brain_audit.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "codex_audit",
+      "schema": "CodexAuditOutput",
+      "validator": "CodexAuditValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": ["goldens/codex_audit.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "prompt_factory",
+      "schema": "PromptFactoryOutput",
+      "validator": "PromptFactoryValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": ["goldens/prompt_factory.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "test_gap_audit",
+      "schema": "TestGapAuditOutput",
+      "validator": "TestGapAuditValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": ["goldens/test_gap_audit.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy"],
+      "maturity": "usable"
+    },
+    {
+      "mode": "policy_drift",
+      "schema": "PolicyDriftOutput",
+      "validator": "PolicyDriftValidator",
+      "evalFolders": ["evals/regression", "evals/redteam"],
+      "goldens": ["goldens/policy_drift.md"],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
+      "maturity": "usable"
+    }
+  ]
+}

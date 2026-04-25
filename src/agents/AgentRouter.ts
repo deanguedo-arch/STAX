@@ -25,7 +25,7 @@ export class AgentRouter {
   constructor(private agents: RouterAgents) {}
 
   agentForMode(mode: Mode): Agent {
-    if (mode === "planning") return this.agents.planner;
+    if (mode === "planning" || mode === "prompt_factory") return this.agents.planner;
     if (mode === "intake" || mode === "stax_fitness") return this.agents.intake;
     return this.agents.analyst;
   }
@@ -54,6 +54,27 @@ export class AgentRouter {
         agent: this.agents.planner,
         mode: "planning",
         reason: "Planning or implementation request detected"
+      };
+    }
+
+    if (detected.mode === "prompt_factory") {
+      return {
+        agent: this.agents.planner,
+        mode: "prompt_factory",
+        reason: "Codex prompt factory request detected"
+      };
+    }
+
+    if (
+      detected.mode === "project_brain" ||
+      detected.mode === "codex_audit" ||
+      detected.mode === "test_gap_audit" ||
+      detected.mode === "policy_drift"
+    ) {
+      return {
+        agent: this.agents.analyst,
+        mode: detected.mode,
+        reason: `${detected.mode} governance mode detected`
       };
     }
 

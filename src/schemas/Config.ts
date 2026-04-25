@@ -10,7 +10,12 @@ export type RaxMode =
   | "stax_fitness"
   | "code_review"
   | "teaching"
-  | "general_chat";
+  | "general_chat"
+  | "project_brain"
+  | "codex_audit"
+  | "prompt_factory"
+  | "test_gap_audit"
+  | "policy_drift";
 
 export type Mode = RaxMode;
 

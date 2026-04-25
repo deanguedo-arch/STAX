@@ -1,0 +1,16 @@
+{
+  "id": "codex_audit_missing_tests",
+  "mode": "codex_audit",
+  "input": "Codex implemented src/foo.ts with a placeholder and did not mention tests.",
+  "expectedProperties": ["fake_complete_flag"],
+  "forbiddenPatterns": ["Approval Recommendation\n- Approve"],
+  "requiredSections": [
+    "## Files Modified",
+    "## Tests Added",
+    "## Commands Run",
+    "## Violations",
+    "## Fake-Complete Flags"
+  ],
+  "critical": true,
+  "tags": ["codex_audit", "missing_tests"]
+}

@@ -7,6 +7,7 @@ import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { MemoryStore } from "./memory/MemoryStore.js";
+import { ModeRegistry } from "./modes/ModeRegistry.js";
 import { PolicyCompiler } from "./policy/PolicyCompiler.js";
 import { PolicyLoader } from "./policy/PolicyLoader.js";
 import { PolicySelector } from "./policy/PolicySelector.js";
@@ -33,6 +34,7 @@ const knownCommands = new Set([
   "corrections",
   "train",
   "policy",
+  "mode",
   "trace",
   "help"
 ]);
@@ -298,6 +300,30 @@ async function policyCommand(args: ParsedArgs): Promise<void> {
   throw new Error("Usage: rax policy list | compile --mode planning --file input.txt");
 }
 
+async function modeCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0];
+  const registry = new ModeRegistry(process.cwd());
+  if (action === "list") {
+    const modes = await registry.list();
+    logInfo(modes.map((entry) => `${entry.mode}\t${entry.maturity}`).join("\n"));
+    return;
+  }
+  if (action === "inspect") {
+    const mode = args.positional[1];
+    if (!mode) throw new Error("Usage: rax mode inspect <mode>");
+    const entry = await registry.inspect(mode);
+    if (!entry) throw new Error(`Mode not found: ${mode}`);
+    logInfo(JSON.stringify(entry, null, 2));
+    return;
+  }
+  if (action === "maturity") {
+    const report = await registry.maturity();
+    logInfo(JSON.stringify(report, null, 2));
+    return;
+  }
+  throw new Error("Usage: rax mode list | inspect <mode> | maturity");
+}
+
 async function traceCommand(args: ParsedArgs): Promise<void> {
   const runId = args.positional[0];
   if (!runId) throw new Error("Usage: rax trace <run-id>");
@@ -329,6 +355,7 @@ function help(): void {
     "  rax train export --sft | --preference | --all",
     "  rax policy list",
     "  rax policy compile --mode planning --file input.txt",
+    "  rax mode list | inspect <mode> | maturity",
     "  rax trace <run-id>"
   ].join("\n"));
 }
@@ -353,6 +380,8 @@ async function main(): Promise<void> {
     await trainCommand(args);
   } else if (args.command === "policy") {
     await policyCommand(args);
+  } else if (args.command === "mode") {
+    await modeCommand(args);
   } else if (args.command === "trace") {
     await traceCommand(args);
   } else {

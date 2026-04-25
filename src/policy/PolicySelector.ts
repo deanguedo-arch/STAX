@@ -26,8 +26,16 @@ export class PolicySelector {
     const common = ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"];
     const text = input.userInput?.toLowerCase() ?? "";
     const toolNeeded = /\b(file|folder|repo|repository|code|shell|write|read|git|project|implement|scaffold)\b/.test(text);
-    if (input.mode === "planning") {
+    if (input.mode === "planning" || input.mode === "prompt_factory") {
       return toolNeeded ? [...common, "tool_policy"] : common;
+    }
+    if (
+      input.mode === "project_brain" ||
+      input.mode === "codex_audit" ||
+      input.mode === "test_gap_audit" ||
+      input.mode === "policy_drift"
+    ) {
+      return [...common, "tool_policy", "memory_policy"];
     }
     if (input.mode === "stax_fitness") return [...common, "privacy_policy"];
     if (input.mode === "code_review") return [...common, "tool_policy"];

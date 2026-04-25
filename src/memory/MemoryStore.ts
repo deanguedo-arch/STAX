@@ -76,15 +76,7 @@ export class MemoryStore {
       .split(/[^a-z0-9_]+/i)
       .map((term) => term.trim())
       .filter((term) => term.length > 2);
-    const types: MemoryType[] = [
-      "session",
-      "project",
-      "user_preference",
-      "correction",
-      "golden",
-      "example",
-      "forbidden"
-    ];
+    const types: MemoryType[] = PROJECT_MEMORY_TYPES;
     const now = Date.now();
     const groups = await Promise.all(types.map((type) => this.all(type)));
     return groups
@@ -107,7 +99,7 @@ export class MemoryStore {
   }
 
   private async setApproval(id: string, approved: boolean): Promise<MemoryRecord> {
-    const types: MemoryType[] = ["session", "project", "user_preference", "correction", "golden", "example", "forbidden"];
+    const types: MemoryType[] = PROJECT_MEMORY_TYPES;
     for (const type of types) {
       const records = await this.all(type);
       const index = records.findIndex((record) => record.id === id);
@@ -122,3 +114,19 @@ export class MemoryStore {
     throw new Error(`Memory not found: ${id}`);
   }
 }
+
+export const PROJECT_MEMORY_TYPES: MemoryType[] = [
+  "session",
+  "project",
+  "user_preference",
+  "correction",
+  "golden",
+  "example",
+  "forbidden",
+  "decision",
+  "known_failure",
+  "proven_working",
+  "unproven_claim",
+  "next_action",
+  "risk"
+];

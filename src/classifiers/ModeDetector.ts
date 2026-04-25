@@ -28,7 +28,44 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
   ],
   code_review: ["code", "repo", "pull request", "bug", "refactor", "typescript", "python", "test failure"],
   teaching: ["explain", "teach", "understand", "how does", "why"],
-  general_chat: []
+  general_chat: [],
+  project_brain: [
+    "project brain",
+    "project state",
+    "proven working",
+    "unproven claims",
+    "risk register",
+    "next actions"
+  ],
+  codex_audit: [
+    "codex audit",
+    "codex says",
+    "codex claim",
+    "fake-complete",
+    "missing evidence",
+    "tests pass but"
+  ],
+  prompt_factory: [
+    "codex prompt",
+    "prompt factory",
+    "surgical prompt",
+    "files to inspect",
+    "acceptance criteria"
+  ],
+  test_gap_audit: [
+    "test gap",
+    "missing tests",
+    "negative cases",
+    "eval cases",
+    "coverage gap"
+  ],
+  policy_drift: [
+    "policy drift",
+    "weakened policy",
+    "disabled critic",
+    "schema validation disabled",
+    "unsafe tools"
+  ]
 };
 
 export class ModeDetector {
@@ -63,6 +100,11 @@ export class ModeDetector {
     }
 
     const priority: Record<RaxMode, number> = {
+      policy_drift: 13,
+      codex_audit: 12,
+      project_brain: 11,
+      test_gap_audit: 10,
+      prompt_factory: 9,
       planning: 8,
       stax_fitness: 7,
       code_review: 6,

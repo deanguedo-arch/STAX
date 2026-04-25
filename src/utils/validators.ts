@@ -1,5 +1,15 @@
 import { z } from "zod";
 import type { Mode } from "../schemas/Config.js";
+import { CODEX_AUDIT_REQUIRED_HEADINGS } from "../schemas/CodexAuditOutput.js";
+import { POLICY_DRIFT_REQUIRED_HEADINGS } from "../schemas/PolicyDriftOutput.js";
+import { PROJECT_BRAIN_REQUIRED_HEADINGS } from "../schemas/ProjectBrainOutput.js";
+import { PROMPT_FACTORY_REQUIRED_HEADINGS } from "../schemas/PromptFactoryOutput.js";
+import { TEST_GAP_AUDIT_REQUIRED_HEADINGS } from "../schemas/TestGapAuditOutput.js";
+import { CodexAuditValidator } from "../validators/CodexAuditValidator.js";
+import { PolicyDriftValidator } from "../validators/PolicyDriftValidator.js";
+import { ProjectBrainValidator } from "../validators/ProjectBrainValidator.js";
+import { PromptFactoryValidator } from "../validators/PromptFactoryValidator.js";
+import { TestGapAuditValidator } from "../validators/TestGapAuditValidator.js";
 
 export type ValidationResult = {
   valid: boolean;
@@ -23,7 +33,12 @@ const requiredHeadings: Record<Mode, string[]> = {
   ],
   code_review: ["## Findings", "## Tests", "## Residual Risk"],
   teaching: ["## Explanation", "## Example", "## Unknowns"],
-  general_chat: ["## Response"]
+  general_chat: ["## Response"],
+  project_brain: [...PROJECT_BRAIN_REQUIRED_HEADINGS],
+  codex_audit: [...CODEX_AUDIT_REQUIRED_HEADINGS],
+  prompt_factory: [...PROMPT_FACTORY_REQUIRED_HEADINGS],
+  test_gap_audit: [...TEST_GAP_AUDIT_REQUIRED_HEADINGS],
+  policy_drift: [...POLICY_DRIFT_REQUIRED_HEADINGS]
 };
 
 const interpretationPhrases = [
@@ -80,8 +95,20 @@ export function validateModeOutput(mode: Mode, output: string): ValidationResult
     }
   }
 
+  const modeSpecific = validateGovernanceMode(mode, output);
+  issues.push(...modeSpecific.issues);
+
   return {
     valid: issues.length === 0,
     issues
   };
+}
+
+function validateGovernanceMode(mode: Mode, output: string): ValidationResult {
+  if (mode === "project_brain") return new ProjectBrainValidator().validate(output);
+  if (mode === "codex_audit") return new CodexAuditValidator().validate(output);
+  if (mode === "prompt_factory") return new PromptFactoryValidator().validate(output);
+  if (mode === "test_gap_audit") return new TestGapAuditValidator().validate(output);
+  if (mode === "policy_drift") return new PolicyDriftValidator().validate(output);
+  return { valid: true, issues: [] };
 }

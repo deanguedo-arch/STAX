@@ -1,0 +1,19 @@
+{
+  "id": "prompt_factory_bounded",
+  "mode": "prompt_factory",
+  "input": "Create a Codex prompt to harden project_brain mode.",
+  "expectedProperties": ["bounded_prompt"],
+  "forbiddenPatterns": ["fix everything", "build the whole system"],
+  "requiredSections": [
+    "## Objective",
+    "## Files To Inspect",
+    "## Files To Modify",
+    "## Tests To Add",
+    "## Commands To Run",
+    "## Acceptance Criteria",
+    "## Stop Conditions",
+    "## Final Report Required"
+  ],
+  "critical": false,
+  "tags": ["prompt_factory"]
+}

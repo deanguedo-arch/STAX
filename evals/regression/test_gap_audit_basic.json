@@ -1,0 +1,17 @@
+{
+  "id": "test_gap_audit_basic",
+  "mode": "test_gap_audit",
+  "input": "Test gap audit for a new mode validator.",
+  "expectedProperties": [],
+  "forbiddenPatterns": ["no tests needed"],
+  "requiredSections": [
+    "## Feature",
+    "## Existing Tests",
+    "## Missing Tests",
+    "## Negative Cases Needed",
+    "## Eval Cases Needed",
+    "## Priority"
+  ],
+  "critical": false,
+  "tags": ["test_gap"]
+}
