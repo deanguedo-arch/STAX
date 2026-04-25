@@ -31,6 +31,61 @@ function detectsUnsafePolicyDrift(text: string): string[] {
   return checks.filter(([pattern]) => pattern.test(text)).map(([, issue]) => issue);
 }
 
+function hasLocalEvidence(text: string): boolean {
+  return text.includes("## Local Evidence");
+}
+
+function latestEvalEvidence(text: string): boolean {
+  return /### Latest Eval Result[\s\S]*-\s+Path:\s+evals\/eval_results\/.*\.json/i.test(text);
+}
+
+function localFilesChanged(text: string): string[] {
+  const diffSection = sectionBetween(text, "### Git Diff Name Only", "### Latest Eval Result");
+  const diffFiles = diffSection
+    .split("\n")
+    .map((line) => line.trim().replace(/^-\s+/, ""))
+    .filter((line) => line && line !== "None");
+  const statusSection = sectionBetween(text, "### Git Status", "### Git Diff Stat");
+  const statusFiles = statusSection
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^[MADRCU?]{1,2}\s+/.test(line))
+    .map((line) => line.replace(/^[MADRCU?]{1,2}\s+/, "").trim());
+  return Array.from(new Set([...diffFiles, ...statusFiles]));
+}
+
+function projectStateEvidenceLines(text: string): string[] {
+  const lines: string[] = [];
+  const latestEval = sectionBetween(text, "### Latest Eval Result", "### Latest Run Folder");
+  const latestRun = sectionBetween(text, "### Latest Run Folder", "### Project Docs");
+  const maturity = sectionBetween(text, "### Mode Maturity", "### Evidence Collection Errors");
+  if (latestEval.includes("Path:")) {
+    const evalPath = latestEval.match(/Path:\s+([^\n]+)/)?.[1]?.trim();
+    const passRate = latestEval.match(/passRate:\s+([^\n]+)/)?.[1]?.trim();
+    lines.push(`Latest eval artifact: ${evalPath ?? "unknown"} with passRate ${passRate ?? "unknown"}.`);
+  }
+  if (latestRun.includes("- runs/")) {
+    lines.push(`Latest run folder: ${latestRun.match(/-\s+(runs\/[^\n]+)/)?.[1]?.trim() ?? "unknown"}.`);
+  }
+  if (maturity.trim()) {
+    const maturityLines = maturity
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => /^-\s+/.test(line))
+      .slice(0, 4);
+    lines.push(...maturityLines.map((line) => `Mode maturity: ${line.replace(/^-\s+/, "")}`));
+  }
+  return lines;
+}
+
+function sectionBetween(text: string, startHeading: string, endHeading: string): string {
+  const start = text.indexOf(startHeading);
+  if (start === -1) return "";
+  const afterStart = text.slice(start + startHeading.length);
+  const end = afterStart.indexOf(endHeading);
+  return (end === -1 ? afterStart : afterStart.slice(0, end)).replace(/```txt|```/g, "").trim();
+}
+
 export class AnalystAgent implements Agent {
   name = "analyst";
   mode = "analysis" as const;
@@ -68,6 +123,7 @@ export class AnalystAgent implements Agent {
       const risks = memoryLines(input, "risk");
       const nextActions = memoryLines(input, "next_action");
       const allMemory = memoryLines(input);
+      const localEvidence = projectStateEvidenceLines(input.input);
 
       return {
         agent: this.name,
@@ -79,6 +135,7 @@ export class AnalystAgent implements Agent {
           ...bulletize(
             [
               "STAX/RAX is being treated as a local governed reasoning runtime, not a free-form chatbot.",
+              ...localEvidence,
               ...allMemory.map((item) => `Approved memory: ${item}`)
             ],
             "No approved project memory was retrieved."
@@ -140,21 +197,39 @@ export class AnalystAgent implements Agent {
 
     if (input.mode === "codex_audit") {
       const text = input.input.trim();
+      const localEvidence = hasLocalEvidence(text);
+      const changedFiles = localFilesChanged(text);
+      const evalEvidence = latestEvalEvidence(text);
       const testClaim = /\b(all tests pass|tests pass|typecheck passes|evals pass|passed tests)\b/i.test(text);
-      const commandEvidence = hasTestEvidence(text);
+      const commandEvidence = hasTestEvidence(text) || evalEvidence;
       const placeholder = detectsPlaceholder(text);
       const scopeCreep = /\b(ui|embedding|autonomous shell|recursive agent|free-form agent chat)\b/i.test(text);
+      const policyConfigDrift = changedFiles.some((file) =>
+        /(^|\/)(rax\.config\.json|policies\/|modes\/.*\.mode\.md|src\/policy\/|src\/safety\/|src\/tools\/)/.test(file)
+      );
+      const evalChanged = changedFiles.some((file) => file.startsWith("evals/"));
+      const docsCompletionClaim = /\b(done|complete|completed|finished)\b/i.test(text) && changedFiles.some((file) => file.startsWith("docs/"));
       const missing = [
         ...(testClaim && !commandEvidence ? ["Test/typecheck/eval command output was not supplied."] : []),
-        ...(!/files? modified|diff|changed files|src\//i.test(text) ? ["Modified files were not identified."] : []),
+        ...(!localEvidence && !/files? modified|diff|changed files|src\//i.test(text) ? ["Modified files were not identified."] : []),
+        ...(localEvidence && !evalEvidence ? ["Latest eval result artifact was not found in local evidence."] : []),
+        ...(localEvidence && changedFiles.length > 0 && !commandEvidence ? ["Local changes exist but no test/eval evidence was found."] : []),
         ...(placeholder ? ["Placeholder implementation needs real behavior evidence."] : [])
       ];
       const flags = [
         ...(testClaim && !commandEvidence ? ["Claimed tests pass without output."] : []),
         ...(placeholder ? ["Placeholder-only implementation risk."] : []),
-        ...(scopeCreep ? ["Possible scope creep beyond CLI governance work."] : [])
+        ...(scopeCreep ? ["Possible scope creep beyond CLI governance work."] : []),
+        ...(policyConfigDrift ? ["Policy/config/tool governance files changed; require redteam and regression evidence."] : []),
+        ...(evalChanged && !/eval|regression|redteam/i.test(text) ? ["Eval files changed without explanation in the supplied report."] : []),
+        ...(docsCompletionClaim && !commandEvidence ? ["Docs claim completion without command evidence."] : [])
       ];
       const recommendation = missing.length || flags.length ? "Reject until evidence is supplied." : "Needs review with supplied evidence.";
+      const evidenceFound = [
+        ...(commandEvidence ? ["Command output, eval artifact, or pass artifact was supplied."] : []),
+        ...(localEvidence ? ["Local git/eval/run evidence was collected read-only."] : []),
+        ...(changedFiles.length ? [`Local changed files detected: ${changedFiles.join(", ")}`] : [])
+      ];
 
       return {
         agent: this.name,
@@ -166,13 +241,15 @@ export class AnalystAgent implements Agent {
           `- ${text || "No Codex claim supplied."}`,
           "",
           "## Evidence Found",
-          ...(commandEvidence ? ["- Command output or pass artifact was supplied."] : ["- None found."]),
+          ...bulletize(evidenceFound, "None found."),
           "",
           "## Missing Evidence",
           ...bulletize(missing, "None identified from supplied input."),
           "",
           "## Files Modified",
-          /\b(src\/|docs\/|tests\/|modes\/|evals\/)/i.test(text)
+          changedFiles.length
+            ? changedFiles.map((file) => `- ${file}`).join("\n")
+            : /\b(src\/|docs\/|tests\/|modes\/|evals\/)/i.test(text)
             ? "- File paths were mentioned in the claim."
             : "- Unknown from supplied input.",
           "",
@@ -180,13 +257,18 @@ export class AnalystAgent implements Agent {
           /tests?\//i.test(text) ? "- Test files were mentioned." : "- Unknown from supplied input.",
           "",
           "## Commands Run",
-          commandEvidence ? "- Command evidence was mentioned in the claim." : "- None supplied.",
+          commandEvidence
+            ? "- Command or eval evidence was mentioned in the claim/local evidence."
+            : localEvidence
+              ? "- Local evidence collection ran read-only git/eval/run inspection; no test command output was supplied."
+              : "- None supplied.",
           "",
           "## Violations",
           ...bulletize(
             [
               ...(missing.length ? ["Evidence policy: claims require command output or artifacts."] : []),
-              ...(scopeCreep ? ["Scope control: possible unapproved expansion."] : [])
+              ...(scopeCreep ? ["Scope control: possible unapproved expansion."] : []),
+              ...(policyConfigDrift ? ["Tool/policy governance changed; redteam and regression evidence required."] : [])
             ],
             "None identified from supplied input."
           ),

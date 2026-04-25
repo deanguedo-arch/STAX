@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createInterface } from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
+import { ChatSession } from "./chat/ChatSession.js";
 import { createCorrection, promoteCorrection } from "./core/Corrections.js";
 import { loadConfig, mergeConfig } from "./core/ConfigLoader.js";
 import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
+import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { MemoryStore } from "./memory/MemoryStore.js";
 import { ModeRegistry } from "./modes/ModeRegistry.js";
 import { PolicyCompiler } from "./policy/PolicyCompiler.js";
@@ -35,6 +39,8 @@ const knownCommands = new Set([
   "train",
   "policy",
   "mode",
+  "chat",
+  "codex-audit-local",
   "trace",
   "help"
 ]);
@@ -324,6 +330,78 @@ async function modeCommand(args: ParsedArgs): Promise<void> {
   throw new Error("Usage: rax mode list | inspect <mode> | maturity");
 }
 
+async function chatCommand(args: ParsedArgs): Promise<void> {
+  const runtime = await createDefaultRuntime();
+  const session = new ChatSession(runtime, new MemoryStore(), process.cwd());
+  const onceInput =
+    typeof args.flags.once === "string"
+      ? args.flags.once
+      : args.positional.join(" ");
+
+  if (onceInput.trim()) {
+    const result = await session.handleLine(onceInput);
+    if (result.output) logInfo(result.output);
+    return;
+  }
+
+  if (!process.stdin.isTTY) {
+    const raw = await new Promise<string>((resolve, reject) => {
+      let data = "";
+      process.stdin.setEncoding("utf8");
+      process.stdin.on("data", (chunk) => {
+        data += chunk;
+      });
+      process.stdin.on("end", () => resolve(data));
+      process.stdin.on("error", reject);
+    });
+    for (const line of raw.split(/\r?\n/)) {
+      const result = await session.handleLine(line);
+      if (result.output) logInfo(result.output);
+      if (result.shouldExit) break;
+    }
+    return;
+  }
+
+  logInfo("RAX chat. Type /help for commands, /quit to exit.");
+  const rl = createInterface({ input, output });
+  try {
+    while (true) {
+      const line = await rl.question("rax> ");
+      const result = await session.handleLine(line);
+      if (result.output) logInfo(result.output);
+      if (result.shouldExit) break;
+    }
+  } finally {
+    rl.close();
+  }
+}
+
+async function codexAuditLocalCommand(args: ParsedArgs): Promise<void> {
+  const reportPath = typeof args.flags.report === "string" ? args.flags.report : args.positional[0];
+  if (!reportPath) {
+    throw new Error("Usage: rax codex-audit-local --report report.md");
+  }
+  const report = await fs.readFile(reportPath, "utf8");
+  const evidence = await collectLocalEvidence(process.cwd(), {
+    includeProjectDocs: false,
+    includeModeMaturity: true
+  });
+  const runtime = await createDefaultRuntime();
+  const inputText = [
+    "Audit this Codex report against local read-only evidence.",
+    "",
+    "## Codex Report",
+    report.trim(),
+    "",
+    formatLocalEvidence(evidence)
+  ].join("\n");
+  const result = await runtime.run(inputText, [], { mode: "codex_audit" });
+  logInfo(result.output);
+  logInfo("");
+  logInfo(`Run: ${result.runId}`);
+  logInfo(`Run folder: ${path.join("runs", result.createdAt.slice(0, 10), result.runId)}`);
+}
+
 async function traceCommand(args: ParsedArgs): Promise<void> {
   const runId = args.positional[0];
   if (!runId) throw new Error("Usage: rax trace <run-id>");
@@ -356,6 +434,8 @@ function help(): void {
     "  rax policy list",
     "  rax policy compile --mode planning --file input.txt",
     "  rax mode list | inspect <mode> | maturity",
+    "  rax chat [--once \"message\"]",
+    "  rax codex-audit-local --report report.md",
     "  rax trace <run-id>"
   ].join("\n"));
 }
@@ -382,6 +462,10 @@ async function main(): Promise<void> {
     await policyCommand(args);
   } else if (args.command === "mode") {
     await modeCommand(args);
+  } else if (args.command === "chat") {
+    await chatCommand(args);
+  } else if (args.command === "codex-audit-local") {
+    await codexAuditLocalCommand(args);
   } else if (args.command === "trace") {
     await traceCommand(args);
   } else {
