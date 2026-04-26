@@ -71,7 +71,7 @@ Trace: <trace path>
 - `/status` shows workspace, thread, mode, latest run, latest LearningEvent, queue counts, and learning metrics.
 - `/clear` clears only the active context window. It keeps thread history, runs, traces, and LearningEvents.
 - `/compact` writes a thread summary candidate under `chats/summary_candidates/` and requires review before any memory promotion.
-- `/lab report`, `/lab queue`, and `/lab redteam summary` are read-only Learning Lab views. Chat does not approve or promote lab candidates.
+- `/lab report`, `/lab queue`, `/lab redteam summary`, `/lab failures`, `/lab patches`, and `/lab handoffs` are Learning Lab views. `/lab go cautious 1` may generate a cautious lab cycle. Chat does not approve, promote, merge, or run balanced/aggressive lab profiles.
 
 ## Threads
 

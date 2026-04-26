@@ -27,6 +27,8 @@ export const LearningLabDomainSchema = z.enum([
 
 export const LearningLabDifficultySchema = z.enum(["easy", "medium", "hard", "adversarial"]);
 export const LearningLabApprovalStateSchema = z.enum(["candidate", "approved", "rejected"]);
+export const AutonomyProfileNameSchema = z.enum(["cautious", "balanced", "aggressive", "experimental"]);
+export const LabReleaseGateStatusSchema = z.enum(["safe_to_review", "needs_human", "blocked"]);
 
 export const LearningWorkerResultSchema = z
   .object({
@@ -144,9 +146,101 @@ export const LabCandidateSchema = z.object({
   artifact: z.record(z.string(), z.unknown())
 });
 
+export const FailureClusterSchema = z.object({
+  clusterId: z.string().min(1),
+  failureType: z.enum([
+    "generic_output",
+    "missing_section",
+    "policy_gap",
+    "routing_error",
+    "schema_failure",
+    "critic_failure",
+    "replay_drift",
+    "expected_property",
+    "forbidden_pattern",
+    "unknown_failure"
+  ]),
+  mode: LabModeSchema,
+  domain: LearningLabDomainSchema,
+  count: z.number().int().nonnegative(),
+  examples: z.array(
+    z.object({
+      scenarioId: z.string().min(1),
+      runId: z.string().min(1),
+      learningEventId: z.string().min(1),
+      tracePath: z.string().min(1),
+      finalPath: z.string().min(1),
+      reason: z.string().min(1)
+    })
+  ),
+  suggestedQueueTypes: z.array(z.string()),
+  severity: z.enum(["minor", "major", "critical"])
+});
+
+export const PatchProposalSchema = z.object({
+  patchId: z.string().min(1),
+  sourceClusterId: z.string().min(1),
+  title: z.string().min(1),
+  risk: z.enum(["low", "medium", "high"]),
+  filesToInspect: z.array(z.string()),
+  filesToModify: z.array(z.string()),
+  testsToAdd: z.array(z.string()),
+  commandsToRun: z.array(z.string()),
+  acceptanceCriteria: z.array(z.string()),
+  rollbackPlan: z.array(z.string()),
+  codexPrompt: z.string().min(1),
+  approvalRequired: z.literal(true)
+});
+
+export const CodexHandoffSchema = z.object({
+  handoffId: z.string().min(1),
+  patchId: z.string().min(1),
+  branchSuggested: z.string().min(1),
+  prompt: z.string().min(1),
+  requiredCommands: z.array(z.string()),
+  stopConditions: z.array(z.string()),
+  finalReportRequired: z.array(z.string())
+});
+
+export const VerificationResultSchema = z.object({
+  verificationId: z.string().min(1),
+  patchId: z.string().min(1),
+  commandsRun: z.array(z.string()),
+  passed: z.boolean(),
+  failures: z.array(z.string()),
+  createdAt: z.string().min(1),
+  skipped: z.boolean().optional()
+});
+
+export const ReleaseGateResultSchema = z.object({
+  gateId: z.string().min(1),
+  patchId: z.string().min(1),
+  status: LabReleaseGateStatusSchema,
+  reasons: z.array(z.string()),
+  createdAt: z.string().min(1)
+});
+
+export const LabCycleRecordSchema = z.object({
+  cycleId: z.string().min(1),
+  profile: AutonomyProfileNameSchema,
+  domain: LearningLabDomainSchema,
+  createdAt: z.string().min(1),
+  scenariosGenerated: z.number().int().nonnegative(),
+  scenariosRun: z.number().int().nonnegative(),
+  failures: z.array(FailureClusterSchema),
+  candidatesCreated: z.array(z.string()),
+  patchesProposed: z.array(z.string()),
+  handoffsCreated: z.array(z.string()),
+  verificationResults: z.array(z.string()),
+  releaseGate: LabReleaseGateStatusSchema,
+  artifactPaths: z.array(z.string())
+});
+
 export type LearningWorkerRole = z.infer<typeof LearningWorkerRoleSchema>;
 export type LearningLabDomain = z.infer<typeof LearningLabDomainSchema>;
 export type LearningLabDifficulty = z.infer<typeof LearningLabDifficultySchema>;
+export type AutonomyProfileName = z.infer<typeof AutonomyProfileNameSchema>;
+export type LabReleaseGateStatus = z.infer<typeof LabReleaseGateStatusSchema>;
 export type LearningWorkerResult = z.infer<typeof LearningWorkerResultSchema>;
 export type CurriculumItem = z.infer<typeof CurriculumItemSchema>;
 export type CurriculumPack = z.infer<typeof CurriculumPackSchema>;
@@ -155,6 +249,12 @@ export type LabScenarioSet = z.infer<typeof LabScenarioSetSchema>;
 export type LabResult = z.infer<typeof LabResultSchema>;
 export type LabRunRecord = z.infer<typeof LabRunRecordSchema>;
 export type LabCandidate = z.infer<typeof LabCandidateSchema>;
+export type FailureCluster = z.infer<typeof FailureClusterSchema>;
+export type PatchProposal = z.infer<typeof PatchProposalSchema>;
+export type CodexHandoff = z.infer<typeof CodexHandoffSchema>;
+export type VerificationResult = z.infer<typeof VerificationResultSchema>;
+export type ReleaseGateResult = z.infer<typeof ReleaseGateResultSchema>;
+export type LabCycleRecord = z.infer<typeof LabCycleRecordSchema>;
 export type LabMode = z.infer<typeof LabModeSchema> & RaxMode;
 
 export const labDirs = [
@@ -162,6 +262,11 @@ export const labDirs = [
   "learning/lab/scenarios",
   "learning/lab/runs",
   "learning/lab/reports",
+  "learning/lab/cycles",
+  "learning/lab/patches",
+  "learning/lab/handoffs",
+  "learning/lab/verification",
+  "learning/lab/release-gates",
   "learning/lab/candidates/eval",
   "learning/lab/candidates/correction",
   "learning/lab/candidates/training",

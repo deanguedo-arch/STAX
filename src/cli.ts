@@ -18,10 +18,16 @@ import { LearningRecorder } from "./learning/LearningRecorder.js";
 import { LearningRetention } from "./learning/LearningRetention.js";
 import { PromotionGate, type PromotionTarget } from "./learning/PromotionGate.js";
 import { CurriculumWorker } from "./lab/CurriculumWorker.js";
+import { FailureMiner } from "./lab/FailureMiner.js";
 import { LabMetrics } from "./lab/LabMetrics.js";
+import { LabOrchestrator } from "./lab/LabOrchestrator.js";
 import { LabRunner } from "./lab/LabRunner.js";
+import { PatchPlanner } from "./lab/PatchPlanner.js";
 import { RedTeamGenerator } from "./lab/RedTeamGenerator.js";
+import { CodexHandoffWorker } from "./lab/CodexHandoffWorker.js";
+import { ReleaseGate } from "./lab/ReleaseGate.js";
 import { ScenarioGenerator } from "./lab/ScenarioGenerator.js";
+import { VerificationWorker } from "./lab/VerificationWorker.js";
 import { MemoryStore } from "./memory/MemoryStore.js";
 import { ModeRegistry } from "./modes/ModeRegistry.js";
 import { PolicyCompiler } from "./policy/PolicyCompiler.js";
@@ -585,6 +591,22 @@ async function learnCommand(args: ParsedArgs): Promise<void> {
 
 async function labCommand(args: ParsedArgs): Promise<void> {
   const action = args.positional[0];
+  if (action === "go") {
+    const profile = typeof args.flags.profile === "string" ? args.flags.profile : "cautious";
+    const cycles = Number(typeof args.flags.cycles === "string" ? args.flags.cycles : "1");
+    const domain = typeof args.flags.domain === "string" ? args.flags.domain : "planning";
+    const count = Number(typeof args.flags.count === "string" ? args.flags.count : "5");
+    const result = await new LabOrchestrator().go({
+      profile,
+      cycles,
+      domain,
+      count,
+      executeVerification: Boolean(args.flags["execute-verification"])
+    });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab go", args, true, JSON.stringify(result), [result.path]);
+    return;
+  }
   if (action === "curriculum") {
     const domain = typeof args.flags.domain === "string" ? args.flags.domain : "";
     const count = Number(typeof args.flags.count === "string" ? args.flags.count : "25");
@@ -628,8 +650,52 @@ async function labCommand(args: ParsedArgs): Promise<void> {
     await recordCommandEvent("lab queue", args, true, summary);
     return;
   }
+  if (action === "failures") {
+    const result = await new FailureMiner().mine();
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab failures", args, true, JSON.stringify(result), [result.path]);
+    return;
+  }
+  if (action === "patches") {
+    const clusters = await new FailureMiner().readLatest();
+    const proposals = await new PatchPlanner().plan({ clusters });
+    logInfo(JSON.stringify(proposals, null, 2));
+    await recordCommandEvent("lab patches", args, true, JSON.stringify(proposals), proposals.flatMap((item) => [item.path, item.markdownPath]));
+    return;
+  }
+  if (action === "handoffs") {
+    const patchFiles = await latestPatchFiles(process.cwd());
+    const handoffs = [];
+    for (const patchFile of patchFiles) {
+      handoffs.push(await new CodexHandoffWorker().create({ patch: patchFile }));
+    }
+    logInfo(JSON.stringify(handoffs, null, 2));
+    await recordCommandEvent("lab handoffs", args, true, JSON.stringify(handoffs), handoffs.map((item) => item.path));
+    return;
+  }
+  if (action === "verify") {
+    const patchId = args.positional[1];
+    if (!patchId) throw new Error("Usage: rax lab verify <patch-id>");
+    const result = await new VerificationWorker().verify({
+      patchId,
+      commands: ["npm run typecheck"],
+      execute: Boolean(args.flags.execute)
+    });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab verify", args, result.result.passed, JSON.stringify(result), [result.path]);
+    return;
+  }
+  if (action === "gate") {
+    const patchId = args.positional[1];
+    if (!patchId) throw new Error("Usage: rax lab gate <patch-id>");
+    const patchFile = await findPatchFile(process.cwd(), patchId);
+    const result = await new ReleaseGate().evaluate({ patch: patchFile });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab gate", args, true, JSON.stringify(result), [result.path]);
+    return;
+  }
   throw new Error(
-    "Usage: rax lab curriculum --domain <domain> --count <n> | scenarios --curriculum <file> | redteam --count <n> | run --file <scenario-file> | report | queue"
+    "Usage: rax lab go|curriculum|scenarios|redteam|run|report|queue|failures|patches|handoffs|verify|gate"
   );
 }
 
@@ -657,6 +723,39 @@ async function learningEvents() {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
   }
   return events;
+}
+
+async function latestPatchFiles(rootDir: string): Promise<string[]> {
+  const dir = path.join(rootDir, "learning", "lab", "patches");
+  try {
+    const files = (await fs.readdir(dir))
+      .filter((entry) => entry.endsWith(".json"))
+      .sort()
+      .slice(-10)
+      .map((entry) => path.join("learning", "lab", "patches", entry));
+    if (files.length === 0) throw new Error("No lab patch proposals found.");
+    return files;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") throw new Error("No lab patch proposals found.");
+    throw error;
+  }
+}
+
+async function findPatchFile(rootDir: string, patchId: string): Promise<string> {
+  const dir = path.join(rootDir, "learning", "lab", "patches");
+  const direct = path.join(dir, `${patchId}.json`);
+  try {
+    await fs.stat(direct);
+    return path.join("learning", "lab", "patches", `${patchId}.json`);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  for (const entry of await fs.readdir(dir)) {
+    if (entry.endsWith(".json") && entry.includes(patchId)) {
+      return path.join("learning", "lab", "patches", entry);
+    }
+  }
+  throw new Error(`Lab patch proposal not found: ${patchId}`);
 }
 
 async function latestRunId(rootDir: string): Promise<string> {
@@ -734,7 +833,7 @@ function help(): void {
     "  rax trace <run-id>",
     "  rax show <run-id>|last [--summary]",
     "  rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated",
-    "  rax lab curriculum|scenarios|redteam|run|report|queue"
+    "  rax lab go|curriculum|scenarios|redteam|run|report|queue|failures|patches|handoffs|verify|gate"
   ].join("\n"));
 }
 

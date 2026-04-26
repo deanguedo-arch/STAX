@@ -74,7 +74,7 @@ Approvals and promotions remain CLI-only in this version. Chat may inspect, eval
 
 `/compact` creates a pending thread summary candidate only. It is not approved memory and is not retrieved as durable memory unless reviewed and promoted outside chat.
 
-Learning Lab chat commands are read-only. `/lab report`, `/lab queue`, and `/lab redteam summary` expose lab state without promoting candidates.
+Learning Lab chat commands expose lab state without promoting candidates. `/lab report`, `/lab queue`, `/lab redteam summary`, `/lab failures`, `/lab patches`, and `/lab handoffs` are read-only. `/lab go cautious 1` may generate and run a cautious lab cycle, but chat cannot approve, promote, merge, or run balanced/aggressive profiles.
 
 ## Thread Storage
 

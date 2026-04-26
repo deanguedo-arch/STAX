@@ -82,6 +82,33 @@ npm run rax -- lab report
 npm run rax -- lab queue
 ```
 
+Run a bounded improvement cycle:
+
+```bash
+npm run rax -- lab go --profile cautious --cycles 1 --domain planning --count 5
+npm run rax -- lab go --profile balanced --cycles 1 --domain planning --count 5
+npm run rax -- lab go --profile aggressive --cycles 1 --domain redteam_governance --count 5
+```
+
+Inspect autonomy artifacts:
+
+```bash
+npm run rax -- lab failures
+npm run rax -- lab patches
+npm run rax -- lab handoffs
+npm run rax -- lab verify <patch-id>
+npm run rax -- lab gate <patch-id>
+```
+
+`lab go` uses explicit profiles:
+
+- `cautious`: generate and run scenarios only.
+- `balanced`: create candidates and patch proposals.
+- `aggressive`: create handoff prompts and verification records too.
+- `experimental`: disabled by default.
+
+No profile can auto-merge. No profile can approve or promote durable artifacts.
+
 ## Chat Commands
 
 These are read-only:
@@ -90,6 +117,10 @@ These are read-only:
 /lab report
 /lab queue
 /lab redteam summary
+/lab failures
+/lab patches
+/lab handoffs
+/lab go cautious 1
 ```
 
 No chat command approves or promotes Learning Lab candidates.
@@ -101,6 +132,11 @@ learning/lab/curricula/
 learning/lab/scenarios/
 learning/lab/runs/
 learning/lab/reports/
+learning/lab/cycles/
+learning/lab/patches/
+learning/lab/handoffs/
+learning/lab/verification/
+learning/lab/release-gates/
 learning/lab/candidates/eval/
 learning/lab/candidates/correction/
 learning/lab/candidates/training/
@@ -118,6 +154,11 @@ curriculum
 -> LearningEvent
 -> lab result
 -> candidate artifacts
+-> failure clusters
+-> patch proposals
+-> handoff prompts
+-> verification records
+-> release gate
 -> existing approval gate
 ```
 

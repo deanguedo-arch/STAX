@@ -81,6 +81,18 @@ npm run rax -- lab report
 npm run rax -- lab queue
 ```
 
+Profile-bound improvement cycles are available as sandbox artifacts:
+
+```bash
+npm run rax -- lab go --profile cautious --cycles 1 --domain planning --count 5
+npm run rax -- lab go --profile balanced --cycles 1 --domain planning --count 5
+npm run rax -- lab failures
+npm run rax -- lab patches
+npm run rax -- lab handoffs
+```
+
+These commands can create cycle records, failure clusters, patch proposals, handoff prompts, verification records, and release-gate records. They do not merge, promote, approve memory, train models, or mutate durable system state automatically.
+
 ## Run With Mock Provider
 
 ```bash

@@ -27,7 +27,7 @@ type TraceWithLearning = {
 export class LabRunner {
   constructor(private rootDir = process.cwd(), private runtime?: RaxRuntime) {}
 
-  async runFile(input: { file: string }): Promise<{ path: string; record: LabRunRecord }> {
+  async runFile(input: { file: string; createCandidates?: boolean }): Promise<{ path: string; record: LabRunRecord }> {
     await ensureLabDirs(this.rootDir);
     const scenarioFile = resolveLabPath(this.rootDir, input.file);
     const scenarioSet = LabScenarioSetSchema.parse(JSON.parse(await fs.readFile(scenarioFile, "utf8")));
@@ -61,7 +61,7 @@ export class LabRunner {
         tracePath: relativeLabPath(this.rootDir, tracePath),
         finalPath: relativeLabPath(this.rootDir, finalPath)
       };
-      if (!evaluation.pass) {
+      if (!evaluation.pass && input.createCandidates !== false) {
         result.queuesCreated.push(...(await this.createCandidates(scenario, result, output.output)));
       }
       results.push(result);

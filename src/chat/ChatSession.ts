@@ -8,7 +8,9 @@ import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
 import { LearningQueue } from "../learning/LearningQueue.js";
 import { LearningRecorder } from "../learning/LearningRecorder.js";
+import { FailureMiner } from "../lab/FailureMiner.js";
 import { LabMetrics } from "../lab/LabMetrics.js";
+import { LabOrchestrator } from "../lab/LabOrchestrator.js";
 import { MemoryStore } from "../memory/MemoryStore.js";
 import type { RaxMode } from "../schemas/Config.js";
 import { ThreadStore, type ChatThread } from "./ThreadStore.js";
@@ -207,7 +209,7 @@ export class ChatSession {
     }
 
     if (command === "/lab") {
-      const [labAction = "", labArg = ""] = arg.split(/\s+/);
+      const [labAction = "", labArg = "", labExtra = ""] = arg.split(/\s+/);
       const metrics = new LabMetrics(this.rootDir);
       if (labAction === "report") {
         return { output: JSON.stringify(await metrics.readLatest(), null, 2) };
@@ -218,7 +220,39 @@ export class ChatSession {
       if (labAction === "redteam" && labArg === "summary") {
         return { output: await metrics.redteamSummary() };
       }
-      return { output: "Usage: /lab report | queue | redteam summary" };
+      if (labAction === "failures") {
+        return { output: JSON.stringify(await new FailureMiner(this.rootDir).readLatest(), null, 2) };
+      }
+      if (labAction === "patches") {
+        return { output: await this.listLabArtifacts("patches", "patch proposals") };
+      }
+      if (labAction === "handoffs") {
+        return { output: await this.listLabArtifacts("handoffs", "handoffs") };
+      }
+      if (labAction === "go") {
+        if (labArg !== "cautious") {
+          return { output: "Chat only allows /lab go cautious <cycles>. Use CLI for balanced/aggressive profiles." };
+        }
+        const cycles = Number(labExtra || "1");
+        const result = await new LabOrchestrator(this.rootDir).go({
+          profile: "cautious",
+          cycles,
+          domain: "planning",
+          count: 5,
+          executeVerification: false
+        });
+        return {
+          output: [
+            `Lab go cautious complete: ${result.cycles.length} cycle(s)`,
+            `Summary: ${result.path}`,
+            ...result.cycles.map(
+              (cycle) =>
+                `- ${cycle.cycleId}: scenariosRun=${cycle.scenariosRun}, failures=${cycle.failures.length}, releaseGate=${cycle.releaseGate}`
+            )
+          ].join("\n")
+        };
+      }
+      return { output: "Usage: /lab report | queue | redteam summary | failures | patches | handoffs | go cautious <cycles>" };
     }
 
     if (command === "/eval" || command === "/regression") {
@@ -440,6 +474,18 @@ export class ChatSession {
     return fs.readFile(file, "utf8");
   }
 
+  private async listLabArtifacts(folder: "patches" | "handoffs", label: string): Promise<string> {
+    const dir = path.join(this.rootDir, "learning", "lab", folder);
+    try {
+      const entries = (await fs.readdir(dir)).filter((entry) => entry.endsWith(".json") || entry.endsWith(".md")).sort();
+      if (entries.length === 0) return `- No lab ${label}.`;
+      return [`Lab ${label}: ${entries.length}`, ...entries.slice(-20).map((entry) => `- ${path.join("learning", "lab", folder, entry)}`)].join("\n");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") return `- No lab ${label}.`;
+      throw error;
+    }
+  }
+
   private async queueSummary(): Promise<string> {
     const items = await new LearningQueue(this.rootDir).list();
     if (items.length === 0) return "- No learning queue items.";
@@ -606,7 +652,7 @@ export class ChatSession {
       "/queue",
       "/metrics",
       "/learn last",
-      "/lab report|queue|redteam summary",
+      "/lab report|queue|redteam summary|failures|patches|handoffs|go cautious <cycles>",
       "/prompt <task>",
       "/test-gap <feature>",
       "/policy-drift <change>",
