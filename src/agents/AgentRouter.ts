@@ -70,7 +70,8 @@ export class AgentRouter {
       detected.mode === "codex_audit" ||
       detected.mode === "test_gap_audit" ||
       detected.mode === "policy_drift" ||
-      detected.mode === "learning_unit"
+      detected.mode === "learning_unit" ||
+      detected.mode === "model_comparison"
     ) {
       return {
         agent: this.agents.analyst,

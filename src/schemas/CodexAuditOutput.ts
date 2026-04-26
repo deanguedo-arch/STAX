@@ -1,6 +1,13 @@
 import { z } from "zod";
 
 export const CODEX_AUDIT_REQUIRED_HEADINGS = [
+  "## Audit Type",
+  "## Evidence Checked",
+  "## Claims Verified",
+  "## Claims Not Verified",
+  "## Risks",
+  "## Required Next Proof",
+  "## Recommendation",
   "## Codex Claim",
   "## Evidence Found",
   "## Missing Evidence",
@@ -14,6 +21,13 @@ export const CODEX_AUDIT_REQUIRED_HEADINGS = [
 ] as const;
 
 export const CodexAuditOutputSchema = z.object({
+  auditType: z.enum(["Verified Audit", "Partial Audit", "Reasoned Opinion"]),
+  evidenceChecked: z.array(z.string()),
+  claimsVerified: z.array(z.string()),
+  claimsNotVerified: z.array(z.string()),
+  risks: z.array(z.string()),
+  requiredNextProof: z.array(z.string()),
+  recommendation: z.string().min(1),
   codexClaim: z.array(z.string()),
   evidenceFound: z.array(z.string()),
   missingEvidence: z.array(z.string()),

@@ -54,6 +54,8 @@ describe("local evidence", () => {
     const runDir = path.join(rootDir, "runs", output.createdAt.slice(0, 10), output.runId);
     const loggedInput = await fs.readFile(path.join(runDir, "input.txt"), "utf8");
 
+    expect(output.output).toContain("## Audit Type");
+    expect(output.output).toContain("Verified Audit");
     expect(output.output).toContain("Local git/eval/run evidence was collected read-only.");
     expect(output.output).toContain("src/foo.ts");
     expect(loggedInput).toContain("## Local Evidence");

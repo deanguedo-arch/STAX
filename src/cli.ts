@@ -10,6 +10,8 @@ import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
+import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
+import { DisagreementCapture } from "./learning/DisagreementCapture.js";
 import { LearningEventSchema, LearningQueueTypeSchema } from "./learning/LearningEvent.js";
 import { LearningMetricsStore } from "./learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "./learning/LearningProposalGenerator.js";
@@ -37,8 +39,10 @@ import { RiskClassifier } from "./safety/RiskClassifier.js";
 import { BoundaryDecision } from "./safety/BoundaryDecision.js";
 import { DEFAULT_CONFIG, type DetailLevel, type RaxMode } from "./schemas/Config.js";
 import { TrainingExporter } from "./training/TrainingExporter.js";
+import { TrainingQualityGate } from "./training/TrainingQualityGate.js";
 import { createRunId } from "./utils/ids.js";
 import { logError, logInfo } from "./utils/logger.js";
+import { WorkspaceRegistry } from "./workspace/WorkspaceRegistry.js";
 
 type ParsedArgs = {
   command: string;
@@ -63,6 +67,10 @@ const knownCommands = new Set([
   "show",
   "learn",
   "lab",
+  "evidence",
+  "workspace",
+  "disagree",
+  "compare",
   "help"
 ]);
 
@@ -305,8 +313,17 @@ async function correctionsCommand(args: ParsedArgs): Promise<void> {
 }
 
 async function trainCommand(args: ParsedArgs): Promise<void> {
+  if (args.positional[0] === "quality") {
+    const file = typeof args.flags.file === "string" ? args.flags.file : args.positional[1];
+    if (!file) throw new Error("Usage: rax train quality --file training.jsonl");
+    const result = await new TrainingQualityGate().checkFile(file);
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("train quality", args, result.passed, JSON.stringify(result), [file]);
+    if (!result.passed) process.exitCode = 1;
+    return;
+  }
   if (args.positional[0] !== "export") {
-    throw new Error("Usage: rax train export --sft | --preference | --all");
+    throw new Error("Usage: rax train export --sft | --preference | --all | rax train quality --file training.jsonl");
   }
   const exporter = new TrainingExporter();
   const results = [];
@@ -491,6 +508,116 @@ async function showCommand(args: ParsedArgs): Promise<void> {
     `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
     `Trace: ${path.relative(process.cwd(), path.join(runDir, "trace.json"))}`
   ].join("\n"));
+}
+
+async function evidenceCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "list";
+  const collector = new EvidenceCollector();
+  if (action === "collect") {
+    const result = await collector.collect({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : "current"
+    });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("evidence collect", args, true, JSON.stringify(result), [result.path]);
+    return;
+  }
+  if (action === "list") {
+    const collections = await collector.list();
+    logInfo(JSON.stringify(collections, null, 2));
+    await recordCommandEvent("evidence list", args, true, JSON.stringify({ count: collections.length }));
+    return;
+  }
+  if (action === "show") {
+    const id = args.positional[1];
+    if (!id) throw new Error("Usage: rax evidence show <collection-id|evidence-id>");
+    const collection = await collector.show(id);
+    if (!collection) throw new Error(`Evidence not found: ${id}`);
+    logInfo(JSON.stringify(collection, null, 2));
+    await recordCommandEvent("evidence show", args, true, JSON.stringify(collection));
+    return;
+  }
+  throw new Error("Usage: rax evidence collect [--workspace current] | list | show <id>");
+}
+
+async function workspaceCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "list";
+  const registry = new WorkspaceRegistry();
+  if (action === "create") {
+    const name = args.positional[1];
+    const repo = typeof args.flags.repo === "string" ? args.flags.repo : "";
+    if (!name || !repo) throw new Error("Usage: rax workspace create <name> --repo <path>");
+    const record = await registry.create({ name, repo });
+    logInfo(JSON.stringify(record, null, 2));
+    await recordCommandEvent("workspace create", args, true, JSON.stringify(record));
+    return;
+  }
+  if (action === "use") {
+    const name = args.positional[1];
+    if (!name) throw new Error("Usage: rax workspace use <name>");
+    const record = await registry.use(name);
+    logInfo(JSON.stringify(record, null, 2));
+    await recordCommandEvent("workspace use", args, true, JSON.stringify(record));
+    return;
+  }
+  if (action === "current") {
+    logInfo(JSON.stringify((await registry.current()) ?? null, null, 2));
+    return;
+  }
+  if (action === "list") {
+    logInfo(JSON.stringify(await registry.list(), null, 2));
+    return;
+  }
+  throw new Error("Usage: rax workspace create <name> --repo <path> | use <name> | current | list");
+}
+
+async function disagreeCommand(args: ParsedArgs): Promise<void> {
+  const reason = typeof args.flags.reason === "string" ? args.flags.reason : args.positional.join(" ");
+  if (!reason.trim()) throw new Error("Usage: rax disagree --reason \"...\" [--run <run-id>] [--mode codex_audit]");
+  const result = await new DisagreementCapture().capture({
+    reason,
+    lastRunId: typeof args.flags.run === "string" ? args.flags.run : undefined,
+    mode: typeof args.flags.mode === "string" ? args.flags.mode : undefined
+  });
+  logInfo(JSON.stringify(result, null, 2));
+}
+
+async function compareCommand(args: ParsedArgs): Promise<void> {
+  const taskFile = typeof args.flags.task === "string" ? args.flags.task : undefined;
+  const staxFile = typeof args.flags.stax === "string" ? args.flags.stax : undefined;
+  const externalFile = typeof args.flags.external === "string" ? args.flags.external : undefined;
+  if (!staxFile || !externalFile) {
+    throw new Error("Usage: rax compare --stax stax-answer.md --external external-answer.md [--task task.md] [--evidence evidence.md]");
+  }
+  const task = taskFile ? await fs.readFile(taskFile, "utf8") : args.positional.join(" ") || "Compare answers for this STAX project.";
+  const staxAnswer = await fs.readFile(staxFile, "utf8");
+  const externalAnswer = await fs.readFile(externalFile, "utf8");
+  const evidence = typeof args.flags.evidence === "string" ? await fs.readFile(args.flags.evidence, "utf8") : "";
+  const runtime = await createDefaultRuntime();
+  const result = await runtime.run(
+    [
+      "Compare these answers for local STAX project usefulness.",
+      "",
+      "## Task",
+      task.trim(),
+      "",
+      "## STAX Answer",
+      staxAnswer.trim(),
+      "",
+      "## External Answer",
+      externalAnswer.trim(),
+      "",
+      "## Local Evidence",
+      evidence.trim() || "No local evidence file supplied."
+    ].join("\n"),
+    [],
+    { mode: "model_comparison" }
+  );
+  logInfo(result.output);
+  logInfo("");
+  logInfo(`Run: ${result.runId}`);
+  await recordCommandEvent("compare", args, result.validation.valid, result.output, [
+    path.join("runs", result.createdAt.slice(0, 10), result.runId)
+  ], result.runId);
 }
 
 async function learnCommand(args: ParsedArgs): Promise<void> {
@@ -825,6 +952,7 @@ function help(): void {
     "  rax corrections list",
     "  rax corrections promote <correction-id> --eval --training --golden",
     "  rax train export --sft | --preference | --all",
+    "  rax train quality --file training.jsonl",
     "  rax policy list",
     "  rax policy compile --mode planning --file input.txt",
     "  rax mode list | inspect <mode> | maturity",
@@ -833,7 +961,11 @@ function help(): void {
     "  rax trace <run-id>",
     "  rax show <run-id>|last [--summary]",
     "  rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated",
-    "  rax lab go|curriculum|scenarios|redteam|run|report|queue|failures|patches|handoffs|verify|gate"
+    "  rax lab go|curriculum|scenarios|redteam|run|report|queue|failures|patches|handoffs|verify|gate",
+    "  rax evidence collect|list|show <id>",
+    "  rax workspace create <name> --repo <path> | use <name> | current | list",
+    "  rax disagree --reason \"...\" [--run <run-id>]",
+    "  rax compare --stax stax.md --external chatgpt.md [--task task.md]"
   ].join("\n"));
 }
 
@@ -874,6 +1006,14 @@ async function main(): Promise<void> {
     await learnCommand(args);
   } else if (args.command === "lab") {
     await labCommand(args);
+  } else if (args.command === "evidence") {
+    await evidenceCommand(args);
+  } else if (args.command === "workspace") {
+    await workspaceCommand(args);
+  } else if (args.command === "disagree") {
+    await disagreeCommand(args);
+  } else if (args.command === "compare") {
+    await compareCommand(args);
   } else {
     help();
   }

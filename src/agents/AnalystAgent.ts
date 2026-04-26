@@ -1,5 +1,6 @@
 import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
+import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 
 function bulletize(items: string[], fallback: string): string[] {
   return items.length ? items.map((item) => `- ${item}`) : [`- ${fallback}`];
@@ -76,6 +77,32 @@ function projectStateEvidenceLines(text: string): string[] {
     lines.push(...maturityLines.map((line) => `Mode maturity: ${line.replace(/^-\s+/, "")}`));
   }
   return lines;
+}
+
+function auditEvidenceFoundLines(text: string): string[] {
+  const lines: string[] = [];
+  const tracePath = text.match(/\bTrace:\s+(runs\/[^\s]+\/trace\.json)/i)?.[1];
+  const runFolder = text.match(/\bRun Folder:\s+(runs\/[^\s]+)/i)?.[1] ??
+    text.match(/\bLatest run folder:\s+(runs\/[^\n]+)/i)?.[1];
+  const evalPath = text.match(/\bPath:\s+(evals\/eval_results\/[^\s]+\.json)/i)?.[1];
+  const passRate = text.match(/\bpassRate:\s+([^\n]+)/i)?.[1]?.trim();
+  const proofPacket = text.match(/\bProofPacket:\s+([^\n]+)/i)?.[1]?.trim();
+  const claimSupported = Array.from(text.matchAll(/\bClaimSupported:\s+([^\n]+)/gi)).map((match) => match[1]?.trim()).filter(Boolean);
+  const redactions = Array.from(text.matchAll(/-\s+([a-z_]+):\s+([1-9]\d*)/gi))
+    .filter((match) => /private_key|token|secret|cookie|key/i.test(match[1] ?? ""))
+    .map((match) => `${match[1]}=${match[2]}`);
+
+  if (proofPacket) lines.push(`Proof packet: ${proofPacket}.`);
+  if (tracePath) lines.push(`Trace artifact: ${tracePath}.`);
+  if (runFolder) lines.push(`Run artifact: ${runFolder}.`);
+  if (evalPath) lines.push(`Eval artifact: ${evalPath}${passRate ? ` with passRate ${passRate}` : ""}.`);
+  for (const claim of claimSupported.slice(0, 4)) {
+    lines.push(`Claim supported by evidence: ${claim}.`);
+  }
+  if (redactions.length) {
+    lines.push(`Proof packet redactions applied: ${redactions.join(", ")}.`);
+  }
+  return Array.from(new Set(lines));
 }
 
 function sectionBetween(text: string, startHeading: string, endHeading: string): string {
@@ -254,6 +281,7 @@ export class AnalystAgent implements Agent {
 
     if (input.mode === "codex_audit") {
       const text = input.input.trim();
+      const auditAssessment = assessAuditEvidence(text);
       const localEvidence = hasLocalEvidence(text);
       const changedFiles = localFilesChanged(text);
       const evalEvidence = latestEvalEvidence(text);
@@ -267,6 +295,7 @@ export class AnalystAgent implements Agent {
       const evalChanged = changedFiles.some((file) => file.startsWith("evals/"));
       const docsCompletionClaim = /\b(done|complete|completed|finished)\b/i.test(text) && changedFiles.some((file) => file.startsWith("docs/"));
       const missing = [
+        ...auditAssessment.missingEvidence.filter((item) => !/none identified/i.test(item)),
         ...(testClaim && !commandEvidence ? ["Test/typecheck/eval command output was not supplied."] : []),
         ...(!localEvidence && !/files? modified|diff|changed files|src\//i.test(text) ? ["Modified files were not identified."] : []),
         ...(localEvidence && !evalEvidence ? ["Latest eval result artifact was not found in local evidence."] : []),
@@ -285,6 +314,7 @@ export class AnalystAgent implements Agent {
       const evidenceFound = [
         ...(commandEvidence ? ["Command output, eval artifact, or pass artifact was supplied."] : []),
         ...(localEvidence ? ["Local git/eval/run evidence was collected read-only."] : []),
+        ...auditEvidenceFoundLines(text),
         ...(changedFiles.length ? [`Local changed files detected: ${changedFiles.join(", ")}`] : [])
       ];
 
@@ -294,6 +324,8 @@ export class AnalystAgent implements Agent {
         confidence: "medium",
         metadata: { providerText: providerResponse.text },
         output: [
+          ...renderAuditContractSections(auditAssessment),
+          "",
           "## Codex Claim",
           `- ${text || "No Codex claim supplied."}`,
           "",
@@ -338,6 +370,71 @@ export class AnalystAgent implements Agent {
           "",
           "## Approval Recommendation",
           `- ${recommendation}`
+        ].join("\n")
+      };
+    }
+
+    if (input.mode === "model_comparison") {
+      const text = input.input.trim();
+      const evidenceLines = auditEvidenceFoundLines(text);
+      const hasStaxAnswer = /\bSTAX Answer\b|## STAX|Run:\s+run-|Trace:\s+runs\//i.test(text);
+      const hasExternalAnswer = /\bExternal Answer\b|ChatGPT|external assistant|other answer/i.test(text);
+      const localProof = evidenceLines.length > 0 || /\b(runs\/|trace\.json|learningEvent|evals\/|proof packet|local evidence)\b/i.test(text);
+      return {
+        agent: this.name,
+        schema: "model_comparison",
+        confidence: "medium",
+        metadata: { providerText: providerResponse.text },
+        output: [
+          "## Task",
+          `- Compare the supplied STAX answer, external answer, and any local evidence for project usefulness.`,
+          "",
+          "## STAX Answer Strengths",
+          hasStaxAnswer
+            ? "- STAX can be stronger when it cites local runs, traces, LearningEvents, evals, or repo artifacts."
+            : "- No clearly labeled STAX answer was supplied; this comparison is partial.",
+          "",
+          "## External Answer Strengths",
+          hasExternalAnswer
+            ? "- The external answer can contribute broader reasoning, alternate framing, or clearer strategy."
+            : "- No clearly labeled external answer was supplied; this comparison is partial.",
+          "",
+          "## Evidence Comparison",
+          ...bulletize(
+            [
+              ...(localProof ? ["Local proof or artifact references were supplied."] : ["No local proof artifact was supplied; this cannot be treated as a verified comparison."]),
+              ...evidenceLines
+            ],
+            "No evidence supplied."
+          ),
+          "",
+          "## Specificity Comparison",
+          "- Prefer the answer that names exact files, tests, evals, commands, artifacts, and approval boundaries.",
+          "- Penalize generic advice that cannot be verified inside the repo.",
+          "",
+          "## Actionability Comparison",
+          "- The better project answer should produce a bounded Codex prompt or concrete next verification step.",
+          "- The answer must not promote memory, evals, training data, policies, schemas, or modes without approval.",
+          "",
+          "## Missing Local Proof",
+          localProof
+            ? "- Review whether the cited artifacts actually support the claims before promotion."
+            : "- Add trace, eval, test, or file evidence before claiming one answer is proven better.",
+          "",
+          "## Safer Answer",
+          "- Use the external answer as a reasoning input, but treat local STAX evidence as the deciding proof surface.",
+          "",
+          "## Better Answer For This Project",
+          "- The better answer is the one that is locally testable, evidence-linked, and can create eval/correction/patch candidates without self-approval.",
+          "",
+          "## Recommended Correction",
+          "- If STAX missed useful external reasoning, capture a correction candidate linked to the run and evidence instead of storing raw external output as memory.",
+          "",
+          "## Recommended Eval",
+          "- Add a regression comparison case requiring Evidence Comparison, Missing Local Proof, Recommended Correction, and Recommended Eval sections.",
+          "",
+          "## Recommended Prompt / Patch",
+          "Ask Codex to implement only the missing locally proven behavior, add paired positive/negative evals, run typecheck/tests/evals, and report artifacts before claiming completion."
         ].join("\n")
       };
     }

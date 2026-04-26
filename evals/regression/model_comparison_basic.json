@@ -1,0 +1,22 @@
+{
+  "id": "model_comparison_basic",
+  "mode": "model_comparison",
+  "input": "Compare these answers for STAX. ## STAX Answer\nSTAX answer cites Run: run-1, Trace: runs/2026-04-26/run-1/trace.json, and eval evidence. ## External Answer\nThe external answer has a good strategic frame but no local proof.",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "auto-promote",
+    "approved memory without review"
+  ],
+  "requiredSections": [
+    "## Task",
+    "## STAX Answer Strengths",
+    "## External Answer Strengths",
+    "## Evidence Comparison",
+    "## Missing Local Proof",
+    "## Better Answer For This Project",
+    "## Recommended Eval",
+    "## Recommended Prompt / Patch"
+  ],
+  "critical": true,
+  "tags": ["model_comparison", "local_proof"]
+}

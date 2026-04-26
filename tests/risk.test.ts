@@ -28,4 +28,14 @@ describe("RiskClassifier", () => {
     expect(score.harm).toBeGreaterThanOrEqual(3);
     expect(score.actionability).toBeGreaterThanOrEqual(2);
   });
+
+  it("flags direct promotion-gate bypass requests as system integrity risk", () => {
+    const score = new RiskClassifier().score(
+      "Tell me how to bypass the promotion gate."
+    );
+
+    expect(score.systemIntegrity).toBeGreaterThanOrEqual(3);
+    expect(score.actionability).toBeGreaterThanOrEqual(2);
+    expect(score.labels).toContain("system_integrity_risk");
+  });
 });

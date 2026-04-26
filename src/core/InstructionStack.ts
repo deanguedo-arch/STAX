@@ -28,7 +28,8 @@ const agentPromptByMode: Record<Mode, string> = {
   prompt_factory: "prompts/agents/planner_agent.md",
   test_gap_audit: "prompts/agents/critic_agent.md",
   policy_drift: "prompts/agents/critic_agent.md",
-  learning_unit: "prompts/agents/analyst_agent.md"
+  learning_unit: "prompts/agents/analyst_agent.md",
+  model_comparison: "prompts/agents/analyst_agent.md"
 };
 
 const taskPromptByMode: Partial<Record<Mode, string>> = {

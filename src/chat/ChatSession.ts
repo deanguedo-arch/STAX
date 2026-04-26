@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createProofPacket, renderProofPacket, type EvidenceItem } from "../audit/ProofPacket.js";
+import { redactProofText } from "../audit/ProofRedactor.js";
 import { runEvals } from "../core/EvalRunner.js";
 import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
@@ -8,6 +10,7 @@ import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
 import { LearningQueue } from "../learning/LearningQueue.js";
 import { LearningRecorder } from "../learning/LearningRecorder.js";
+import { DisagreementCapture } from "../learning/DisagreementCapture.js";
 import { FailureMiner } from "../lab/FailureMiner.js";
 import { LabMetrics } from "../lab/LabMetrics.js";
 import { LabOrchestrator } from "../lab/LabOrchestrator.js";
@@ -34,7 +37,8 @@ const VALID_MODES: RaxMode[] = [
   "prompt_factory",
   "test_gap_audit",
   "policy_drift",
-  "learning_unit"
+  "learning_unit",
+  "model_comparison"
 ];
 
 export class ChatSession {
@@ -321,7 +325,53 @@ export class ChatSession {
       if (!this.lastAssistantOutput) {
         return { output: "No assistant output to audit yet." };
       }
-      const output = await this.run(this.lastAssistantOutput, "codex_audit");
+      const output = arg === "--proof"
+        ? await this.auditLastWithProof()
+        : await this.run(this.lastAssistantOutput, "codex_audit");
+      return { output };
+    }
+
+    if (command === "/disagree") {
+      if (!arg) return { output: "Usage: /disagree <what was wrong with the last answer>" };
+      const result = await new DisagreementCapture(this.rootDir).capture({
+        reason: arg,
+        lastRunId: this.runIds.at(-1),
+        lastOutput: this.lastAssistantOutput,
+        mode: await this.lastRunMode()
+      });
+      return {
+        output: [
+          "Disagreement captured.",
+          `LearningEvent: ${result.eventId}`,
+          `Run: ${result.runId}`,
+          `PairedEvalCandidate: ${result.pairedEvalPath}`,
+          "No correction, eval, memory, training record, policy, schema, or mode was promoted."
+        ].join("\n")
+      };
+    }
+
+    if (command === "/compare") {
+      if (!arg.startsWith("external ")) {
+        return { output: "Usage: /compare external <external answer or summary>" };
+      }
+      if (!this.lastAssistantOutput) return { output: "No STAX answer is available to compare yet." };
+      const externalAnswer = arg.replace(/^external\s+/, "").trim();
+      if (!externalAnswer) return { output: "Usage: /compare external <external answer or summary>" };
+      const output = await this.run(
+        [
+          "Compare the last STAX answer with this external assistant answer for this project.",
+          "",
+          "## STAX Answer",
+          this.lastAssistantOutput,
+          "",
+          "## External Answer",
+          externalAnswer,
+          "",
+          "## Local Proof",
+          `LastRun: ${this.runIds.at(-1) ?? "none"}`
+        ].join("\n"),
+        "model_comparison"
+      );
       return { output };
     }
 
@@ -462,8 +512,28 @@ export class ChatSession {
 
     if (this.isAuditLastIntent(normalized)) {
       if (!this.lastAssistantOutput) return { output: "No assistant output to audit yet." };
-      const output = await this.run(this.lastAssistantOutput, "codex_audit");
+      const output = /\b(proof|evidence|verified)\b/.test(normalized)
+        ? await this.auditLastWithProof()
+        : await this.run(this.lastAssistantOutput, "codex_audit");
       return { output };
+    }
+
+    if (this.isDisagreeIntent(normalized)) {
+      const result = await new DisagreementCapture(this.rootDir).capture({
+        reason: input,
+        lastRunId: this.runIds.at(-1),
+        lastOutput: this.lastAssistantOutput,
+        mode: await this.lastRunMode()
+      });
+      return {
+        output: [
+          "Disagreement captured.",
+          `LearningEvent: ${result.eventId}`,
+          `Run: ${result.runId}`,
+          `PairedEvalCandidate: ${result.pairedEvalPath}`,
+          "No durable artifact was promoted automatically."
+        ].join("\n")
+      };
     }
 
     if (this.isEvalIntent(normalized)) {
@@ -554,6 +624,10 @@ export class ChatSession {
     return /\b(how do i use|what can you do|help me use|make this easy|easy on all fronts)\b/.test(input);
   }
 
+  private isDisagreeIntent(input: string): boolean {
+    return /\b(i disagree|that is wrong|you missed|should have allowed|should have refused|over refused|under refused|over-refused|under-refused)\b/.test(input);
+  }
+
   private async run(input: string, mode?: RaxMode): Promise<string> {
     await this.ensureThread();
     const result = await this.runtime.run(input, [`Workspace: ${this.workspace}`, ...this.context], { mode });
@@ -613,7 +687,22 @@ export class ChatSession {
     if (/\b(learning unit|approved learning loop|learning event|learning queue|improve over time|adapt over time)\b/i.test(input)) {
       return "learning_unit";
     }
+    if (/\b(model comparison|compare external|external answer|chatgpt answer|compare answers)\b/i.test(input)) {
+      return "model_comparison";
+    }
     return undefined;
+  }
+
+  private async lastRunMode(): Promise<RaxMode | undefined> {
+    const runId = this.runIds.at(-1);
+    if (!runId) return undefined;
+    try {
+      const runDir = await this.findRunDir(runId);
+      const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as { mode?: RaxMode };
+      return trace.mode;
+    } catch {
+      return undefined;
+    }
   }
 
   private async showRun(runId: string): Promise<string> {
@@ -804,6 +893,109 @@ export class ChatSession {
     }
   }
 
+  private async auditLastWithProof(): Promise<string> {
+    const runId = this.runIds.at(-1);
+    if (!runId) return "No chat run is available to audit with proof.";
+    const thread = await this.ensureThread();
+    const runDir = await this.findRunDir(runId);
+    const runStat = await fs.stat(runDir);
+    const tracePath = path.join(runDir, "trace.json");
+    const trace = JSON.parse(await fs.readFile(tracePath, "utf8")) as {
+      mode?: string;
+      boundaryMode?: string;
+      selectedAgent?: string;
+      validation?: { valid?: boolean; issues?: string[] };
+      learningEventId?: string;
+      learningQueues?: string[];
+      policiesApplied?: string[];
+    };
+    const evidence = await collectLocalEvidence(this.rootDir, { includeModeMaturity: true });
+    const runRelativePath = path.relative(this.rootDir, runDir);
+    const traceRelativePath = path.relative(this.rootDir, tracePath);
+    const rawProofText = [
+      "## Previous Assistant Output",
+      this.lastAssistantOutput,
+      "",
+      formatLocalEvidence(evidence)
+    ].join("\n");
+    const redacted = redactProofText(rawProofText);
+    const [previousAssistantSection, localEvidenceSection] = redacted.text.split(/\n## Local Evidence\n/);
+    const evidenceItems: EvidenceItem[] = [
+      {
+        evidenceId: "ev_last_run",
+        evidenceType: "run",
+        path: runRelativePath,
+        summary: "Last chat-linked run folder selected from the current thread.",
+        claimSupported: "The audit is scoped to the current thread's last assistant run.",
+        confidence: "high"
+      },
+      {
+        evidenceId: "ev_last_trace",
+        evidenceType: "trace",
+        path: traceRelativePath,
+        summary: `Trace reports mode=${trace.mode ?? "unknown"} validation=${trace.validation?.valid === false ? "failed" : "passed"}.`,
+        claimSupported: "The previous answer has runtime trace evidence.",
+        confidence: "high"
+      }
+    ];
+    if (trace.learningEventId) {
+      evidenceItems.push({
+        evidenceId: "ev_last_learning_event",
+        evidenceType: "learning_event",
+        path: path.join("learning", "events", "hot", `${trace.learningEventId}.json`),
+        summary: `LearningEvent linked by trace: ${trace.learningEventId}.`,
+        claimSupported: "The previous answer has a linked LearningEvent.",
+        confidence: "high"
+      });
+    }
+    if (evidence.latestEval) {
+      evidenceItems.push({
+        evidenceId: "ev_latest_eval",
+        evidenceType: "eval",
+        path: evidence.latestEval.path,
+        command: "npm run rax -- eval or regression eval artifact",
+        summary: `Latest eval artifact: passed=${evidence.latestEval.passed ?? "unknown"} failed=${evidence.latestEval.failed ?? "unknown"} passRate=${evidence.latestEval.passRate ?? "unknown"}.`,
+        claimSupported: "Latest eval evidence is available for audit context.",
+        confidence: evidence.latestEval.failed === 0 && evidence.latestEval.criticalFailures === 0 ? "high" : "medium"
+      });
+    }
+
+    const ambiguityWarnings = [
+      ...(evidence.latestRunFolder && evidence.latestRunFolder !== runRelativePath
+        ? [`Global latest run ${evidence.latestRunFolder} differs from current thread last run ${runRelativePath}.`]
+        : []),
+      ...(thread.linkedRuns.at(-1) && thread.linkedRuns.at(-1) !== runId
+        ? [`Thread latest linked run ${thread.linkedRuns.at(-1)} differs from selected run ${runId}.`]
+        : [])
+    ];
+    const proofPacket = createProofPacket({
+      workspace: this.workspace,
+      threadId: thread.threadId,
+      runId,
+      runCreatedAt: runStat.birthtime.toISOString(),
+      mode: trace.mode,
+      boundaryMode: trace.boundaryMode,
+      selectedAgent: trace.selectedAgent,
+      validationStatus: trace.validation?.valid === false ? "failed" : "passed",
+      learningEventId: trace.learningEventId,
+      learningQueues: trace.learningQueues ?? [],
+      policiesApplied: trace.policiesApplied ?? [],
+      evidenceItems,
+      redactions: redacted.redactions,
+      ambiguityWarnings
+    });
+    const auditInput = [
+      "Audit the previous STAX assistant output using local proof.",
+      "",
+      renderProofPacket(proofPacket),
+      "",
+      previousAssistantSection,
+      "",
+      localEvidenceSection ? `## Local Evidence\n${localEvidenceSection}` : "## Local Evidence\n- None."
+    ].join("\n");
+    return this.run(auditInput, "codex_audit");
+  }
+
   private plainEnglishHelpText(): string {
     return [
       "You can talk normally. I understand these plain-English controls:",
@@ -814,6 +1006,8 @@ export class ChatSession {
       "- \"show metrics\"",
       "- \"learn from that\"",
       "- \"audit last answer\"",
+      "- \"I disagree because ...\"",
+      "- \"/compare external <answer>\"",
       "- \"run evals\"",
       "- \"run regression\"",
       "- \"replay last run\"",
@@ -887,6 +1081,7 @@ export class ChatSession {
     this.workspace = this.thread.workspace;
     this.modeOverride = this.thread.mode === "auto" ? undefined : this.thread.mode;
     this.runIds = [...this.thread.linkedRuns];
+    this.lastAssistantOutput = [...this.thread.messages].reverse().find((message) => message.role === "assistant")?.content ?? "";
     return this.thread;
   }
 
@@ -926,6 +1121,9 @@ export class ChatSession {
       "/test-gap <feature>",
       "/policy-drift <change>",
       "/audit-last",
+      "/audit-last --proof",
+      "/disagree <reason>",
+      "/compare external <answer>",
       "/eval",
       "/regression",
       "/replay last|<run-id>",

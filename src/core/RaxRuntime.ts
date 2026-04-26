@@ -64,13 +64,13 @@ export class RaxRuntime {
     const createdAt = new Date().toISOString();
     const startedAt = Date.now();
     const intent = new IntentClassifier().classify(input);
+    const detectedMode = this.modeDetector.detect(input);
+    const effectiveMode = options.mode ?? detectedMode.mode;
     const risk = this.riskClassifier.score(input);
-    const boundary = this.boundaryDecision.decide(risk);
+    const boundary = this.boundaryDecision.decide(risk, { mode: effectiveMode, input });
     const agentSequence: string[] = [];
     const modelCalls: ModelCallTrace[] = [];
     let retries = 0;
-    const detectedMode = this.modeDetector.detect(input);
-    const effectiveMode = options.mode ?? detectedMode.mode;
     const detailLevel =
       options.detailLevel ?? this.detailLevelController.select(effectiveMode, boundary.mode);
     const retrievedMemory = (await new MemoryStore(this.rootDir).search(input)).slice(

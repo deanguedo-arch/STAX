@@ -43,4 +43,10 @@ describe("ModeDetector", () => {
     expect(result.mode).toBe("stax_fitness");
     expect(result.matchedTerms).toEqual(expect.arrayContaining(["bjj", "recovery"]));
   });
+
+  it("detects external answer comparison mode", () => {
+    const result = new ModeDetector().detect("Compare the STAX answer with this ChatGPT answer.");
+
+    expect(result.mode).toBe("model_comparison");
+  });
 });

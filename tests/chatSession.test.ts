@@ -140,6 +140,66 @@ describe("ChatSession", () => {
     expect(audit.output).toContain("## Fake-Complete Flags");
   });
 
+  it("audits the previous assistant output with local proof when requested", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    await session.handleLine("Codex says the runtime behavior changed.");
+    const audit = await session.handleLine("/audit-last --proof");
+
+    expect(audit.output).toContain("## Audit Type");
+    expect(audit.output).toContain("Partial Audit");
+    expect(audit.output).toContain("## Evidence Checked");
+    expect(audit.output).toContain("Trace artifact reference supplied.");
+    expect(audit.output).toContain("## Proof Packet");
+    expect(audit.output).toContain("Workspace: default");
+    expect(audit.output).toContain("Thread: thread_default");
+  });
+
+  it("captures disagreements and compares external answers from chat", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    await session.handleLine("Codex says runtime behavior changed.");
+    const disagreement = await session.handleLine("/disagree This over-refused a defensive governance plan.");
+    const comparison = await session.handleLine("/compare external ChatGPT gave a broader strategy but did not cite local traces.");
+
+    expect(disagreement.output).toContain("Disagreement captured.");
+    expect(disagreement.output).toContain("PairedEvalCandidate: learning/eval_pairs/");
+    expect(disagreement.output).toContain("No correction, eval, memory, training record, policy, schema, or mode was promoted.");
+    expect(comparison.output).toContain("## Evidence Comparison");
+    expect(comparison.output).toContain("Mode: model_comparison");
+    expect(comparison.output).toContain("LearningEvent: learn-");
+  });
+
+  it("redacts secrets from audit-last proof packets", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    await session.handleLine("OPENAI_API_KEY=sk-abcdefghijklmnopqrstuvwxyz123456");
+    const audit = await session.handleLine("/audit-last --proof");
+
+    expect(audit.output).toContain("[REDACTED_OPENAI_KEY]");
+    expect(audit.output).not.toContain("sk-abcdefghijklmnopqrstuvwxyz123456");
+  });
+
+  it("restores the last assistant output for audit-last across chat sessions", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const firstSession = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+    await firstSession.handleLine("Codex says all tests pass but provides no output.");
+
+    const secondSession = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+    const audit = await secondSession.handleLine("/audit-last --proof");
+
+    expect(audit.output).toContain("## Audit Type");
+    expect(audit.output).toContain("## Previous Assistant Output");
+    expect(audit.output).not.toContain("No assistant output to audit yet.");
+  });
+
   it("accepts plain-English control requests for common chat operations", async () => {
     const rootDir = await tempRoot();
     const runtime = await createDefaultRuntime({ rootDir });

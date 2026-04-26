@@ -87,6 +87,16 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
     "trace",
     "queue",
     "promotion"
+  ],
+  model_comparison: [
+    "model comparison",
+    "compare external",
+    "external answer",
+    "chatgpt answer",
+    "stax answer",
+    "which answer is better",
+    "compare answers",
+    "better answer for this project"
   ]
 };
 
@@ -156,7 +166,8 @@ export class ModeDetector {
       intake: 3,
       teaching: 2,
       general_chat: 1,
-      learning_unit: 14
+      learning_unit: 14,
+      model_comparison: 12
     };
 
     const ranked = Object.entries(MODE_TERMS)

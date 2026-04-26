@@ -54,6 +54,9 @@ Trace: <trace path>
 /test-gap <feature>
 /policy-drift <change>
 /audit-last
+/audit-last --proof
+/disagree <reason>
+/compare external <answer>
 /runs
 /exit
 ```
@@ -65,6 +68,9 @@ Trace: <trace path>
 - `/test-gap <feature>` runs Test Gap Audit.
 - `/policy-drift <change>` runs Policy Drift.
 - `/audit-last` sends the previous assistant output through Codex Audit.
+- `/audit-last --proof` audits the previous assistant output with linked run, trace, learning event, policies, and read-only local evidence.
+- `/disagree <reason>` captures a disagreement against the latest chat run, creates a LearningEvent, and writes paired eval candidates. It does not promote anything.
+- `/compare external <answer>` compares the latest STAX answer against an external assistant answer through `model_comparison`.
 - `/learn last` runs Learning Unit against the latest chat run.
 - `/queue` and `/metrics` summarize learning state without opening files.
 - `/eval`, `/regression`, and `/replay last` keep test/replay checks inside chat while still recording command LearningEvents.
@@ -82,6 +88,8 @@ show queue
 show metrics
 learn from that
 audit last answer
+I disagree because ...
+/compare external <answer>
 run evals
 run regression
 replay last run

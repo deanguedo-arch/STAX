@@ -150,7 +150,12 @@ async function runGit(rootDir: string, args: string[], errors: string[]): Promis
     if (stderr.trim()) errors.push(`git ${args.join(" ")} stderr: ${stderr.trim()}`);
     return stdout;
   } catch (error) {
-    errors.push(`git ${args.join(" ")} failed: ${error instanceof Error ? error.message : String(error)}`);
+    const message = error instanceof Error ? error.message : String(error);
+    errors.push(
+      message.includes("not a git repository")
+        ? `git ${args.join(" ")} failed: not a git repository`
+        : `git ${args.join(" ")} failed: ${message.split("\n")[0]}`
+    );
     return "";
   }
 }

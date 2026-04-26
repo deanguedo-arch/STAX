@@ -24,7 +24,8 @@ export const RaxModeSchema = z.enum([
   "prompt_factory",
   "test_gap_audit",
   "policy_drift",
-  "learning_unit"
+  "learning_unit",
+  "model_comparison"
 ]);
 
 export const DetailLevelSchema = z.enum([

@@ -86,3 +86,10 @@ learning/lab/candidates/memory/**
 !learning/lab/candidates/memory/.gitkeep
 chats/**
 !chats/.gitkeep
+evidence/**
+!evidence/.gitkeep
+!evidence/collections/
+evidence/collections/**
+!evidence/collections/.gitkeep
+workspaces/**
+!workspaces/.gitkeep

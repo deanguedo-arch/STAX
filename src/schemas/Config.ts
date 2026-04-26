@@ -16,7 +16,8 @@ export type RaxMode =
   | "prompt_factory"
   | "test_gap_audit"
   | "policy_drift"
-  | "learning_unit";
+  | "learning_unit"
+  | "model_comparison";
 
 export type Mode = RaxMode;
 

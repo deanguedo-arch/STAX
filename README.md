@@ -61,6 +61,9 @@ Useful slash commands:
 /learn last
 /lab report
 /lab queue
+/audit-last --proof
+/disagree <reason>
+/compare external <answer>
 /eval
 /replay last
 /clear
@@ -75,11 +78,26 @@ what just happened?
 show status
 learn from that
 audit last answer
+I disagree because ...
 run evals
 unleash the sandbox
 show sandbox report
 reset mode to auto
 ```
+
+## Local Proof Controls
+
+STAX is meant to beat normal chat inside local projects by using proof surfaces:
+
+```bash
+npm run rax -- evidence collect --workspace current
+npm run rax -- evidence list
+npm run rax -- disagree --reason "This over-refused a defensive governance audit."
+npm run rax -- workspace create canvas-helper --repo ../canvas-helper
+npm run rax -- train quality --file training.jsonl
+```
+
+`/audit-last --proof`, `/disagree`, and `/compare external` are the chat-first versions of those controls. They create evidence, LearningEvents, and candidate eval pressure only; they do not approve, promote, merge, train, or enable tools.
 
 ## Learning Lab Workers
 

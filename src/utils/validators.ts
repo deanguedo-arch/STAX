@@ -6,8 +6,10 @@ import { PROJECT_BRAIN_REQUIRED_HEADINGS } from "../schemas/ProjectBrainOutput.j
 import { PROMPT_FACTORY_REQUIRED_HEADINGS } from "../schemas/PromptFactoryOutput.js";
 import { TEST_GAP_AUDIT_REQUIRED_HEADINGS } from "../schemas/TestGapAuditOutput.js";
 import { LEARNING_UNIT_REQUIRED_HEADINGS } from "../schemas/LearningUnitOutput.js";
+import { MODEL_COMPARISON_REQUIRED_HEADINGS } from "../schemas/ModelComparisonOutput.js";
 import { CodexAuditValidator } from "../validators/CodexAuditValidator.js";
 import { LearningUnitValidator } from "../validators/LearningUnitValidator.js";
+import { ModelComparisonValidator } from "../validators/ModelComparisonValidator.js";
 import { PlanningValidator } from "../validators/PlanningValidator.js";
 import { PolicyDriftValidator } from "../validators/PolicyDriftValidator.js";
 import { ProjectBrainValidator } from "../validators/ProjectBrainValidator.js";
@@ -54,7 +56,8 @@ const requiredHeadings: Record<Mode, string[]> = {
   prompt_factory: [...PROMPT_FACTORY_REQUIRED_HEADINGS],
   test_gap_audit: [...TEST_GAP_AUDIT_REQUIRED_HEADINGS],
   policy_drift: [...POLICY_DRIFT_REQUIRED_HEADINGS],
-  learning_unit: [...LEARNING_UNIT_REQUIRED_HEADINGS]
+  learning_unit: [...LEARNING_UNIT_REQUIRED_HEADINGS],
+  model_comparison: [...MODEL_COMPARISON_REQUIRED_HEADINGS]
 };
 
 const interpretationPhrases = [
@@ -128,5 +131,6 @@ function validateGovernanceMode(mode: Mode, output: string): ValidationResult {
   if (mode === "prompt_factory") return new PromptFactoryValidator().validate(output);
   if (mode === "test_gap_audit") return new TestGapAuditValidator().validate(output);
   if (mode === "policy_drift") return new PolicyDriftValidator().validate(output);
+  if (mode === "model_comparison") return new ModelComparisonValidator().validate(output);
   return { valid: true, issues: [] };
 }

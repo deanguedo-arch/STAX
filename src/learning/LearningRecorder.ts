@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { RunLoggerPayload } from "../core/RunLogger.js";
+import { SelfAudit } from "../audit/SelfAudit.js";
 import type { RunTrace } from "../schemas/RunLog.js";
 import type { LearningEvent, LearningEventStatus, LearningFailureType } from "./LearningEvent.js";
 import { LearningEventSchema } from "./LearningEvent.js";
@@ -32,7 +33,11 @@ export class LearningRecorder {
     const relativeRunDir = path.relative(this.rootDir, runDir);
     const status = this.statusFor(payload);
     const generic = new GenericOutputDetector().analyze(payload.trace.mode, payload.final);
-    const failureTypes = this.failureTypesFor(status, payload, generic.failureTypes);
+    const selfAudit = new SelfAudit().audit({ mode: payload.trace.mode, output: payload.final });
+    const failureTypes = this.failureTypesFor(status, payload, [
+      ...generic.failureTypes,
+      ...selfAudit.failureTypes
+    ]);
     const hasFailure = failureTypes.length > 0;
     const eventId = this.eventIdForRun(payload.runId);
     const event: LearningEvent = {
@@ -67,13 +72,16 @@ export class LearningRecorder {
       },
       qualitySignals: {
         ...generic.qualitySignals,
+        evidenceScore: Math.min(generic.qualitySignals.evidenceScore, selfAudit.score.evidence),
         unsupportedClaims: payload.criticReview?.unsupportedClaims ?? generic.qualitySignals.unsupportedClaims
       },
       failureClassification: {
         hasFailure,
         failureTypes,
         severity: this.severityFor(failureTypes, payload.criticReview?.severity),
-        explanation: hasFailure ? generic.explanation : "Run completed without learning failure."
+        explanation: hasFailure
+          ? [generic.explanation, ...selfAudit.issues].filter(Boolean).join(" ")
+          : "Run completed without learning failure."
       },
       proposedQueues: [],
       approvalState: "trace_only",
@@ -86,6 +94,7 @@ export class LearningRecorder {
     };
     event.proposedQueues = new LearningClassifier().classify(event);
     event.approvalState = event.proposedQueues.length === 1 && event.proposedQueues[0] === "trace_only" ? "trace_only" : "pending_review";
+    await fs.writeFile(path.join(runDir, "self_audit.json"), JSON.stringify(selfAudit, null, 2), "utf8");
     return this.persist(event, runDir, payload.trace);
   }
 

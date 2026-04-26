@@ -67,12 +67,17 @@ Trace: <trace path>
 /test-gap <feature>
 /policy-drift <change>
 /audit-last
+/audit-last --proof
+/disagree <reason>
+/compare external <answer>
 /exit
 ```
 
-Approvals and promotions remain CLI-only in this version. Chat may inspect, evaluate, replay, queue, and propose; it does not promote durable system state.
+Approvals and promotions remain CLI-only in this version. Chat may inspect, evaluate, replay, queue, audit with local proof, and propose; it does not promote durable system state.
 
 `/compact` creates a pending thread summary candidate only. It is not approved memory and is not retrieved as durable memory unless reviewed and promoted outside chat.
+
+`/disagree <reason>` turns your judgment into a command LearningEvent plus paired eval candidates. `/compare external <answer>` routes the latest STAX answer and an external answer through `model_comparison` so STAX can decide what is better for the local project using proof instead of vibe.
 
 Learning Lab chat commands expose lab state without promoting candidates. `/lab report`, `/lab queue`, `/lab redteam summary`, `/lab failures`, `/lab patches`, and `/lab handoffs` are read-only. `/lab go cautious 1` may generate and run a cautious lab cycle, but chat cannot approve, promote, merge, or run balanced/aggressive profiles.
 
@@ -87,6 +92,7 @@ show queue
 show metrics
 learn from that
 audit last answer
+I disagree because ...
 run evals
 run regression
 replay last run

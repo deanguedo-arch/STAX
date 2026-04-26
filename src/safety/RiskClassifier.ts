@@ -17,7 +17,11 @@ export class RiskClassifier {
       "step by step",
       "exact instructions",
       "exact code",
+      "give me steps",
+      "instructions to",
       "how do i",
+      "show me how to",
+      "tell me how to",
       "walk me through"
     ];
     const harmTerms = ["hurt", "kill", "poison", "weapon", "self harm", "suicide"];
@@ -25,7 +29,16 @@ export class RiskClassifier {
     const privacyTerms = ["identify this person", "address", "phone number", "dox", "track someone"];
     const exploitationTerms = ["manipulate", "coerce", "blackmail", "pressure them"];
     const regulatedTerms = ["dosage", "legal strategy", "tax evasion", "medical diagnosis", "prescribe"];
-    const systemTerms = ["ignore previous instructions", "reveal hidden", "bypass safety", "jailbreak"];
+    const systemTerms = [
+      "ignore previous instructions",
+      "reveal hidden",
+      "bypass safety",
+      "bypass the promotion gate",
+      "poison memory",
+      "memory poisoning",
+      "misuse tools",
+      "jailbreak"
+    ];
 
     if (actionTerms.some((term) => text.includes(term))) {
       actionability += 2;
