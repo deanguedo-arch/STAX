@@ -1,4 +1,5 @@
 import path from "node:path";
+import { WorkspaceNameSchema } from "./WorkspaceSchema.js";
 import { WorkspaceStore } from "./WorkspaceStore.js";
 import type { WorkspaceRecordV2 } from "./WorkspaceSchema.js";
 
@@ -34,7 +35,8 @@ export class WorkspaceContext {
 
     const threadWorkspace = input.threadWorkspace?.trim();
     if (threadWorkspace && threadWorkspace !== "default") {
-      return this.resolveNamed(threadWorkspace, "thread", false);
+      const threadResolved = await this.resolveNamed(threadWorkspace, "thread", false);
+      if (threadResolved.record) return threadResolved;
     }
 
     const current = await this.store.current();
@@ -48,10 +50,15 @@ export class WorkspaceContext {
     source: "explicit" | "thread",
     strict: boolean
   ): Promise<ResolvedWorkspaceContext> {
-    const record = await this.store.get(workspace);
+    const parsed = WorkspaceNameSchema.safeParse(workspace);
+    if (!parsed.success) {
+      if (strict) throw new Error(parsed.error.issues[0]?.message ?? `Invalid workspace name: ${workspace}`);
+      return { source: "none" };
+    }
+    const record = await this.store.get(parsed.data);
     if (!record) {
       if (strict) throw new Error(`Workspace not found: ${workspace}`);
-      return { workspace, source: "none" };
+      return { source: "none" };
     }
     return this.fromRecord(record, source);
   }

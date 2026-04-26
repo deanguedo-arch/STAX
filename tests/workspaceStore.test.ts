@@ -46,6 +46,25 @@ describe("WorkspaceStore", () => {
     const store = new WorkspaceStore(rootDir);
 
     await expect(store.create({ workspace: "bad/name", repoPath: "." })).rejects.toThrow(/Workspace names/);
+    await expect(store.create({ workspace: ".", repoPath: "." })).rejects.toThrow(/Workspace names/);
+    await expect(store.create({ workspace: "..", repoPath: "." })).rejects.toThrow(/Workspace names/);
+    await expect(store.create({ workspace: ".hidden", repoPath: "." })).rejects.toThrow(/Workspace names/);
+    await expect(store.create({ workspace: "foo.bar", repoPath: "." })).rejects.toThrow(/Workspace names/);
+    await expect(store.create({ workspace: "foo\\bar", repoPath: "." })).rejects.toThrow(/Workspace names/);
+    await expect(store.create({ workspace: "foo bar", repoPath: "." })).rejects.toThrow(/Workspace names/);
     await expect(store.create({ workspace: "missing", repoPath: "nope" })).rejects.toThrow(/does not exist/);
+  });
+
+  it("falls back to current workspace instead of tracing stale thread workspace", async () => {
+    const rootDir = await tempRoot();
+    await fs.mkdir(path.join(rootDir, "linked"), { recursive: true });
+    const store = new WorkspaceStore(rootDir);
+    await store.create({ workspace: "demo", repoPath: "linked", use: true });
+
+    const context = await new WorkspaceContext(rootDir).resolve({ threadWorkspace: "missing", requireWorkspace: true });
+
+    expect(context.workspace).toBe("demo");
+    expect(context.source).toBe("current");
+    expect(context.linkedRepoPath).toBe(path.join(rootDir, "linked"));
   });
 });

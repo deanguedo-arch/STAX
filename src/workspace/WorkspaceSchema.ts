@@ -3,7 +3,7 @@ import { z } from "zod";
 export const WorkspaceNameSchema = z
   .string()
   .min(1)
-  .regex(/^[A-Za-z0-9._-]+$/, "Workspace names may only contain letters, numbers, dots, underscores, and hyphens.");
+  .regex(/^[A-Za-z0-9_-]+$/, "Workspace names may only contain letters, numbers, underscores, and hyphens.");
 
 export const WorkspaceSchema = z.object({
   workspace: WorkspaceNameSchema,

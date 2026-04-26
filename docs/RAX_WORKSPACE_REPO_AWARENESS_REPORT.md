@@ -48,6 +48,23 @@ It also adds first-class command evidence artifacts for eval-style verification 
 - `src/schemas/RunLog.ts`
 - `src/schemas/zodSchemas.ts`
 - `tests/behavior100Proof.test.ts`
+- `tests/redteamEval.test.ts`
+
+## External PR Audit Repair
+
+After the branch was pushed, the external STAX ChatGPT audit inspected PR #1 and confirmed it could see head commit `4b15424b569220d43e4a801e03312efcb5b146cd`, 2 commits, 27 changed files, 1878 additions, and 81 deletions.
+
+It found two real blockers:
+
+- `WorkspaceNameSchema` allowed dots, including `.` and `..`, which could create path-dangerous workspace names.
+- `WorkspaceContext.resolve()` could silently propagate a stale chat-thread workspace name instead of using a valid workspace record.
+
+Fixes applied after audit:
+
+- Workspace names now allow only letters, numbers, underscores, and hyphens.
+- Tests now reject `.`, `..`, `.hidden`, `foo.bar`, slash, backslash, and space-containing workspace names.
+- Stale thread workspace resolution now falls back to the active registry workspace when one exists, instead of tracing a missing workspace string.
+- A redteam eval test timeout was raised to 10 seconds because the full eval suite can exceed Vitest's 5 second default while still passing functionally.
 
 ## Repo Summary Example
 
@@ -114,7 +131,7 @@ Observed output includes relative path, line number, snippet, and match reason:
 
 ```json
 {
-  "runId": "run-2026-04-26T13-17-27-248Z-tnlp2s",
+  "runId": "run-2026-04-26T13-33-43-878Z-fqxmrf",
   "workspace": "demo",
   "linkedRepoPath": "<repo-root>"
 }
@@ -124,7 +141,7 @@ Observed output includes relative path, line number, snippet, and match reason:
 
 ```json
 {
-  "runId": "run-2026-04-26T13-17-27-248Z-tnlp2s",
+  "runId": "run-2026-04-26T13-33-43-878Z-fqxmrf",
   "workspace": "demo"
 }
 ```
@@ -133,11 +150,11 @@ Observed output includes relative path, line number, snippet, and match reason:
 
 ```json
 {
-  "commandEvidenceId": "cmd-ev-20260426131648865-4wnfyu",
+  "commandEvidenceId": "cmd-ev-20260426133348161-q8amf0",
   "command": "npm run rax -- eval --regression",
   "exitCode": 0,
-  "stdoutPath": "evidence/commands/2026-04-26/cmd-ev-20260426131648865-4wnfyu.stdout.txt",
-  "stderrPath": "evidence/commands/2026-04-26/cmd-ev-20260426131648865-4wnfyu.stderr.txt",
+  "stdoutPath": "evidence/commands/2026-04-26/cmd-ev-20260426133348161-q8amf0.stdout.txt",
+  "stderrPath": "evidence/commands/2026-04-26/cmd-ev-20260426133348161-q8amf0.stderr.txt",
   "summary": "regression evals: 28/28 passed, failed=0, criticalFailures=0.",
   "hash": "c3abfba7a064f14218fa0934be34afcc3785dfd972c45fea84434bf56842c4db"
 }
@@ -146,7 +163,7 @@ Observed output includes relative path, line number, snippet, and match reason:
 ## Verified Audit Citation Example
 
 ```txt
-Regression evals passed. Evidence: cmd-ev-20260426131648865-4wnfyu.
+Regression evals passed. Evidence: cmd-ev-20260426133348161-q8amf0.
 ```
 
 This supports the eval result claim only. It does not automatically prove feature completeness or linked repo behavior.
@@ -164,7 +181,7 @@ Result: pass
 npm test
 Result: pass
 Test Files: 41 passed (41)
-Tests: 145 passed (145)
+Tests: 146 passed (146)
 ```
 
 ```txt
@@ -214,7 +231,7 @@ Returned source/test snippets from linked repo and ignored unsafe folders.
 ```txt
 npm run rax -- evidence collect --workspace current
 Result: pass
-Wrote evidence/collections/evidence_20260426131713_jjpo.json.
+Wrote evidence/collections/evidence_20260426133414_uoj6.json.
 Included workspace docs, repo_summary evidence, trace/run evidence, eval evidence, and command_output evidence.
 ```
 
@@ -228,35 +245,35 @@ Returned the same read-only repo summary through the chat alias.
 npm run rax -- chat --once "/state"
 Result: pass
 Included active workspace context demo and repo-summary context.
-Run: run-2026-04-26T13-17-27-248Z-tnlp2s.
+Run: run-2026-04-26T13-33-43-878Z-fqxmrf.
 ```
 
 ```txt
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
 Result: pass
 Preserved explicit stax_fitness signal extraction behavior.
-Run: run-2026-04-26T13-17-13-184Z-3osoe2.
+Run: run-2026-04-26T13-31-01-930Z-379v2y.
 ```
 
 ```txt
 npm run rax -- eval
 Result: pass
 total=16 passed=16 failed=0 passRate=1 criticalFailures=0
-Command evidence: cmd-ev-20260426131648239-zre31t
+Command evidence: cmd-ev-20260426133346535-ov7ese
 ```
 
 ```txt
 npm run rax -- eval --regression
 Result: pass
 total=28 passed=28 failed=0 passRate=1 criticalFailures=0
-Command evidence: cmd-ev-20260426131648865-4wnfyu
+Command evidence: cmd-ev-20260426133348161-q8amf0
 ```
 
 ```txt
 npm run rax -- eval --redteam
 Result: pass
 total=9 passed=9 failed=0 passRate=1 criticalFailures=0
-Command evidence: cmd-ev-20260426131648039-m1qtfi
+Command evidence: cmd-ev-20260426133345626-apapd1
 ```
 
 ## Test Coverage Added
