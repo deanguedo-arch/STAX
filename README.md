@@ -34,6 +34,35 @@ On PowerShell:
 Copy-Item .env.example .env
 ```
 
+## Chat-First Use
+
+For daily use, start STAX chat:
+
+```bash
+npm run chat
+```
+
+One-shot chat for tests or quick prompts:
+
+```bash
+npm run rax -- chat --once "Design the approved learning loop."
+```
+
+Normal chat messages still create a run, trace, LearningEvent, queue/proposal when needed, and a linked thread message under `chats/threads/`.
+
+Useful slash commands:
+
+```txt
+/mode planning
+/last
+/queue
+/metrics
+/learn last
+/eval
+/replay last
+/exit
+```
+
 ## Run With Mock Provider
 
 ```bash

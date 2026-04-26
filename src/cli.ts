@@ -387,11 +387,11 @@ async function chatCommand(args: ParsedArgs): Promise<void> {
     return;
   }
 
-  logInfo("RAX chat. Type /help for commands, /quit to exit.");
+  logInfo("STAX chat. Type /help for commands, /exit to exit.");
   const rl = createInterface({ input, output });
   try {
     while (true) {
-      const line = await rl.question("rax> ");
+      const line = await rl.question("STAX> ");
       const result = await session.handleLine(line);
       if (result.output) logInfo(result.output);
       if (result.shouldExit) break;
@@ -432,6 +432,9 @@ async function traceCommand(args: ParsedArgs): Promise<void> {
   if (!runId) throw new Error("Usage: rax trace <run-id>");
   const runsDir = path.join(process.cwd(), "runs");
   for (const date of await fs.readdir(runsDir)) {
+    const dateDir = path.join(runsDir, date);
+    const dateStat = await fs.stat(dateDir);
+    if (!dateStat.isDirectory()) continue;
     const candidate = path.join(runsDir, date, runId, "trace.json");
     try {
       logInfo(await fs.readFile(candidate, "utf8"));
@@ -621,6 +624,9 @@ async function latestRunId(rootDir: string): Promise<string> {
 async function findRunDir(rootDir: string, runId: string): Promise<string> {
   const runsDir = path.join(rootDir, "runs");
   for (const date of (await fs.readdir(runsDir)).sort().reverse()) {
+    const dateDir = path.join(runsDir, date);
+    const dateStat = await fs.stat(dateDir);
+    if (!dateStat.isDirectory()) continue;
     const candidate = path.join(runsDir, date, runId);
     try {
       const stat = await fs.stat(candidate);
@@ -677,7 +683,10 @@ function help(): void {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
-  if (args.command === "run") {
+  const executable = path.basename(process.argv[1] ?? "");
+  if (args.command === "run" && process.argv.slice(2).length === 0 && executable.includes("stax")) {
+    await chatCommand({ command: "chat", positional: [], flags: {} });
+  } else if (args.command === "run") {
     await runCommand(args);
   } else if (args.command === "batch") {
     await batchCommand(args);

@@ -39,3 +39,5 @@ training/exports/**
 !training/exports/.gitkeep
 learning/**
 !learning/.gitkeep
+chats/**
+!chats/.gitkeep

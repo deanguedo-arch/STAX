@@ -1,10 +1,11 @@
 # Chat CLI
 
-`rax chat` is a terminal chat shell around the existing governed runtime. It does not bypass policy compilation, risk checks, schema validation, critic gates, run logging, or approved-memory rules.
+`rax chat` is the chat-first terminal shell around the existing governed runtime. It does not bypass policy compilation, risk checks, schema validation, critic gates, run logging, LearningEvent recording, or approved-memory rules.
 
 ## Start Interactive Chat
 
 ```bash
+npm run chat
 npm run rax -- chat
 ```
 
@@ -14,12 +15,32 @@ npm run rax -- chat
 npm run rax -- chat --once "what are we doing next?"
 ```
 
+Every normal chat response prints the answer plus:
+
+```txt
+Run: <run-id>
+Mode: <mode>
+LearningEvent: <learning-event-id>
+Queues: <learning queues>
+Trace: <trace path>
+```
+
 ## Commands
 
 ```txt
 /help
 /mode auto|<mode>
 /project <name>
+/last
+/show last|<run-id>
+/queue
+/metrics
+/learn last
+/eval
+/regression
+/replay last|<run-id>
+/thread
+/new [title]
 /memory search <query>
 /remember <fact>
 /state
@@ -28,7 +49,7 @@ npm run rax -- chat --once "what are we doing next?"
 /policy-drift <change>
 /audit-last
 /runs
-/quit
+/exit
 ```
 
 ## Control Surface Commands
@@ -38,6 +59,19 @@ npm run rax -- chat --once "what are we doing next?"
 - `/test-gap <feature>` runs Test Gap Audit.
 - `/policy-drift <change>` runs Policy Drift.
 - `/audit-last` sends the previous assistant output through Codex Audit.
+- `/learn last` runs Learning Unit against the latest chat run.
+- `/queue` and `/metrics` summarize learning state without opening files.
+- `/eval`, `/regression`, and `/replay last` keep test/replay checks inside chat while still recording command LearningEvents.
+
+## Threads
+
+Chat threads are stored under:
+
+```txt
+chats/threads/<thread-id>.json
+```
+
+Threads store messages, linked run IDs, and linked LearningEvent IDs. `/new` starts a fresh thread; `/thread` shows the current thread state.
 
 ## Memory Rule
 

@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { ChatSession } from "../src/chat/ChatSession.js";
+import { ThreadStore } from "../src/chat/ThreadStore.js";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
 import { MemoryStore } from "../src/memory/MemoryStore.js";
 
@@ -22,6 +23,38 @@ describe("ChatSession", () => {
     expect(result.output).toContain("## Project State");
     expect(result.output).toContain("## Proven Working");
     expect(result.output).toContain("Run: run-");
+    expect(result.output).toContain("Mode: project_brain");
+    expect(result.output).toContain("LearningEvent: learn-");
+    expect(result.output).toContain("Trace: runs/");
+
+    const thread = await new ThreadStore(rootDir).read("thread_default");
+    expect(thread?.messages.map((message) => message.role)).toEqual(["user", "assistant"]);
+    expect(thread?.linkedRuns).toHaveLength(1);
+    expect(thread?.linkedLearningEvents[0]).toContain("learn-");
+  });
+
+  it("creates threads and supports chat-first slash aliases", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const newThread = await session.handleLine("/new Project Brain");
+    const mode = await session.handleLine("/mode planning");
+    const answer = await session.handleLine("Design Project Brain mode.");
+    const last = await session.handleLine("/last");
+    const queue = await session.handleLine("/queue");
+    const metrics = await session.handleLine("/metrics");
+    const learn = await session.handleLine("/learn last");
+    const thread = await session.handleLine("/thread");
+
+    expect(newThread.output).toContain("new thread: thread_");
+    expect(mode.output).toBe("mode: planning");
+    expect(answer.output).toContain("Run: run-");
+    expect(last.output).toContain("LearningEvent: learn-");
+    expect(queue.output).toMatch(/No learning queue items|queueItemId|\[/);
+    expect(metrics.output).toContain("learningEventsCreated");
+    expect(learn.output).toContain("## Candidate Queues");
+    expect(thread.output).toContain("Messages:");
   });
 
   it("creates pending memory without making it retrievable", async () => {

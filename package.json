@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "bin": {
-    "rax": "./dist/src/cli.js"
+    "rax": "./dist/src/cli.js",
+    "stax": "./dist/src/cli.js"
   },
   "scripts": {
     "dev": "tsx src/cli.ts",
     "rax": "tsx src/cli.ts",
+    "chat": "tsx src/cli.ts chat",
     "run": "tsx src/cli.ts run",
     "test": "vitest run",
     "test:watch": "vitest",

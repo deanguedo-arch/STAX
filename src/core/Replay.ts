@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { RaxConfig } from "../schemas/Config.js";
+import type { RaxConfig, RaxMode } from "../schemas/Config.js";
 import { createDefaultRuntime } from "./RaxRuntime.js";
 
 export type ReplayInput = {
@@ -27,13 +27,14 @@ export type ReplayResult = {
 
 export async function findRunDate(rootDir: string, runId: string): Promise<string> {
   const runsDir = path.join(rootDir, "runs");
-  const dates = await fs.readdir(runsDir);
+  const dates = await fs.readdir(runsDir, { withFileTypes: true });
   for (const date of dates) {
-    const candidate = path.join(runsDir, date, runId);
+    if (!date.isDirectory()) continue;
+    const candidate = path.join(runsDir, date.name, runId);
     try {
       const stat = await fs.stat(candidate);
       if (stat.isDirectory()) {
-        return date;
+        return date.name;
       }
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -63,10 +64,12 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
     fs.readFile(configPath, "utf8")
   ]);
   const config = JSON.parse(rawConfig) as RaxConfig;
-  const runtime = await createDefaultRuntime({ rootDir, config });
-  const replayed = await runtime.run(originalInput);
-  const outputExact = originalOutput === replayed.output;
   const originalTrace = await readTrace(runDir);
+  const runtime = await createDefaultRuntime({ rootDir, config });
+  const replayed = await runtime.run(originalInput, [], {
+    mode: typeof originalTrace.mode === "string" ? (originalTrace.mode as RaxMode) : undefined
+  });
+  const outputExact = originalOutput === replayed.output;
   const replayTrace = await readTrace(path.join(rootDir, "runs", replayed.createdAt.slice(0, 10), replayed.runId));
   const traceDiffs = compareReplayTrace(originalTrace, replayTrace);
   const traceExact = traceDiffs.length === 0;

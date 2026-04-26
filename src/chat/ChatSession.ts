@@ -1,12 +1,16 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { runEvals } from "../core/EvalRunner.js";
+import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
 import { collectLocalEvidence, formatLocalEvidence } from "../evidence/LocalEvidenceCollector.js";
 import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
 import { LearningQueue } from "../learning/LearningQueue.js";
+import { LearningRecorder } from "../learning/LearningRecorder.js";
 import { MemoryStore } from "../memory/MemoryStore.js";
 import type { RaxMode } from "../schemas/Config.js";
+import { ThreadStore, type ChatThread } from "./ThreadStore.js";
 
 export type ChatTurnResult = {
   output: string;
@@ -33,18 +37,24 @@ const VALID_MODES: RaxMode[] = [
 export class ChatSession {
   private context: string[] = [];
   private modeOverride: RaxMode | undefined;
-  private workspace = "STAX";
+  private workspace = "default";
   private runIds: string[] = [];
   private lastAssistantOutput = "";
+  private threadId = "thread_default";
+  private thread?: ChatThread;
+  private threadStore: ThreadStore;
 
   constructor(
     private runtime: RaxRuntime,
     private memoryStore = new MemoryStore(),
     private rootDir = process.cwd()
-  ) {}
+  ) {
+    this.threadStore = new ThreadStore(rootDir);
+  }
 
   async handleLine(line: string): Promise<ChatTurnResult> {
     const input = line.trim();
+    await this.ensureThread();
     if (!input) return { output: "" };
     if (input.startsWith("/")) {
       return this.handleCommand(input);
@@ -72,20 +82,49 @@ export class ChatSession {
       }
       if (arg === "auto") {
         this.modeOverride = undefined;
+        this.thread = await this.threadStore.updateMode(this.threadId, "auto");
         return { output: "mode: auto" };
       }
       if (!VALID_MODES.includes(arg as RaxMode)) {
         return { output: `Unknown mode: ${arg}\nValid modes: ${VALID_MODES.join(", ")}` };
       }
       this.modeOverride = arg as RaxMode;
+      this.thread = await this.threadStore.updateMode(this.threadId, this.modeOverride);
       return { output: `mode: ${this.modeOverride}` };
     }
 
     if (command === "/project") {
       if (!arg) return { output: `project: ${this.workspace}` };
       this.workspace = arg;
+      this.thread = await this.threadStore.updateWorkspace(this.threadId, this.workspace);
       this.context.push(`Workspace: ${this.workspace}`);
       return { output: `project: ${this.workspace}` };
+    }
+
+    if (command === "/thread") {
+      const thread = await this.ensureThread();
+      return {
+        output: [
+          `Thread: ${thread.threadId}`,
+          `Title: ${thread.title}`,
+          `Workspace: ${thread.workspace}`,
+          `Mode: ${thread.mode}`,
+          `Messages: ${thread.messages.length}`,
+          `LinkedRuns: ${thread.linkedRuns.length}`,
+          `LinkedLearningEvents: ${thread.linkedLearningEvents.length}`
+        ].join("\n")
+      };
+    }
+
+    if (command === "/new") {
+      const title = arg || "New Chat";
+      this.thread = await this.threadStore.create({ title, workspace: this.workspace, mode: "auto" });
+      this.threadId = this.thread.threadId;
+      this.modeOverride = undefined;
+      this.context = [];
+      this.runIds = [];
+      this.lastAssistantOutput = "";
+      return { output: `new thread: ${this.thread.threadId}` };
     }
 
     if (command === "/runs") {
@@ -94,24 +133,39 @@ export class ChatSession {
       };
     }
 
+    if (command === "/last") {
+      const runId = this.runIds.at(-1);
+      if (!runId) return { output: "No chat run is available to show." };
+      return { output: await this.showRun(runId) };
+    }
+
     if (command === "/show") {
       const runId = arg && arg !== "last" ? arg : this.runIds.at(-1);
       if (!runId) return { output: "No chat run is available to show." };
       return { output: await this.showRun(runId) };
     }
 
+    if (command === "/queue") {
+      return { output: await this.queueSummary() };
+    }
+
+    if (command === "/metrics") {
+      return { output: await this.metricsSummary() };
+    }
+
     if (command === "/learn") {
       const [learnAction = "", learnArg = ""] = arg.split(/\s+/);
+      if (arg === "last") {
+        const runId = this.runIds.at(-1);
+        if (!runId) return { output: "No chat run is available to analyze." };
+        const output = await this.run(`Analyze run ${runId} and propose how STAX should improve from it.`, "learning_unit");
+        return { output };
+      }
       if (learnAction === "queue") {
-        const items = await new LearningQueue(this.rootDir).list();
-        return {
-          output: items.length
-            ? items.map((item) => `- ${item.queueItemId} [${item.queueType}] ${item.reason}`).join("\n")
-            : "- No learning queue items."
-        };
+        return { output: await this.queueSummary() };
       }
       if (learnAction === "metrics") {
-        return { output: JSON.stringify(await new LearningMetricsStore(this.rootDir).read(), null, 2) };
+        return { output: await this.metricsSummary() };
       }
       if (learnAction === "inspect" && learnArg) {
         return { output: await this.inspectLearningEvent(learnArg) };
@@ -123,7 +177,64 @@ export class ChatSession {
         const proposal = await new LearningProposalGenerator(this.rootDir).generate(event);
         return { output: proposal ? JSON.stringify(proposal, null, 2) : "No proposal needed for trace-only event." };
       }
-      return { output: "Usage: /learn queue | metrics | inspect <event-id> | propose last" };
+      return { output: "Usage: /learn last | queue | metrics | inspect <event-id> | propose last" };
+    }
+
+    if (command === "/eval" || command === "/regression") {
+      const folder = command === "/regression" ? "regression" : "cases";
+      const result = await runEvals({ rootDir: this.rootDir, folder });
+      await new LearningRecorder(this.rootDir).recordCommand({
+        commandName: command === "/regression" ? "chat regression" : "chat eval",
+        argsSummary: command,
+        success: result.failed === 0 && result.criticalFailures === 0,
+        outputSummary: JSON.stringify(result),
+        exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1
+      });
+      return {
+        output: [
+          `${command === "/regression" ? "Regression" : "Eval"}: ${result.passed}/${result.total}`,
+          `passRate: ${result.passRate}`,
+          `criticalFailures: ${result.criticalFailures}`
+        ].join("\n")
+      };
+    }
+
+    if (command === "/replay") {
+      const runId = arg === "last" || !arg ? this.runIds.at(-1) : arg;
+      if (!runId) return { output: "No chat run is available to replay." };
+      try {
+        const result = await replayRun({ rootDir: this.rootDir, runId });
+        await new LearningRecorder(this.rootDir).recordCommand({
+          commandName: "chat replay",
+          argsSummary: `/replay ${runId}`,
+          success: result.exact,
+          outputSummary: JSON.stringify(result),
+          exitStatus: result.exact ? 0 : 1,
+          artifactPaths: [result.replayRunId],
+          runId
+        });
+        return {
+          output: [
+            `Replay: ${result.exact ? "exact" : "drift detected"}`,
+            `OriginalRun: ${result.originalRunId}`,
+            `ReplayRun: ${result.replayRunId}`,
+            `OutputExact: ${result.outputExact}`,
+            `TraceExact: ${result.traceExact}`,
+            `Reason: ${result.reason ?? "none"}`
+          ].join("\n")
+        };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        await new LearningRecorder(this.rootDir).recordCommand({
+          commandName: "chat replay",
+          argsSummary: `/replay ${runId}`,
+          success: false,
+          outputSummary: message,
+          exitStatus: 1,
+          runId
+        });
+        return { output: `Replay failed: ${message}` };
+      }
     }
 
     if (command === "/audit-last") {
@@ -201,13 +312,42 @@ export class ChatSession {
   }
 
   private async run(input: string, mode?: RaxMode): Promise<string> {
+    await this.ensureThread();
     const result = await this.runtime.run(input, [`Workspace: ${this.workspace}`, ...this.context], { mode });
+    const runDir = await this.findRunDir(result.runId);
+    const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
+      learningEventId?: string;
+      learningQueues?: string[];
+      mode?: string;
+      validation?: { valid?: boolean };
+    };
     this.runIds.push(result.runId);
     this.lastAssistantOutput = result.output;
     this.context.push(`User: ${input}`);
     this.context.push(`RAX: ${result.output}`);
     this.context = this.context.slice(-12);
-    return [result.output, "", `Run: ${result.runId}`].join("\n");
+    const learningEventId = trace.learningEventId;
+    await this.threadStore.appendMessage(this.threadId, {
+      role: "user",
+      content: input,
+      runId: result.runId,
+      learningEventId
+    });
+    this.thread = await this.threadStore.appendMessage(this.threadId, {
+      role: "assistant",
+      content: result.output,
+      runId: result.runId,
+      learningEventId
+    });
+    return [
+      result.output,
+      "",
+      `Run: ${result.runId}`,
+      `Mode: ${result.taskMode}`,
+      `LearningEvent: ${learningEventId ?? "none"}`,
+      `Queues: ${trace.learningQueues?.join(", ") || "none"}`,
+      `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`
+    ].join("\n");
   }
 
   private inferChatMode(input: string): RaxMode | undefined {
@@ -258,9 +398,62 @@ export class ChatSession {
     return fs.readFile(file, "utf8");
   }
 
+  private async queueSummary(): Promise<string> {
+    const items = await new LearningQueue(this.rootDir).list();
+    if (items.length === 0) return "- No learning queue items.";
+
+    const counts = new Map<string, number>();
+    for (const item of items) {
+      counts.set(item.queueType, (counts.get(item.queueType) ?? 0) + 1);
+    }
+    const recent = items
+      .slice(-10)
+      .reverse()
+      .map((item) => `- [${item.queueType}] ${item.eventId} (${item.reason})`);
+
+    return [
+      `Learning Queue: ${items.length} item${items.length === 1 ? "" : "s"}`,
+      "By Type:",
+      ...Array.from(counts.entries()).map(([type, count]) => `- ${type}: ${count}`),
+      "",
+      `Recent${items.length > 10 ? " (latest 10)" : ""}:`,
+      ...recent,
+      "",
+      "Use /learn inspect <event-id> for the full event."
+    ].join("\n");
+  }
+
+  private async metricsSummary(): Promise<string> {
+    const metrics = await new LearningMetricsStore(this.rootDir).read();
+    return [
+      "Learning Metrics:",
+      `learningEventsCreated: ${metrics.learningEventsCreated}`,
+      `totalRuns: ${metrics.totalRuns}`,
+      `genericOutputRate: ${metrics.genericOutputRate}`,
+      `criticFailureRate: ${metrics.criticFailureRate}`,
+      `schemaFailureRate: ${metrics.schemaFailureRate}`,
+      `evalFailureRate: ${metrics.evalFailureRate}`,
+      `candidateApprovalRate: ${metrics.candidateApprovalRate}`,
+      `candidateRejectionRate: ${metrics.candidateRejectionRate}`,
+      `planningSpecificityScore: ${metrics.planningSpecificityScore}`
+    ].join("\n");
+  }
+
+  private async ensureThread(): Promise<ChatThread> {
+    if (this.thread) return this.thread;
+    this.thread = await this.threadStore.getOrCreate(this.threadId);
+    this.workspace = this.thread.workspace;
+    this.modeOverride = this.thread.mode === "auto" ? undefined : this.thread.mode;
+    this.runIds = [...this.thread.linkedRuns];
+    return this.thread;
+  }
+
   private async findRunDir(runId: string): Promise<string> {
     const runsDir = path.join(this.rootDir, "runs");
     for (const date of (await fs.readdir(runsDir)).sort().reverse()) {
+      const dateDir = path.join(runsDir, date);
+      const dateStat = await fs.stat(dateDir);
+      if (!dateStat.isDirectory()) continue;
       const candidate = path.join(runsDir, date, runId);
       try {
         const stat = await fs.stat(candidate);
@@ -281,12 +474,21 @@ export class ChatSession {
       "/memory search <query>",
       "/remember <fact>",
       "/state",
+      "/last",
+      "/queue",
+      "/metrics",
+      "/learn last",
       "/prompt <task>",
       "/test-gap <feature>",
       "/policy-drift <change>",
       "/audit-last",
+      "/eval",
+      "/regression",
+      "/replay last|<run-id>",
+      "/thread",
+      "/new [title]",
       "/show last|<run-id>",
-      "/learn queue|metrics|inspect <event-id>|propose last",
+      "/learn last|queue|metrics|inspect <event-id>|propose last",
       "/runs",
       "/quit"
     ].join("\n");
