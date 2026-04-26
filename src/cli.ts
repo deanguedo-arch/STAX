@@ -10,6 +10,7 @@ import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
+import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
 import { DisagreementCapture } from "./learning/DisagreementCapture.js";
 import { LearningEventSchema, LearningQueueTypeSchema } from "./learning/LearningEvent.js";
@@ -42,7 +43,10 @@ import { TrainingExporter } from "./training/TrainingExporter.js";
 import { TrainingQualityGate } from "./training/TrainingQualityGate.js";
 import { createRunId } from "./utils/ids.js";
 import { logError, logInfo } from "./utils/logger.js";
-import { WorkspaceRegistry } from "./workspace/WorkspaceRegistry.js";
+import { WorkspaceContext, type ResolvedWorkspaceContext } from "./workspace/WorkspaceContext.js";
+import { WorkspaceStore } from "./workspace/WorkspaceStore.js";
+import { RepoSummary } from "./workspace/RepoSummary.js";
+import { RepoSearch } from "./workspace/RepoSearch.js";
 
 type ParsedArgs = {
   command: string;
@@ -114,12 +118,17 @@ async function runCommand(args: ParsedArgs): Promise<void> {
   }
 
   const runtime = await createDefaultRuntime();
+  const workspace = await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
   const output = await runtime.run(input, [], {
     mode: typeof args.flags.mode === "string" ? (args.flags.mode as RaxMode) : undefined,
     detailLevel:
       typeof args.flags.detail === "string"
         ? (args.flags.detail as DetailLevel)
-        : undefined
+        : undefined,
+    workspace: workspace.workspace,
+    linkedRepoPath: workspace.linkedRepoPath
   });
   if (args.flags.print === "json") {
     logInfo(JSON.stringify(output, null, 2));
@@ -144,6 +153,9 @@ async function batchCommand(args: ParsedArgs): Promise<void> {
   }
 
   const runtime = await createDefaultRuntime();
+  const workspace = await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
   const loaded = await loadConfig(process.cwd());
   const config = mergeConfig(DEFAULT_CONFIG, loaded);
   const entries = (await fs.readdir(folder))
@@ -161,7 +173,9 @@ async function batchCommand(args: ParsedArgs): Promise<void> {
     try {
       const input = await fs.readFile(fullPath, "utf8");
       const output = await runtime.run(input, [], {
-        mode: typeof args.flags.mode === "string" ? (args.flags.mode as RaxMode) : undefined
+        mode: typeof args.flags.mode === "string" ? (args.flags.mode as RaxMode) : undefined,
+        workspace: workspace.workspace,
+        linkedRepoPath: workspace.linkedRepoPath
       });
       summary.push({ file: entry, runId: output.runId });
       logInfo(`${entry}: ${output.runId}`);
@@ -191,12 +205,20 @@ async function evalCommand(args: ParsedArgs): Promise<void> {
     : args.flags.regression
       ? "regression"
       : "cases";
+  const workspace = await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
   const result = await runEvals({
     folder,
-    mode: typeof args.flags.mode === "string" ? args.flags.mode : undefined
+    mode: typeof args.flags.mode === "string" ? args.flags.mode : undefined,
+    workspace: workspace.workspace,
+    linkedRepoPath: workspace.linkedRepoPath
   });
-  logInfo(JSON.stringify(result, null, 2));
-  await recordCommandEvent("eval", args, result.failed === 0 && result.criticalFailures === 0, JSON.stringify(result));
+  const stdout = JSON.stringify(result, null, 2);
+  logInfo(stdout);
+  const success = result.failed === 0 && result.criticalFailures === 0;
+  const commandEvidence = await recordCommandEvidence(commandLineFor(args), args, success ? 0 : 1, stdout, "", evalSummary(folder, result), workspace);
+  await recordCommandEvent("eval", args, success, stdout, [commandEvidencePath(commandEvidence), commandEvidence.stdoutPath, commandEvidence.stderrPath], undefined, workspace);
   if (result.failed > 0 || result.criticalFailures > 0 || result.passRate < DEFAULT_CONFIG.evals.minimumPassRate) {
     process.exitCode = 1;
   }
@@ -209,8 +231,21 @@ async function replayCommand(args: ParsedArgs): Promise<void> {
     throw new Error("Usage: rax replay <run-id>");
   }
   const result = await replayRun({ runId, date });
-  logInfo(JSON.stringify(result, null, 2));
-  await recordCommandEvent("replay", args, result.exact, JSON.stringify(result), [result.replayRunId]);
+  const stdout = JSON.stringify(result, null, 2);
+  logInfo(stdout);
+  const workspace = await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
+  const commandEvidence = await recordCommandEvidence(
+    commandLineFor(args),
+    args,
+    result.exact ? 0 : 1,
+    stdout,
+    "",
+    result.exact ? "Replay matched original output and deterministic trace fields." : result.reason ?? "Replay differed.",
+    workspace
+  );
+  await recordCommandEvent("replay", args, result.exact, stdout, [result.replayRunId, commandEvidencePath(commandEvidence)], undefined, workspace);
   if (!result.exact) {
     process.exitCode = 1;
   }
@@ -541,12 +576,12 @@ async function evidenceCommand(args: ParsedArgs): Promise<void> {
 
 async function workspaceCommand(args: ParsedArgs): Promise<void> {
   const action = args.positional[0] ?? "list";
-  const registry = new WorkspaceRegistry();
+  const store = new WorkspaceStore();
   if (action === "create") {
     const name = args.positional[1];
     const repo = typeof args.flags.repo === "string" ? args.flags.repo : "";
     if (!name || !repo) throw new Error("Usage: rax workspace create <name> --repo <path>");
-    const record = await registry.create({ name, repo });
+    const record = await store.create({ workspace: name, repoPath: repo, use: Boolean(args.flags.use) });
     logInfo(JSON.stringify(record, null, 2));
     await recordCommandEvent("workspace create", args, true, JSON.stringify(record));
     return;
@@ -554,20 +589,49 @@ async function workspaceCommand(args: ParsedArgs): Promise<void> {
   if (action === "use") {
     const name = args.positional[1];
     if (!name) throw new Error("Usage: rax workspace use <name>");
-    const record = await registry.use(name);
+    const record = await store.use(name);
     logInfo(JSON.stringify(record, null, 2));
     await recordCommandEvent("workspace use", args, true, JSON.stringify(record));
     return;
   }
-  if (action === "current") {
-    logInfo(JSON.stringify((await registry.current()) ?? null, null, 2));
+  if (action === "status" || action === "current") {
+    logInfo(JSON.stringify(await store.status(), null, 2));
+    return;
+  }
+  if (action === "show") {
+    const name = args.positional[1];
+    if (!name) throw new Error("Usage: rax workspace show <name>");
+    const record = await store.get(name);
+    if (!record) throw new Error(`Workspace not found: ${name}`);
+    logInfo(JSON.stringify(record, null, 2));
     return;
   }
   if (action === "list") {
-    logInfo(JSON.stringify(await registry.list(), null, 2));
+    logInfo(JSON.stringify(await store.list(), null, 2));
     return;
   }
-  throw new Error("Usage: rax workspace create <name> --repo <path> | use <name> | current | list");
+  if (action === "repo-summary") {
+    const workspace = await new WorkspaceContext().resolve({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : "current",
+      requireWorkspace: true
+    });
+    if (!workspace.linkedRepoPath) throw new Error(`Workspace has no linked repo path: ${workspace.workspace}`);
+    logInfo((await new RepoSummary(workspace.linkedRepoPath).summarize()).markdown);
+    return;
+  }
+  if (action === "search") {
+    const query = args.positional.slice(1).join(" ");
+    if (!query.trim()) throw new Error('Usage: rax workspace search "query"');
+    const workspace = await new WorkspaceContext().resolve({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : "current",
+      requireWorkspace: true
+    });
+    if (!workspace.linkedRepoPath) throw new Error(`Workspace has no linked repo path: ${workspace.workspace}`);
+    const search = new RepoSearch(workspace.linkedRepoPath);
+    logInfo(search.format(await search.search(query), query));
+    return;
+  }
+  throw new Error("Usage: rax workspace create <name> --repo <path> [--use] | use <name> | status | list | show <name> | repo-summary | search <query>");
 }
 
 async function disagreeCommand(args: ParsedArgs): Promise<void> {
@@ -926,8 +990,12 @@ async function recordCommandEvent(
   success: boolean,
   outputSummary: string,
   artifactPaths: string[] = [],
-  runId?: string
+  runId?: string,
+  workspace?: ResolvedWorkspaceContext
 ): Promise<void> {
+  const resolved = workspace ?? await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
   await new LearningRecorder().recordCommand({
     commandName,
     argsSummary: [args.command, ...args.positional].join(" "),
@@ -935,8 +1003,43 @@ async function recordCommandEvent(
     outputSummary,
     exitStatus: success ? 0 : 1,
     artifactPaths,
-    runId
+    runId,
+    workspace: resolved.workspace
   });
+}
+
+async function recordCommandEvidence(
+  command: string,
+  args: ParsedArgs,
+  exitCode: number,
+  stdout: string,
+  stderr: string,
+  summary: string,
+  workspace?: ResolvedWorkspaceContext
+) {
+  return new CommandEvidenceStore().record({
+    command,
+    args: args.positional,
+    exitCode,
+    stdout,
+    stderr,
+    summary,
+    workspace: workspace?.workspace,
+    linkedRepoPath: workspace?.linkedRepoPath
+  });
+}
+
+function commandLineFor(args: ParsedArgs): string {
+  const flags = Object.entries(args.flags).flatMap(([key, value]) => value === true ? [`--${key}`] : [`--${key}`, String(value)]);
+  return ["npm", "run", "rax", "--", args.command, ...args.positional, ...flags].join(" ");
+}
+
+function evalSummary(folder: string, result: { total: number; passed: number; failed: number; criticalFailures: number }): string {
+  return `${folder} evals: ${result.passed}/${result.total} passed, failed=${result.failed}, criticalFailures=${result.criticalFailures}.`;
+}
+
+function commandEvidencePath(evidence: { commandEvidenceId: string; createdAt: string }): string {
+  return path.join("evidence", "commands", evidence.createdAt.slice(0, 10), `${evidence.commandEvidenceId}.json`);
 }
 
 function help(): void {
@@ -963,7 +1066,7 @@ function help(): void {
     "  rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated",
     "  rax lab go|curriculum|scenarios|redteam|run|report|queue|failures|patches|handoffs|verify|gate",
     "  rax evidence collect|list|show <id>",
-    "  rax workspace create <name> --repo <path> | use <name> | current | list",
+    "  rax workspace create <name> --repo <path> [--use] | use <name> | status | list | show <name> | repo-summary | search <query>",
     "  rax disagree --reason \"...\" [--run <run-id>]",
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]"
   ].join("\n"));

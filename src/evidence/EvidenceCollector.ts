@@ -1,10 +1,25 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { CommandEvidenceStore } from "./CommandEvidenceStore.js";
 import { collectLocalEvidence } from "./LocalEvidenceCollector.js";
+import { RepoSummary } from "../workspace/RepoSummary.js";
+import { WorkspaceContext } from "../workspace/WorkspaceContext.js";
+import type { ResolvedWorkspaceContext } from "../workspace/WorkspaceContext.js";
+import { WorkspaceStore } from "../workspace/WorkspaceStore.js";
 
 export type CollectedEvidenceItem = {
   evidenceId: string;
-  sourceType: "file" | "trace" | "run" | "eval" | "test" | "lab_report" | "codex_report" | "workspace_doc" | "command_output";
+  sourceType:
+    | "file"
+    | "trace"
+    | "run"
+    | "eval"
+    | "test"
+    | "lab_report"
+    | "codex_report"
+    | "workspace_doc"
+    | "repo_summary"
+    | "command_output";
   path?: string;
   command?: string;
   summary: string;
@@ -23,7 +38,16 @@ export class EvidenceCollector {
   constructor(private rootDir = process.cwd()) {}
 
   async collect(input: { workspace?: string } = {}): Promise<{ path: string; collection: EvidenceCollection }> {
-    const workspace = input.workspace ?? "current";
+    let workspaceContext: ResolvedWorkspaceContext;
+    try {
+      workspaceContext = await new WorkspaceContext(this.rootDir).resolve({
+        workspace: input.workspace,
+        requireWorkspace: input.workspace === "current"
+      });
+    } catch {
+      workspaceContext = { source: "none" };
+    }
+    const workspace = workspaceContext.workspace ?? input.workspace ?? "current";
     const createdAt = new Date().toISOString();
     const collectionId = `evidence_${createdAt.replace(/[^0-9]/g, "").slice(0, 14)}_${Math.random().toString(36).slice(2, 6)}`;
     const local = await collectLocalEvidence(this.rootDir, { includeProjectDocs: true, includeModeMaturity: true });
@@ -75,6 +99,42 @@ export class EvidenceCollector {
         summary: "Project evidence document exists and was sampled.",
         confidence: "medium",
         createdAt
+      });
+    }
+    if (workspaceContext.workspace) {
+      const docs = await new WorkspaceStore(this.rootDir).readWorkspaceDocs(workspaceContext.workspace);
+      for (const doc of docs.filter((item) => item.exists)) {
+        items.push({
+          evidenceId: `${collectionId}_workspace_doc_${items.length}`,
+          sourceType: "workspace_doc",
+          path: doc.path,
+          summary: "Workspace evidence document exists and was sampled.",
+          confidence: "medium",
+          createdAt
+        });
+      }
+    }
+    if (workspaceContext.linkedRepoPath) {
+      const summary = await new RepoSummary(workspaceContext.linkedRepoPath).summarize();
+      items.push({
+        evidenceId: `${collectionId}_repo_summary`,
+        sourceType: "repo_summary",
+        path: workspaceContext.linkedRepoPath,
+        summary: summary.markdown.slice(0, 500),
+        confidence: "medium",
+        createdAt
+      });
+    }
+    const commandEvidence = await new CommandEvidenceStore(this.rootDir).list();
+    for (const command of commandEvidence.slice(-20)) {
+      items.push({
+        evidenceId: command.commandEvidenceId,
+        sourceType: "command_output",
+        path: path.join("evidence", "commands", command.createdAt.slice(0, 10), `${command.commandEvidenceId}.json`),
+        command: command.command,
+        summary: command.summary,
+        confidence: command.success ? "high" : "medium",
+        createdAt: command.createdAt
       });
     }
     const collection = { collectionId, workspace, createdAt, items };

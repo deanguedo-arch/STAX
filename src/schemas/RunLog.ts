@@ -16,6 +16,8 @@ export type ModelCallTrace = {
 export type RunTrace = {
   runId: string;
   createdAt: string;
+  workspace?: string;
+  linkedRepoPath?: string;
   runtimeVersion: string;
   provider: string;
   model: string;

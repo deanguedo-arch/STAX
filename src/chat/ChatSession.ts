@@ -16,6 +16,10 @@ import { LabMetrics } from "../lab/LabMetrics.js";
 import { LabOrchestrator } from "../lab/LabOrchestrator.js";
 import { MemoryStore } from "../memory/MemoryStore.js";
 import type { RaxMode } from "../schemas/Config.js";
+import { RepoSearch } from "../workspace/RepoSearch.js";
+import { RepoSummary } from "../workspace/RepoSummary.js";
+import { WorkspaceContext, type ResolvedWorkspaceContext } from "../workspace/WorkspaceContext.js";
+import { WorkspaceStore } from "../workspace/WorkspaceStore.js";
 import { ThreadStore, type ChatThread } from "./ThreadStore.js";
 
 export type ChatTurnResult = {
@@ -78,9 +82,10 @@ export class ChatSession {
 
   async headerText(): Promise<string> {
     const thread = await this.ensureThread();
+    const workspace = await this.resolveWorkspace();
     return [
       "STAX Chat",
-      `Workspace: ${this.workspace}`,
+      `Workspace: ${workspace.workspace ?? this.workspace}`,
       `Thread: ${thread.threadId}`,
       `Mode: ${this.modeOverride ?? "auto"}`,
       "Type /help for commands, /exit to exit."
@@ -114,6 +119,10 @@ export class ChatSession {
       this.modeOverride = arg as RaxMode;
       this.thread = await this.threadStore.updateMode(this.threadId, this.modeOverride);
       return { output: `mode: ${this.modeOverride}` };
+    }
+
+    if (command === "/workspace") {
+      return { output: await this.workspaceCommand(arg) };
     }
 
     if (command === "/project") {
@@ -266,13 +275,20 @@ export class ChatSession {
 
     if (command === "/eval" || command === "/regression") {
       const folder = command === "/regression" ? "regression" : "cases";
-      const result = await runEvals({ rootDir: this.rootDir, folder });
+      const workspace = await this.resolveWorkspace();
+      const result = await runEvals({
+        rootDir: this.rootDir,
+        folder,
+        workspace: workspace.workspace,
+        linkedRepoPath: workspace.linkedRepoPath
+      });
       await new LearningRecorder(this.rootDir).recordCommand({
         commandName: command === "/regression" ? "chat regression" : "chat eval",
         argsSummary: command,
         success: result.failed === 0 && result.criticalFailures === 0,
         outputSummary: JSON.stringify(result),
-        exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1
+        exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
+        workspace: workspace.workspace
       });
       return {
         output: [
@@ -287,6 +303,7 @@ export class ChatSession {
       const runId = arg === "last" || !arg ? this.runIds.at(-1) : arg;
       if (!runId) return { output: "No chat run is available to replay." };
       try {
+        const workspace = await this.resolveWorkspace();
         const result = await replayRun({ rootDir: this.rootDir, runId });
         await new LearningRecorder(this.rootDir).recordCommand({
           commandName: "chat replay",
@@ -295,6 +312,7 @@ export class ChatSession {
           outputSummary: JSON.stringify(result),
           exitStatus: result.exact ? 0 : 1,
           artifactPaths: [result.replayRunId],
+          workspace: workspace.workspace,
           runId
         });
         return {
@@ -380,8 +398,9 @@ export class ChatSession {
         includeProjectDocs: true,
         includeModeMaturity: true
       });
+      const workspaceState = await this.workspaceStateContext();
       const output = await this.run(
-        ["Project Brain local state review.", formatLocalEvidence(evidence)].join("\n\n"),
+        ["Project Brain local state review.", workspaceState, formatLocalEvidence(evidence)].filter(Boolean).join("\n\n"),
         "project_brain"
       );
       return { output };
@@ -628,9 +647,60 @@ export class ChatSession {
     return /\b(i disagree|that is wrong|you missed|should have allowed|should have refused|over refused|under refused|over-refused|under-refused)\b/.test(input);
   }
 
+  private async workspaceCommand(arg: string): Promise<string> {
+    await this.ensureThread();
+    const [action = "status", ...rest] = arg.split(/\s+/).filter(Boolean);
+    const store = new WorkspaceStore(this.rootDir);
+    if (action === "status" || action === "current") {
+      const context = await this.resolveWorkspace();
+      return [
+        "Workspace Status",
+        `Workspace: ${context.workspace ?? "none"}`,
+        `Source: ${context.source}`,
+        `RepoPath: ${context.repoPath ?? "none"}`,
+        `LinkedRepoPath: ${context.linkedRepoPath ?? "none"}`
+      ].join("\n");
+    }
+    if (action === "use") {
+      const name = rest[0];
+      if (!name) return "Usage: /workspace use <name>";
+      const record = await store.use(name);
+      this.workspace = record.workspace;
+      this.thread = await this.threadStore.updateWorkspace(this.threadId, record.workspace);
+      return `workspace: ${record.workspace}`;
+    }
+    if (action === "list") {
+      return JSON.stringify(await store.list(), null, 2);
+    }
+    if (action === "show") {
+      const name = rest[0] || this.workspace;
+      const record = await store.get(name);
+      return record ? JSON.stringify(record, null, 2) : `Workspace not found: ${name}`;
+    }
+    if (action === "repo-summary") {
+      const context = await this.resolveWorkspace(true);
+      if (!context.linkedRepoPath) return `Workspace has no linked repo path: ${context.workspace ?? "none"}`;
+      return (await new RepoSummary(context.linkedRepoPath).summarize()).markdown;
+    }
+    if (action === "search") {
+      const query = rest.join(" ");
+      if (!query.trim()) return "Usage: /workspace search <query>";
+      const context = await this.resolveWorkspace(true);
+      if (!context.linkedRepoPath) return `Workspace has no linked repo path: ${context.workspace ?? "none"}`;
+      const search = new RepoSearch(context.linkedRepoPath);
+      return search.format(await search.search(query), query);
+    }
+    return "Usage: /workspace status|use <name>|list|show <name>|repo-summary|search <query>";
+  }
+
   private async run(input: string, mode?: RaxMode): Promise<string> {
     await this.ensureThread();
-    const result = await this.runtime.run(input, [`Workspace: ${this.workspace}`, ...this.context], { mode });
+    const workspace = await this.resolveWorkspace();
+    const result = await this.runtime.run(input, [`Workspace: ${workspace.workspace ?? this.workspace}`, ...this.context], {
+      mode,
+      workspace: workspace.workspace,
+      linkedRepoPath: workspace.linkedRepoPath
+    });
     const runDir = await this.findRunDir(result.runId);
     const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
       learningEventId?: string;
@@ -796,6 +866,7 @@ export class ChatSession {
 
   private async statusSummary(): Promise<string> {
     const thread = await this.ensureThread();
+    const workspace = await this.resolveWorkspace();
     const queueItems = await new LearningQueue(this.rootDir).list();
     const metrics = await new LearningMetricsStore(this.rootDir).read();
     const queueCounts = new Map<string, number>();
@@ -807,7 +878,9 @@ export class ChatSession {
       : ["- none"];
     return [
       "STAX Chat Status",
-      `Workspace: ${this.workspace}`,
+      `Workspace: ${workspace.workspace ?? this.workspace}`,
+      `WorkspaceSource: ${workspace.source}`,
+      `LinkedRepoPath: ${workspace.linkedRepoPath ?? "none"}`,
       `Thread: ${thread.threadId}`,
       `Mode: ${this.modeOverride ?? "auto"}`,
       `LatestRun: ${this.runIds.at(-1) ?? "none"}`,
@@ -822,6 +895,44 @@ export class ChatSession {
       `learningEventsCreated: ${metrics.learningEventsCreated}`,
       `genericOutputRate: ${metrics.genericOutputRate}`,
       `planningSpecificityScore: ${metrics.planningSpecificityScore}`
+    ].join("\n");
+  }
+
+  private async resolveWorkspace(requireWorkspace = false): Promise<ResolvedWorkspaceContext> {
+    const thread = await this.ensureThread();
+    const resolved = await new WorkspaceContext(this.rootDir).resolve({
+      threadWorkspace: thread.workspace,
+      requireWorkspace
+    });
+    if (resolved.workspace && resolved.workspace !== this.workspace) {
+      this.workspace = resolved.workspace;
+      this.thread = await this.threadStore.updateWorkspace(this.threadId, resolved.workspace);
+    }
+    return resolved;
+  }
+
+  private async workspaceStateContext(): Promise<string> {
+    const context = await this.resolveWorkspace();
+    if (!context.workspace) {
+      return "## Workspace Context\n- No active workspace.\n- Falling back to global project docs only.";
+    }
+    const docs = await new WorkspaceStore(this.rootDir).readWorkspaceDocs(context.workspace);
+    const repoSummary = context.linkedRepoPath
+      ? (await new RepoSummary(context.linkedRepoPath).summarize()).markdown
+      : "## Repo Summary\n- No linked repo path configured.";
+    return [
+      "## Workspace Context",
+      `- Workspace: ${context.workspace}`,
+      `- RepoPath: ${context.repoPath ?? "none"}`,
+      `- LinkedRepoPath: ${context.linkedRepoPath ?? "none"}`,
+      "",
+      repoSummary,
+      "",
+      "## Workspace Docs",
+      ...docs.map((doc) => [
+        `### ${doc.path}`,
+        doc.exists ? ["```txt", doc.excerpt ?? "", "```"].join("\n") : "- Missing"
+      ].join("\n"))
     ].join("\n");
   }
 
@@ -1108,6 +1219,7 @@ export class ChatSession {
       "/help",
       "/mode auto|<mode>",
       "/project <name>",
+      "/workspace status|use <name>|list|show <name>|repo-summary|search <query>",
       "/status",
       "/memory search <query>",
       "/remember <fact>",
