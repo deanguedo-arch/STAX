@@ -59,7 +59,7 @@ Observed output includes:
 
 ```txt
 ## Repo Summary
-- Repo: /Users/deanguedo/Documents/GitHub/STAX
+- Repo: <repo-root>
 - README: # STAX/RAX - Rule-Aware Adaptive Runtime ...
 ## Detected Stack
 - Node/npm package
@@ -116,7 +116,7 @@ Observed output includes relative path, line number, snippet, and match reason:
 {
   "runId": "run-2026-04-26T13-17-27-248Z-tnlp2s",
   "workspace": "demo",
-  "linkedRepoPath": "/Users/deanguedo/Documents/GitHub/STAX"
+  "linkedRepoPath": "<repo-root>"
 }
 ```
 
@@ -170,7 +170,7 @@ Tests: 145 passed (145)
 ```txt
 npm run rax -- workspace create demo --repo .
 Result: pass
-Created workspace demo with repoPath "." and linkedRepoPath /Users/deanguedo/Documents/GitHub/STAX.
+Created workspace demo with repoPath "." and linkedRepoPath resolved to the local STAX repo root.
 ```
 
 ```txt
@@ -184,7 +184,7 @@ npm run rax -- workspace status
 Result: pass
 current: demo
 repoPath: .
-linkedRepoPath: /Users/deanguedo/Documents/GitHub/STAX
+linkedRepoPath: <repo-root>
 ```
 
 ```txt
