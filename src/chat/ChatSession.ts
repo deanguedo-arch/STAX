@@ -63,6 +63,11 @@ export class ChatSession {
       return this.handleCommand(input);
     }
 
+    const naturalControl = await this.handleNaturalControl(input);
+    if (naturalControl) {
+      return naturalControl;
+    }
+
     const output = await this.run(input, this.modeOverride ?? this.inferChatMode(input));
     return { output };
   }
@@ -386,6 +391,169 @@ export class ChatSession {
     return { output: `Unknown command: ${command}\n${this.helpText()}` };
   }
 
+  private async handleNaturalControl(input: string): Promise<ChatTurnResult | undefined> {
+    const normalized = input
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (this.isSandboxGoIntent(normalized)) {
+      const result = await new LabOrchestrator(this.rootDir).go({
+        profile: "cautious",
+        cycles: 1,
+        domain: "planning",
+        count: 5,
+        executeVerification: false
+      });
+      return {
+        output: [
+          "I ran the safe sandbox cycle.",
+          "",
+          `Profile: cautious`,
+          `Cycles: ${result.cycles.length}`,
+          `Summary: ${result.path}`,
+          ...result.cycles.map(
+            (cycle) =>
+              `- ${cycle.cycleId}: scenariosRun=${cycle.scenariosRun}, failures=${cycle.failures.length}, releaseGate=${cycle.releaseGate}`
+          ),
+          "",
+          "Nothing was approved, promoted, merged, trained, or written into durable memory.",
+          "Say \"show sandbox report\", \"show sandbox failures\", or \"show sandbox patches\" to inspect what happened."
+        ].join("\n")
+      };
+    }
+
+    if (this.isLabReportIntent(normalized)) {
+      const report = await new LabMetrics(this.rootDir).readLatest();
+      return { output: JSON.stringify(report, null, 2) };
+    }
+
+    if (this.isLabFailureIntent(normalized)) {
+      return { output: JSON.stringify(await new FailureMiner(this.rootDir).readLatest(), null, 2) };
+    }
+
+    if (this.isLabPatchIntent(normalized)) {
+      return { output: await this.listLabArtifacts("patches", "patch proposals") };
+    }
+
+    if (this.isLastRunExplanationIntent(normalized)) {
+      return { output: await this.explainLastRun() };
+    }
+
+    if (this.isStatusIntent(normalized)) {
+      return { output: await this.statusSummary() };
+    }
+
+    if (this.isQueueIntent(normalized)) {
+      return { output: await this.queueSummary() };
+    }
+
+    if (this.isMetricsIntent(normalized)) {
+      return { output: await this.metricsSummary() };
+    }
+
+    if (this.isLearnLastIntent(normalized)) {
+      const runId = this.runIds.at(-1);
+      if (!runId) return { output: "No chat run is available to analyze yet." };
+      const output = await this.run(`Analyze run ${runId} and propose how STAX should improve from it.`, "learning_unit");
+      return { output };
+    }
+
+    if (this.isAuditLastIntent(normalized)) {
+      if (!this.lastAssistantOutput) return { output: "No assistant output to audit yet." };
+      const output = await this.run(this.lastAssistantOutput, "codex_audit");
+      return { output };
+    }
+
+    if (this.isEvalIntent(normalized)) {
+      return { output: await this.runChatEval("cases", "Eval") };
+    }
+
+    if (this.isRegressionIntent(normalized)) {
+      return { output: await this.runChatEval("regression", "Regression") };
+    }
+
+    if (this.isReplayLastIntent(normalized)) {
+      return { output: await this.replayLastRun() };
+    }
+
+    if (this.isHowToUseIntent(normalized)) {
+      return { output: this.plainEnglishHelpText() };
+    }
+
+    if (this.isModeAutoIntent(normalized)) {
+      this.modeOverride = undefined;
+      this.thread = await this.threadStore.updateMode(this.threadId, "auto");
+      return { output: "Mode reset to auto. Normal chat will pick the mode from your message now." };
+    }
+
+    return undefined;
+  }
+
+  private isSandboxGoIntent(input: string): boolean {
+    const mentionsSandbox = /\b(sandbox|sand box|lab|learning lab)\b/.test(input);
+    const asksToRun = /\b(unleash|unlesh|launch|start|run|go|let loose|let it loose|kick off|stress test)\b/.test(input);
+    const mentionsWorkers = /\b(agent|agents|worker|workers|team)\b/.test(input);
+    return mentionsSandbox && (asksToRun || mentionsWorkers);
+  }
+
+  private isLabReportIntent(input: string): boolean {
+    return /\b(show|open|view|what is|what's|give me)\b/.test(input) && /\b(sandbox|lab)\b/.test(input) && /\breport\b/.test(input);
+  }
+
+  private isLabFailureIntent(input: string): boolean {
+    return /\b(show|open|view|what|list|give me)\b/.test(input) && /\b(sandbox|lab)\b/.test(input) && /\b(failure|failures|failed|weakness|weaknesses)\b/.test(input);
+  }
+
+  private isLabPatchIntent(input: string): boolean {
+    return /\b(show|open|view|what|list|give me)\b/.test(input) && /\b(sandbox|lab)\b/.test(input) && /\b(patch|patches|proposal|proposals|handoff|handoffs)\b/.test(input);
+  }
+
+  private isLastRunExplanationIntent(input: string): boolean {
+    return /\b(what did you just do|what just happened|what happened there|explain that|explain the last run|what did that do)\b/.test(input);
+  }
+
+  private isModeAutoIntent(input: string): boolean {
+    return /\b(reset|switch|set)\b/.test(input) && /\bmode\b/.test(input) && /\bauto\b/.test(input);
+  }
+
+  private isStatusIntent(input: string): boolean {
+    return /^(show )?(status|system status|chat status)$/.test(input) || /\bwhat'?s the status\b/.test(input);
+  }
+
+  private isQueueIntent(input: string): boolean {
+    return /\b(show|check|what'?s in|list)\b/.test(input) && /\b(queue|learning queue)\b/.test(input);
+  }
+
+  private isMetricsIntent(input: string): boolean {
+    return /\b(show|check|what are|what'?s|list)\b/.test(input) && /\b(metrics|learning metrics|numbers)\b/.test(input);
+  }
+
+  private isLearnLastIntent(input: string): boolean {
+    return /\b(learn from that|learn from this|analyze last run|analyse last run|what should stax learn|make a learning event|propose improvements)\b/.test(input);
+  }
+
+  private isAuditLastIntent(input: string): boolean {
+    return /\b(audit last|audit that|audit this|check last answer|check that answer|review last answer)\b/.test(input);
+  }
+
+  private isEvalIntent(input: string): boolean {
+    return /\b(run|start|do)\b/.test(input) && /\b(eval|evals|evaluation|evaluations)\b/.test(input) && !/\bregression\b/.test(input);
+  }
+
+  private isRegressionIntent(input: string): boolean {
+    return /\b(run|start|do)\b/.test(input) && /\b(regression|regressions)\b/.test(input);
+  }
+
+  private isReplayLastIntent(input: string): boolean {
+    return /\b(replay|rerun)\b/.test(input) && /\b(last|previous)\b/.test(input);
+  }
+
+  private isHowToUseIntent(input: string): boolean {
+    return /\b(how do i use|what can you do|help me use|make this easy|easy on all fronts)\b/.test(input);
+  }
+
   private async run(input: string, mode?: RaxMode): Promise<string> {
     await this.ensureThread();
     const result = await this.runtime.run(input, [`Workspace: ${this.workspace}`, ...this.context], { mode });
@@ -474,6 +642,32 @@ export class ChatSession {
     return fs.readFile(file, "utf8");
   }
 
+  private async explainLastRun(): Promise<string> {
+    const runId = this.runIds.at(-1);
+    if (!runId) {
+      return "No chat run is available yet. Say something normally, or say \"unleash the sandbox\" to run a safe lab cycle.";
+    }
+    const runDir = await this.findRunDir(runId);
+    const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
+      mode?: string;
+      learningEventId?: string;
+      learningQueues?: string[];
+      validation?: { valid?: boolean };
+    };
+    return [
+      "That message went through the governed STAX runtime.",
+      "",
+      `Run: ${runId}`,
+      `Mode: ${trace.mode ?? "unknown"}`,
+      `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
+      `LearningEvent: ${trace.learningEventId ?? "none"}`,
+      `Queues: ${trace.learningQueues?.join(", ") || "none"}`,
+      `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`,
+      "",
+      "In plain English: STAX answered, saved a trace, recorded a LearningEvent, and did not promote anything automatically."
+    ].join("\n");
+  }
+
   private async listLabArtifacts(folder: "patches" | "handoffs", label: string): Promise<string> {
     const dir = path.join(this.rootDir, "learning", "lab", folder);
     try {
@@ -555,6 +749,81 @@ export class ChatSession {
       `candidateApprovalRate: ${metrics.candidateApprovalRate}`,
       `candidateRejectionRate: ${metrics.candidateRejectionRate}`,
       `planningSpecificityScore: ${metrics.planningSpecificityScore}`
+    ].join("\n");
+  }
+
+  private async runChatEval(folder: "cases" | "regression", label: string): Promise<string> {
+    const result = await runEvals({ rootDir: this.rootDir, folder });
+    await new LearningRecorder(this.rootDir).recordCommand({
+      commandName: `chat ${label.toLowerCase()}`,
+      argsSummary: label.toLowerCase(),
+      success: result.failed === 0 && result.criticalFailures === 0,
+      outputSummary: JSON.stringify(result),
+      exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1
+    });
+    return [
+      `${label}: ${result.passed}/${result.total}`,
+      `passRate: ${result.passRate}`,
+      `criticalFailures: ${result.criticalFailures}`
+    ].join("\n");
+  }
+
+  private async replayLastRun(): Promise<string> {
+    const runId = this.runIds.at(-1);
+    if (!runId) return "No chat run is available to replay.";
+    try {
+      const result = await replayRun({ rootDir: this.rootDir, runId });
+      await new LearningRecorder(this.rootDir).recordCommand({
+        commandName: "chat replay",
+        argsSummary: `replay ${runId}`,
+        success: result.exact,
+        outputSummary: JSON.stringify(result),
+        exitStatus: result.exact ? 0 : 1,
+        artifactPaths: [result.replayRunId],
+        runId
+      });
+      return [
+        `Replay: ${result.exact ? "exact" : "drift detected"}`,
+        `OriginalRun: ${result.originalRunId}`,
+        `ReplayRun: ${result.replayRunId}`,
+        `OutputExact: ${result.outputExact}`,
+        `TraceExact: ${result.traceExact}`,
+        `Reason: ${result.reason ?? "none"}`
+      ].join("\n");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await new LearningRecorder(this.rootDir).recordCommand({
+        commandName: "chat replay",
+        argsSummary: `replay ${runId}`,
+        success: false,
+        outputSummary: message,
+        exitStatus: 1,
+        runId
+      });
+      return `Replay failed: ${message}`;
+    }
+  }
+
+  private plainEnglishHelpText(): string {
+    return [
+      "You can talk normally. I understand these plain-English controls:",
+      "",
+      "- \"what just happened?\"",
+      "- \"show status\"",
+      "- \"show queue\"",
+      "- \"show metrics\"",
+      "- \"learn from that\"",
+      "- \"audit last answer\"",
+      "- \"run evals\"",
+      "- \"run regression\"",
+      "- \"replay last run\"",
+      "- \"unleash the sandbox\"",
+      "- \"show sandbox report\"",
+      "- \"show sandbox failures\"",
+      "- \"show sandbox patches\"",
+      "- \"reset mode to auto\"",
+      "",
+      "Guardrails stay on: plain chat can run the safe sandbox profile, inspect proof, and run checks. It cannot approve, promote, merge, train, or enable tools."
     ].join("\n");
   }
 

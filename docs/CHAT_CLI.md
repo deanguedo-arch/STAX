@@ -73,6 +73,25 @@ Trace: <trace path>
 - `/compact` writes a thread summary candidate under `chats/summary_candidates/` and requires review before any memory promotion.
 - `/lab report`, `/lab queue`, `/lab redteam summary`, `/lab failures`, `/lab patches`, and `/lab handoffs` are Learning Lab views. `/lab go cautious 1` may generate a cautious lab cycle. Chat does not approve, promote, merge, or run balanced/aggressive lab profiles.
 
+Plain-English requests are also supported for the common paths:
+
+```txt
+what just happened?
+show status
+show queue
+show metrics
+learn from that
+audit last answer
+run evals
+run regression
+replay last run
+unleash the sandbox
+show sandbox report
+show sandbox failures
+show sandbox patches
+reset mode to auto
+```
+
 ## Threads
 
 Chat threads are stored under:

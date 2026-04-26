@@ -68,6 +68,19 @@ Useful slash commands:
 /exit
 ```
 
+You can also use plain English for common controls:
+
+```txt
+what just happened?
+show status
+learn from that
+audit last answer
+run evals
+unleash the sandbox
+show sandbox report
+reset mode to auto
+```
+
 ## Learning Lab Workers
 
 The Learning Lab creates synthetic scenario candidates for controlled STAX exposure. Workers are not autonomous agents and do not promote memory, evals, training records, policies, schemas, or modes.

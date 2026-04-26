@@ -76,6 +76,29 @@ Approvals and promotions remain CLI-only in this version. Chat may inspect, eval
 
 Learning Lab chat commands expose lab state without promoting candidates. `/lab report`, `/lab queue`, `/lab redteam summary`, `/lab failures`, `/lab patches`, and `/lab handoffs` are read-only. `/lab go cautious 1` may generate and run a cautious lab cycle, but chat cannot approve, promote, merge, or run balanced/aggressive profiles.
 
+## Plain-English Controls
+
+Slash commands are shortcuts, not the only interface. STAX Chat also recognizes common plain-English requests:
+
+```txt
+what just happened?
+show status
+show queue
+show metrics
+learn from that
+audit last answer
+run evals
+run regression
+replay last run
+unleash the sandbox
+show sandbox report
+show sandbox failures
+show sandbox patches
+reset mode to auto
+```
+
+Plain-English sandbox requests run only the safe cautious profile. They do not approve, promote, merge, train, or enable tools.
+
 ## Thread Storage
 
 Threads are stored as JSON:

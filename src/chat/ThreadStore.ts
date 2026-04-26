@@ -99,7 +99,10 @@ export class ThreadStore {
 
   private async write(thread: ChatThread): Promise<void> {
     await fs.mkdir(path.join(this.rootDir, "chats", "threads"), { recursive: true });
-    await fs.writeFile(this.threadPath(thread.threadId), JSON.stringify(thread, null, 2), "utf8");
+    const target = this.threadPath(thread.threadId);
+    const temp = `${target}.${process.pid}.${Math.random().toString(36).slice(2, 8)}.tmp`;
+    await fs.writeFile(temp, JSON.stringify(thread, null, 2), "utf8");
+    await fs.rename(temp, target);
   }
 
   private threadPath(threadId: string): string {

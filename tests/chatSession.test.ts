@@ -139,4 +139,31 @@ describe("ChatSession", () => {
     expect(audit.output).toContain("## Codex Claim");
     expect(audit.output).toContain("## Fake-Complete Flags");
   });
+
+  it("accepts plain-English control requests for common chat operations", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const first = await session.handleLine("what are we doing next?");
+    const explain = await session.handleLine("what did you just do there?");
+    const help = await session.handleLine("how do i use this without commands?");
+    const sandbox = await session.handleLine("can you unleash your sand box agents?");
+    const report = await session.handleLine("show sandbox report");
+    const failures = await session.handleLine("show sandbox failures");
+    const patches = await session.handleLine("show sandbox patches");
+    const learn = await session.handleLine("learn from that");
+    const mode = await session.handleLine("reset mode to auto");
+
+    expect(first.output).toContain("Run: run-");
+    expect(explain.output).toContain("That message went through the governed STAX runtime.");
+    expect(help.output).toContain("plain-English controls");
+    expect(sandbox.output).toContain("I ran the safe sandbox cycle.");
+    expect(sandbox.output).toContain("Nothing was approved, promoted, merged, trained, or written into durable memory.");
+    expect(report.output).toContain("scenariosGenerated");
+    expect(failures.output).toContain("[");
+    expect(patches.output).toMatch(/No lab patch proposals|Lab patch proposals/);
+    expect(learn.output).toContain("## Candidate Queues");
+    expect(mode.output).toBe("Mode reset to auto. Normal chat will pick the mode from your message now.");
+  });
 });
