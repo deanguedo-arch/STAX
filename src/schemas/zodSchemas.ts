@@ -304,6 +304,8 @@ export const TrainingExportRecordSchema = z.union([
 export const RunTraceSchema = z.object({
   runId: z.string(),
   createdAt: z.string(),
+  workspace: z.string().optional(),
+  linkedRepoPath: z.string().optional(),
   runtimeVersion: z.string(),
   provider: z.string(),
   model: z.string(),

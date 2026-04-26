@@ -26,7 +26,8 @@ export function assessAuditEvidence(text: string): VerifiedAuditAssessment {
     lines.some((line) => /\bnpm test\b/i.test(line) && /\b(pass(ed)?|exit code 0|\d+\s+tests?\s+passed)\b/i.test(line)) ||
     /\b\d+\s+tests?\s+passed\b/i.test(text);
   const hasFileEvidence = /\b(src|tests|evals|docs|modes)\/[A-Za-z0-9_.\/-]+/i.test(text);
-  const hasCommandEvidence = hasTestEvidence || hasEvalEvidence || /\bexit code 0\b/i.test(text);
+  const hasFirstClassCommandEvidence = /\bcmd-ev-[A-Za-z0-9-]+\b|\bevidence\/commands\/[^\s]+\.json\b/i.test(text);
+  const hasCommandEvidence = hasTestEvidence || hasEvalEvidence || hasFirstClassCommandEvidence || /\bexit code 0\b/i.test(text);
 
   const evidenceChecked = [
     ...(hasLocalEvidence ? ["Local evidence block supplied."] : []),
@@ -34,6 +35,7 @@ export function assessAuditEvidence(text: string): VerifiedAuditAssessment {
     ...(hasTraceEvidence ? ["Trace artifact reference supplied."] : []),
     ...(hasEvalEvidence ? ["Eval result evidence supplied."] : []),
     ...(hasTestEvidence ? ["Typecheck/test command evidence supplied."] : []),
+    ...(hasFirstClassCommandEvidence ? ["Command evidence artifact supplied."] : []),
     ...(hasFileEvidence ? ["File path evidence supplied."] : [])
   ];
 
@@ -46,6 +48,7 @@ export function assessAuditEvidence(text: string): VerifiedAuditAssessment {
   const claimsVerified = [
     ...(hasTestEvidence ? ["Typecheck/test evidence was supplied for at least one claim."] : []),
     ...(hasEvalEvidence ? ["Eval evidence was supplied for at least one claim."] : []),
+    ...(hasFirstClassCommandEvidence ? ["Command evidence was supplied for at least one claim."] : []),
     ...(hasTraceEvidence ? ["Trace evidence was supplied for runtime behavior review."] : []),
     ...(hasRunEvidence ? ["Run artifact evidence was supplied for runtime behavior review."] : []),
     ...(sufficiency.hasRelevantClaimSupport ? ["At least one evidence item is tied to the audited claim."] : [])

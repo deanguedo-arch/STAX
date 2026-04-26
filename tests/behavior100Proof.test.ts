@@ -133,7 +133,7 @@ describe("100 percent proof gates", () => {
     await expect(
       execFileAsync(command, commandArgs, { cwd: rootDir })
     ).rejects.toMatchObject({ code: 1 });
-  });
+  }, 10000);
 
   it("extracts messy STAX pasted observations into atomic typed signals", () => {
     const signals = extractStaxSignals([

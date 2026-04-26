@@ -67,7 +67,9 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
   const originalTrace = await readTrace(runDir);
   const runtime = await createDefaultRuntime({ rootDir, config });
   const replayed = await runtime.run(originalInput, [], {
-    mode: typeof originalTrace.mode === "string" ? (originalTrace.mode as RaxMode) : undefined
+    mode: typeof originalTrace.mode === "string" ? (originalTrace.mode as RaxMode) : undefined,
+    workspace: typeof originalTrace.workspace === "string" ? originalTrace.workspace : undefined,
+    linkedRepoPath: typeof originalTrace.linkedRepoPath === "string" ? originalTrace.linkedRepoPath : undefined
   });
   const outputExact = originalOutput === replayed.output;
   const replayTrace = await readTrace(path.join(rootDir, "runs", replayed.createdAt.slice(0, 10), replayed.runId));
@@ -102,6 +104,8 @@ export async function replayRun(input: ReplayInput): Promise<ReplayResult> {
 }
 
 type ReplayTrace = {
+  workspace?: unknown;
+  linkedRepoPath?: unknown;
   mode?: unknown;
   boundaryMode?: unknown;
   selectedAgent?: unknown;
@@ -125,6 +129,8 @@ async function readTrace(runDir: string): Promise<ReplayTrace> {
 
 function compareReplayTrace(original: ReplayTrace, replayed: ReplayTrace): string[] {
   const diffs: string[] = [];
+  compareField("workspace", original.workspace, replayed.workspace, diffs);
+  compareField("linkedRepoPath", original.linkedRepoPath, replayed.linkedRepoPath, diffs);
   compareField("mode", original.mode, replayed.mode, diffs);
   compareField("boundaryMode", original.boundaryMode, replayed.boundaryMode, diffs);
   compareField("selectedAgent", original.selectedAgent, replayed.selectedAgent, diffs);

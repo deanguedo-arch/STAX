@@ -72,7 +72,13 @@ async function readExpected(rootDir: string, name: string): Promise<string | und
 }
 
 export async function runEvals(
-  options: { rootDir?: string; folder?: "cases" | "redteam" | "regression"; mode?: string } = {}
+  options: {
+    rootDir?: string;
+    folder?: "cases" | "redteam" | "regression";
+    mode?: string;
+    workspace?: string;
+    linkedRepoPath?: string;
+  } = {}
 ): Promise<EvalResult> {
   const rootDir = options.rootDir ?? process.cwd();
   const runtime = await createDefaultRuntime({ rootDir });
@@ -91,7 +97,11 @@ export async function runEvals(
     const output = await runtime.run(
       input,
       [],
-      jsonCase ? { mode: jsonCase.mode as RaxMode } : {}
+      {
+        ...(jsonCase ? { mode: jsonCase.mode as RaxMode } : {}),
+        workspace: options.workspace,
+        linkedRepoPath: options.linkedRepoPath
+      }
     );
 
     if (jsonCase) {

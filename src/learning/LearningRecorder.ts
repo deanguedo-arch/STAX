@@ -22,6 +22,7 @@ export type CommandLearningInput = {
   artifactPaths?: string[];
   runId?: string;
   mode?: string;
+  workspace?: string;
 };
 
 export class LearningRecorder {
@@ -43,6 +44,7 @@ export class LearningRecorder {
     const event: LearningEvent = {
       eventId,
       runId: payload.runId,
+      workspace: payload.trace.workspace,
       createdAt: new Date().toISOString(),
       input: {
         raw: payload.input,
@@ -111,6 +113,7 @@ export class LearningRecorder {
       eventId,
       runId,
       commandId,
+      workspace: input.workspace,
       createdAt: new Date().toISOString(),
       command: {
         name: input.commandName,

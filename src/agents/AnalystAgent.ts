@@ -76,6 +76,17 @@ function projectStateEvidenceLines(text: string): string[] {
       .slice(0, 4);
     lines.push(...maturityLines.map((line) => `Mode maturity: ${line.replace(/^-\s+/, "")}`));
   }
+  if (text.includes("## Workspace Context")) {
+    const workspace = text.match(/-\s+Workspace:\s+([^\n]+)/)?.[1]?.trim();
+    lines.push(
+      /No active workspace/i.test(text)
+        ? "No active workspace was available; global project docs were used."
+        : `Active workspace context: ${workspace ?? "unknown"}.`
+    );
+  }
+  if (text.includes("## Repo Summary")) {
+    lines.push("Workspace repo summary context was supplied.");
+  }
   return lines;
 }
 
@@ -225,6 +236,13 @@ export class AnalystAgent implements Agent {
             "No approved project memory was retrieved."
           ),
           "",
+          ...(input.input.includes("## Repo Summary")
+            ? [
+                "## Repo Summary",
+                "- Workspace repo summary context was supplied to Project Brain.",
+                ""
+              ]
+            : []),
           "## Current Objective",
           "- Advance the repo from Behavior System v0.1 toward project governance modes while preserving STAX fitness behavior.",
           "",

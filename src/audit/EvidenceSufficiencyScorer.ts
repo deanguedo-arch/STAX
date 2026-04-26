@@ -37,7 +37,7 @@ export function scoreProofPacket(packet: ProofPacket): EvidenceSufficiencyScore 
 
 export function scoreEvidenceText(text: string): EvidenceSufficiencyScore {
   const lines = text.split("\n");
-  const hasPathEvidence = /\b(runs\/\d{4}-\d{2}-\d{2}\/run-[^\s]+|evals\/eval_results\/[^\s]+\.json|learning\/events\/hot\/[^\s]+\.json|src\/[A-Za-z0-9_.\/-]+|tests\/[A-Za-z0-9_.\/-]+)\b/i.test(text);
+  const hasPathEvidence = /\b(runs\/\d{4}-\d{2}-\d{2}\/run-[^\s]+|evals\/eval_results\/[^\s]+\.json|learning\/events\/hot\/[^\s]+\.json|evidence\/commands\/[^\s]+\.json|src\/[A-Za-z0-9_.\/-]+|tests\/[A-Za-z0-9_.\/-]+)\b/i.test(text);
   const hasCommandLineResult = lines.some(
     (line) =>
       /\b(npm run typecheck|npm test|npm run rax -- eval)\b/i.test(line) &&
@@ -46,6 +46,7 @@ export function scoreEvidenceText(text: string): EvidenceSufficiencyScore {
   );
   const hasEvalArtifact = /Latest Eval Result[\s\S]*Path:\s+evals\/eval_results\/.*\.json/i.test(text) ||
     /\bevals\/eval_results\/[^\s]+\.json\b/i.test(text);
+  const hasCommandEvidenceArtifact = /\bcmd-ev-[A-Za-z0-9-]+\b|\bevidence\/commands\/[^\s]+\.json\b/i.test(text);
   const hasTraceOrRun = /\brun-\d{4}-\d{2}-\d{2}T|\bruns\/\d{4}-\d{2}-\d{2}\/run-|trace\.json\b/i.test(text);
   const hasClaimSupport = /\b(ClaimSupported:|claim supported|Trace evidence|Eval evidence|Run artifact evidence|Latest eval artifact|Latest run folder|Trace: runs\/|Path:\s+evals\/)/i.test(text);
   const ambiguitySection = text.match(/## Proof Ambiguity Warnings([\s\S]*?)(?:\n##\s+|$)/i)?.[1] ?? "";
@@ -59,7 +60,7 @@ export function scoreEvidenceText(text: string): EvidenceSufficiencyScore {
 
   return finalizeScore({
     hasConcreteArtifact: hasPathEvidence || hasEvalArtifact,
-    hasCommandResult: hasCommandLineResult || hasEvalArtifact,
+    hasCommandResult: hasCommandLineResult || hasEvalArtifact || hasCommandEvidenceArtifact,
     hasTraceOrRun,
     hasRelevantClaimSupport: hasClaimSupport && (hasPathEvidence || hasEvalArtifact || hasTraceOrRun),
     hasOnlyUserProvidedClaims: !hasLocalEvidence && !hasPathEvidence && !hasEvalArtifact && !hasCommandLineResult,

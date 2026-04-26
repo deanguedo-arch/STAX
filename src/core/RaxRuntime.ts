@@ -35,6 +35,13 @@ export type RaxRuntimeOptions = {
   config?: DeepPartial<RaxConfig>;
 };
 
+export type RaxRunOptions = {
+  mode?: RaxMode;
+  detailLevel?: DetailLevel;
+  workspace?: string;
+  linkedRepoPath?: string;
+};
+
 export class RaxRuntime {
   constructor(
     private rootDir: string,
@@ -58,7 +65,7 @@ export class RaxRuntime {
   async run(
     input: string,
     context: string[] = [],
-    options: { mode?: RaxMode; detailLevel?: DetailLevel } = {}
+    options: RaxRunOptions = {}
   ): Promise<RaxOutput> {
     const runId = createRunId();
     const createdAt = new Date().toISOString();
@@ -104,6 +111,8 @@ export class RaxRuntime {
       const trace: RunTrace = {
         runId,
         createdAt,
+        workspace: options.workspace,
+        linkedRepoPath: options.linkedRepoPath,
         runtimeVersion: this.config.runtime.version,
         provider: this.provider.name,
         model: this.provider.model,
@@ -273,6 +282,8 @@ export class RaxRuntime {
       const trace: RunTrace = {
         runId,
         createdAt,
+        workspace: options.workspace,
+        linkedRepoPath: options.linkedRepoPath,
         runtimeVersion: this.config.runtime.version,
         provider: this.provider.name,
         model: this.provider.model,
@@ -432,6 +443,8 @@ export class RaxRuntime {
       const trace: RunTrace = {
         runId,
         createdAt,
+        workspace: options.workspace,
+        linkedRepoPath: options.linkedRepoPath,
         runtimeVersion: this.config.runtime.version,
         provider: this.provider.name,
         model: this.provider.model,
@@ -510,6 +523,8 @@ export class RaxRuntime {
     const trace: RunTrace = {
       runId,
       createdAt,
+      workspace: options.workspace,
+      linkedRepoPath: options.linkedRepoPath,
       runtimeVersion: this.config.runtime.version,
       provider: this.provider.name,
       model: this.provider.model,
