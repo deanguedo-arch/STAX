@@ -17,6 +17,11 @@ import { LearningQueue } from "./learning/LearningQueue.js";
 import { LearningRecorder } from "./learning/LearningRecorder.js";
 import { LearningRetention } from "./learning/LearningRetention.js";
 import { PromotionGate, type PromotionTarget } from "./learning/PromotionGate.js";
+import { CurriculumWorker } from "./lab/CurriculumWorker.js";
+import { LabMetrics } from "./lab/LabMetrics.js";
+import { LabRunner } from "./lab/LabRunner.js";
+import { RedTeamGenerator } from "./lab/RedTeamGenerator.js";
+import { ScenarioGenerator } from "./lab/ScenarioGenerator.js";
 import { MemoryStore } from "./memory/MemoryStore.js";
 import { ModeRegistry } from "./modes/ModeRegistry.js";
 import { PolicyCompiler } from "./policy/PolicyCompiler.js";
@@ -51,6 +56,7 @@ const knownCommands = new Set([
   "trace",
   "show",
   "learn",
+  "lab",
   "help"
 ]);
 
@@ -577,6 +583,56 @@ async function learnCommand(args: ParsedArgs): Promise<void> {
   throw new Error("Usage: rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated|retention");
 }
 
+async function labCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0];
+  if (action === "curriculum") {
+    const domain = typeof args.flags.domain === "string" ? args.flags.domain : "";
+    const count = Number(typeof args.flags.count === "string" ? args.flags.count : "25");
+    const result = await new CurriculumWorker().generate({ domain, count });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab curriculum", args, true, JSON.stringify(result.workerResult), [result.path]);
+    return;
+  }
+  if (action === "scenarios") {
+    const curriculumPath = typeof args.flags.curriculum === "string" ? args.flags.curriculum : "";
+    if (!curriculumPath) throw new Error("Usage: rax lab scenarios --curriculum <file>");
+    const result = await new ScenarioGenerator().generate({ curriculumPath });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab scenarios", args, true, JSON.stringify(result.workerResult), [result.path]);
+    return;
+  }
+  if (action === "redteam") {
+    const count = Number(typeof args.flags.count === "string" ? args.flags.count : "25");
+    const result = await new RedTeamGenerator().generate({ count });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab redteam", args, true, JSON.stringify(result.workerResult), [result.path]);
+    return;
+  }
+  if (action === "run") {
+    const file = typeof args.flags.file === "string" ? args.flags.file : "";
+    if (!file) throw new Error("Usage: rax lab run --file <scenario-file>");
+    const result = await new LabRunner().runFile({ file });
+    logInfo(JSON.stringify(result, null, 2));
+    await recordCommandEvent("lab run", args, true, JSON.stringify(result.record), [result.path]);
+    return;
+  }
+  if (action === "report") {
+    const report = await new LabMetrics().report();
+    logInfo(JSON.stringify(report, null, 2));
+    await recordCommandEvent("lab report", args, true, JSON.stringify(report), ["learning/lab/reports/latest.json"]);
+    return;
+  }
+  if (action === "queue") {
+    const summary = await new LabMetrics().queueSummary();
+    logInfo(summary);
+    await recordCommandEvent("lab queue", args, true, summary);
+    return;
+  }
+  throw new Error(
+    "Usage: rax lab curriculum --domain <domain> --count <n> | scenarios --curriculum <file> | redteam --count <n> | run --file <scenario-file> | report | queue"
+  );
+}
+
 function promotionTarget(args: ParsedArgs): PromotionTarget {
   if (args.flags.eval) return "eval";
   if (args.flags.correction) return "correction";
@@ -677,7 +733,8 @@ function help(): void {
     "  rax codex-audit-local --report report.md",
     "  rax trace <run-id>",
     "  rax show <run-id>|last [--summary]",
-    "  rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated"
+    "  rax learn queue|inspect|event|propose|promote|reject|metrics|failures|repeated",
+    "  rax lab curriculum|scenarios|redteam|run|report|queue"
   ].join("\n"));
 }
 
@@ -716,6 +773,8 @@ async function main(): Promise<void> {
     await showCommand(args);
   } else if (args.command === "learn") {
     await learnCommand(args);
+  } else if (args.command === "lab") {
+    await labCommand(args);
   } else {
     help();
   }

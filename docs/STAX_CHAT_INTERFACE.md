@@ -52,6 +52,9 @@ Trace: <trace path>
 /queue
 /metrics
 /learn last
+/lab report
+/lab queue
+/lab redteam summary
 /eval
 /regression
 /replay last
@@ -70,6 +73,8 @@ Trace: <trace path>
 Approvals and promotions remain CLI-only in this version. Chat may inspect, evaluate, replay, queue, and propose; it does not promote durable system state.
 
 `/compact` creates a pending thread summary candidate only. It is not approved memory and is not retrieved as durable memory unless reviewed and promoted outside chat.
+
+Learning Lab chat commands are read-only. `/lab report`, `/lab queue`, and `/lab redteam summary` expose lab state without promoting candidates.
 
 ## Thread Storage
 

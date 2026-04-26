@@ -11,3 +11,8 @@ export { PolicyCompiler } from "./policy/PolicyCompiler.js";
 export { PolicyLoader } from "./policy/PolicyLoader.js";
 export { PolicySelector } from "./policy/PolicySelector.js";
 export { TrainingExporter } from "./training/TrainingExporter.js";
+export { CurriculumWorker } from "./lab/CurriculumWorker.js";
+export { ScenarioGenerator } from "./lab/ScenarioGenerator.js";
+export { RedTeamGenerator } from "./lab/RedTeamGenerator.js";
+export { LabRunner } from "./lab/LabRunner.js";
+export { LabMetrics } from "./lab/LabMetrics.js";

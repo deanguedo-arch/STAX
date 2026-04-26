@@ -59,11 +59,26 @@ Useful slash commands:
 /queue
 /metrics
 /learn last
+/lab report
+/lab queue
 /eval
 /replay last
 /clear
 /compact
 /exit
+```
+
+## Learning Lab Workers
+
+The Learning Lab creates synthetic scenario candidates for controlled STAX exposure. Workers are not autonomous agents and do not promote memory, evals, training records, policies, schemas, or modes.
+
+```bash
+npm run rax -- lab curriculum --domain planning --count 5
+npm run rax -- lab scenarios --curriculum learning/lab/curricula/<file>.json
+npm run rax -- lab run --file learning/lab/scenarios/<file>.json
+npm run rax -- lab redteam --count 5
+npm run rax -- lab report
+npm run rax -- lab queue
 ```
 
 ## Run With Mock Provider

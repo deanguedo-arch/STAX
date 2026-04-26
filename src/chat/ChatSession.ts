@@ -8,6 +8,7 @@ import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
 import { LearningQueue } from "../learning/LearningQueue.js";
 import { LearningRecorder } from "../learning/LearningRecorder.js";
+import { LabMetrics } from "../lab/LabMetrics.js";
 import { MemoryStore } from "../memory/MemoryStore.js";
 import type { RaxMode } from "../schemas/Config.js";
 import { ThreadStore, type ChatThread } from "./ThreadStore.js";
@@ -203,6 +204,21 @@ export class ChatSession {
         return { output: proposal ? JSON.stringify(proposal, null, 2) : "No proposal needed for trace-only event." };
       }
       return { output: "Usage: /learn last | queue | metrics | inspect <event-id> | propose last" };
+    }
+
+    if (command === "/lab") {
+      const [labAction = "", labArg = ""] = arg.split(/\s+/);
+      const metrics = new LabMetrics(this.rootDir);
+      if (labAction === "report") {
+        return { output: JSON.stringify(await metrics.readLatest(), null, 2) };
+      }
+      if (labAction === "queue") {
+        return { output: await metrics.queueSummary() };
+      }
+      if (labAction === "redteam" && labArg === "summary") {
+        return { output: await metrics.redteamSummary() };
+      }
+      return { output: "Usage: /lab report | queue | redteam summary" };
     }
 
     if (command === "/eval" || command === "/regression") {
@@ -590,6 +606,7 @@ export class ChatSession {
       "/queue",
       "/metrics",
       "/learn last",
+      "/lab report|queue|redteam summary",
       "/prompt <task>",
       "/test-gap <feature>",
       "/policy-drift <change>",
