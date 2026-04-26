@@ -37,6 +37,7 @@ This is chat-first, not chat-only. CLI commands remain the backend for tests, au
 
 - /help
 - /mode auto|planning|learning_unit|project_brain|codex_audit|stax_fitness
+- /status
 - /last
 - /show last
 - /show <run-id>
@@ -48,6 +49,8 @@ This is chat-first, not chat-only. CLI commands remain the backend for tests, au
 - /replay last
 - /thread
 - /new [title]
+- /clear
+- /compact
 - /exit
 
 Approvals and promotions remain CLI-only.
@@ -62,12 +65,16 @@ Approvals and promotions remain CLI-only.
 - /metrics returns a compact learning metric summary.
 - /learn last runs learning_unit against the latest chat run.
 - /eval and /replay last record command LearningEvents.
+- /status shows workspace, thread, mode, latest run, latest LearningEvent, queue counts, and learning metrics.
+- /clear clears only active context; thread history and learning artifacts remain intact.
+- /compact writes a pending thread summary candidate under chats/summary_candidates/ and does not promote it to memory.
 - Replay now ignores non-directory entries in runs/ and preserves the original traced mode during replay.
 
 ## Tests Added
 
 - Chat thread persistence with linked runId and LearningEvent ID.
 - Chat-first slash aliases: /new, /mode, /last, /queue, /metrics, /learn last, /thread.
+- Chat polish commands: /status, /clear, and /compact.
 - Replay ignores stray non-directory entries such as .DS_Store in runs/.
 - Replay preserves the original traced mode for explicit-mode runs.
 
@@ -80,7 +87,7 @@ Result: passed
 npm test
 Result: passed
 Test Files: 33 passed
-Tests: 98 passed
+Tests: 99 passed
 
 npm run build
 Result: passed
@@ -198,6 +205,32 @@ Mode: planning
 Messages: 14
 LinkedRuns: 7
 LinkedLearningEvents: 7
+```
+
+## Status Example
+
+```txt
+npm run rax -- chat --once "/status"
+
+STAX Chat Status
+Workspace: default
+Thread: thread_default
+Mode: planning
+LatestRun: run-...
+LatestLearningEvent: learn-...
+Messages: 14
+ActiveContextItems: 0
+```
+
+## Compact Example
+
+```txt
+npm run rax -- chat --once "/compact"
+
+Thread summary candidate created.
+Path: chats/summary_candidates/summary_...
+Approval: required before memory promotion.
+Active chat context was compacted; thread history was kept.
 ```
 
 ## Documentation Updated

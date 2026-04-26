@@ -45,6 +45,7 @@ Trace: <trace path>
 ```txt
 /help
 /mode auto|planning|learning_unit|project_brain|codex_audit|stax_fitness
+/status
 /last
 /show last
 /show <run-id>
@@ -56,6 +57,8 @@ Trace: <trace path>
 /replay last
 /thread
 /new [title]
+/clear
+/compact
 /state
 /prompt <task>
 /test-gap <feature>
@@ -65,6 +68,8 @@ Trace: <trace path>
 ```
 
 Approvals and promotions remain CLI-only in this version. Chat may inspect, evaluate, replay, queue, and propose; it does not promote durable system state.
+
+`/compact` creates a pending thread summary candidate only. It is not approved memory and is not retrieved as durable memory unless reviewed and promoted outside chat.
 
 ## Thread Storage
 

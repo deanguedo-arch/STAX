@@ -387,7 +387,7 @@ async function chatCommand(args: ParsedArgs): Promise<void> {
     return;
   }
 
-  logInfo("STAX chat. Type /help for commands, /exit to exit.");
+  logInfo(await session.headerText());
   const rl = createInterface({ input, output });
   try {
     while (true) {

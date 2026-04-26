@@ -54,12 +54,15 @@ Useful slash commands:
 
 ```txt
 /mode planning
+/status
 /last
 /queue
 /metrics
 /learn last
 /eval
 /replay last
+/clear
+/compact
 /exit
 ```
 

@@ -64,6 +64,17 @@ export class ChatSession {
     return { output };
   }
 
+  async headerText(): Promise<string> {
+    const thread = await this.ensureThread();
+    return [
+      "STAX Chat",
+      `Workspace: ${this.workspace}`,
+      `Thread: ${thread.threadId}`,
+      `Mode: ${this.modeOverride ?? "auto"}`,
+      "Type /help for commands, /exit to exit."
+    ].join("\n");
+  }
+
   private async handleCommand(commandLine: string): Promise<ChatTurnResult> {
     const [command = "", ...rest] = commandLine.split(/\s+/);
     const arg = rest.join(" ").trim();
@@ -101,6 +112,10 @@ export class ChatSession {
       return { output: `project: ${this.workspace}` };
     }
 
+    if (command === "/status") {
+      return { output: await this.statusSummary() };
+    }
+
     if (command === "/thread") {
       const thread = await this.ensureThread();
       return {
@@ -125,6 +140,16 @@ export class ChatSession {
       this.runIds = [];
       this.lastAssistantOutput = "";
       return { output: `new thread: ${this.thread.threadId}` };
+    }
+
+    if (command === "/clear") {
+      this.context = [];
+      this.lastAssistantOutput = "";
+      return { output: "Active chat context cleared. Thread history and learning artifacts were kept." };
+    }
+
+    if (command === "/compact") {
+      return { output: await this.createThreadSummaryCandidate() };
     }
 
     if (command === "/runs") {
@@ -344,6 +369,7 @@ export class ChatSession {
       "",
       `Run: ${result.runId}`,
       `Mode: ${result.taskMode}`,
+      ...(this.modeOverride ? [`ModeOverride: ${this.modeOverride}`] : []),
       `LearningEvent: ${learningEventId ?? "none"}`,
       `Queues: ${trace.learningQueues?.join(", ") || "none"}`,
       `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`
@@ -423,6 +449,37 @@ export class ChatSession {
     ].join("\n");
   }
 
+  private async statusSummary(): Promise<string> {
+    const thread = await this.ensureThread();
+    const queueItems = await new LearningQueue(this.rootDir).list();
+    const metrics = await new LearningMetricsStore(this.rootDir).read();
+    const queueCounts = new Map<string, number>();
+    for (const item of queueItems) {
+      queueCounts.set(item.queueType, (queueCounts.get(item.queueType) ?? 0) + 1);
+    }
+    const queueLines = queueCounts.size
+      ? Array.from(queueCounts.entries()).map(([type, count]) => `- ${type}: ${count}`)
+      : ["- none"];
+    return [
+      "STAX Chat Status",
+      `Workspace: ${this.workspace}`,
+      `Thread: ${thread.threadId}`,
+      `Mode: ${this.modeOverride ?? "auto"}`,
+      `LatestRun: ${this.runIds.at(-1) ?? "none"}`,
+      `LatestLearningEvent: ${thread.linkedLearningEvents.at(-1) ?? "none"}`,
+      `Messages: ${thread.messages.length}`,
+      `ActiveContextItems: ${this.context.length}`,
+      "",
+      "Queue Counts:",
+      ...queueLines,
+      "",
+      "Learning Metrics:",
+      `learningEventsCreated: ${metrics.learningEventsCreated}`,
+      `genericOutputRate: ${metrics.genericOutputRate}`,
+      `planningSpecificityScore: ${metrics.planningSpecificityScore}`
+    ].join("\n");
+  }
+
   private async metricsSummary(): Promise<string> {
     const metrics = await new LearningMetricsStore(this.rootDir).read();
     return [
@@ -436,6 +493,60 @@ export class ChatSession {
       `candidateApprovalRate: ${metrics.candidateApprovalRate}`,
       `candidateRejectionRate: ${metrics.candidateRejectionRate}`,
       `planningSpecificityScore: ${metrics.planningSpecificityScore}`
+    ].join("\n");
+  }
+
+  private async createThreadSummaryCandidate(): Promise<string> {
+    const thread = await this.ensureThread();
+    if (thread.messages.length === 0) {
+      return "No thread messages to compact.";
+    }
+    const createdAt = new Date().toISOString();
+    const candidateId = `summary_${createdAt.replace(/[^0-9]/g, "").slice(0, 17)}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`;
+    const recentMessages = thread.messages.slice(-12).map((message) => {
+      const compactContent = message.content.replace(/\s+/g, " ").trim().slice(0, 280);
+      const links = [message.runId ? `run=${message.runId}` : undefined, message.learningEventId ? `event=${message.learningEventId}` : undefined]
+        .filter(Boolean)
+        .join(", ");
+      return `- ${message.role}: ${compactContent}${links ? ` (${links})` : ""}`;
+    });
+    const content = [
+      "# Chat Summary Candidate",
+      "",
+      `Candidate: ${candidateId}`,
+      `Thread: ${thread.threadId}`,
+      `Workspace: ${thread.workspace}`,
+      `Mode: ${thread.mode}`,
+      `CreatedAt: ${createdAt}`,
+      "",
+      "## Recent Messages",
+      ...recentMessages,
+      "",
+      "## Linked Runs",
+      ...(thread.linkedRuns.length ? thread.linkedRuns.slice(-12).map((runId) => `- ${runId}`) : ["- none"]),
+      "",
+      "## Linked LearningEvents",
+      ...(thread.linkedLearningEvents.length ? thread.linkedLearningEvents.slice(-12).map((eventId) => `- ${eventId}`) : ["- none"]),
+      "",
+      "## Approval Required",
+      "This is a thread summary candidate only. It is not approved memory and must not be retrieved as durable memory unless explicitly reviewed and promoted."
+    ].join("\n");
+    const summaryDir = path.join(this.rootDir, "chats", "summary_candidates");
+    await fs.mkdir(summaryDir, { recursive: true });
+    const summaryPath = path.join(summaryDir, `${candidateId}.md`);
+    await fs.writeFile(summaryPath, content, "utf8");
+    this.context = [`Thread summary candidate: ${path.relative(this.rootDir, summaryPath)}`];
+    this.thread = await this.threadStore.appendMessage(thread.threadId, {
+      role: "system",
+      content: `Thread summary candidate created at ${path.relative(this.rootDir, summaryPath)}. Approval required before memory promotion.`
+    });
+    return [
+      "Thread summary candidate created.",
+      `Path: ${path.relative(this.rootDir, summaryPath)}`,
+      "Approval: required before memory promotion.",
+      "Active chat context was compacted; thread history was kept."
     ].join("\n");
   }
 
@@ -471,6 +582,7 @@ export class ChatSession {
       "/help",
       "/mode auto|<mode>",
       "/project <name>",
+      "/status",
       "/memory search <query>",
       "/remember <fact>",
       "/state",
@@ -487,6 +599,8 @@ export class ChatSession {
       "/replay last|<run-id>",
       "/thread",
       "/new [title]",
+      "/clear",
+      "/compact",
       "/show last|<run-id>",
       "/learn last|queue|metrics|inspect <event-id>|propose last",
       "/runs",

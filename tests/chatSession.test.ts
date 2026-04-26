@@ -42,6 +42,7 @@ describe("ChatSession", () => {
     const mode = await session.handleLine("/mode planning");
     const answer = await session.handleLine("Design Project Brain mode.");
     const last = await session.handleLine("/last");
+    const status = await session.handleLine("/status");
     const queue = await session.handleLine("/queue");
     const metrics = await session.handleLine("/metrics");
     const learn = await session.handleLine("/learn last");
@@ -50,11 +51,35 @@ describe("ChatSession", () => {
     expect(newThread.output).toContain("new thread: thread_");
     expect(mode.output).toBe("mode: planning");
     expect(answer.output).toContain("Run: run-");
+    expect(answer.output).toContain("ModeOverride: planning");
     expect(last.output).toContain("LearningEvent: learn-");
+    expect(status.output).toContain("STAX Chat Status");
+    expect(status.output).toContain("LatestRun: run-");
     expect(queue.output).toMatch(/No learning queue items|queueItemId|\[/);
     expect(metrics.output).toContain("learningEventsCreated");
     expect(learn.output).toContain("## Candidate Queues");
     expect(thread.output).toContain("Messages:");
+  });
+
+  it("clears active context and creates governed compact summary candidates", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    expect(await session.headerText()).toContain("STAX Chat");
+    await session.handleLine("what are we doing next?");
+    const compact = await session.handleLine("/compact");
+    const clear = await session.handleLine("/clear");
+    const thread = await new ThreadStore(rootDir).read("thread_default");
+    const summaryPath = compact.output.match(/Path: (.+)/)?.[1];
+
+    expect(compact.output).toContain("Thread summary candidate created");
+    expect(compact.output).toContain("Approval: required");
+    expect(summaryPath).toBeTruthy();
+    expect(await fs.readFile(path.join(rootDir, summaryPath ?? ""), "utf8")).toContain("## Approval Required");
+    expect(clear.output).toContain("Thread history and learning artifacts were kept");
+    expect(thread?.messages.at(-1)?.role).toBe("system");
+    expect(thread?.messages.at(-1)?.content).toContain("Approval required");
   });
 
   it("creates pending memory without making it retrievable", async () => {

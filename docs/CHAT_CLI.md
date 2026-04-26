@@ -31,6 +31,7 @@ Trace: <trace path>
 /help
 /mode auto|<mode>
 /project <name>
+/status
 /last
 /show last|<run-id>
 /queue
@@ -41,6 +42,8 @@ Trace: <trace path>
 /replay last|<run-id>
 /thread
 /new [title]
+/clear
+/compact
 /memory search <query>
 /remember <fact>
 /state
@@ -62,6 +65,9 @@ Trace: <trace path>
 - `/learn last` runs Learning Unit against the latest chat run.
 - `/queue` and `/metrics` summarize learning state without opening files.
 - `/eval`, `/regression`, and `/replay last` keep test/replay checks inside chat while still recording command LearningEvents.
+- `/status` shows workspace, thread, mode, latest run, latest LearningEvent, queue counts, and learning metrics.
+- `/clear` clears only the active context window. It keeps thread history, runs, traces, and LearningEvents.
+- `/compact` writes a thread summary candidate under `chats/summary_candidates/` and requires review before any memory promotion.
 
 ## Threads
 
