@@ -236,6 +236,13 @@ export class ChatIntentClassifier {
         reasonCode: mentionedWorkspace ? "workspace_risk_question" : "repo_risk_question"
       };
     }
+    if (/\b(biggest|main|largest|top)\b.*\b(operational problem|operating problem|workflow problem|repo problem|project problem)\b/.test(input)) {
+      return {
+        workspace: mentionedWorkspace,
+        objective: "Identify the highest verified operating-state risk from read-only repo evidence.",
+        reasonCode: mentionedWorkspace ? "workspace_operating_state_question" : "repo_operating_state_question"
+      };
+    }
     if (/\bfix (this|current) (repo|repository|project|workspace)\b/.test(input) || /\bfix it\b/.test(input) && currentRepo) {
       return {
         objective: "Audit and plan next allowed actions for the target repo without mutating it.",
@@ -268,13 +275,15 @@ export class ChatIntentClassifier {
   }
 
   private extractAuditWorkspace(input: string, context: ChatIntentContext): string | undefined {
-    const match = input.match(/\baudit\s+(?:workspace\s+|project\s+|repo\s+|repository\s+)?([a-z0-9_-]+(?:\s+[a-z0-9_-]+){0,2})\b/);
+    const mentioned = this.findMentionedWorkspace(input, context);
+    if (mentioned) return mentioned;
+
+    const match = input.match(/\baudit\s+(?:workspace\s+|project\s+|repo\s+|repository\s+)?([a-z0-9_-]+)\b/);
     const raw = match?.[1]?.trim();
     if (!raw || /^(this|current|the|my|last|it|that)$/.test(raw)) return undefined;
-    const candidate = raw.replace(/\s+/g, "-");
-    const exact = this.matchKnownWorkspace(candidate, context);
+    const exact = this.matchKnownWorkspace(raw, context);
     if (exact) return exact;
-    return candidate;
+    return raw;
   }
 
   private matchKnownWorkspace(candidate: string, context: ChatIntentContext): string | undefined {

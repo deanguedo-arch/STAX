@@ -134,6 +134,44 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("Tests were not run in the linked repo.");
   });
 
+  it("answers operating-state questions with the highest verified repo risk instead of only listing scripts", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.mkdir(path.join(linkedRepo, "scripts", "tests"), { recursive: true });
+    await fs.mkdir(path.join(linkedRepo, "docs", "ops"), { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({ scripts: { test: "vitest run", typecheck: "tsc --noEmit" } }),
+      "utf8"
+    );
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n\nActive workspace proof.", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "src", "index.ts"), "export const value = 1;\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "scripts", "tests", "operator.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await fs.writeFile(
+      path.join(linkedRepo, "docs", "ops", "ACTIVE_HANDOFF.md"),
+      "# Active Handoff\n\n- One red test still fails.\n- Manual browser check still needs validation.\n",
+      "utf8"
+    );
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("what is the biggest operational problem right now?");
+
+    expect(result.output).toMatch(/^## Direct Answer/);
+    expect(result.output).toContain("Biggest verified operating problem: handoff/validation drift.");
+    expect(result.output).toContain("Tests/scripts were found");
+    expect(result.output).toContain("pass/fail is unknown");
+    expect(result.output).toContain("## One Next Step");
+    expect(result.output).toContain("Run `npm run typecheck`");
+    expect(result.output).toContain("paste back the full output");
+    expect(result.output).toContain("ProblemMovement: needs_evidence");
+    expect(result.output).toContain("Operation: workspace_repo_audit");
+    expect(result.output).toContain("docs/ops/ACTIVE_HANDOFF.md");
+    expect(result.output).not.toContain("STAX found test/script evidence");
+  });
+
   it("turns fix-this-repo language into an audit plan without mutating the linked repo", async () => {
     const rootDir = await tempRoot();
     const linkedRepo = path.join(rootDir, "linked-canvas");

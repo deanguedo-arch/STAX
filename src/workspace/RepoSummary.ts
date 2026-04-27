@@ -217,13 +217,15 @@ async function readConfigFiles(repoRoot: string): Promise<SafeTextRead[]> {
 }
 
 async function listTestTrees(repoRoot: string): Promise<{ files: string[]; skipped: string[] }> {
-  const [tests, test] = await Promise.all([
+  const [tests, test, scriptsTests, e2e] = await Promise.all([
     listTree(repoRoot, "tests", 3),
-    listTree(repoRoot, "test", 3)
+    listTree(repoRoot, "test", 3),
+    listTree(repoRoot, path.join("scripts", "tests"), 3),
+    listTree(repoRoot, "e2e", 4)
   ]);
   return {
-    files: [...tests.files, ...test.files],
-    skipped: [...tests.skipped, ...test.skipped]
+    files: [...tests.files, ...test.files, ...scriptsTests.files, ...e2e.files],
+    skipped: [...tests.skipped, ...test.skipped, ...scriptsTests.skipped, ...e2e.skipped]
   };
 }
 

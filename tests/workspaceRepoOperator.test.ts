@@ -14,6 +14,8 @@ async function createFixtureRepo(): Promise<string> {
   const repo = await tempRepo();
   await fs.mkdir(path.join(repo, "src"), { recursive: true });
   await fs.mkdir(path.join(repo, "tests"), { recursive: true });
+  await fs.mkdir(path.join(repo, "scripts", "tests"), { recursive: true });
+  await fs.mkdir(path.join(repo, "docs", "ops"), { recursive: true });
   await fs.mkdir(path.join(repo, "node_modules", "pkg"), { recursive: true });
   await fs.mkdir(path.join(repo, ".git"), { recursive: true });
   await fs.mkdir(path.join(repo, "dist"), { recursive: true });
@@ -25,6 +27,13 @@ async function createFixtureRepo(): Promise<string> {
   await fs.writeFile(path.join(repo, "README.md"), "# Fixture Repo\n\nProof fixture.", "utf8");
   await fs.writeFile(path.join(repo, "src", "index.ts"), "export const ok = true;\n", "utf8");
   await fs.writeFile(path.join(repo, "tests", "index.test.ts"), "expect(true).toBe(true);\n", "utf8");
+  await fs.writeFile(path.join(repo, "scripts", "tests", "operator.test.ts"), "expect(true).toBe(true);\n", "utf8");
+  await fs.writeFile(
+    path.join(repo, "docs", "ops", "ACTIVE_HANDOFF.md"),
+    "# Handoff\n\n- Status: complete\n- Known risks / follow-up\n- One older red test still fails.\n- Manual browser spot-check still needs validation.\n",
+    "utf8"
+  );
+  await fs.writeFile(path.join(repo, "docs", "ops", "FAST_PATHS.md"), "# Fast Paths\n", "utf8");
   await fs.writeFile(path.join(repo, "node_modules", "pkg", "index.js"), "module.exports = {}\n", "utf8");
   await fs.writeFile(path.join(repo, ".git", "config"), "secret\n", "utf8");
   await fs.writeFile(path.join(repo, "dist", "bundle.js"), "compiled\n", "utf8");
@@ -52,9 +61,14 @@ describe("workspace repo operator evidence pack", () => {
     expect(pack.inspectedFiles).toContain("README.md");
     expect(pack.sourceFiles).toContain(path.join("src", "index.ts"));
     expect(pack.testFiles).toContain(path.join("tests", "index.test.ts"));
+    expect(pack.testFiles).toContain(path.join("scripts", "tests", "operator.test.ts"));
+    expect(pack.operationalFiles).toContain(path.join("docs", "ops", "ACTIVE_HANDOFF.md"));
     expect(pack.scripts).toContainEqual({ name: "test", command: "vitest run" });
     expect(pack.markdown).toContain("## Scripts / Test Commands Found");
+    expect(pack.markdown).toContain("## Operational Files Checked");
     expect(pack.markdown).toContain("Tests were not run in the linked repo.");
+    expect(pack.riskFlags).toContain("active_handoff_mentions_red_or_failing_test");
+    expect(pack.riskFlags).toContain("active_handoff_has_unvalidated_manual_check");
   });
 
   it("skips ignored, secret-like, binary, and symlink paths", async () => {
@@ -112,5 +126,10 @@ describe("workspace repo operator evidence pack", () => {
     expect(classifier.classify("what is risky in this repo?").intent).toBe("workspace_repo_audit");
     expect(classifier.classify("fix this repo").intent).toBe("workspace_repo_audit");
     expect(classifier.classify("what tests exist in canvas-helper?", { knownWorkspaces: ["canvas-helper"] }).workspace).toBe("canvas-helper");
+    expect(classifier.classify("audit canvas-helper as the active workspace", { knownWorkspaces: ["canvas-helper"] }).workspace).toBe("canvas-helper");
+    const operatingState = classifier.classify("what is the biggest operational problem in canvas-helper?", { knownWorkspaces: ["canvas-helper"] });
+    expect(operatingState.intent).toBe("workspace_repo_audit");
+    expect(operatingState.workspace).toBe("canvas-helper");
+    expect(operatingState.reasonCodes).toContain("workspace_operating_state_question");
   });
 });

@@ -119,6 +119,9 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
     }
     return "STAX did not modify the repo. It performed read-only inspection and a governed audit so the next move can be based on evidence instead of a broad fix request.";
   }
+  if (isOperatingStateQuestion(plan)) {
+    return operatingStateAnswer(result, foundTestsOrScripts);
+  }
   if (foundTestsOrScripts) {
     const scripts = scriptNames(result);
     const tests = testFiles(result);
@@ -136,6 +139,9 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
   }
   if (result.deferred || !result.executed) {
     return ensurePasteBack(result.nextAllowedActions[0]?.trim() || "Use the explicit slash or CLI command for this operation and paste back the output.");
+  }
+  if (isOperatingStateQuestion(plan)) {
+    return `Run \`${operatingProofCommand(result)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
   }
   if (hasTestsOrScripts(result)) {
     return `Run \`${testCommand(result)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing test names if any.`;
@@ -199,8 +205,86 @@ function testCommand(result: OperationExecutionResult): string {
   return testScript ? `npm run ${testScript}` : "npm test";
 }
 
+function operatingProofCommand(result: OperationExecutionResult): string {
+  const scripts = scriptNames(result);
+  if (scripts.includes("typecheck")) return "npm run typecheck";
+  return testCommand(result);
+}
+
 function repoPath(result: OperationExecutionResult): string | undefined {
   return result.evidenceChecked.find((item) => item.startsWith("RepoPath: "))?.replace("RepoPath: ", "");
+}
+
+function isOperatingStateQuestion(plan: OperationPlan): boolean {
+  return plan.reasonCodes.some((code) => code === "repo_operating_state_question" || code === "workspace_operating_state_question");
+}
+
+function operatingStateAnswer(result: OperationExecutionResult, foundTestsOrScripts: boolean): string {
+  const risks = sectionItems(result.result, "Risks");
+  const missingEvidence = sectionItems(result.result, "Missing Evidence");
+  const operationalFiles = sectionItems(result.result, "Operational Files Checked");
+  const gitStatus = gitStatusBlock(result.result);
+  const testHonesty = foundTestsOrScripts ? " Tests/scripts were found, but STAX did not run them, so pass/fail is unknown." : "";
+  const evidenceSuffix = [
+    gitStatus && !hasChangedFiles(gitStatus) ? "git status is clean" : undefined,
+    operationalFiles.length ? `operational docs inspected (${operationalFiles.slice(0, 2).join(", ")})` : undefined
+  ].filter(Boolean).join("; ");
+
+  const lead = highestOperatingRisk(risks, missingEvidence);
+  if (lead) {
+    return `${lead}${testHonesty}${evidenceSuffix ? ` Verified context: ${evidenceSuffix}.` : ""}`;
+  }
+
+  return `No single operational failure was verified from read-only evidence. Current verified state: ${evidenceSuffix || "repo evidence was inspected read-only"}; the remaining unknown is command/test pass-fail because STAX did not run the linked repo.${testHonesty}`;
+}
+
+function highestOperatingRisk(risks: string[], missingEvidence: string[]): string | undefined {
+  if (risks.includes("git_worktree_has_changes")) {
+    return "Biggest verified operating problem: worktree ambiguity. The linked repo has uncommitted changes, so any audit or fix could mix current work with stale assumptions.";
+  }
+  if (risks.includes("active_handoff_mentions_red_or_failing_test") || risks.includes("active_handoff_has_unvalidated_manual_check")) {
+    return "Biggest verified operating problem: handoff/validation drift. The active handoff mentions failing or unvalidated checks, so the next work should first prove the current baseline.";
+  }
+  if (risks.includes("duplicate_copy_file_names_detected")) {
+    return "Biggest verified operating problem: duplicate-file noise. The repo contains copy-style filenames that can make agents edit the wrong surface unless paths are tightly specified.";
+  }
+  if (risks.includes("no_test_script_detected")) {
+    return "Biggest verified operating problem: missing test entrypoint. STAX found no package test script, so proof has to be reconstructed from narrower commands or docs.";
+  }
+  if (risks.includes("no_test_tree_detected")) {
+    return "Biggest verified operating problem: missing test tree. STAX could not verify a test surface from the repo shape.";
+  }
+  if (risks.includes("git_status_unavailable")) {
+    return "Biggest verified operating problem: missing git-status evidence. STAX could inspect files, but it could not verify whether the linked repo is clean.";
+  }
+  if (missingEvidence.includes("src")) {
+    return "Biggest verified operating problem: repo-shape mismatch. The workspace does not expose a conventional src tree, so STAX has to target scripts/tests, e2e, and ops docs instead of using generic repo assumptions.";
+  }
+  if (missingEvidence.length) {
+    return `Biggest verified operating problem: missing expected evidence (${missingEvidence.slice(0, 3).join(", ")}).`;
+  }
+  return undefined;
+}
+
+function sectionItems(markdown: string, heading: string): string[] {
+  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = markdown.match(new RegExp(`## ${escaped}\\n([\\s\\S]*?)(?=\\n## |\\nRun: |$)`));
+  if (!match?.[1]) return [];
+  return match[1]
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("- "))
+    .map((line) => line.replace(/^-\s+/, "").trim())
+    .filter((line) => line && line.toLowerCase() !== "none");
+}
+
+function gitStatusBlock(markdown: string): string | undefined {
+  const match = markdown.match(/## Git Status\n```txt\n([\s\S]*?)\n```/);
+  return match?.[1]?.trim();
+}
+
+function hasChangedFiles(gitStatus: string): boolean {
+  return /\n\s*[MADRCU?]{1,2}\s+/m.test(gitStatus);
 }
 
 function matchResultLine(result: string, pattern: RegExp): string | undefined {
