@@ -45,4 +45,16 @@ describe("runEvals", () => {
     expect(result.criticalFailures).toBe(1);
     expect(result.passRate).toBe(0);
   });
+
+  it("writes distinct result artifacts for parallel eval runs", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-eval-parallel-"));
+    await fs.mkdir(path.join(rootDir, "evals", "cases"), { recursive: true });
+    await fs.writeFile(path.join(rootDir, "evals", "cases", "case-1.txt"), "Analyze patterns", "utf8");
+
+    await Promise.all([runEvals({ rootDir }), runEvals({ rootDir })]);
+
+    const resultFiles = await fs.readdir(path.join(rootDir, "evals", "eval_results"));
+    expect(resultFiles.filter((file) => file.endsWith(".json"))).toHaveLength(2);
+    expect(new Set(resultFiles).size).toBe(resultFiles.length);
+  });
 });

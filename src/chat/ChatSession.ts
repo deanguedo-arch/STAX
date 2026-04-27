@@ -7,7 +7,10 @@ import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
 import { BehaviorMiner } from "../compare/BehaviorMiner.js";
 import { BehaviorRequirementTriage } from "../compare/BehaviorRequirementTriage.js";
+import { CommandEvidenceStore, type CommandEvidence } from "../evidence/CommandEvidenceStore.js";
+import { parsePastedCommandEvidence } from "../evidence/CommandOutputParser.js";
 import { collectLocalEvidence, formatLocalEvidence } from "../evidence/LocalEvidenceCollector.js";
+import { VerificationDebtStore, type VerificationDebt } from "../evidence/VerificationDebtStore.js";
 import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
 import { LearningQueue } from "../learning/LearningQueue.js";
@@ -302,13 +305,25 @@ export class ChatSession {
         workspace: workspace.workspace,
         linkedRepoPath: workspace.linkedRepoPath
       });
+      const stdout = JSON.stringify(result);
+      const evidence = await new CommandEvidenceStore(this.rootDir).record({
+        command,
+        args: [command],
+        exitCode: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
+        stdout,
+        stderr: "",
+        summary: `${command} ${result.passed}/${result.total} passed.`,
+        workspace: workspace.workspace ?? this.workspace ?? "default",
+        linkedRepoPath: workspace.linkedRepoPath
+      });
       await new LearningRecorder(this.rootDir).recordCommand({
         commandName: command === "/regression" ? "chat regression" : "chat eval",
         argsSummary: command,
         success: result.failed === 0 && result.criticalFailures === 0,
-        outputSummary: JSON.stringify(result),
+        outputSummary: stdout,
         exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
-        workspace: workspace.workspace
+        artifactPaths: [commandEvidencePathFor(evidence), evidence.stdoutPath, evidence.stderrPath],
+        workspace: workspace.workspace ?? this.workspace ?? "default"
       });
       return {
         output: [
@@ -562,6 +577,29 @@ export class ChatSession {
             workspaceResolution
           })
         : undefined;
+      const commandEvidenceStore = new CommandEvidenceStore(this.rootDir);
+      const verificationDebtStore = new VerificationDebtStore(this.rootDir);
+      const parsedCommandEvidence = parsePastedCommandEvidence(plan.originalInput);
+      const recordedCommandEvidence = [];
+      for (const parsed of parsedCommandEvidence) {
+        const evidence = await commandEvidenceStore.record({
+          ...parsed,
+          workspace: workspaceLabel === "current_repo" ? undefined : workspaceLabel,
+          linkedRepoPath: targetRepoPath
+        });
+        recordedCommandEvidence.push(evidence);
+        await verificationDebtStore.satisfyMatching(evidence);
+      }
+      const storedCommandEvidence = await commandEvidenceStore.list({
+        workspace: workspaceLabel === "current_repo" ? undefined : workspaceLabel
+      });
+      const openVerificationDebts = await this.refreshWorkspaceVerificationDebt({
+        store: verificationDebtStore,
+        workspace: workspaceLabel === "current_repo" ? undefined : workspaceLabel,
+        linkedRepoPath: targetRepoPath,
+        repoEvidencePack,
+        commandEvidence: storedCommandEvidence
+      });
       const localEvidence = await collectLocalEvidence(this.rootDir, {
         includeProjectDocs: true,
         includeModeMaturity: true
@@ -578,7 +616,9 @@ export class ChatSession {
         ...workspaceDocs.filter((doc) => doc.exists).map((doc) => doc.path),
         ...(repoEvidencePack?.inspectedFiles.map((file) => `repo:${file}`) ?? []),
         ...(repoEvidencePack?.testFiles.map((file) => `repo-test:${file}`) ?? []),
-        ...(repoEvidencePack?.scripts.map((script) => `repo-script:${script.name}`) ?? [])
+        ...(repoEvidencePack?.scripts.map((script) => `repo-script:${script.name}`) ?? []),
+        ...storedCommandEvidence.map((item) => `command-evidence:${item.commandEvidenceId}:${item.command}:${item.status}:${item.source}`),
+        ...openVerificationDebts.map((item) => `verification-debt:${item.requiredCommand}:${item.status}`)
       );
 
       const auditInput = [
@@ -605,6 +645,10 @@ export class ChatSession {
               ].join("\n"))
             ].join("\n")
           : "## Workspace Docs\n- No workspace docs were available.",
+        "",
+        formatCommandEvidenceSection(storedCommandEvidence),
+        "",
+        formatVerificationDebtSection(openVerificationDebts),
         "",
         formatLocalEvidence(localEvidence),
         "",
@@ -662,6 +706,26 @@ export class ChatSession {
         ]
       };
     }
+  }
+
+  private async refreshWorkspaceVerificationDebt(input: {
+    store: VerificationDebtStore;
+    workspace?: string;
+    linkedRepoPath?: string;
+    repoEvidencePack?: Awaited<ReturnType<RepoEvidencePackBuilder["build"]>>;
+    commandEvidence: Awaited<ReturnType<CommandEvidenceStore["list"]>>;
+  }) {
+    const scripts = input.repoEvidencePack?.scripts.map((script) => script.name) ?? [];
+    const fullE2e = scripts.find((script) => script === "test:e2e") ?? scripts.find((script) => /^test:e2e\b/.test(script));
+    if (fullE2e && !input.commandEvidence.some((item) => item.success && commandsEquivalent(item.command, `npm run ${fullE2e}`))) {
+      await input.store.recordOpen({
+        workspace: input.workspace,
+        linkedRepoPath: input.linkedRepoPath,
+        requiredCommand: `npm run ${fullE2e}`,
+        reason: "Full linked-repo e2e proof has not been supplied for this workspace."
+      });
+    }
+    return input.store.list({ workspace: input.workspace, status: "open" });
   }
 
   private async executeJudgmentDigestOperation(_plan: OperationPlan): Promise<OperationExecutionResult> {
@@ -1291,13 +1355,32 @@ export class ChatSession {
   }
 
   private async runChatEval(folder: "cases" | "regression", label: string): Promise<string> {
-    const result = await runEvals({ rootDir: this.rootDir, folder });
+    const workspace = await this.resolveWorkspace();
+    const result = await runEvals({
+      rootDir: this.rootDir,
+      folder,
+      workspace: workspace.workspace,
+      linkedRepoPath: workspace.linkedRepoPath
+    });
+    const stdout = JSON.stringify(result);
+    const evidence = await new CommandEvidenceStore(this.rootDir).record({
+      command: label.toLowerCase(),
+      args: [label.toLowerCase()],
+      exitCode: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
+      stdout,
+      stderr: "",
+      summary: `${label}: ${result.passed}/${result.total} passed.`,
+      workspace: workspace.workspace ?? this.workspace ?? "default",
+      linkedRepoPath: workspace.linkedRepoPath
+    });
     await new LearningRecorder(this.rootDir).recordCommand({
       commandName: `chat ${label.toLowerCase()}`,
       argsSummary: label.toLowerCase(),
       success: result.failed === 0 && result.criticalFailures === 0,
-      outputSummary: JSON.stringify(result),
-      exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1
+      outputSummary: stdout,
+      exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
+      artifactPaths: [commandEvidencePathFor(evidence), evidence.stdoutPath, evidence.stderrPath],
+      workspace: workspace.workspace ?? this.workspace ?? "default"
     });
     return [
       `${label}: ${result.passed}/${result.total}`,
@@ -1595,4 +1678,44 @@ export class ChatSession {
       "/quit"
     ].join("\n");
   }
+}
+
+function formatCommandEvidenceSection(evidence: CommandEvidence[]): string {
+  return [
+    "## Stored Command Evidence",
+    ...(evidence.length
+      ? evidence.slice(-12).map((item) =>
+          [
+            `- ${item.commandEvidenceId}: ${item.command}`,
+            `  - Status: ${item.status}`,
+            `  - Source: ${item.source}`,
+            `  - Confidence: ${item.source === "local_stax_command_output" ? "high" : "medium"}`,
+            `  - Path: evidence/commands/${item.createdAt.slice(0, 10)}/${item.commandEvidenceId}.json`
+          ].join("\n")
+        )
+      : ["- None"])
+  ].join("\n");
+}
+
+function formatVerificationDebtSection(debts: VerificationDebt[]): string {
+  return [
+    "## Verification Debt",
+    ...(debts.length
+      ? debts.map((debt) =>
+          [
+            `- ${debt.debtId}: ${debt.requiredCommand}`,
+            `  - Status: ${debt.status}`,
+            `  - Reason: ${debt.reason}`
+          ].join("\n")
+        )
+      : ["- None"])
+  ].join("\n");
+}
+
+function commandsEquivalent(left: string, right: string): boolean {
+  return left.trim().replace(/\s+/g, " ").toLowerCase() === right.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function commandEvidencePathFor(evidence: CommandEvidence): string {
+  return path.join("evidence", "commands", evidence.createdAt.slice(0, 10), `${evidence.commandEvidenceId}.json`);
 }

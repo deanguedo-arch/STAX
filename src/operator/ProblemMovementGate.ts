@@ -18,6 +18,7 @@ export class ProblemMovementGate {
     const primaryStep = primaryNextStep(input.oneNextStep);
     const foundTestsOrScripts = input.evidenceChecked.some((item) => /^repo-(test|script):/.test(item));
     const suppliedCommandEvidence = hasUserSuppliedCommandEvidence(input);
+    const commandEvidenceRecord = hasCommandEvidenceRecord(input);
     const blockedOrDeferred = input.receiptStatus === "blocked" || input.receiptStatus === "deferred" || input.receiptStatus === "not_executed";
 
     if (!input.directAnswer.trim()) {
@@ -49,11 +50,14 @@ export class ProblemMovementGate {
       if (!/\b(test|script)s?\b/i.test(input.directAnswer)) {
         blockingReasons.push("Direct Answer must mention tests or scripts when local evidence found them.");
       }
-      if (!suppliedCommandEvidence && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(input.directAnswer)) {
+      if (!suppliedCommandEvidence && !commandEvidenceRecord && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(input.directAnswer)) {
         blockingReasons.push("Direct Answer must say test pass/fail is unknown when tests/scripts were found but not run.");
       }
       if (suppliedCommandEvidence && !/\buser-supplied command evidence\b/i.test(input.directAnswer)) {
         blockingReasons.push("Direct Answer must label pasted command results as user-supplied command evidence.");
+      }
+      if (commandEvidenceRecord && !/\bstored command evidence\b/i.test(input.directAnswer) && !/\buser-supplied command evidence\b/i.test(input.directAnswer)) {
+        blockingReasons.push("Direct Answer must label stored command evidence when command evidence artifacts are used.");
       }
       if (!/\bnpm (run|test)\b/i.test(primaryStep)) {
         blockingReasons.push("One Next Step must name the exact test command when tests/scripts were found.");
@@ -193,7 +197,7 @@ function claimsCompletionWithoutProof(input: ProblemMovementInput): boolean {
   if (/\b(no operation action was executed|no source files were modified|did not execute|pass\/fail is unknown|unknown pass\/fail)\b/i.test(text)) {
     return false;
   }
-  if (hasUserSuppliedCommandEvidence(input) && /\buser-supplied command evidence\b/i.test(input.directAnswer) && /\bpartial\b/i.test(input.proofStatus)) {
+  if ((hasUserSuppliedCommandEvidence(input) || hasCommandEvidenceRecord(input)) && /\b(user-supplied|stored) command evidence\b/i.test(input.directAnswer) && /\bpartial\b/i.test(input.proofStatus)) {
     return false;
   }
   return !hasCommandOrTraceEvidence(input);
@@ -203,6 +207,10 @@ function hasUserSuppliedCommandEvidence(input: ProblemMovementInput): boolean {
   return /\bnpm run [a-z0-9:_-]+\s+(passed|failed)\b/i.test(input.userTask) ||
     /\bnpm test\s+(passed|failed)\b/i.test(input.userTask) ||
     /\bnpx tsx --test\b[\s\S]*?\bpassed\s+\d+\s*\/\s*\d+/i.test(input.userTask);
+}
+
+function hasCommandEvidenceRecord(input: ProblemMovementInput): boolean {
+  return input.evidenceChecked.some((item) => /^command-evidence:/.test(item));
 }
 
 function hasCommandOrTraceEvidence(input: ProblemMovementInput): boolean {

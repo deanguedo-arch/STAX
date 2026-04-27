@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { ChatSession } from "../src/chat/ChatSession.js";
 import { ThreadStore } from "../src/chat/ThreadStore.js";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
+import { CommandEvidenceStore } from "../src/evidence/CommandEvidenceStore.js";
 import { MemoryStore } from "../src/memory/MemoryStore.js";
 
 async function tempRoot(): Promise<string> {
@@ -115,6 +116,23 @@ describe("ChatSession", () => {
     expect(prompt.output).toContain("## Commands To Run");
     expect(testGap.output).toContain("## Missing Tests");
     expect(policyDrift.output).toContain("Shell execution enabled or requested.");
+  });
+
+  it("records chat eval output as command evidence", async () => {
+    const rootDir = await tempRoot();
+    await fs.mkdir(path.join(rootDir, "evals", "cases"), { recursive: true });
+    await fs.writeFile(path.join(rootDir, "evals", "cases", "case-1.txt"), "Analyze patterns", "utf8");
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("/eval");
+    const evidence = await new CommandEvidenceStore(rootDir).list({ workspace: "default" });
+
+    expect(result.output).toContain("Eval:");
+    expect(evidence).toHaveLength(1);
+    expect(evidence[0]?.source).toBe("local_stax_command_output");
+    expect(evidence[0]?.command).toBe("/eval");
+    expect(evidence[0]?.commandFamily).toBe("eval");
   });
 
   it("routes common project-state chat questions to Project Brain without leaking workspace into mode detection", async () => {

@@ -172,6 +172,7 @@ export async function runEvals(
 async function writeEvalResult(rootDir: string, result: EvalResult): Promise<void> {
   const dir = path.join(rootDir, "evals", "eval_results");
   await fs.mkdir(dir, { recursive: true });
-  const file = path.join(dir, `${new Date().toISOString().replace(/[:.]/g, "-")}.json`);
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const file = path.join(dir, `${new Date().toISOString().replace(/[:.]/g, "-")}-${suffix}.json`);
   await fs.writeFile(file, JSON.stringify(result, null, 2), "utf8");
 }

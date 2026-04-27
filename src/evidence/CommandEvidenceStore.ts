@@ -13,6 +13,16 @@ export const CommandEvidenceSchema = z.object({
   args: z.array(z.string()),
   exitCode: z.number().int(),
   success: z.boolean(),
+  source: z.enum(["human_pasted_command_output", "codex_reported_command_output", "local_stax_command_output"]).default("local_stax_command_output"),
+  status: z.enum(["passed", "failed", "partial", "unknown"]).default("unknown"),
+  commandFamily: z.enum(["typecheck", "test", "e2e", "build", "eval", "regression", "redteam", "unknown"]).default("unknown"),
+  counts: z.object({
+    filesPassed: z.number().int().nonnegative().optional(),
+    testsPassed: z.number().int().nonnegative().optional(),
+    testsFailed: z.number().int().nonnegative().optional(),
+    suitesPassed: z.number().int().nonnegative().optional(),
+    suitesFailed: z.number().int().nonnegative().optional()
+  }).optional(),
   stdoutPath: z.string().min(1),
   stderrPath: z.string().min(1),
   stdoutTruncated: z.boolean(),
@@ -31,6 +41,10 @@ export type CommandEvidenceInput = {
   command: string;
   args?: string[];
   exitCode: number;
+  source?: CommandEvidence["source"];
+  status?: CommandEvidence["status"];
+  commandFamily?: CommandEvidence["commandFamily"];
+  counts?: CommandEvidence["counts"];
   stdout?: string;
   stderr?: string;
   summary: string;
@@ -65,7 +79,8 @@ export class CommandEvidenceStore {
       exitCode: input.exitCode,
       stdout: stdout.text,
       stderr: stderr.text,
-      workspace: input.workspace
+      workspace: input.workspace,
+      source: input.source ?? "local_stax_command_output"
     });
     const evidence = CommandEvidenceSchema.parse({
       commandEvidenceId,
@@ -73,6 +88,10 @@ export class CommandEvidenceStore {
       args: input.args ?? [],
       exitCode: input.exitCode,
       success: input.exitCode === 0,
+      source: input.source ?? "local_stax_command_output",
+      status: input.status ?? (input.exitCode === 0 ? "passed" : "failed"),
+      commandFamily: input.commandFamily ?? commandFamilyFor(input.command),
+      counts: input.counts,
       stdoutPath,
       stderrPath,
       stdoutTruncated: stdout.truncated,
@@ -88,7 +107,7 @@ export class CommandEvidenceStore {
     return evidence;
   }
 
-  async list(): Promise<CommandEvidence[]> {
+  async list(filter: { workspace?: string; command?: string } = {}): Promise<CommandEvidence[]> {
     const root = path.join(this.rootDir, "evidence", "commands");
     const evidence: CommandEvidence[] = [];
     try {
@@ -99,7 +118,10 @@ export class CommandEvidenceStore {
         if (!stat.isDirectory()) continue;
         const files = (await fs.readdir(dir)).filter((file) => file.endsWith(".json")).sort();
         for (const file of files) {
-          evidence.push(CommandEvidenceSchema.parse(JSON.parse(await fs.readFile(path.join(dir, file), "utf8"))));
+          const item = CommandEvidenceSchema.parse(JSON.parse(await fs.readFile(path.join(dir, file), "utf8")));
+          if (filter.workspace && item.workspace !== filter.workspace) continue;
+          if (filter.command && item.command !== filter.command) continue;
+          evidence.push(item);
         }
       }
     } catch (error) {
@@ -129,4 +151,15 @@ export class CommandEvidenceStore {
   private hash(value: Record<string, unknown>): string {
     return crypto.createHash("sha256").update(JSON.stringify(value)).digest("hex");
   }
+}
+
+export function commandFamilyFor(command: string): CommandEvidence["commandFamily"] {
+  if (/\beval --redteam\b|\b--redteam\b/i.test(command)) return "redteam";
+  if (/\beval --regression\b|\b--regression\b/i.test(command)) return "regression";
+  if (/\beval\b/i.test(command)) return "eval";
+  if (/\btypecheck\b/i.test(command)) return "typecheck";
+  if (/\bbuild\b/i.test(command)) return "build";
+  if (/\be2e\b|playwright/i.test(command)) return "e2e";
+  if (/\btest\b/i.test(command)) return "test";
+  return "unknown";
 }

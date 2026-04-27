@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 import { ChatIntentClassifier } from "../src/operator/ChatIntentClassifier.js";
 import { ChatSession } from "../src/chat/ChatSession.js";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
+import { CommandEvidenceStore } from "../src/evidence/CommandEvidenceStore.js";
+import { VerificationDebtStore } from "../src/evidence/VerificationDebtStore.js";
 import { MemoryStore } from "../src/memory/MemoryStore.js";
 import { ReviewRouter } from "../src/review/ReviewRouter.js";
 import type { ReviewSource } from "../src/review/ReviewSchemas.js";
@@ -200,6 +202,13 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("ProblemMovement: needs_evidence");
     expect(result.output).toContain("Run `npm run test:course-shell`");
     expect(directAnswer).not.toContain("pass/fail is unknown");
+    const commandEvidence = await new CommandEvidenceStore(rootDir).list({ workspace: "canvas-helper" });
+    expect(commandEvidence.map((item) => item.command).sort()).toEqual([
+      "npm run typecheck",
+      "npm run build:studio",
+      "npx tsx --test scripts/tests/course-shell.test.ts"
+    ].sort());
+    expect(commandEvidence.every((item) => item.source === "human_pasted_command_output")).toBe(true);
   });
 
   it("does not repeat a proof command that was already supplied as passed", async () => {
@@ -231,6 +240,39 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("npm run test:course-shell passed 4/4");
     expect(result.output).not.toContain("Run `npm run test:course-shell`");
     expect(result.output).toContain("Run `npm run test:e2e:smoke`");
+  });
+
+  it("tracks full e2e as verification debt when focused proof exists but full e2e is missing", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "scripts", "tests"), { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({
+        scripts: {
+          typecheck: "tsc --noEmit",
+          "test:course-shell": "tsx --test scripts/tests/course-shell.test.ts",
+          "test:e2e": "playwright test -c e2e/playwright.config.ts"
+        }
+      }),
+      "utf8"
+    );
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "scripts", "tests", "course-shell.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine(
+      "audit canvas-helper after this command evidence: npm run typecheck passed; npm run test:course-shell passed 4/4."
+    );
+
+    expect(result.output).toContain("Verification Debt");
+    expect(result.output).toContain("npm run test:e2e");
+    expect(result.output).toContain("Run `npm run test:e2e`");
+    const debts = await new VerificationDebtStore(rootDir).list({ workspace: "canvas-helper" });
+    expect(debts[0]?.requiredCommand).toBe("npm run test:e2e");
+    expect(debts[0]?.status).toBe("open");
   });
 
   it("turns fix-this-repo language into an audit plan without mutating the linked repo", async () => {

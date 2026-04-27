@@ -90,6 +90,7 @@ export class OperationReceiptValidator {
     const fakeRisks = sectionContent(output, "## Fake-Complete Risks");
     const missingEvidence = sectionContent(output, "## Missing Evidence");
     const usesUserSuppliedCommandEvidence = /\buser-supplied command evidence\b/i.test(directAnswer);
+    const usesStoredCommandEvidence = /\bstored command evidence\b/i.test(directAnswer) || /\bcommand-evidence:/i.test(output);
     const directAnswerIndex = output.indexOf("## Direct Answer");
     const receiptIndex = output.indexOf("## Receipt");
     if (directAnswerIndex === -1 || receiptIndex === -1 || receiptIndex < directAnswerIndex) {
@@ -133,7 +134,7 @@ export class OperationReceiptValidator {
     if (/\brepo-(test|script):/i.test(output) && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(notVerified)) {
       issues.push("Markdown receipt found tests/scripts but did not say pass/fail is unknown.");
     }
-    if (/\brepo-(test|script):/i.test(output) && !usesUserSuppliedCommandEvidence && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(directAnswer)) {
+    if (/\brepo-(test|script):/i.test(output) && !usesUserSuppliedCommandEvidence && !usesStoredCommandEvidence && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(directAnswer)) {
       issues.push("Direct Answer must state test pass/fail is unknown when tests/scripts were found but not run.");
     }
     if (/\brepo-(test|script):/i.test(output) && !/does not prove tests pass|test scripts.*not prove/i.test(fakeRisks)) {

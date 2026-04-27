@@ -99,6 +99,7 @@ function renderOutcomeHeader(outcome: OutcomeHeader, movement: ProblemMovementRe
 function directAnswer(plan: OperationPlan, result: OperationExecutionResult): string {
   const foundTestsOrScripts = hasTestsOrScripts(result);
   const suppliedCommandEvidence = commandEvidenceStatements(plan.originalInput);
+  const storedCommandEvidence = storedCommandEvidenceStatements(result);
   if (result.blocked) {
     return "Blocked. STAX did not execute the requested operation, approve anything, promote anything, or mutate durable state.";
   }
@@ -123,9 +124,11 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
   if (isOperatingStateQuestion(plan)) {
     return operatingStateAnswer(result, foundTestsOrScripts);
   }
-  if (suppliedCommandEvidence.length && (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit")) {
+  if ((suppliedCommandEvidence.length || storedCommandEvidence.length) && (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit")) {
+    const sourceLabel = suppliedCommandEvidence.length ? "User-supplied command evidence" : "Stored command evidence";
+    const statements = suppliedCommandEvidence.length ? suppliedCommandEvidence : storedCommandEvidence;
     return [
-      `User-supplied command evidence says ${suppliedCommandEvidence.join("; ")}.`,
+      `${sourceLabel} says ${statements.join("; ")}.`,
       foundTestsOrScripts ? "STAX also found test/script evidence by read-only inspection." : "STAX also inspected the target repo read-only.",
       "Treat this as partial proof for the named commands only; it does not prove full repo behavior or approve any mutation."
     ].join(" ");
@@ -149,9 +152,17 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return ensurePasteBack(result.nextAllowedActions[0]?.trim() || "Use the explicit slash or CLI command for this operation and paste back the output.");
   }
   if (isOperatingStateQuestion(plan)) {
+    const debtCommand = verificationDebtCommand(result);
+    if (debtCommand) {
+      return `Run \`${debtCommand}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
+    }
     return `Run \`${operatingProofCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
   }
   if (hasTestsOrScripts(result)) {
+    const debtCommand = verificationDebtCommand(result);
+    if (debtCommand) {
+      return `Run \`${debtCommand}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
+    }
     return `Run \`${testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing test names if any.`;
   }
   if (plan.intent === "judgment_digest") {
@@ -209,6 +220,7 @@ function testFiles(result: OperationExecutionResult): string[] {
 function testCommand(result: OperationExecutionResult, originalInput = ""): string {
   const scripts = scriptNames(result);
   const supplied = suppliedNpmRunScripts(originalInput);
+  for (const script of storedNpmRunScripts(result)) supplied.add(script);
   if (scripts.includes("test") && !supplied.has("test")) return "npm test";
   const testScript = scripts.find((script) => /test/i.test(script) && !supplied.has(script)) ||
     scripts.find((script) => /test/i.test(script));
@@ -218,6 +230,7 @@ function testCommand(result: OperationExecutionResult, originalInput = ""): stri
 function operatingProofCommand(result: OperationExecutionResult, originalInput = ""): string {
   const scripts = scriptNames(result);
   const supplied = suppliedNpmRunScripts(originalInput);
+  for (const script of storedNpmRunScripts(result)) supplied.add(script);
   if (scripts.includes("typecheck") && !supplied.has("typecheck")) return "npm run typecheck";
   return testCommand(result, originalInput);
 }
@@ -313,6 +326,13 @@ function commandEvidenceStatements(input: string): string[] {
   return Array.from(statements);
 }
 
+function storedCommandEvidenceStatements(result: OperationExecutionResult): string[] {
+  return result.evidenceChecked
+    .map((item) => item.match(/^command-evidence:[^:]+:(.+):(passed|failed|partial|unknown):(human_pasted_command_output|codex_reported_command_output|local_stax_command_output)$/))
+    .filter((match): match is RegExpMatchArray => Boolean(match))
+    .map((match) => `${match[1]} ${match[2]}`);
+}
+
 function suppliedNpmRunScripts(input: string): Set<string> {
   const scripts = new Set<string>();
   for (const match of input.matchAll(/\bnpm run ([a-z0-9:_-]+)\s+(?:passed|failed)(?:\s+\d+\s*\/\s*\d+)?\b/gi)) {
@@ -320,6 +340,22 @@ function suppliedNpmRunScripts(input: string): Set<string> {
   }
   if (/\bnpm test\s+(passed|failed)\b/i.test(input)) scripts.add("test");
   return scripts;
+}
+
+function storedNpmRunScripts(result: OperationExecutionResult): Set<string> {
+  const scripts = new Set<string>();
+  for (const item of result.evidenceChecked) {
+    const match = item.match(/^command-evidence:[^:]+:npm run ([^:]+(?::[^:]+)*):(passed|failed|partial|unknown):/);
+    if (match?.[1]) scripts.add(match[1]);
+    if (/^command-evidence:[^:]+:npm test:(passed|failed|partial|unknown):/.test(item)) scripts.add("test");
+  }
+  return scripts;
+}
+
+function verificationDebtCommand(result: OperationExecutionResult): string | undefined {
+  return result.evidenceChecked
+    .find((item) => item.startsWith("verification-debt:"))
+    ?.match(/^verification-debt:(.+):open$/)?.[1];
 }
 
 function matchResultLine(result: string, pattern: RegExp): string | undefined {
