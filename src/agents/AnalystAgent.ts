@@ -1,6 +1,7 @@
 import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
+import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
 
 function bulletize(items: string[], fallback: string): string[] {
   return items.length ? items.map((item) => `- ${item}`) : [`- ${fallback}`];
@@ -13,7 +14,8 @@ function memoryLines(input: AgentInput, type?: string): string[] {
 }
 
 function hasTestEvidence(text: string): boolean {
-  return /\b(npm run typecheck|npm test|npm run rax -- eval|passed|passRate|exit code 0|tests?:\s*\d+|✓)\b/i.test(text);
+  return /\b(## Local Evidence|## Proof Packet|ProofPacket:|ClaimSupported:|evidence\/commands\/)\b/i.test(text) &&
+    /\b(npm run typecheck|npm test|npm run rax -- eval|passed|passRate|exit code 0|tests?:\s*\d+|✓)\b/i.test(text);
 }
 
 function detectsPlaceholder(text: string): boolean {
@@ -306,6 +308,7 @@ export class AnalystAgent implements Agent {
     if (input.mode === "codex_audit") {
       const text = input.input.trim();
       const auditAssessment = assessAuditEvidence(text);
+      const evidenceDecision = decideEvidence(text);
       const localEvidence = hasLocalEvidence(text);
       const changedFiles = localFilesChanged(text);
       const evalEvidence = latestEvalEvidence(text);
@@ -349,6 +352,8 @@ export class AnalystAgent implements Agent {
         metadata: { providerText: providerResponse.text },
         output: [
           ...renderAuditContractSections(auditAssessment),
+          "",
+          ...renderEvidenceDecision(evidenceDecision),
           "",
           "## Codex Claim",
           `- ${text || "No Codex claim supplied."}`,
@@ -401,6 +406,7 @@ export class AnalystAgent implements Agent {
     if (input.mode === "model_comparison") {
       const text = input.input.trim();
       const evidenceLines = auditEvidenceFoundLines(text);
+      const evidenceDecision = decideEvidence(text);
       const hasStaxAnswer = /\bSTAX Answer\b|## STAX|Run:\s+run-|Trace:\s+runs\//i.test(text);
       const hasExternalAnswer = /\bExternal Answer\b|ChatGPT|external assistant|other answer/i.test(text);
       const localProof = evidenceLines.length > 0 || /\b(runs\/|trace\.json|learningEvent|evals\/|proof packet|local evidence)\b/i.test(text);
@@ -431,6 +437,8 @@ export class AnalystAgent implements Agent {
             ],
             "No evidence supplied."
           ),
+          "",
+          ...renderEvidenceDecision(evidenceDecision),
           "",
           "## Specificity Comparison",
           "- Prefer the answer that names exact files, tests, evals, commands, artifacts, and approval boundaries.",

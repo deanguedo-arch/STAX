@@ -17,17 +17,23 @@ export function assessAuditEvidence(text: string): VerifiedAuditAssessment {
   const lines = text.split("\n");
   const sufficiency = scoreEvidenceText(text);
   const hasLocalEvidence = text.includes("## Local Evidence");
+  const hasFirstClassLocalEvidence = hasLocalEvidence || text.includes("## Proof Packet") || /\b(ProofPacket:|ClaimSupported:|evidence\/commands\/)/i.test(text);
   const hasRunEvidence = /\brun-\d{4}-\d{2}-\d{2}T|\bruns\/\d{4}-\d{2}-\d{2}\/run-/i.test(text);
   const hasTraceEvidence = /\btrace\.json\b|\bTrace:\s+runs\//i.test(text);
   const hasEvalEvidence = /Latest Eval Result[\s\S]*Path:\s+evals\/eval_results\/.*\.json/i.test(text) ||
-    lines.some((line) => /\bnpm run rax -- eval\b/i.test(line) && /\b(pass(ed)?|0 failed|criticalFailures:\s*0|passRate:\s*1)\b/i.test(line));
-  const hasTestEvidence =
+    /\bevals\/eval_results\/[^\s]+\.json\b/i.test(text) ||
+    (hasFirstClassLocalEvidence && lines.some((line) =>
+      /\bnpm run rax -- eval\b/i.test(line) && /\b(pass(ed)?|0 failed|criticalFailures:\s*0|passRate:\s*1)\b/i.test(line)
+    ));
+  const hasTestEvidence = hasFirstClassLocalEvidence && (
     lines.some((line) => /\bnpm run typecheck\b/i.test(line) && /\b(pass(ed)?|exit code 0|0 errors?)\b/i.test(line)) ||
     lines.some((line) => /\bnpm test\b/i.test(line) && /\b(pass(ed)?|exit code 0|\d+\s+tests?\s+passed)\b/i.test(line)) ||
-    /\b\d+\s+tests?\s+passed\b/i.test(text);
+    /\b\d+\s+tests?\s+passed\b/i.test(text)
+  );
   const hasFileEvidence = /\b(src|tests|evals|docs|modes)\/[A-Za-z0-9_.\/-]+/i.test(text);
   const hasFirstClassCommandEvidence = /\bcmd-ev-[A-Za-z0-9-]+\b|\bevidence\/commands\/[^\s]+\.json\b/i.test(text);
-  const hasCommandEvidence = hasTestEvidence || hasEvalEvidence || hasFirstClassCommandEvidence || /\bexit code 0\b/i.test(text);
+  const hasCommandEvidence = hasTestEvidence || hasEvalEvidence || hasFirstClassCommandEvidence ||
+    (hasFirstClassLocalEvidence && /\bexit code 0\b/i.test(text));
 
   const evidenceChecked = [
     ...(hasLocalEvidence ? ["Local evidence block supplied."] : []),

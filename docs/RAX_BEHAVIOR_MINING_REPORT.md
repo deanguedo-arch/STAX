@@ -298,3 +298,16 @@ SATURATED: no new useful observable behavior.
 - Saturation is only as strong as the task set being mined. This pass saturated
   the current STAX/general-strategy behavior extraction task set; future real
   project failures may still create new behavior requirements.
+
+## Follow-Up Control Surface
+
+Behavior mining now feeds a candidate-only triage layer:
+
+```bash
+npm run rax -- mine triage
+npm run rax -- mine next
+```
+
+The triage layer does not promote mined requirements. It groups and ranks them
+so the next implementation slice is selected from proof, workspace, eval, Codex,
+and safety pressure rather than from a vague backlog.

@@ -6,6 +6,7 @@ import { runEvals } from "../core/EvalRunner.js";
 import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
 import { BehaviorMiner } from "../compare/BehaviorMiner.js";
+import { BehaviorRequirementTriage } from "../compare/BehaviorRequirementTriage.js";
 import { collectLocalEvidence, formatLocalEvidence } from "../evidence/LocalEvidenceCollector.js";
 import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
@@ -424,6 +425,10 @@ export class ChatSession {
       if (mineAction === "requirements") {
         return { output: JSON.stringify(await miner.readRequirements(), null, 2) };
       }
+      if (mineAction === "triage" || mineAction === "next") {
+        const report = await new BehaviorRequirementTriage(this.rootDir).triage(await miner.readRequirements());
+        return { output: new BehaviorRequirementTriage(this.rootDir).format(report) };
+      }
       if (mineAction === "external") {
         const externalAnswer = mineRest.join(" ").trim();
         if (!externalAnswer) return { output: "Usage: /mine external <external answer or behavior spec>" };
@@ -437,7 +442,7 @@ export class ChatSession {
         });
         return { output: miner.formatRound(result.round, result.report) };
       }
-      return { output: "Usage: /mine prompt | report | requirements | external <external answer or behavior spec>" };
+      return { output: "Usage: /mine prompt | report | requirements | triage | next | external <external answer or behavior spec>" };
     }
 
     if (command === "/state") {
@@ -1458,6 +1463,7 @@ export class ChatSession {
       "- \"/compare external <answer>\"",
       "- \"/mine prompt\"",
       "- \"/mine external <clean-room behavior spec>\"",
+      "- \"/mine triage\"",
       "- \"/mine report\"",
       "- \"replay last run\"",
       "- \"show sandbox report\"",
@@ -1575,7 +1581,7 @@ export class ChatSession {
       "/audit-last --proof",
       "/disagree <reason>",
       "/compare external <answer>",
-      "/mine prompt|report|requirements|external <answer>",
+      "/mine prompt|report|requirements|triage|next|external <answer>",
       "/eval",
       "/regression",
       "/replay last|<run-id>",

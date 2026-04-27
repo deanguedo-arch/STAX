@@ -14,6 +14,7 @@ export class CodexAuditValidator {
     );
     const evidenceFound = sectionContent(output, "## Evidence Found");
     const auditType = sectionContent(output, "## Audit Type");
+    const evidenceDecision = sectionContent(output, "## Evidence Decision");
     const evidenceChecked = sectionContent(output, "## Evidence Checked");
     const missingEvidence = sectionContent(output, "## Missing Evidence");
     const fakeCompleteFlags = sectionContent(output, "## Fake-Complete Flags");
@@ -26,6 +27,14 @@ export class CodexAuditValidator {
 
     if (/Verified Audit/i.test(auditType) && !sufficiency.canClaimVerifiedAudit) {
       issues.push(`Verified Audit requires concrete evidence and sufficiency: ${sufficiency.missing.join("; ")}`);
+    }
+
+    if (!/\bDecision:\s+(verified|partial|reasoned_opinion|blocked_for_evidence)\b/i.test(evidenceDecision)) {
+      issues.push("Evidence Decision must include a valid decision label.");
+    }
+
+    if (/\bDecision:\s+verified\b/i.test(evidenceDecision) && !sufficiency.canClaimVerifiedAudit) {
+      issues.push("Evidence Decision cannot be verified without sufficient local evidence.");
     }
 
     if (/Reasoned Opinion/i.test(auditType) && recommendation.includes("approve")) {

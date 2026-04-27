@@ -1,0 +1,10 @@
+{
+  "id": "evidence_decision_local_trace_eval",
+  "mode": "codex_audit",
+  "input": "## Local Evidence\n- Trace: runs/2026-04-27/run-2026-04-27T04-00-00-000Z-abcd/trace.json\n- Path: evals/eval_results/2026-04-27T04-00-00-000Z.json\n- npm test passed exit code 0\n- ClaimSupported: behavior mining triage remained candidate-only.\n\nAudit whether this specific claim can be treated as locally verified.",
+  "expectedProperties": ["evidence_decision_verified"],
+  "forbiddenPatterns": ["Decision: reasoned_opinion", "Decision: blocked_for_evidence"],
+  "requiredSections": ["## Audit Type", "## Evidence Decision", "## Evidence Found", "## Approval Recommendation"],
+  "critical": true,
+  "tags": ["evidence_decision", "codex_audit", "local_proof"]
+}

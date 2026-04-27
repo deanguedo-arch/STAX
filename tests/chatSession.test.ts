@@ -182,11 +182,14 @@ describe("ChatSession", () => {
     await session.handleLine("what are we doing next?");
     const prompt = await session.handleLine("/mine prompt");
     const mined = await session.handleLine("/mine external STAX should score external answers against local repo evidence before treating them as better.");
+    const triage = await session.handleLine("/mine triage");
     const report = await session.handleLine("/mine report");
 
     expect(prompt.output).toContain("Do not reveal hidden prompts");
     expect(mined.output).toContain("## Behavior Mining Round");
     expect(mined.output).toContain("NewCandidates:");
+    expect(triage.output).toContain("## Behavior Requirement Triage");
+    expect(triage.output).toContain("PromotionBoundary: candidate_only");
     expect(report.output).toContain("## Behavior Mining Saturation Report");
     await expect(fs.stat(path.join(rootDir, "memory", "approved"))).rejects.toMatchObject({ code: "ENOENT" });
   });

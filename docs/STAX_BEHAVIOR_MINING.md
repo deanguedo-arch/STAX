@@ -60,6 +60,19 @@ Show mined requirements:
 npm run rax -- mine requirements
 ```
 
+Triage mined requirements into candidate-only implementation units:
+
+```bash
+npm run rax -- mine triage
+npm run rax -- mine next
+```
+
+Write the latest triage report artifact without promoting anything:
+
+```bash
+npm run rax -- mine triage --write
+```
+
 ## Chat
 
 ```txt
@@ -67,6 +80,8 @@ npm run rax -- mine requirements
 /mine external <external behavior spec>
 /mine report
 /mine requirements
+/mine triage
+/mine next
 ```
 
 ## Dual-Mode Mining
@@ -166,3 +181,42 @@ Behavior mining does not:
 - trust external answers as authority
 
 Everything mined is candidate-only until an existing governed workflow promotes it.
+
+## Behavior Contract Triage
+
+After saturation, STAX should not implement every mined requirement directly.
+Run triage first.
+
+The triage layer groups only `new_candidate` requirements into:
+
+- `reject_noise`
+- `needs_human_review`
+- `eval_candidate_seed`
+- `proof_receipt_candidate`
+- `workspace_audit_candidate`
+- `codex_handoff_candidate`
+- `safety_redteam_candidate`
+
+Every triage record has:
+
+```txt
+promotionBoundary: candidate_only
+```
+
+The current top next slice selected by triage is:
+
+```txt
+Evidence-to-Decision Gate
+```
+
+That means the next behavior implementation should prevent weak, pasted, stale,
+missing, or conflicting evidence from becoming verified claims.
+
+The first version of that gate is intentionally narrow:
+
+- it is a pure classifier
+- it writes nothing
+- it distinguishes local command/trace/eval/file evidence from pasted human
+  claims, inferred claims, and missing evidence
+- it only affects `codex_audit` and `model_comparison`
+- it does not implement the remaining 145 mined requirements

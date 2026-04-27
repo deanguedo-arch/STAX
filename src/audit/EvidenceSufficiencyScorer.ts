@@ -37,8 +37,9 @@ export function scoreProofPacket(packet: ProofPacket): EvidenceSufficiencyScore 
 
 export function scoreEvidenceText(text: string): EvidenceSufficiencyScore {
   const lines = text.split("\n");
+  const hasLocalEvidence = text.includes("## Local Evidence") || text.includes("## Proof Packet") || /\b(ProofPacket:|ClaimSupported:|evidence\/commands\/)/i.test(text);
   const hasPathEvidence = /\b(runs\/\d{4}-\d{2}-\d{2}\/run-[^\s]+|evals\/eval_results\/[^\s]+\.json|learning\/events\/hot\/[^\s]+\.json|evidence\/commands\/[^\s]+\.json|src\/[A-Za-z0-9_.\/-]+|tests\/[A-Za-z0-9_.\/-]+)\b/i.test(text);
-  const hasCommandLineResult = lines.some(
+  const hasCommandLineResult = hasLocalEvidence && lines.some(
     (line) =>
       /\b(npm run typecheck|npm test|npm run rax -- eval)\b/i.test(line) &&
       /\b(pass(ed)?|exit code 0|0 failed|criticalFailures:\s*0|passRate:\s*1|\d+\s+tests?\s+passed)\b/i.test(line) &&
@@ -56,8 +57,6 @@ export function scoreEvidenceText(text: string): EvidenceSufficiencyScore {
     .some((line) => /^-\s+/.test(line) && !/^-?\s*none\.?$/i.test(line.replace(/^-\s+/, "")));
   const hasAmbiguity = hasNonEmptyAmbiguitySection ||
     /\b(ambiguous|multiple possible latest|wrong last|unresolved run|unresolved thread)\b/i.test(text.replace(/## Proof Ambiguity Warnings[\s\S]*?(?:\n##\s+|$)/i, ""));
-  const hasLocalEvidence = text.includes("## Local Evidence") || text.includes("## Proof Packet");
-
   return finalizeScore({
     hasConcreteArtifact: hasPathEvidence || hasEvalArtifact,
     hasCommandResult: hasCommandLineResult || hasEvalArtifact || hasCommandEvidenceArtifact,

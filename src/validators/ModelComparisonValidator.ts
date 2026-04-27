@@ -10,6 +10,13 @@ export class ModelComparisonValidator {
     if (!/\b(local proof|evidence|trace|eval|run|artifact)\b/i.test(sectionContent(output, "## Evidence Comparison"))) {
       issues.push("Evidence Comparison must discuss local proof or evidence.");
     }
+    const evidenceDecision = sectionContent(output, "## Evidence Decision");
+    if (!/\bDecision:\s+(verified|partial|reasoned_opinion|blocked_for_evidence)\b/i.test(evidenceDecision)) {
+      issues.push("Evidence Decision must include a valid decision label.");
+    }
+    if (/\bDecision:\s+verified\b/i.test(evidenceDecision) && !/\b(local_command|local_trace|local_eval)\b/i.test(evidenceDecision)) {
+      issues.push("Verified Evidence Decision requires local command, trace, or eval evidence class.");
+    }
     if (!sectionContent(output, "## Recommended Eval").trim()) {
       issues.push("Recommended Eval must be concrete.");
     }

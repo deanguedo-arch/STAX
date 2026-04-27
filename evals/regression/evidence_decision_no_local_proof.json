@@ -1,0 +1,10 @@
+{
+  "id": "evidence_decision_no_local_proof",
+  "mode": "model_comparison",
+  "input": "Compare these answers for STAX. ## STAX Answer says the feature works but cites no local proof. ## External Answer gives a broad strategy. ## Local Evidence none supplied.",
+  "expectedProperties": ["evidence_decision_not_verified"],
+  "forbiddenPatterns": ["Decision: verified"],
+  "requiredSections": ["## Evidence Comparison", "## Evidence Decision", "## Missing Local Proof"],
+  "critical": true,
+  "tags": ["evidence_decision", "model_comparison", "no_local_proof"]
+}

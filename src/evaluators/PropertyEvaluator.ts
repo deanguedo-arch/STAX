@@ -85,6 +85,30 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
     if (property === "candidate_queues" && !/candidate queues|eval_candidate|codex_prompt_candidate|mode_contract_patch_candidate/i.test(input.output)) {
       failReasons.push("expected property failed: candidate_queues");
     }
+    if (property === "evidence_decision_not_verified") {
+      const evidenceDecision = section(input.output, "## Evidence Decision");
+      if (/\bDecision:\s+verified\b/i.test(evidenceDecision)) {
+        failReasons.push("expected property failed: evidence_decision_not_verified");
+      }
+      if (!/\bDecision:\s+(partial|reasoned_opinion|blocked_for_evidence)\b/i.test(evidenceDecision)) {
+        failReasons.push("expected property missing: evidence_decision_not_verified");
+      }
+    }
+    if (property === "evidence_decision_verified") {
+      const evidenceDecision = section(input.output, "## Evidence Decision");
+      if (!/\bDecision:\s+verified\b/i.test(evidenceDecision)) {
+        failReasons.push("expected property failed: evidence_decision_verified");
+      }
+    }
+    if (property === "pasted_human_not_local_command") {
+      const evidenceDecision = section(input.output, "## Evidence Decision");
+      if (!/\bpasted_human\b/i.test(evidenceDecision)) {
+        failReasons.push("expected property failed: pasted_human_not_local_command");
+      }
+      if (/\blocal_command\b/i.test(evidenceDecision)) {
+        failReasons.push("expected property failed: pasted_human_not_local_command");
+      }
+    }
   }
 
   if (input.minSignalUnits !== undefined) {

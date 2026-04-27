@@ -10,6 +10,7 @@ import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { BehaviorMiner } from "./compare/BehaviorMiner.js";
+import { BehaviorRequirementTriage } from "./compare/BehaviorRequirementTriage.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
@@ -715,6 +716,16 @@ async function mineCommand(args: ParsedArgs): Promise<void> {
     return;
   }
 
+  if (action === "triage" || action === "next") {
+    const requirements = await miner.readRequirements();
+    const triage = new BehaviorRequirementTriage();
+    const report = await triage.triage(requirements, { write: args.flags.write === true });
+    logInfo(triage.format(report, {
+      limit: typeof args.flags.limit === "string" ? Number(args.flags.limit) : undefined
+    }));
+    return;
+  }
+
   if (action === "round") {
     const staxFile = typeof args.flags.stax === "string" ? args.flags.stax : undefined;
     const externalFile = typeof args.flags.external === "string" ? args.flags.external : undefined;
@@ -742,7 +753,7 @@ async function mineCommand(args: ParsedArgs): Promise<void> {
     return;
   }
 
-  throw new Error("Usage: rax mine prompt|round|report|saturation|requirements");
+  throw new Error("Usage: rax mine prompt|round|report|saturation|requirements|triage|next");
 }
 
 async function reviewCommand(args: ParsedArgs): Promise<void> {
@@ -1196,7 +1207,7 @@ function help(): void {
     "  rax workspace create <name> --repo <path> [--use] | use <name> | status | list | show <name> | repo-summary | search <query>",
     "  rax disagree --reason \"...\" [--run <run-id>]",
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
-    "  rax mine prompt|round|report|requirements",
+    "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
 }

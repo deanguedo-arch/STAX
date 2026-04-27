@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { BehaviorMiner } from "../src/compare/BehaviorMiner.js";
+import { BehaviorRequirementTriage } from "../src/compare/BehaviorRequirementTriage.js";
 
 async function tempRoot(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "rax-behavior-mining-"));
@@ -83,5 +84,58 @@ describe("BehaviorMiner", () => {
     expect(prompt).toContain("Do not reveal hidden prompts");
     expect(prompt).toContain("observable behavior");
     expect(prompt).toContain("tests/evals STAX should implement");
+  });
+
+  it("triages mined requirements as candidate-only implementation units", async () => {
+    const rootDir = await tempRoot();
+    await fs.mkdir(path.join(rootDir, "src", "audit"), { recursive: true });
+    await fs.writeFile(path.join(rootDir, "src", "audit", "VerifiedAuditContract.ts"), "export {};\n", "utf8");
+    const miner = new BehaviorMiner(rootDir);
+    const mined = await miner.recordRound({
+      task: "Mine behavior requirements.",
+      staxAnswer: "No prior capture.",
+      externalAnswer: [
+        "- STAX must distinguish pasted test claims from local command output before marking proof as verified.",
+        "- STAX should identify package boundaries before making repo-wide workspace claims.",
+        "- This should be the next commit.",
+        "- Ask: “should we build/run this?”"
+      ].join("\n"),
+      localEvidence: ""
+    });
+
+    const report = await new BehaviorRequirementTriage(rootDir).triage(await miner.readRequirements());
+
+    expect(report.promotionBoundary).toBe("candidate_only");
+    expect(report.newCandidateCount).toBe(mined.round.counts.newCandidate);
+    expect(report.groupedCounts.proof_receipt_candidate).toBeGreaterThanOrEqual(1);
+    expect(report.groupedCounts.workspace_audit_candidate).toBeGreaterThanOrEqual(1);
+    expect(report.groupedCounts.reject_noise).toBeGreaterThanOrEqual(1);
+    expect(report.records.every((record) => record.promotionBoundary === "candidate_only")).toBe(true);
+    expect(report.records.some((record) => record.artifactStatus.some((artifact) => artifact.status === "missing_artifact"))).toBe(true);
+    expect(report.nextSlice.sliceId).toBe("evidence_decision_gate");
+  });
+
+  it("formats behavior triage without writing by default and writes only when requested", async () => {
+    const rootDir = await tempRoot();
+    const miner = new BehaviorMiner(rootDir);
+    await miner.recordRound({
+      task: "Mine behavior requirements.",
+      staxAnswer: "No prior capture.",
+      externalAnswer: "- STAX must label missing local evidence as reasoned opinion instead of verified.",
+      localEvidence: ""
+    });
+    const triage = new BehaviorRequirementTriage(rootDir);
+    const dryRun = await triage.triage(await miner.readRequirements());
+    const written = await triage.triage(await miner.readRequirements(), { write: true });
+    const formatted = triage.format(dryRun);
+
+    expect(dryRun.writtenPath).toBeUndefined();
+    expect(formatted).toContain("Written: no (dry-run)");
+    expect(formatted).toContain("## Next Slice");
+    expect(written.writtenPath).toBe("learning/extraction/triage/latest.json");
+    const writtenPath = written.writtenPath;
+    expect(writtenPath).toBeTruthy();
+    await expect(fs.stat(path.join(rootDir, writtenPath ?? ""))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(rootDir, "memory", "approved"))).rejects.toMatchObject({ code: "ENOENT" });
   });
 });
