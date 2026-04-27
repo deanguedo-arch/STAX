@@ -68,7 +68,7 @@ and refuses broad reasoning superiority from one small slice.
 ## Current Strategic Benchmark Status
 
 ```txt
-Status: broad_reasoning_candidate
+Status: not_proven
 Total: 25
 STAXBetter: 25
 ExternalBetter: 0
@@ -76,15 +76,16 @@ Ties: 0
 NoExternalBaseline: 0
 TemplateCollapseCases: 0
 WorkLanes: 5
-CaptureDates: 2
+CaptureDates: 1
 ```
 
-This is a candidate claim, not final broad superiority. The first single-case
-slice proved the mechanism. The v1 holdout fixture expands the benchmark to 25
-strategy cases across five work lanes and two capture dates. The added holdout
-baselines are marked as seeded controls pending clean external capture; they
-prove the breadth gate can run, while fresh external ChatGPT captures are still
-needed for a final claim.
+This is a strong non-final result, not final broad superiority. The first
+single-case slice proved the mechanism. The v1 holdout fixture expands the
+benchmark to 25 strategy cases across five work lanes, replaces the seeded
+controls with fresh ChatGPT STAX browser captures from 2026-04-27, and shows
+STAX beating the captured external answers without template collapse. The gate
+still refuses final broad-reasoning proof because a second capture date is
+required.
 
 ## External Critic Loop
 
@@ -119,6 +120,11 @@ the benchmark is being won by one repeated answer shape. The v1 holdout fixture
 was regenerated through the actual strategic generator so different lanes select
 different control surfaces, and the benchmark reports `TemplateCollapseCases: 0`.
 
+Fresh external baselines were then captured one task at a time from the open
+ChatGPT STAX browser thread. The benchmark still reports `STAXBetter: 25` and
+`NoExternalBaseline: 0`, but the honest status is `not_proven` because all fresh
+captures happened on one date.
+
 ## Validation
 
 ```txt
@@ -129,7 +135,7 @@ npm run rax -- eval --regression: passed; 46/46
 npm run rax -- eval --redteam: passed; 9/9
 npm test -- tests/strategicBenchmark.test.ts: passed; 4/4
 npm run rax -- eval --regression --mode strategic_deliberation: passed; 3/3
-npm run rax -- strategy benchmark: passed; Status broad_reasoning_candidate; TemplateCollapseCases 0
+npm run rax -- strategy benchmark: passed; Status not_proven; STAXBetter 25; NoExternalBaseline 0; TemplateCollapseCases 0; CaptureDates 1
 npm run rax -- strategy prompt: passed
 npm run rax -- run --mode strategic_deliberation "How should STAX become better than ChatGPT at broad reasoning?": passed
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed
@@ -139,8 +145,8 @@ npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu
 
 - This does not prove STAX is broadly better than ChatGPT yet.
 - The current provider is mock by default, so strategy output is draft-only.
-- The expanded v1 benchmark uses seeded control baselines for breadth coverage;
-  final superiority still requires fresh external captures that pass the drift
-  gate.
+- The expanded v1 benchmark now uses fresh captured external baselines from one
+  date. Final superiority still requires a second-date capture that passes the
+  drift gate.
 - External ChatGPT STAX drifted during broad baseline capture. That is now a
   measured baseline-quality failure, not a hidden pass.
