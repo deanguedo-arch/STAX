@@ -125,6 +125,7 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("## One Next Step");
     expect(result.output).toContain("Run `npm test`");
     expect(result.output).toContain("paste back the full output");
+    expect(result.output).toContain("ProblemMovement: needs_evidence");
     expect(result.output).toContain("Operation: workspace_repo_audit");
     expect(result.output).toContain("RepoEvidencePack.build");
     expect(result.output).toContain("## Scripts / Test Commands Found");
@@ -215,6 +216,7 @@ describe("Chat Operator v1B", () => {
     expect(blocked.output).toMatch(/^## Direct Answer/);
     expect(blocked.output).toContain("Blocked. STAX did not execute");
     expect(blocked.output).toContain("## Proof Status\nblocked");
+    expect(blocked.output).toContain("ProblemMovement: blocked");
     expect(deferred.output).toMatch(/^## Direct Answer/);
     expect(deferred.output).toContain("Deferred. STAX did not execute");
     expect(blocked.output).toContain("ExecutionClass: hard_block");

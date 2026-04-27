@@ -7,6 +7,10 @@ Outcome Header v0 sits in front of those receipts so STAX cannot hide a weak
 answer behind proof sections. The useful answer comes first; the receipt comes
 after.
 
+Problem Movement Gate v0 now checks that the useful answer is actually useful
+enough to return. It rejects receipt-only answers, vague next steps, unsupported
+completion claims, and blocked answers that surface promotion commands.
+
 The receipt is a control surface, not a new promotion system.
 
 ## Required Sections
@@ -16,6 +20,9 @@ The receipt is a control surface, not a new promotion system.
 ## One Next Step
 ## Why This Step
 ## Proof Status
+ProblemMovement: ...
+MovementMade: ...
+RequiredEvidence:
 ## Receipt
 ## Operation
 ## Evidence Required
@@ -41,6 +48,7 @@ The receipt is a control surface, not a new promotion system.
 - file listings prove file presence only
 - test files or scripts do not prove tests pass
 - blocked/deferred requests must say no action executed
+- blocked requests must not surface a promotion command as the one next step
 - no receipt approves, promotes, mutates, trains, or changes policy
 
 ## Proof Quality
@@ -51,6 +59,12 @@ Receipts include:
 ProofQuality: sufficient | partial | insufficient
 PromotionStatus: not_allowed | blocked
 MutationStatus: none
+```
+
+The outcome header includes a ProblemMovement disposition:
+
+```txt
+moved_problem | needs_evidence | human_choice_required | blocked | deferred
 ```
 
 Most current operator receipts are intentionally `partial`: they can prove
@@ -74,6 +88,9 @@ STAX found test/script evidence, but it did not run tests; pass/fail is unknown.
 
 One Next Step:
 Run `npm test` in the target repo and paste back the full output, exit code if available, and failing test names if any.
+
+ProblemMovement:
+needs_evidence
 
 Claims Verified:
 - package.json scripts were extracted read-only [evidence: repo-script:test]

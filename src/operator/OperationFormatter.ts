@@ -1,6 +1,8 @@
 import type { OperationExecutionResult, OperationPlan } from "./OperationSchemas.js";
 import { buildOperationReceipt, renderOperationReceipt, type OperationReceipt } from "./OperationReceipt.js";
 import { OperationReceiptValidator } from "./OperationReceiptValidator.js";
+import { ProblemMovementGate } from "./ProblemMovementGate.js";
+import type { ProblemMovementResult } from "./ProblemMovementSchemas.js";
 
 export class OperationFormatter {
   format(plan: OperationPlan, result: OperationExecutionResult): string {
@@ -9,8 +11,34 @@ export class OperationFormatter {
     if (!validation.valid) {
       throw new Error(`OperationReceipt validation failed: ${validation.issues.join("; ")}`);
     }
+    const outcome = buildOutcomeHeader(plan, result, receipt);
+    const movement = new ProblemMovementGate().evaluate({
+      userTask: plan.originalInput,
+      intent: plan.intent,
+      reasonCodes: plan.reasonCodes,
+      riskLevel: plan.riskLevel,
+      executionClass: plan.executionClass,
+      directAnswer: outcome.directAnswer,
+      oneNextStep: outcome.oneNextStep,
+      whyThisStep: outcome.whyThisStep,
+      proofStatus: outcome.proofStatus,
+      receiptStatus: receipt.status,
+      evidenceRequired: receipt.evidenceRequired,
+      evidenceChecked: receipt.evidenceChecked,
+      artifactsCreated: receipt.artifactsCreated,
+      claimsVerified: receipt.claimsVerified.map((claim) => claim.claim),
+      claimsNotVerified: receipt.claimsNotVerified,
+      missingEvidence: receipt.missingEvidence,
+      fakeCompleteRisks: receipt.fakeCompleteRisks,
+      nextAllowedActions: receipt.nextAllowedActions,
+      mutationStatus: receipt.mutationStatus,
+      promotionStatus: receipt.promotionStatus
+    });
+    if (!movement.valid) {
+      throw new Error(`ProblemMovementGate validation failed: ${movement.blockingReasons.join("; ")} Required rewrite: ${movement.requiredRewrite ?? "Rewrite the outcome header."}`);
+    }
     const output = [
-      renderOutcomeHeader(plan, result, receipt),
+      renderOutcomeHeader(outcome, movement),
       "",
       "## Receipt",
       renderOperationReceipt(receipt),
@@ -32,19 +60,39 @@ export class OperationFormatter {
   }
 }
 
-function renderOutcomeHeader(plan: OperationPlan, result: OperationExecutionResult, receipt: OperationReceipt): string {
+type OutcomeHeader = {
+  directAnswer: string;
+  oneNextStep: string;
+  whyThisStep: string;
+  proofStatus: string;
+};
+
+function buildOutcomeHeader(plan: OperationPlan, result: OperationExecutionResult, receipt: OperationReceipt): OutcomeHeader {
+  return {
+    directAnswer: directAnswer(plan, result),
+    oneNextStep: oneNextStep(plan, result),
+    whyThisStep: whyThisStep(plan, result),
+    proofStatus: proofStatus(receipt)
+  };
+}
+
+function renderOutcomeHeader(outcome: OutcomeHeader, movement: ProblemMovementResult): string {
   return [
     "## Direct Answer",
-    directAnswer(plan, result),
+    outcome.directAnswer,
     "",
     "## One Next Step",
-    `- ${oneNextStep(plan, result)}`,
+    `- ${outcome.oneNextStep}`,
     "",
     "## Why This Step",
-    whyThisStep(plan, result),
+    outcome.whyThisStep,
     "",
     "## Proof Status",
-    proofStatus(receipt)
+    outcome.proofStatus,
+    `ProblemMovement: ${movement.disposition}`,
+    `MovementMade: ${movement.movementMade}`,
+    "RequiredEvidence:",
+    ...(movement.requiredEvidence.length ? movement.requiredEvidence.map((item) => `- ${item}`) : ["- None"])
   ].join("\n");
 }
 
@@ -84,7 +132,7 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
 
 function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): string {
   if (result.blocked) {
-    return "Inspect the specific candidate with `npm run rax -- learn queue`, then promote one item only with `npm run rax -- learn promote <event-id> --memory --reason \"...\"` if you truly intend promotion; paste back the command output.";
+    return "Run `npm run rax -- learn queue` to inspect candidates before any approval or promotion path; paste back the output.";
   }
   if (result.deferred || !result.executed) {
     return ensurePasteBack(result.nextAllowedActions[0]?.trim() || "Use the explicit slash or CLI command for this operation and paste back the output.");
@@ -93,13 +141,13 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return `Run \`${testCommand(result)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing test names if any.`;
   }
   if (plan.intent === "judgment_digest") {
-    return "Run `/review digest` if you want a dry-run refresh summary, or `npm run rax -- review inbox` to refresh persisted review metadata; paste back the output if you want STAX to interpret it.";
+    return "Run `npm run rax -- review inbox` to refresh persisted review metadata; paste back the output if you want STAX to interpret it.";
   }
   if (plan.intent === "audit_last_proof") {
     return "Run the exact verification command named in the audit's Required Next Proof section and paste back the command output.";
   }
   if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
-    return "Use the audit's Required Next Proof or Codex Prompt as the next task, then paste back the resulting command output or Codex final report.";
+    return "Use the audit's Required Next Proof as the next task, then paste back the resulting command output or Codex final report.";
   }
   return "Paste the missing local evidence or command output named below so STAX can move this from partial to verified.";
 }

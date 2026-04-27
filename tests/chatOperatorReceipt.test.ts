@@ -108,6 +108,7 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(output).toContain("paste back the full output");
     expect(output).toContain("## Proof Status");
     expect(output).toContain("partial");
+    expect(output).toContain("ProblemMovement: needs_evidence");
   });
 
   it("rejects receipt-first output without a direct outcome answer", () => {
@@ -156,6 +157,7 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(result.output).toContain("## One Next Step");
     expect(result.output).toContain("Run `npm test`");
     expect(result.output).toContain("paste back the full output");
+    expect(result.output).toContain("ProblemMovement: needs_evidence");
     expect(result.output.indexOf("## Direct Answer")).toBeLessThan(result.output.indexOf("## Receipt"));
     expect(result.output).toContain("## Operation");
     expect(result.output).toContain("## Claims Verified");
@@ -176,8 +178,9 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(result.output).toMatch(/^## Direct Answer/);
     expect(result.output).toContain("Blocked. STAX did not execute the requested operation");
     expect(result.output).toContain("## One Next Step");
-    expect(result.output).toContain("npm run rax -- learn promote <event-id> --memory --reason");
-    expect(result.output).toContain("paste back the command output");
+    expect(result.output).toContain("npm run rax -- learn queue");
+    expect(result.output).toContain("paste back the output");
     expect(result.output).toContain("## Proof Status\nblocked");
+    expect(result.output).toContain("ProblemMovement: blocked");
   });
 });

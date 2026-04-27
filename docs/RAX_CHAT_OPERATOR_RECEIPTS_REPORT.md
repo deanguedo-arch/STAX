@@ -2,14 +2,16 @@
 
 Date: 2026-04-27
 
-Status: implemented and extended with Outcome Header v0.
+Status: implemented and extended with Outcome Header v0 and Problem Movement
+Gate v0.
 
 ## Summary
 
 Chat Operator v1B adds Operation Receipts and a Proof Quality Gate for the
 existing natural-language operator surface. Outcome Header v0 now requires the
 operator to answer first, give one concrete next step, and only then render the
-proof receipt.
+proof receipt. Problem Movement Gate v0 now rejects safe-looking operator
+answers that do not actually move the user's problem forward.
 
 The goal is to prevent proof theater:
 
@@ -26,6 +28,9 @@ Direct Answer
 One Next Step
 Why This Step
 Proof Status
+ProblemMovement
+MovementMade
+RequiredEvidence
 Receipt
 ```
 
@@ -98,10 +103,12 @@ MutationStatus
 - Direct Answer cannot be empty
 - One Next Step must contain exactly one primary bullet
 - One Next Step must start with a concrete action verb
+- One Next Step must not offer multiple command alternatives
 - generic steps like `review the evidence`, `continue analysis`, and
   `improve the repo` fail validation
 - manual command steps must say what to paste back
 - blocked/deferred answers must state no action was executed
+- blocked chat answers cannot surface promotion commands as the one next step
 - Verified claims require evidence references.
 - Vague evidence like `Repo evidence pack` is not enough for completion claims.
 - Test/script discovery requires a not-verified claim that pass/fail is unknown.
@@ -122,6 +129,9 @@ STAX found test/script evidence and test files by read-only inspection, but it d
 One Next Step:
 Run `npm test` in the target repo and paste back the full output, exit code if available, and failing test names if any.
 
+ProblemMovement:
+needs_evidence
+
 Claims Verified:
 - package.json scripts were extracted read-only [evidence: repo-script:test]
 - Test files were enumerated read-only [evidence: repo-test:...]
@@ -140,10 +150,10 @@ Direct Answer:
 Blocked. STAX did not execute the requested operation, approve anything, promote anything, or mutate durable state.
 
 One Next Step:
-Inspect the specific candidate with `npm run rax -- learn queue`, then promote one item only with `npm run rax -- learn promote <event-id> --memory --reason "..."`
-if you truly intend promotion; paste back the command output.
+Run `npm run rax -- learn queue` to inspect candidates before any approval or promotion path; paste back the output.
 
 Status: blocked
+ProblemMovement: blocked
 Claims Verified:
 - No operation action was executed because the risk gate blocked the request.
 PromotionStatus: blocked
@@ -182,12 +192,12 @@ Observed results:
 
 ```txt
 npm run typecheck: passed
-npm test: 47 files / 191 tests passed
+npm test: 48 files / 201 tests passed
 npm run rax -- eval: 16/16 passed
 npm run rax -- eval --regression: 43/43 passed
 npm run rax -- eval --redteam: 9/9 passed
 npm run rax -- chat --once "what tests exist in this repo?": passed; Direct Answer reported tests found but not run, pass/fail unknown, and One Next Step gave `npm test` plus paste-back instructions
-npm run rax -- chat --once "approve all memory candidates": passed; hard-block Direct Answer reported no action executed
+npm run rax -- chat --once "approve all memory candidates": passed; hard-block Direct Answer reported no action executed and One Next Step used `npm run rax -- learn queue` instead of a promotion command
 ```
 
 ## Remaining Limitations
@@ -200,3 +210,5 @@ npm run rax -- chat --once "approve all memory candidates": passed; hard-block D
   unless there is direct command/eval/runtime proof.
 - Outcome Header v0 does not persist next actions into an Action Board; that is
   intentionally deferred until the answer-first behavior proves useful.
+- Problem Movement Gate v0 is deterministic and conservative; it only covers
+  Chat Operator output in this slice.
