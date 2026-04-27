@@ -1,6 +1,7 @@
 # RAX Chat Operator Report
 
-Status: implemented.
+Status: implemented. Superseded by Chat Operator v1B receipts for the current
+proof-quality contract; see `docs/RAX_CHAT_OPERATOR_RECEIPTS_REPORT.md`.
 
 Follow-up audit note: external red-team review found one blocker after the initial push:
 `audit this repo` needed to respect an active linked workspace when one exists. That blocker is fixed.

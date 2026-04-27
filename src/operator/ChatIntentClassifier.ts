@@ -54,7 +54,7 @@ export class ChatIntentClassifier {
       return this.plan({
         intent: "unknown",
         originalInput,
-        objective: "Defer a broad or artifact-heavy natural-language operation outside Chat Operator v1A.",
+        objective: "Defer a broad or artifact-heavy natural-language operation outside Chat Operator v1B.",
         riskLevel: "medium",
         executionClass: "review_only",
         operationsToRun: [],
@@ -147,7 +147,7 @@ export class ChatIntentClassifier {
     return this.plan({
       intent: "unknown",
       originalInput,
-      objective: "No Chat Operator v1A control intent detected; use normal runtime fallback.",
+      objective: "No Chat Operator v1B control intent detected; use normal runtime fallback.",
       riskLevel: "low",
       executionClass: "fallback",
       operationsToRun: [],

@@ -14,11 +14,11 @@ export class OperationRiskGate {
       return { allowed: false, reason: "Operation was hard-blocked before execution." };
     }
     if (plan.executionClass === "requires_confirmation") {
-      return { allowed: false, reason: "Operation requires confirmation and is outside Chat Operator v1A auto-execution." };
+      return { allowed: false, reason: "Operation requires confirmation and is outside Chat Operator v1B auto-execution." };
     }
     if (plan.executionClass === "review_only") {
       return { allowed: false, reason: "Operation is deferred to a slash command, CLI command, or later operator slice." };
     }
-    return { allowed: true, reason: "Operation is allowed by Chat Operator v1A." };
+    return { allowed: true, reason: "Operation is allowed by Chat Operator v1B." };
   }
 }

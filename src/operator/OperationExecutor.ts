@@ -48,14 +48,14 @@ export class OperationExecutor {
   private blockedMessage(plan: OperationPlan, reason: string): string {
     if (plan.executionClass === "hard_block") {
       return [
-        "Blocked by Chat Operator v1A.",
+        "Blocked by Chat Operator v1B.",
         "No action was executed.",
         `Reason: ${plan.reasonCodes.join(", ") || reason}`
       ].join("\n");
     }
     if (plan.executionClass === "review_only" || plan.executionClass === "requires_confirmation") {
       return [
-        "Deferred by Chat Operator v1A.",
+        "Deferred by Chat Operator v1B.",
         "No action was executed.",
         `Reason: ${plan.reasonCodes.join(", ") || reason}`
       ].join("\n");

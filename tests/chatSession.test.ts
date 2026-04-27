@@ -235,7 +235,7 @@ describe("ChatSession", () => {
     expect(first.output).toContain("Run: run-");
     expect(explain.output).toContain("That message went through the governed STAX runtime.");
     expect(help.output).toContain("plain-English controls");
-    expect(sandbox.output).toContain("Deferred by Chat Operator v1A");
+    expect(sandbox.output).toContain("Deferred by Chat Operator v1B");
     expect(sandbox.output).toContain("No action was executed.");
     expect(learn.output).toContain("## Candidate Queues");
     expect(mode.output).toBe("Mode reset to auto. Normal chat will pick the mode from your message now.");

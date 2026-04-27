@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CHAT_OPERATOR_VERSION = "v1A";
+export const CHAT_OPERATOR_VERSION = "v1B";
 
 export const OperationIntentSchema = z.enum([
   "audit_workspace",

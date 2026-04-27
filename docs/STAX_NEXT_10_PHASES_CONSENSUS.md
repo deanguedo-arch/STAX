@@ -459,6 +459,16 @@ Build:
 Chat Operator v1B — Operation Receipts + Proof Quality Gate
 ```
 
+Assessment addendum:
+
+STAX is currently stronger as a governance/proof framework than as a genuinely
+superior project assistant. The main risk is proof theater: traces, queues,
+schemas, and reports can make a shallow answer look rigorous. This phase must
+therefore make unsupported completion claims impossible. If tests exist but were
+not run, the receipt must say tests were found, not executed, and pass/fail is
+unknown. If evidence is vague, pasted, stale, or missing, the claim must move to
+`Claims Not Verified`.
+
 Required report:
 
 ```txt
@@ -470,6 +480,7 @@ Required code artifacts:
 - `src/operator/OperationReceipt.ts`
 - `src/operator/OperationReceiptValidator.ts`
 - `tests/chatOperatorReceipt.test.ts`
+- `docs/STAX_CHAT_OPERATOR_RECEIPTS.md`
 
 Modify:
 
@@ -490,6 +501,17 @@ Acceptance criteria:
 8. Workspace repo audit receipt lists exact files, scripts, and test files inspected.
 9. No memory, eval, training, policy, schema, or mode promotion occurs.
 10. Typecheck, tests, eval, regression, and redteam all pass.
+
+Explicitly defer:
+
+- Project Brain durable state.
+- Autonomous lab cycles.
+- Source mutation or linked repo writes.
+- Memory/eval/training promotion.
+- UI.
+
+Those layers depend on trustworthy receipts; they should not ingest half-proven
+operator answers.
 
 ## Final Decision
 

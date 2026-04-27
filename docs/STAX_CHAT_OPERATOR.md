@@ -1,6 +1,6 @@
-# STAX Chat Operator v1A
+# STAX Chat Operator v1B
 
-STAX Chat Operator v1A makes the first daily control requests work in normal language.
+STAX Chat Operator v1B makes the first daily control requests work in normal language and returns a validated operation receipt.
 
 It is not a new agent. It is a typed router from normal chat text into existing governed STAX surfaces.
 
@@ -9,6 +9,8 @@ normal language
 -> OperationPlan
 -> OperationRiskGate
 -> allowlisted backend operation
+-> OperationReceipt
+-> proof-quality validation
 -> proof-backed answer
 ```
 
@@ -42,8 +44,8 @@ The operator does not:
 - run uncontrolled shell commands
 - run broad lab stress tests from vague natural language
 - run eval/regression commands from vague natural language
-- create Codex prompts from evidence in v1A
-- perform model comparison in v1A
+- create Codex prompts from evidence in v1B
+- perform model comparison in v1B
 
 High-risk requests become a hard-block response. Broad artifact-heavy requests are deferred to explicit slash or CLI commands.
 
@@ -104,7 +106,35 @@ Use:
 npm run rax -- workspace create canvas-helper --repo ../canvas-helper --use
 ```
 
-## Accepted v1A Scope
+## Operation Receipts
+
+Every recognized Chat Operator request now starts with a receipt:
+
+```md
+## Operation
+## Evidence Required
+## Actions Run
+## Evidence Checked
+## Artifacts Created
+## Claims Verified
+## Claims Not Verified
+## Missing Evidence
+## Fake-Complete Risks
+## Next Allowed Action
+```
+
+Rules:
+
+- verified claims must cite concrete evidence references
+- vague evidence like "repo evidence pack" cannot support a verified completion claim
+- if tests or scripts are found but not run, pass/fail remains unknown
+- blocked and deferred requests receive a no-action receipt
+- `PromotionStatus` remains `not_allowed` or `blocked`
+- `MutationStatus` remains `none`
+
+This prevents proof theater: sections, traces, or file listings cannot make a shallow or unsupported answer look complete.
+
+## Accepted v1B Scope
 
 This slice intentionally replaces only the first three slash-command style workflows Dean actually needs:
 

@@ -1,27 +1,18 @@
 import type { OperationExecutionResult, OperationPlan } from "./OperationSchemas.js";
+import { buildOperationReceipt, renderOperationReceipt } from "./OperationReceipt.js";
+import { OperationReceiptValidator } from "./OperationReceiptValidator.js";
 
 export class OperationFormatter {
   format(plan: OperationPlan, result: OperationExecutionResult): string {
+    const receipt = buildOperationReceipt(plan, result);
+    const validation = new OperationReceiptValidator().validate(receipt);
+    if (!validation.valid) {
+      throw new Error(`OperationReceipt validation failed: ${validation.issues.join("; ")}`);
+    }
     return [
-      "## Operator Plan",
-      `Operation: ${plan.intent}`,
-      `OperationId: ${plan.operationId}`,
-      `ExecutionClass: ${plan.executionClass}`,
-      `Risk: ${plan.riskLevel}`,
-      `Workspace: ${plan.workspace ?? "current"}`,
-      `Objective: ${plan.objective}`,
-      `RequiresConfirmation: ${plan.requiresConfirmation}`,
+      renderOperationReceipt(receipt),
       "",
-      "## Actions Run",
-      result.actionsRun.length ? result.actionsRun.map((item) => `- ${item}`).join("\n") : "- None",
-      "",
-      "## Evidence Checked",
-      result.evidenceChecked.length ? result.evidenceChecked.map((item) => `- ${item}`).join("\n") : "- None",
-      "",
-      "## Artifacts Created",
-      result.artifactsCreated.length ? result.artifactsCreated.map((item) => `- ${item}`).join("\n") : "- None",
-      "",
-      "## Result",
+      "## Result Detail",
       result.result.trim() || "- No result.",
       "",
       "## Risks / Missing Evidence",

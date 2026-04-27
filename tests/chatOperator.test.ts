@@ -31,7 +31,7 @@ function reviewSource(overrides: Partial<ReviewSource> = {}): ReviewSource {
   };
 }
 
-describe("Chat Operator v1A", () => {
+describe("Chat Operator v1B", () => {
   it("classifies the agreed natural-language intents", () => {
     const classifier = new ChatIntentClassifier();
 
@@ -55,7 +55,11 @@ describe("Chat Operator v1A", () => {
 
     const result = await session.handleLine("audit canvas-helper");
 
+    expect(result.output).toContain("## Operation");
     expect(result.output).toContain("Operation: audit_workspace");
+    expect(result.output).toContain("## Claims Verified");
+    expect(result.output).toContain("## Claims Not Verified");
+    expect(result.output).toContain("## Fake-Complete Risks");
     expect(result.output).toContain("Workspace: canvas-helper");
     expect(result.output).toContain("RepoEvidencePack.build");
     expect(result.output).toContain("## Scripts / Test Commands Found");
@@ -199,7 +203,7 @@ describe("Chat Operator v1A", () => {
     expect(blocked.output).toContain("ExecutionClass: hard_block");
     expect(blocked.output).toContain("No action was executed");
     expect(deferred.output).toContain("ExecutionClass: review_only");
-    expect(deferred.output).toContain("Deferred by Chat Operator v1A");
+    expect(deferred.output).toContain("Deferred by Chat Operator v1B");
     await expect(fs.stat(path.join(rootDir, "learning", "lab", "runs"))).rejects.toMatchObject({ code: "ENOENT" });
   });
 
