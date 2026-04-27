@@ -194,9 +194,32 @@ npm run rax -- eval --redteam: 9/9 passed
 
 - STAX still does not run linked-repo commands automatically.
 - Human-pasted command output is useful but remains weaker than locally executed proof.
-- `/compare external` is not yet a real benchmark.
+- `/compare external` is still a chat comparison path, but `rax compare benchmark` is now the real local benchmark stop-condition path.
 - Workspaces are local operational state and remain ignored by git.
 - This pass does not build Project Brain, autonomous execution, memory approval, training export, or source mutation.
+
+## Local Problem Benchmark Follow-Up
+
+The missing "are we actually beating it?" surface is now covered by:
+
+```bash
+npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json
+```
+
+Final benchmark result:
+
+```txt
+Total: 15
+STAXBetter: 15
+ExternalBetter: 0
+Ties: 0
+NoLocalBasis: 0
+Confidence: benchmark_slice_proven
+StopConditionMet: true
+```
+
+This proves the current 15-task benchmark slice only. Future external losses
+must become new fixtures, not vibe-based claims.
 
 ## What This Information Means
 

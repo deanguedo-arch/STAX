@@ -1,0 +1,157 @@
+{
+  "id": "real_repo_15_tasks_v0",
+  "createdAt": "2026-04-27",
+  "stopCondition": "STAX benchmark slice is acceptable only when there are zero external_better and zero no_local_basis cases.",
+  "cases": [
+    {
+      "id": "brightspace_biggest_risk",
+      "repo": "brightspacequizexporter",
+      "task": "What is the biggest current operating risk in brightspacequizexporter?",
+      "localEvidence": "workspace brightspacequizexporter; repo-script:ingest:ci; repo-script:build; repo-script:test; command-evidence npm run ingest:ci failed; command-evidence-summary Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js; git status D tmp/.gitkeep",
+      "staxAnswer": "Stored command evidence says `npm run ingest:ci` failed in brightspacequizexporter, so the current blocker is the failed ingest proof gate, not ordinary unrun tests. The failure appears to be a dependency/install integrity blocker: @rollup/rollup-darwin-arm64 is missing. Treat this as partial proof only; no repair, approval, promotion, or source mutation happened. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` in brightspacequizexporter and paste back the full output and exit code.",
+      "externalAnswer": "The biggest risk is that the ingest gate is failing, likely because of the missing Rollup optional dependency. You should inspect dependencies and then repair the install before trusting the build or ingest process.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["failed command evidence", "exact dependency command", "proof honesty", "no mutation"]
+    },
+    {
+      "id": "brightspace_proof_gap",
+      "repo": "brightspacequizexporter",
+      "task": "What testing or proof gap matters most in brightspacequizexporter?",
+      "localEvidence": "repo-script:ingest:ci = npm run build && npm run ingest:promotion-check; repo-script:ingest:promotion-check; repo-test:src/test/unit/ingest/parsePdf.core.test.ts; command-evidence npm run ingest:ci failed with @rollup/rollup-darwin-arm64 missing",
+      "staxAnswer": "The proof gap that matters most is the blocked `npm run ingest:ci` gate, because it includes build plus ingest promotion checks. Since stored command evidence says it failed with @rollup/rollup-darwin-arm64 missing, pass/fail for ingest behavior remains unknown. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` in brightspacequizexporter and paste back the dependency tree output.",
+      "externalAnswer": "The main proof gap is the ingest CI gate. Make sure build and promotion checks pass before trusting parser or fixture changes.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["ingest:ci gate", "stored command evidence", "paste back"]
+    },
+    {
+      "id": "brightspace_fake_codex_report",
+      "repo": "brightspacequizexporter",
+      "task": "Audit a Codex final report claiming all Brightspace tests passed without output.",
+      "localEvidence": "codex report has no file list, no diff summary, no command output; command-evidence npm run ingest:ci failed; repo-script:test; repo-script:ingest:ci",
+      "staxAnswer": "Reject the Codex completion claim as unverified. Stored command evidence says `npm run ingest:ci` failed, so the claim that all tests pass is contradicted or unsupported by current proof. No source mutation or approval should happen. One next step: Run `npm run ingest:ci` in brightspacequizexporter only after the dependency blocker is resolved, then paste back output plus the Codex file list and diff summary.",
+      "externalAnswer": "Do not accept the Codex report without command output. Ask Codex for files changed and test results before approving.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["reject fake complete", "failed command evidence", "file list and diff summary"]
+    },
+    {
+      "id": "brightspace_codex_prompt",
+      "repo": "brightspacequizexporter",
+      "task": "Create one bounded Codex prompt to move Brightspace forward.",
+      "localEvidence": "README trust repair; reviewed fixtures are truth; parser output is candidate-only; scripts/config/frozen-manifests.json; scripts/ingest-promotion-check.mjs; scripts/promote-ingest-fix.mjs; repo-script:ingest:ci",
+      "staxAnswer": "Bounded Codex prompt: inspect `scripts/config/frozen-manifests.json`, `scripts/ingest-promotion-check.mjs`, `scripts/promote-ingest-fix.mjs`, and ingest tests under `src/test/unit/ingest/`. Preserve reviewed fixtures as truth and keep parser output candidate-only. Do not mutate promotion gates without tests. One next step: Run `npm run ingest:ci` after the dependency blocker is repaired and paste back the output, exit code, and Codex final report.",
+      "externalAnswer": "Ask Codex to focus on ingest trust repair, reviewed fixtures, and the promotion gate. It should run the ingest CI command before claiming done.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["exact files", "candidate-only boundary", "ingest:ci"]
+    },
+    {
+      "id": "brightspace_next_after_failed_proof",
+      "repo": "brightspacequizexporter",
+      "task": "What is the next move after current Brightspace proof evidence?",
+      "localEvidence": "command-evidence npm run ingest:ci failed; command-evidence-summary Error Cannot find module @rollup/rollup-darwin-arm64; npm ls inspection not yet supplied; no human approval for dependency repair",
+      "staxAnswer": "The current evidence already shows `npm run ingest:ci` failed before behavior could be verified, so rerunning generic tests would not move the problem forward. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` in brightspacequizexporter and paste back the full dependency tree output before any human-approved dependency repair.",
+      "externalAnswer": "Inspect the missing Rollup dependency and then repair the dependency installation if needed.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["avoid rerun loop", "npm ls", "approval boundary"]
+    },
+    {
+      "id": "canvas_biggest_risk",
+      "repo": "canvas-helper",
+      "task": "What is the biggest current operating risk in canvas-helper?",
+      "localEvidence": "workspace canvas-helper; project sportswellness; editable files projects/sportswellness/workspace/index.html projects/sportswellness/workspace/styles.css projects/sportswellness/workspace/main.js; recurring issue text fit symmetrical borders SMART goals checkmark containment; verification debt npm run test:e2e",
+      "staxAnswer": "Biggest verified problem: rendered-preview uncertainty for Sports Wellness in canvas-helper. `projects/sportswellness/workspace/index.html`, `projects/sportswellness/workspace/styles.css`, and `projects/sportswellness/workspace/main.js` are useful source context, but they do not prove text fit, border symmetry, or SMART goals checkmark containment without rendered preview evidence. One next step: Capture the rendered Sports Wellness preview evidence for SMART goals checkmark containment and text fit; paste back a screenshot or visual finding.",
+      "externalAnswer": "The main risk is visual quality in the Sports Wellness preview, especially text overflow, border symmetry, and the SMART goals checkmark. Inspect the preview and then adjust the workspace files.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["rendered preview proof", "sportswellness", "visual finding"]
+    },
+    {
+      "id": "canvas_proof_gap",
+      "repo": "canvas-helper",
+      "task": "What proof gap matters most in canvas-helper?",
+      "localEvidence": "repo-script:test:e2e; stored focused command evidence exists; verification debt full e2e open; sportswellness rendered preview issue needs screenshot proof",
+      "staxAnswer": "The broad proof gap is still full e2e coverage, but for Sports Wellness visual work the sharper proof gap is rendered preview evidence. Stored focused checks do not prove the current card layout. One next step: Capture the rendered Sports Wellness preview and paste back whether text fits, borders look symmetrical, and the SMART goals checkmark stays inside its box.",
+      "externalAnswer": "Run the full e2e tests and visually inspect Sports Wellness. Focused checks are not enough for visual regressions.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["distinguish e2e from visual proof", "paste back"]
+    },
+    {
+      "id": "canvas_fake_codex_report",
+      "repo": "canvas-helper",
+      "task": "Audit a Codex report that says it fixed Sports Wellness and all tests pass without output.",
+      "localEvidence": "workspace canvas-helper; sportswellness rendered preview issue; no command output; no screenshot; no file list; no diff summary; repo-script:test:e2e",
+      "staxAnswer": "Reject the completion claim as fake-complete risk. The report lacks file list, diff summary, command output, and rendered preview evidence, so it does not prove Sports Wellness is fixed or that tests pass. One next step: Run `npm run test:e2e` or capture the rendered Sports Wellness preview, then paste back output or screenshot plus the Codex file list and diff summary.",
+      "externalAnswer": "Do not accept the report without evidence. Ask for screenshots, changed files, and test output.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["fake-complete risk", "screenshot proof", "test:e2e"]
+    },
+    {
+      "id": "canvas_codex_prompt",
+      "repo": "canvas-helper",
+      "task": "Create one bounded Codex prompt for the Sports Wellness issue.",
+      "localEvidence": "sportswellness slug; files projects/sportswellness/workspace/index.html styles.css main.js; issue text fit, symmetrical borders, SMART goals checkmark containment",
+      "staxAnswer": "Bounded Codex prompt: inspect only `projects/sportswellness/workspace/index.html`, `projects/sportswellness/workspace/styles.css`, and `projects/sportswellness/workspace/main.js`. Fix text containment, even borders, and SMART goals checkmark sizing without broad project migration. One next step: Capture the rendered Sports Wellness preview after the patch and paste back a screenshot or visual finding.",
+      "externalAnswer": "Ask Codex to update the Sports Wellness workspace files so the text fits and the checkmark is contained.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["exact files", "bounded scope", "rendered preview proof"]
+    },
+    {
+      "id": "canvas_next_after_evidence",
+      "repo": "canvas-helper",
+      "task": "What is the next move after current Canvas Helper proof evidence?",
+      "localEvidence": "workspace canvas-helper; project sportswellness; projects/sportswellness/workspace/index.html; projects/sportswellness/workspace/styles.css; projects/sportswellness/workspace/main.js; focused checks exist but full e2e debt remains; Sports Wellness issue is visual; rendered preview evidence not supplied",
+      "staxAnswer": "The next move is not to claim the visual issue fixed from source inspection. For this problem, proof requires rendered preview evidence. One next step: Capture the rendered Sports Wellness preview evidence for text fit, border symmetry, and SMART goals checkmark containment; paste back screenshot or visual finding.",
+      "externalAnswer": "Open the preview and check whether the cards look right, then run e2e when possible.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["visual proof boundary", "one next step"]
+    },
+    {
+      "id": "admissions_biggest_risk",
+      "repo": "app-admissions",
+      "task": "What is the biggest current operating risk in app-admissions?",
+      "localEvidence": "workspace app-admissions; repo path ADMISSION-APP; git status main...origin/main [behind 18]; repo-script:build:pages; no test script detected",
+      "staxAnswer": "Biggest verified operating risk: app-admissions is stale because local `main` is behind `origin/main` by 18 commits. Repo-health claims should wait until the sync boundary is resolved. One next step: Ask for human approval to pull or otherwise sync app-admissions with origin before making repo-health claims; paste back the approval decision.",
+      "externalAnswer": "The biggest risk is the branch being 18 commits behind origin. Sync it first, then run the pages build.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["stale branch", "human approval", "no premature build"]
+    },
+    {
+      "id": "admissions_proof_gap",
+      "repo": "app-admissions",
+      "task": "What testing or proof gap matters most in app-admissions?",
+      "localEvidence": "repo-script:build:pages; no package test script; git status behind 18; branch sync approval not supplied",
+      "staxAnswer": "The first proof gap is branch freshness, not test execution. Since app-admissions is behind origin by 18 commits, a build result before sync may prove the wrong revision. One next step: Ask for human approval to pull or otherwise sync app-admissions with origin; paste back the approval decision before running `npm run build:pages`.",
+      "externalAnswer": "There is no normal test script, so the proof command is npm run build:pages. But the branch should be synced first.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["sync before build", "build:pages", "proof honesty"]
+    },
+    {
+      "id": "admissions_fake_codex_report",
+      "repo": "app-admissions",
+      "task": "Audit a Codex report claiming app-admissions tests passed without output.",
+      "localEvidence": "package has build:pages; no test script detected; git status behind 18; no command output; no file list; no diff summary",
+      "staxAnswer": "Reject the test-pass claim as unverified. app-admissions has `npm run build:pages` as the known proof command, no conventional test script in the evidence, and the branch is behind origin by 18 commits. One next step: Ask for human approval to sync app-admissions first; paste back the approval decision plus any Codex file list and diff summary.",
+      "externalAnswer": "Do not accept test-pass claims without output. Ask for build output and changed files.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["no nonexistent npm test", "sync boundary", "fake complete"]
+    },
+    {
+      "id": "admissions_codex_prompt",
+      "repo": "app-admissions",
+      "task": "Create one bounded Codex prompt for app-admissions repo health.",
+      "localEvidence": "repo-script:build:pages; git behind 18; no test script detected; source mutation should wait until sync approved",
+      "staxAnswer": "Bounded Codex prompt candidate: after human-approved sync, inspect `package.json` and the Pages build configuration, then run only `npm run build:pages`. Do not claim tests pass because no test script was detected. One next step: Ask for human approval to pull or otherwise sync app-admissions; paste back the approval decision before any Codex source patch or build proof.",
+      "externalAnswer": "Ask Codex to sync the branch, inspect the build, and run npm run build:pages.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["human-approved sync", "build:pages", "no test claim"]
+    },
+    {
+      "id": "admissions_next_after_evidence",
+      "repo": "app-admissions",
+      "task": "What is the next move after current app-admissions evidence?",
+      "localEvidence": "git status main...origin/main [behind 18]; repo-script:build:pages; no test script; no sync approval supplied",
+      "staxAnswer": "The next move is the sync approval boundary. Running `npm run build:pages` before resolving the branch being 18 commits behind may verify a stale revision. One next step: Ask for human approval to pull or otherwise sync app-admissions with origin; paste back the approval decision.",
+      "externalAnswer": "Sync with origin, then run npm run build:pages.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": ["approval boundary", "stale revision risk", "one next step"]
+    }
+  ]
+}

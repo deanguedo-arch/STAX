@@ -11,6 +11,7 @@ import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { BehaviorMiner } from "./compare/BehaviorMiner.js";
 import { BehaviorRequirementTriage } from "./compare/BehaviorRequirementTriage.js";
+import { LocalProblemBenchmark } from "./compare/LocalProblemBenchmark.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
@@ -656,6 +657,17 @@ async function disagreeCommand(args: ParsedArgs): Promise<void> {
 }
 
 async function compareCommand(args: ParsedArgs): Promise<void> {
+  if (args.positional[0] === "benchmark") {
+    const benchmark = new LocalProblemBenchmark();
+    const file = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    const dir = typeof args.flags.fixtures === "string" ? args.flags.fixtures : undefined;
+    const summary = file
+      ? await benchmark.scoreFile(file)
+      : await benchmark.scoreDirectory(dir ?? "fixtures/problem_benchmark");
+    logInfo(benchmark.formatSummary(summary));
+    await recordCommandEvent("compare benchmark", args, summary.stopConditionMet, JSON.stringify(summary), []);
+    return;
+  }
   const taskFile = typeof args.flags.task === "string" ? args.flags.task : undefined;
   const staxFile = typeof args.flags.stax === "string" ? args.flags.stax : undefined;
   const externalFile = typeof args.flags.external === "string" ? args.flags.external : undefined;
@@ -1207,6 +1219,7 @@ function help(): void {
     "  rax workspace create <name> --repo <path> [--use] | use <name> | status | list | show <name> | repo-summary | search <query>",
     "  rax disagree --reason \"...\" [--run <run-id>]",
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
+    "  rax compare benchmark [--fixtures fixtures/problem_benchmark | --file fixture.json]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
