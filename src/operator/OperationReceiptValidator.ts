@@ -119,7 +119,7 @@ export class OperationReceiptValidator {
     if (isGenericNextStep(primaryStep)) {
       issues.push(`One Next Step is too generic: ${primaryStep}`);
     }
-    if (!/^(Run|Use|Paste|Create|Link|Inspect|Open|Ask|Set)\b/i.test(primaryStep)) {
+    if (!/^(Run|Use|Paste|Create|Link|Inspect|Open|Ask|Set|Resolve|Capture)\b/i.test(primaryStep)) {
       issues.push("One Next Step must start with a concrete action verb.");
     }
     if (isManualOrExternalStep(primaryStep) && !/\bpaste back\b/i.test(primaryStep)) {

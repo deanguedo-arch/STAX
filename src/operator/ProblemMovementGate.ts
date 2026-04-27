@@ -64,7 +64,9 @@ export class ProblemMovementGate {
       }
       if (!/\bnpm (run|test)\b/i.test(primaryStep) &&
         !(hasFailedCommandEvidence(input) && /\bnpm ls\b/i.test(primaryStep)) &&
-        !(hasFailedCommandEvidence(input) && /\bAsk for human approval\b/i.test(primaryStep) && /\bdependency\b/i.test(primaryStep))) {
+        !(hasFailedCommandEvidence(input) && /\bAsk for human approval\b/i.test(primaryStep) && /\bdependency\b/i.test(primaryStep)) &&
+        !(hasRenderedPreviewProofNeed(input) && /\b(Capture|Open)\b/i.test(primaryStep) && /\b(rendered|preview|screenshot|visual)\b/i.test(primaryStep)) &&
+        !(hasBranchSyncNeed(input, primaryStep))) {
         blockingReasons.push("One Next Step must name the exact test command when tests/scripts were found.");
       }
     }
@@ -128,7 +130,7 @@ function validateNextStep(oneNextStep: string, primaryStep: string): string[] {
   if (isGenericNextStep(primaryStep)) {
     issues.push(`One Next Step is too generic to move the problem forward: ${primaryStep}`);
   }
-  if (!/^(Run|Use|Paste|Create|Link|Inspect|Open|Ask|Set)\b/i.test(primaryStep)) {
+  if (!/^(Run|Use|Paste|Create|Link|Inspect|Open|Ask|Set|Resolve|Capture)\b/i.test(primaryStep)) {
     issues.push("One Next Step must start with a concrete action verb.");
   }
   if (countCommandLikeFragments(primaryStep) > 1) {
@@ -222,6 +224,17 @@ function hasFailedCommandEvidence(input: ProblemMovementInput): boolean {
   return /\bnpm run [a-z0-9:_-]+\s+failed\b/i.test(input.userTask) ||
     /\bnpm test\s+failed\b/i.test(input.userTask) ||
     input.evidenceChecked.some((item) => /^command-evidence:[^:]+:.+:failed:/.test(item));
+}
+
+function hasRenderedPreviewProofNeed(input: ProblemMovementInput): boolean {
+  return /\bsports\s*wellness|sportswellness|smart goals?|checkmark|check mark|rendered preview|text fit|symmetrical borders?\b/i.test(input.userTask) &&
+    /\b(rendered|preview|screenshot|visual|containment|fit|box|border|checkmark|check mark)\b/i.test(input.userTask);
+}
+
+function hasBranchSyncNeed(input: ProblemMovementInput, primaryStep: string): boolean {
+  return /\bbehind origin|behind\s+\d+\s+commit|branch drift|stale branch|origin\/main\b/i.test(input.directAnswer) &&
+    /\bAsk for human approval\b/i.test(primaryStep) &&
+    /\b(pull|sync|reconcile)\b/i.test(primaryStep);
 }
 
 function hasCommandOrTraceEvidence(input: ProblemMovementInput): boolean {

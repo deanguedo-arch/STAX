@@ -648,6 +648,7 @@ export class ChatSession {
         ...(repoEvidencePack?.testFiles.map((file) => `repo-test:${file}`) ?? []),
         ...(repoEvidencePack?.scripts.map((script) => `repo-script:${script.name}`) ?? []),
         ...storedCommandEvidence.map((item) => `command-evidence:${item.commandEvidenceId}:${item.command}:${item.status}:${item.source}`),
+        ...storedCommandEvidence.map((item) => `command-evidence-summary:${item.commandEvidenceId}:${compactCommandEvidenceSummary(item.summary)}`),
         ...openVerificationDebts.map((item) => `verification-debt:${item.requiredCommand}:${item.status}`)
       );
 
@@ -1741,11 +1742,16 @@ function formatCommandEvidenceSection(evidence: CommandEvidence[]): string {
             `  - Status: ${item.status}`,
             `  - Source: ${item.source}`,
             `  - Confidence: ${item.source === "local_stax_command_output" ? "high" : "medium"}`,
+            `  - Summary: ${item.summary}`,
             `  - Path: evidence/commands/${item.createdAt.slice(0, 10)}/${item.commandEvidenceId}.json`
           ].join("\n")
         )
       : ["- None"])
   ].join("\n");
+}
+
+function compactCommandEvidenceSummary(summary: string): string {
+  return summary.replace(/\s+/g, " ").trim().slice(0, 700);
 }
 
 function formatVerificationDebtSection(debts: VerificationDebt[]): string {

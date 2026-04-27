@@ -134,5 +134,16 @@ describe("workspace repo operator evidence pack", () => {
     expect(operatingState.intent).toBe("workspace_repo_audit");
     expect(operatingState.workspace).toBe("canvas-helper");
     expect(operatingState.reasonCodes).toContain("workspace_operating_state_question");
+    const operatingRisk = classifier.classify("what is the biggest current operating risk in brightspacequizexporter?", { knownWorkspaces: ["brightspacequizexporter"] });
+    expect(operatingRisk.intent).toBe("workspace_repo_audit");
+    expect(operatingRisk.workspace).toBe("brightspacequizexporter");
+    expect(operatingRisk.reasonCodes).toContain("workspace_operating_state_question");
+    const proofGap = classifier.classify("what proof/testing gap matters most in app-admissions?", { knownWorkspaces: ["app-admissions"] });
+    expect(proofGap.intent).toBe("workspace_repo_audit");
+    expect(proofGap.workspace).toBe("app-admissions");
+    expect(proofGap.reasonCodes).toContain("workspace_tests_question");
+    const spacedAlias = classifier.classify("Canvas helper evidence says sportswellness needs rendered preview proof. What is the next move after current proof evidence?", { knownWorkspaces: ["canvas-helper"] });
+    expect(spacedAlias.intent).toBe("workspace_repo_audit");
+    expect(spacedAlias.workspace).toBe("canvas-helper");
   });
 });

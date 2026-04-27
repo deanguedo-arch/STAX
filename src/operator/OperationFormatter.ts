@@ -103,6 +103,7 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
   const failedCommand = failedCommandEvidence(plan, result);
   const dependencyBlocker = dependencyRepairBlocker(plan, result);
   const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
+  const renderedPreviewNeed = renderedPreviewProofNeed(plan);
   if (result.blocked) {
     return "Blocked. STAX did not execute the requested operation, approve anything, promote anything, or mutate durable state.";
   }
@@ -119,6 +120,14 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
     return "STAX audited the current thread's last chat-linked run. That proves only what the selected run/trace can support; it does not prove broader repo correctness without command or eval evidence.";
   }
   if (plan.intent === "codex_report_audit") {
+    if (failedCommand) {
+      const sourceLabel = failedCommand.source === "supplied" ? "User-supplied command evidence" : "Stored command evidence";
+      return [
+        "STAX treated the supplied Codex report as unverified until it has file lists, diff summary, and command output.",
+        `${sourceLabel} says \`${failedCommand.command}\` failed, so any claim that all tests pass is contradicted or at least unsupported by the current proof state.`,
+        "It inspected the linked repo read-only; no approval, promotion, or source mutation happened."
+      ].join(" ");
+    }
     return [
       "STAX treated the supplied Codex report as unverified until it has file lists, diff summary, and command output.",
       foundTestsOrScripts ? "Tests/scripts were found by read-only inspection, but STAX did not run them, so pass/fail is unknown." : "No executable proof command was run.",
@@ -145,6 +154,9 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
       inspectedDependencyBlocker ? `The dependency inspection has already been supplied and still points at ${dependencyBlocker}, so the next decision is whether to approve dependency repair.` : dependencyBlocker ? `The failure appears to be a dependency/install integrity blocker (${dependencyBlocker}), so STAX should not claim repo behavior passed or move on to generic test commands.` : "STAX should not claim repo behavior passed or move on to generic test commands until the failed command is explained.",
       "Treat this as partial proof for that failed command only; no repair, approval, promotion, or source mutation happened."
     ].join(" ");
+  }
+  if (renderedPreviewNeed) {
+    return "Biggest verified problem: rendered-preview uncertainty for the named workspace surface. Source files and scripts are useful context, but tests/scripts were not run so pass/fail is unknown, and they do not prove text fit, border symmetry, or SMART goals checkmark containment without rendered preview evidence.";
   }
   if (isOperatingStateQuestion(plan)) {
     return operatingStateAnswer(result, foundTestsOrScripts);
@@ -173,6 +185,7 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
   const failedCommand = failedCommandEvidence(plan, result);
   const dependencyBlocker = dependencyRepairBlocker(plan, result);
   const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
+  const renderedPreviewNeed = renderedPreviewProofNeed(plan);
   if (result.blocked) {
     return "Run `npm run rax -- learn queue` to inspect candidates before any approval or promotion path; paste back the output.";
   }
@@ -180,6 +193,11 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return ensurePasteBack(result.nextAllowedActions[0]?.trim() || "Use the explicit slash or CLI command for this operation and paste back the output.");
   }
   if (isOperatingStateQuestion(plan)) {
+    if (renderedPreviewNeed) {
+      return "Capture the rendered Sports Wellness preview evidence for SMART goals checkmark containment and text fit; paste back a screenshot or visual finding.";
+    }
+    const syncBoundary = syncBoundaryStep(result);
+    if (syncBoundary) return syncBoundary;
     if (failedCommand) {
       if (dependencyBlocker) {
         if (inspectedDependencyBlocker) {
@@ -187,7 +205,7 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
         }
         return `Run \`npm ls @rollup/rollup-darwin-arm64 rollup vite\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and dependency tree lines for the missing package.`;
       }
-      return `Rerun \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
+      return `Run \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
     }
     const debtCommand = verificationDebtCommand(result);
     if (debtCommand) {
@@ -196,6 +214,12 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return `Run \`${operatingProofCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
   }
   if (plan.intent === "codex_report_audit") {
+    if (failedCommand) {
+      if (dependencyBlocker && inspectedDependencyBlocker) {
+        return `Ask for human approval to repair the missing Rollup optional dependency in ${repoPath(result) ?? "the target repo"}; paste back the approval decision before any dependency install or deletion command runs.`;
+      }
+      return `Run \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, plus the Codex file list and diff summary if available.`;
+    }
     const debtCommand = verificationDebtCommand(result);
     return `Run \`${debtCommand ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, plus the Codex file list and diff summary if available.`;
   }
@@ -209,7 +233,10 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
       }
       return `Run \`npm ls @rollup/rollup-darwin-arm64 rollup vite\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and dependency tree lines for the missing package.`;
     }
-    return `Rerun \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
+    return `Run \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
+  }
+  if (renderedPreviewNeed) {
+    return "Capture the rendered Sports Wellness preview evidence for SMART goals checkmark containment and text fit; paste back a screenshot or visual finding.";
   }
   if (hasTestsOrScripts(result)) {
     const debtCommand = verificationDebtCommand(result);
@@ -237,6 +264,10 @@ function whyThisStep(plan: OperationPlan, result: OperationExecutionResult): str
   const failedCommand = failedCommandEvidence(plan, result);
   const dependencyBlocker = dependencyRepairBlocker(plan, result);
   const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
+  const renderedPreviewNeed = renderedPreviewProofNeed(plan);
+  if (renderedPreviewNeed) {
+    return "The user's problem is visual containment in the rendered workspace, so screenshot or rendered-preview evidence is the proof boundary before any fix can be called done.";
+  }
   if (failedCommand) {
     if (inspectedDependencyBlocker) {
       return "The non-mutating dependency inspection is already done; dependency repair can change the local install state, so the next useful move is a human approval boundary before running any repair command.";
@@ -417,6 +448,24 @@ function gitStatusRisk(gitStatus?: string): string | undefined {
     return "Biggest verified operating problem: worktree ambiguity. The linked repo has uncommitted changes, so any audit or fix could mix current work with stale assumptions.";
   }
   return undefined;
+}
+
+function syncBoundaryStep(result: OperationExecutionResult): string | undefined {
+  const gitStatus = gitStatusBlock(result.result);
+  if (!gitStatus) return undefined;
+  const firstLine = gitStatus.split(/\r?\n/)[0] ?? "";
+  if (/\[behind\s+\d+\]/i.test(firstLine)) {
+    return `Ask for human approval to pull or otherwise sync ${repoPath(result) ?? "the target repo"} with origin before making repo-health claims; paste back the approval decision.`;
+  }
+  if (/\[(?:ahead|diverged)[^\]]*\]/i.test(firstLine)) {
+    return `Ask for human approval to reconcile branch drift in ${repoPath(result) ?? "the target repo"} before making repo-health claims; paste back the approval decision.`;
+  }
+  return undefined;
+}
+
+function renderedPreviewProofNeed(plan: OperationPlan): boolean {
+  return /\bsports\s*wellness|sportswellness|smart goals?|checkmark|check mark|rendered preview|text fit|symmetrical borders?\b/i.test(plan.originalInput) &&
+    /\b(rendered|preview|screenshot|visual|containment|fit|box|border|checkmark|check mark)\b/i.test(plan.originalInput);
 }
 
 function commandEvidenceStatements(input: string): string[] {

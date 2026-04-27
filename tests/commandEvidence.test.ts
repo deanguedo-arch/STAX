@@ -95,6 +95,31 @@ describe("CommandEvidenceStore", () => {
     expect(parsed[1]?.commandFamily).toBe("test");
   });
 
+  it("keeps nearby failure context for pasted command evidence without treating it as local execution", async () => {
+    const rootDir = await tempRoot();
+    const parsed = parsePastedCommandEvidence(
+      [
+        "Brightspace proof: npm run ingest:ci failed during build.",
+        "Error: Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js.",
+        "OPENAI_API_KEY=sk-secretsecretsecretsecretsecret",
+        "Do not repair dependencies without human approval."
+      ].join("\n")
+    );
+
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0]?.stdout).toContain("@rollup/rollup-darwin-arm64");
+
+    const evidence = await new CommandEvidenceStore(rootDir).record(parsed[0]!);
+    const stdout = await fs.readFile(path.join(rootDir, evidence.stdoutPath), "utf8");
+
+    expect(evidence.source).toBe("human_pasted_command_output");
+    expect(evidence.summary).toContain("@rollup/rollup-darwin-arm64");
+    expect(evidence.summary).toContain("human-pasted command evidence");
+    expect(evidence.summary).not.toContain("sk-secret");
+    expect(stdout).toContain("@rollup/rollup-darwin-arm64");
+    expect(stdout).not.toContain("sk-secret");
+  });
+
   it("stores source/family/count metadata and retrieves by workspace and command", async () => {
     const rootDir = await tempRoot();
     const store = new CommandEvidenceStore(rootDir);

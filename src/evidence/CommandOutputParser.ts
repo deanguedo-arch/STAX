@@ -18,6 +18,7 @@ export function parsePastedCommandEvidence(input: string): ParsedCommandEvidence
     const script = match[1] ?? "";
     const status = normalizeStatus(match[2] ?? "unknown");
     const matchedText = match[0].trim().replace(/\s+/g, " ");
+    const context = contextSnippet(input, match.index ?? 0, match[0].length);
     const counts = countPair(match[3], match[4]);
     add({
       command: `npm run ${script}`,
@@ -27,9 +28,9 @@ export function parsePastedCommandEvidence(input: string): ParsedCommandEvidence
       status,
       commandFamily: commandFamilyFor(`npm run ${script}`),
       counts,
-      stdout: matchedText,
+      stdout: context,
       stderr: "",
-      summary: `${matchedText} (human-pasted command evidence; not local execution).`,
+      summary: summarizeHumanEvidence(matchedText, context),
       matchedText
     });
   }
@@ -37,6 +38,7 @@ export function parsePastedCommandEvidence(input: string): ParsedCommandEvidence
   for (const match of input.matchAll(/\bnpm test\s+(passed|failed)(?:\s+(\d+)\s*\/\s*(\d+))?\b/gi)) {
     const status = normalizeStatus(match[1] ?? "unknown");
     const matchedText = match[0].trim().replace(/\s+/g, " ");
+    const context = contextSnippet(input, match.index ?? 0, match[0].length);
     add({
       command: "npm test",
       args: ["test"],
@@ -45,9 +47,9 @@ export function parsePastedCommandEvidence(input: string): ParsedCommandEvidence
       status,
       commandFamily: "test",
       counts: countPair(match[2], match[3]),
-      stdout: matchedText,
+      stdout: context,
       stderr: "",
-      summary: `${matchedText} (human-pasted command evidence; not local execution).`,
+      summary: summarizeHumanEvidence(matchedText, context),
       matchedText
     });
   }
@@ -56,6 +58,7 @@ export function parsePastedCommandEvidence(input: string): ParsedCommandEvidence
     const files = (match[1] ?? "").trim().replace(/\s+/g, " ");
     const status = normalizeStatus(match[2] ?? "unknown");
     const matchedText = match[0].trim().replace(/\s+/g, " ");
+    const context = contextSnippet(input, match.index ?? 0, match[0].length);
     add({
       command: `npx tsx --test ${files}`,
       args: ["tsx", "--test", ...files.split(/\s+/).filter(Boolean)],
@@ -64,14 +67,28 @@ export function parsePastedCommandEvidence(input: string): ParsedCommandEvidence
       status,
       commandFamily: "test",
       counts: countPair(match[3], match[4]),
-      stdout: matchedText,
+      stdout: context,
       stderr: "",
-      summary: `${matchedText} (human-pasted command evidence; not local execution).`,
+      summary: summarizeHumanEvidence(matchedText, context),
       matchedText
     });
   }
 
   return parsed;
+}
+
+function contextSnippet(input: string, start: number, length: number): string {
+  const window = 700;
+  const from = Math.max(0, start - window);
+  const to = Math.min(input.length, start + length + window);
+  const prefix = from > 0 ? "[SNIP] " : "";
+  const suffix = to < input.length ? " [SNIP]" : "";
+  return `${prefix}${input.slice(from, to).replace(/\s+/g, " ").trim()}${suffix}`;
+}
+
+function summarizeHumanEvidence(matchedText: string, context: string): string {
+  const contextSuffix = context && context !== matchedText ? ` Context: ${context}` : "";
+  return `${matchedText} (human-pasted command evidence; not local execution).${contextSuffix}`;
 }
 
 function normalizeStatus(value: string): "passed" | "failed" | "unknown" {

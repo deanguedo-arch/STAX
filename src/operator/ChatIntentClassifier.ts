@@ -270,10 +270,24 @@ export class ChatIntentClassifier {
         reasonCode: mentionedWorkspace ? "workspace_risk_question" : "repo_risk_question"
       };
     }
-    if (/\b(biggest|main|largest|top)\b.*\b(operational problem|operating problem|workflow problem|repo problem|project problem)\b/.test(input)) {
+    if (/\b(biggest|main|largest|top|current)\b.*\b(operational problem|operating problem|operating risk|operational risk|workflow problem|repo problem|project problem|repo risk|project risk)\b/.test(input)) {
       return {
         workspace: mentionedWorkspace,
         objective: "Identify the highest verified operating-state risk from read-only repo evidence.",
+        reasonCode: mentionedWorkspace ? "workspace_operating_state_question" : "repo_operating_state_question"
+      };
+    }
+    if (/\b(proof|testing|test|verification)\b.*\b(gap|debt|missing|matters most|next proof)\b/.test(input) && (/\b(repo|repository|project|workspace)\b/.test(input) || mentionedWorkspace)) {
+      return {
+        workspace: mentionedWorkspace,
+        objective: "Identify the highest proof or testing gap from read-only repo evidence.",
+        reasonCode: mentionedWorkspace ? "workspace_tests_question" : "repo_tests_question"
+      };
+    }
+    if (/\b(next move|next step)\b.*\b(current proof|proof evidence|command evidence|evidence)\b/.test(input) && (/\b(repo|repository|project|workspace)\b/.test(input) || mentionedWorkspace)) {
+      return {
+        workspace: mentionedWorkspace,
+        objective: "Identify the next bounded proof step from supplied evidence and read-only repo evidence.",
         reasonCode: mentionedWorkspace ? "workspace_operating_state_question" : "repo_operating_state_question"
       };
     }
@@ -339,11 +353,14 @@ export class ChatIntentClassifier {
 
   private matchKnownWorkspace(candidate: string, context: ChatIntentContext): string | undefined {
     const known = context.knownWorkspaces ?? [];
-    return known.find((workspace) => workspace.toLowerCase() === candidate.toLowerCase());
+    return known.find((workspace) => workspace.toLowerCase() === candidate.toLowerCase() || workspaceAlias(workspace) === workspaceAlias(candidate));
   }
 
   private findMentionedWorkspace(input: string, context: ChatIntentContext): string | undefined {
-    return (context.knownWorkspaces ?? []).find((workspace) => input.includes(workspace.toLowerCase()));
+    const normalizedInput = workspaceAlias(input);
+    return (context.knownWorkspaces ?? []).find((workspace) =>
+      input.includes(workspace.toLowerCase()) || normalizedInput.includes(workspaceAlias(workspace))
+    );
   }
 
   private plan(input: PlanInput): OperationPlan {
@@ -370,4 +387,8 @@ function normalize(input: string): string {
     .replace(/[^\w\s-]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function workspaceAlias(input: string): string {
+  return input.toLowerCase().replace(/[^a-z0-9]+/g, "");
 }

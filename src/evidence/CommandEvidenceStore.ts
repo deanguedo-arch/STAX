@@ -6,6 +6,7 @@ import { redactProofText } from "../audit/ProofRedactor.js";
 
 const MAX_STREAM_CHARS = 200 * 1024;
 const HALF_STREAM_CHARS = 100 * 1024;
+const MAX_SUMMARY_CHARS = 2400;
 
 export const CommandEvidenceSchema = z.object({
   commandEvidenceId: z.string().min(1),
@@ -66,6 +67,7 @@ export class CommandEvidenceStore {
 
     const stdout = this.redactAndTruncate(input.stdout ?? "");
     const stderr = this.redactAndTruncate(input.stderr ?? "");
+    const summary = this.redactSummary(input.summary);
     const stdoutPath = path.join("evidence", "commands", date, `${commandEvidenceId}.stdout.txt`);
     const stderrPath = path.join("evidence", "commands", date, `${commandEvidenceId}.stderr.txt`);
     await Promise.all([
@@ -96,8 +98,8 @@ export class CommandEvidenceStore {
       stderrPath,
       stdoutTruncated: stdout.truncated,
       stderrTruncated: stderr.truncated,
-      redactionCount: stdout.redactionCount + stderr.redactionCount,
-      summary: input.summary,
+      redactionCount: stdout.redactionCount + stderr.redactionCount + summary.redactionCount,
+      summary: summary.text,
       createdAt,
       hash,
       workspace: input.workspace,
@@ -144,6 +146,18 @@ export class CommandEvidenceStore {
     return {
       text,
       truncated,
+      redactionCount: redacted.redactions.reduce((sum, item) => sum + item.replacements, 0)
+    };
+  }
+
+  private redactSummary(input: string): { text: string; redactionCount: number } {
+    const redacted = redactProofText(input);
+    const compact = redacted.text.replace(/\s+/g, " ").trim();
+    const text = compact.length > MAX_SUMMARY_CHARS
+      ? `${compact.slice(0, MAX_SUMMARY_CHARS)} [TRUNCATED_SUMMARY]`
+      : compact;
+    return {
+      text: text || "Command evidence recorded.",
       redactionCount: redacted.redactions.reduce((sum, item) => sum + item.replacements, 0)
     };
   }

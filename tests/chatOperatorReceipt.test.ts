@@ -146,6 +146,36 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(output).toContain("ProblemMovement: needs_evidence");
   });
 
+  it("uses stored command evidence summaries to preserve the useful failure reason", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        originalInput: "What is the biggest current operating risk in brightspacequizexporter?",
+        workspace: "brightspacequizexporter",
+        reasonCodes: ["workspace_risk_question"]
+      }),
+      baseResult({
+        evidenceChecked: [
+          "OperationPlan",
+          "RepoPath: /tmp/brightspacequizexporter",
+          "repo:package.json",
+          "repo-script:build",
+          "repo-script:test",
+          "repo-script:ingest:ci",
+          "command-evidence:cmd-1:npm run ingest:ci:failed:human_pasted_command_output",
+          "command-evidence-summary:cmd-1:npm run ingest:ci failed. Context: Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js."
+        ],
+        result: "Read-only repo evidence pack with stored command evidence.",
+        risks: []
+      })
+    );
+
+    expect(output).toContain("Stored command evidence says `npm run ingest:ci` failed");
+    expect(output).toContain("@rollup/rollup-darwin-arm64");
+    expect(output).toContain("dependency/install integrity blocker");
+    expect(output).toContain("Run `npm ls @rollup/rollup-darwin-arm64 rollup vite`");
+    expect(output).not.toContain("Run `npm test`");
+  });
+
   it("moves from completed dependency inspection to a human approval boundary", () => {
     const output = new OperationFormatter().format(
       basePlan({
@@ -178,6 +208,95 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(output).not.toContain("Run `npm test`");
     expect(output).toContain("paste back the approval decision");
     expect(output).toContain("ProblemMovement: needs_evidence");
+  });
+
+  it("uses failed proof command evidence when auditing fake Codex reports", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        intent: "codex_report_audit",
+        originalInput: "Audit this Codex final report for brightspacequizexporter: Codex says all tests pass, but provides no command output.",
+        workspace: "brightspacequizexporter",
+        reasonCodes: ["codex_report_audit_intent"]
+      }),
+      baseResult({
+        evidenceChecked: [
+          "OperationPlan",
+          "RepoPath: /tmp/brightspacequizexporter",
+          "repo:package.json",
+          "repo-script:build",
+          "repo-script:test",
+          "repo-script:ingest:ci",
+          "command-evidence:cmd-1:npm run ingest:ci:failed:human_pasted_command_output"
+        ],
+        result: "Read-only repo evidence pack with stored command evidence."
+      })
+    );
+
+    expect(output).toContain("Codex report as unverified");
+    expect(output).toContain("`npm run ingest:ci` failed");
+    expect(output).toContain("claim that all tests pass");
+    expect(output).toContain("Run `npm run ingest:ci`");
+    expect(output).not.toContain("Run `npm test`");
+  });
+
+  it("prefers rendered preview proof for visual workspace problems", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        originalInput: [
+          "Canvas helper evidence: sportswellness is the project slug;",
+          "editable files are projects/sportswellness/workspace/index.html, styles.css, and main.js;",
+          "recurring issue is text fit, symmetrical borders, and SMART goals checkmark containment;",
+          "full e2e proof remains open. What is the next move after current proof evidence?"
+        ].join(" "),
+        workspace: "canvas-helper",
+        reasonCodes: ["workspace_operating_state_question"]
+      }),
+      baseResult({
+        evidenceChecked: [
+          "OperationPlan",
+          "RepoPath: /tmp/canvas-helper",
+          "repo:package.json",
+          "repo-script:test:e2e",
+          "repo:projects/sportswellness/workspace/index.html",
+          "repo:projects/sportswellness/workspace/styles.css",
+          "repo:projects/sportswellness/workspace/main.js"
+        ],
+        result: "Read-only repo evidence pack."
+      })
+    );
+
+    expect(output).toContain("rendered-preview uncertainty");
+    expect(output).toContain("SMART goals checkmark containment");
+    expect(output).toContain("Capture the rendered Sports Wellness preview evidence");
+    expect(output).not.toContain("Run `npm run test:e2e`");
+  });
+
+  it("asks for approval before sync when branch is behind origin", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        originalInput: "what is the biggest current operating risk in app-admissions?",
+        workspace: "app-admissions",
+        reasonCodes: ["workspace_operating_state_question"]
+      }),
+      baseResult({
+        evidenceChecked: [
+          "OperationPlan",
+          "RepoPath: /tmp/ADMISSION-APP",
+          "repo:package.json",
+          "repo-script:build:pages"
+        ],
+        result: [
+          "## Git Status",
+          "```txt",
+          "## main...origin/main [behind 18]",
+          "```"
+        ].join("\n")
+      })
+    );
+
+    expect(output).toContain("stale branch");
+    expect(output).toContain("Ask for human approval to pull or otherwise sync");
+    expect(output).not.toContain("Run `npm run build:pages`");
   });
 
   it("rejects receipt-first output without a direct outcome answer", () => {

@@ -116,6 +116,57 @@ Current limitation: `/compare external` still behaves more like a comparison-mod
 
 Next useful slice: build `LocalProblemBenchmark` only after a few more real comparisons are captured.
 
+## External ChatGPT Baseline Trial
+
+A sanitized external ChatGPT prompt was run against the same 15-task frame for:
+
+- `brightspacequizexporter`
+- `canvas-helper`
+- `app-admissions`
+
+The external baseline was useful because it stayed pointed at the repos and gave direct operating-risk answers:
+
+- Brightspace: the blocking proof issue is the failed `npm run ingest:ci` gate; if the failure names missing Rollup optional dependency evidence, do not claim build/tests/ingest promotion passed.
+- Canvas Helper: the Sports Wellness risk is rendered-preview uncertainty; source inspection is not enough to prove text fit, border symmetry, or SMART goals checkmark containment.
+- App Admissions: the branch being behind `origin/main` is the first operating boundary; sync requires human approval before repo-health claims.
+
+The first STAX pass lost against that baseline in several places:
+
+- It remembered `npm run ingest:ci failed` but lost the nearby failure reason, so later answers sometimes asked to rerun the same command.
+- It treated `Canvas helper` with a space as a weaker generic prompt instead of the `canvas-helper` workspace.
+- It sometimes moved to generic proof commands instead of rendered-preview proof for visual workspace issues.
+- It jumped to `npm run build:pages` for `app-admissions` before surfacing the stale-branch approval boundary.
+
+## Second Dogfood Patch
+
+The second patch fixed the failures above without mutating linked repos or adding autonomous execution:
+
+- pasted command evidence now stores a bounded, redacted context snippet, not only the matched command phrase
+- command evidence summaries are visible to the operator/audit path
+- stored command summaries can preserve useful failure clues like `@rollup/rollup-darwin-arm64`
+- workspace intent routing recognizes operating-risk and proof-gap language more reliably
+- `Canvas helper` maps to the `canvas-helper` workspace
+- visual Sports Wellness questions prefer rendered-preview evidence over generic e2e proof
+- stale `app-admissions` branch state asks for human sync approval before build proof
+
+Key smoke after the patch:
+
+```bash
+npm run rax -- chat --once "For workspace brightspacequizexporter: npm run ingest:ci failed during build. Error: Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js. Do not propose deleting node_modules or running npm install unless it is human-approved. What is the current blocker?"
+
+npm run rax -- chat --once "What is the biggest current operating risk in brightspacequizexporter?"
+```
+
+The second command, which did not repeat the full error context, now answers from stored command evidence:
+
+```txt
+Stored command evidence says `npm run ingest:ci` failed...
+The failure appears to be a dependency/install integrity blocker (@rollup/rollup-darwin-arm64 missing)...
+Run `npm ls @rollup/rollup-darwin-arm64 rollup vite`...
+```
+
+This is the concrete improvement: STAX no longer forgets the useful reason behind a failed proof command as quickly, and it avoids sending Dean back through an already-known failed command loop.
+
 ## Commands Run
 
 Implemented and checked the dogfood fix with:
@@ -125,13 +176,15 @@ npm run typecheck
 npm test -- chatOperator chatOperatorReceipt problemMovementGate workspaceRepoOperator chatSession commandEvidence localEvidence
 npm run rax -- chat --once "what tests exist in brightspacequizexporter and what proof is missing?"
 npm run rax -- chat --once "audit this Codex final report for canvas-helper: Codex says it fixed the repo and all tests pass, but provides no file list, no diff summary, and no command output."
+npm test -- tests/commandEvidence.test.ts tests/chatOperatorReceipt.test.ts tests/workspaceRepoOperator.test.ts
+npm run rax -- chat --once "What is the biggest current operating risk in brightspacequizexporter?"
 ```
 
 Final validation:
 
 ```txt
 npm run typecheck: passed
-npm test: 48 files / 216 tests passed
+npm test: 48 files / 224 tests passed
 npm run rax -- eval: 16/16 passed
 npm run rax -- eval --regression: 43/43 passed
 npm run rax -- eval --redteam: 9/9 passed
