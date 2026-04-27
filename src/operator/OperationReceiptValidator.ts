@@ -7,6 +7,11 @@ export type OperationReceiptValidation = {
 };
 
 const requiredReceiptHeadings = [
+  "## Direct Answer",
+  "## One Next Step",
+  "## Why This Step",
+  "## Proof Status",
+  "## Receipt",
   "## Operation",
   "## Evidence Required",
   "## Evidence Checked",
@@ -76,15 +81,59 @@ export class OperationReceiptValidator {
 
   validateMarkdown(output: string): OperationReceiptValidation {
     const issues = missingHeadings(output, requiredReceiptHeadings).map((heading) => `Missing receipt heading: ${heading}`);
+    const directAnswer = sectionContent(output, "## Direct Answer");
+    const oneNextStep = sectionContent(output, "## One Next Step");
+    const whyThisStep = sectionContent(output, "## Why This Step");
+    const proofStatus = sectionContent(output, "## Proof Status");
     const verified = sectionContent(output, "## Claims Verified");
     const notVerified = sectionContent(output, "## Claims Not Verified");
     const fakeRisks = sectionContent(output, "## Fake-Complete Risks");
     const missingEvidence = sectionContent(output, "## Missing Evidence");
+    const directAnswerIndex = output.indexOf("## Direct Answer");
+    const receiptIndex = output.indexOf("## Receipt");
+    if (directAnswerIndex === -1 || receiptIndex === -1 || receiptIndex < directAnswerIndex) {
+      issues.push("Outcome header must appear before the receipt.");
+    }
+    if (!directAnswer.trim()) {
+      issues.push("Direct Answer cannot be empty.");
+    }
+    if (!whyThisStep.trim()) {
+      issues.push("Why This Step cannot be empty.");
+    }
+    if (!/\b(verified|partial|blocked|deferred)\b/i.test(proofStatus)) {
+      issues.push("Proof Status must be verified, partial, blocked, or deferred.");
+    }
+    const nextSteps = oneNextStep
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.startsWith("- "));
+    if (nextSteps.length !== 1) {
+      issues.push("One Next Step must contain exactly one primary bullet.");
+    }
+    const primaryStep = nextSteps[0]?.replace(/^-\s+/, "").trim() ?? oneNextStep.trim();
+    if (!primaryStep) {
+      issues.push("One Next Step cannot be empty.");
+    }
+    if (isGenericNextStep(primaryStep)) {
+      issues.push(`One Next Step is too generic: ${primaryStep}`);
+    }
+    if (!/^(Run|Use|Paste|Create|Link|Inspect|Open|Ask|Set)\b/i.test(primaryStep)) {
+      issues.push("One Next Step must start with a concrete action verb.");
+    }
+    if (isManualOrExternalStep(primaryStep) && !/\bpaste back\b/i.test(primaryStep)) {
+      issues.push("Manual or external next steps must say what to paste back.");
+    }
+    if (/\b(Status:\s+blocked|Status:\s+deferred|ExecutionClass:\s+(hard_block|review_only|requires_confirmation))\b/i.test(output) && !/\bno action was executed|did not execute\b/i.test(directAnswer)) {
+      issues.push("Blocked or deferred responses must state in Direct Answer that no action was executed.");
+    }
     if (/\btests? (pass|passed)|completion|complete|implemented|fixed\b/i.test(verified) && !/\bevidence:\s*(cmd-ev-|evidence\/commands\/|evals\/eval_results\/)/i.test(verified)) {
       issues.push("Markdown receipt has a completion-like verified claim without command/eval evidence.");
     }
     if (/\brepo-(test|script):/i.test(output) && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(notVerified)) {
       issues.push("Markdown receipt found tests/scripts but did not say pass/fail is unknown.");
+    }
+    if (/\brepo-(test|script):/i.test(output) && !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(directAnswer)) {
+      issues.push("Direct Answer must state test pass/fail is unknown when tests/scripts were found but not run.");
     }
     if (/\brepo-(test|script):/i.test(output) && !/does not prove tests pass|test scripts.*not prove/i.test(fakeRisks)) {
       issues.push("Markdown receipt found tests/scripts but omitted fake-complete risk.");
@@ -115,4 +164,25 @@ function isCompletionClaim(claim: string): boolean {
 
 function isNoActionClaim(claim: string): boolean {
   return /\b(no operation action was executed|no source files were modified)\b/i.test(claim);
+}
+
+function isGenericNextStep(step: string): boolean {
+  const normalized = step.toLowerCase().replace(/[`"'.,]/g, "").replace(/\s+/g, " ").trim();
+  const generic = [
+    "review the evidence",
+    "continue analysis",
+    "improve the repo",
+    "check the tests",
+    "investigate further",
+    "follow up",
+    "make it better",
+    "review tests",
+    "check evidence",
+    "use the codex prompt or required next proof from the audit"
+  ];
+  return generic.some((phrase) => normalized === phrase || normalized.startsWith(`${phrase} `));
+}
+
+function isManualOrExternalStep(step: string): boolean {
+  return /\b(npm|pnpm|yarn|tsx|vitest|rax|CLI|command|Codex final report)\b/i.test(step);
 }

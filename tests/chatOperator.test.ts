@@ -55,6 +55,9 @@ describe("Chat Operator v1B", () => {
 
     const result = await session.handleLine("audit canvas-helper");
 
+    expect(result.output).toMatch(/^## Direct Answer/);
+    expect(result.output).toContain("## One Next Step");
+    expect(result.output).toContain("## Receipt");
     expect(result.output).toContain("## Operation");
     expect(result.output).toContain("Operation: audit_workspace");
     expect(result.output).toContain("## Claims Verified");
@@ -117,6 +120,11 @@ describe("Chat Operator v1B", () => {
 
     const result = await session.handleLine("what tests exist in this repo?");
 
+    expect(result.output).toMatch(/^## Direct Answer/);
+    expect(result.output).toContain("pass/fail is unknown");
+    expect(result.output).toContain("## One Next Step");
+    expect(result.output).toContain("Run `npm test`");
+    expect(result.output).toContain("paste back the full output");
     expect(result.output).toContain("Operation: workspace_repo_audit");
     expect(result.output).toContain("RepoEvidencePack.build");
     expect(result.output).toContain("## Scripts / Test Commands Found");
@@ -140,6 +148,10 @@ describe("Chat Operator v1B", () => {
     const result = await session.handleLine("fix this repo");
     const after = await fs.readdir(linkedRepo, { recursive: true });
 
+    expect(result.output).toMatch(/^## Direct Answer/);
+    expect(result.output).toContain("STAX did not modify the repo.");
+    expect(result.output).toContain("Run `npm test`");
+    expect(result.output).toContain("paste back the full output");
     expect(result.output).toContain("Operation: workspace_repo_audit");
     expect(result.output).toContain("Audit and plan next allowed actions");
     expect(result.output).toContain("No source files were modified.");
@@ -200,6 +212,11 @@ describe("Chat Operator v1B", () => {
     const blocked = await session.handleLine("approve all memory candidates");
     const deferred = await session.handleLine("stress test planning");
 
+    expect(blocked.output).toMatch(/^## Direct Answer/);
+    expect(blocked.output).toContain("Blocked. STAX did not execute");
+    expect(blocked.output).toContain("## Proof Status\nblocked");
+    expect(deferred.output).toMatch(/^## Direct Answer/);
+    expect(deferred.output).toContain("Deferred. STAX did not execute");
     expect(blocked.output).toContain("ExecutionClass: hard_block");
     expect(blocked.output).toContain("No action was executed");
     expect(deferred.output).toContain("ExecutionClass: review_only");

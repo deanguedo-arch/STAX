@@ -6,6 +6,7 @@ import { ChatSession } from "../src/chat/ChatSession.js";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
 import { MemoryStore } from "../src/memory/MemoryStore.js";
 import { buildOperationReceipt } from "../src/operator/OperationReceipt.js";
+import { OperationFormatter } from "../src/operator/OperationFormatter.js";
 import { OperationReceiptValidator } from "../src/operator/OperationReceiptValidator.js";
 import type { OperationExecutionResult, OperationPlan } from "../src/operator/OperationSchemas.js";
 import { WorkspaceStore } from "../src/workspace/WorkspaceStore.js";
@@ -96,6 +97,49 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(validation.issues.join(" ")).toContain("pass/fail is unknown");
   });
 
+  it("renders outcome header before receipt details", () => {
+    const output = new OperationFormatter().format(basePlan(), baseResult());
+
+    expect(output.indexOf("## Direct Answer")).toBeLessThan(output.indexOf("## Receipt"));
+    expect(output).toContain("## Direct Answer");
+    expect(output).toContain("pass/fail is unknown");
+    expect(output).toContain("## One Next Step");
+    expect(output).toContain("Run `npm test`");
+    expect(output).toContain("paste back the full output");
+    expect(output).toContain("## Proof Status");
+    expect(output).toContain("partial");
+  });
+
+  it("rejects receipt-first output without a direct outcome answer", () => {
+    const output = new OperationFormatter().format(basePlan(), baseResult())
+      .replace(/## Direct Answer[\s\S]*?## Receipt\n/, "## Receipt\n");
+
+    const validation = new OperationReceiptValidator().validateMarkdown(output);
+
+    expect(validation.valid).toBe(false);
+    expect(validation.issues.join(" ")).toContain("Missing receipt heading: ## Direct Answer");
+  });
+
+  it("rejects generic next actions even when receipt sections are present", () => {
+    const output = new OperationFormatter().format(basePlan(), baseResult())
+      .replace(/## One Next Step\n- [^\n]+/, "## One Next Step\n- review the evidence");
+
+    const validation = new OperationReceiptValidator().validateMarkdown(output);
+
+    expect(validation.valid).toBe(false);
+    expect(validation.issues.join(" ")).toContain("too generic");
+  });
+
+  it("requires manual command steps to say what to paste back", () => {
+    const output = new OperationFormatter().format(basePlan(), baseResult())
+      .replace(/ and paste back the full output, exit code if available, and failing test names if any\./, ".");
+
+    const validation = new OperationReceiptValidator().validateMarkdown(output);
+
+    expect(validation.valid).toBe(false);
+    expect(validation.issues.join(" ")).toContain("paste back");
+  });
+
   it("renders validated receipt sections for plain-English repo test questions", async () => {
     const rootDir = await tempRoot();
     const linkedRepo = await createLinkedRepo(rootDir);
@@ -107,10 +151,33 @@ describe("Chat Operator v1B operation receipts", () => {
     const validation = new OperationReceiptValidator().validateMarkdown(result.output);
 
     expect(validation.valid).toBe(true);
+    expect(result.output).toMatch(/^## Direct Answer/);
+    expect(result.output).toContain("STAX found test/script evidence");
+    expect(result.output).toContain("## One Next Step");
+    expect(result.output).toContain("Run `npm test`");
+    expect(result.output).toContain("paste back the full output");
+    expect(result.output.indexOf("## Direct Answer")).toBeLessThan(result.output.indexOf("## Receipt"));
     expect(result.output).toContain("## Operation");
     expect(result.output).toContain("## Claims Verified");
     expect(result.output).toContain("## Claims Not Verified");
     expect(result.output).toContain("Tests were found, but no test command was executed");
     expect(result.output).toContain("Finding test scripts or test files does not prove tests pass.");
+  });
+
+  it("renders blocked requests as no-action direct answers", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("approve all memory candidates");
+    const validation = new OperationReceiptValidator().validateMarkdown(result.output);
+
+    expect(validation.valid).toBe(true);
+    expect(result.output).toMatch(/^## Direct Answer/);
+    expect(result.output).toContain("Blocked. STAX did not execute the requested operation");
+    expect(result.output).toContain("## One Next Step");
+    expect(result.output).toContain("npm run rax -- learn promote <event-id> --memory --reason");
+    expect(result.output).toContain("paste back the command output");
+    expect(result.output).toContain("## Proof Status\nblocked");
   });
 });

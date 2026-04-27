@@ -2,12 +2,14 @@
 
 Date: 2026-04-27
 
-Status: implemented.
+Status: implemented and extended with Outcome Header v0.
 
 ## Summary
 
 Chat Operator v1B adds Operation Receipts and a Proof Quality Gate for the
-existing natural-language operator surface.
+existing natural-language operator surface. Outcome Header v0 now requires the
+operator to answer first, give one concrete next step, and only then render the
+proof receipt.
 
 The goal is to prevent proof theater:
 
@@ -17,15 +19,28 @@ nice sections + traces + queues != solved user problem
 
 Every recognized operator request now renders a validated receipt that separates
 verified claims from unsupported claims and explicitly names fake-complete risks.
+Every recognized operator response now starts with:
+
+```txt
+Direct Answer
+One Next Step
+Why This Step
+Proof Status
+Receipt
+```
 
 ## Consensus
 
 Red Team, Blue Team, and implementation review aligned on the same slice:
 
 ```txt
-Build Operation Receipts now.
-Defer Project Brain, autonomy, UI, memory promotion, training, and source mutation.
+Answer first.
+One concrete next step second.
+Proof receipt third.
 ```
+
+Do not add a Workspace Action Board, Codex Task Loop, durable Project Brain
+state, new review queue, approval path, or promotion path in this slice.
 
 ## Files Created
 
@@ -49,9 +64,14 @@ Defer Project Brain, autonomy, UI, memory promotion, training, and source mutati
 
 ## Receipt Contract
 
-Required receipt sections:
+Required outcome and receipt sections:
 
 ```txt
+Direct Answer
+One Next Step
+Why This Step
+Proof Status
+Receipt
 Operation
 Evidence Required
 Actions Run
@@ -74,6 +94,14 @@ MutationStatus
 
 ## Validator Rules
 
+- recognized operator output must render the outcome header before the receipt
+- Direct Answer cannot be empty
+- One Next Step must contain exactly one primary bullet
+- One Next Step must start with a concrete action verb
+- generic steps like `review the evidence`, `continue analysis`, and
+  `improve the repo` fail validation
+- manual command steps must say what to paste back
+- blocked/deferred answers must state no action was executed
 - Verified claims require evidence references.
 - Vague evidence like `Repo evidence pack` is not enough for completion claims.
 - Test/script discovery requires a not-verified claim that pass/fail is unknown.
@@ -88,6 +116,12 @@ MutationStatus
 `what tests exist in this repo?`
 
 ```txt
+Direct Answer:
+STAX found test/script evidence and test files by read-only inspection, but it did not run tests; pass/fail is unknown.
+
+One Next Step:
+Run `npm test` in the target repo and paste back the full output, exit code if available, and failing test names if any.
+
 Claims Verified:
 - package.json scripts were extracted read-only [evidence: repo-script:test]
 - Test files were enumerated read-only [evidence: repo-test:...]
@@ -102,6 +136,13 @@ Fake-Complete Risks:
 `approve all memory candidates`
 
 ```txt
+Direct Answer:
+Blocked. STAX did not execute the requested operation, approve anything, promote anything, or mutate durable state.
+
+One Next Step:
+Inspect the specific candidate with `npm run rax -- learn queue`, then promote one item only with `npm run rax -- learn promote <event-id> --memory --reason "..."`
+if you truly intend promotion; paste back the command output.
+
 Status: blocked
 Claims Verified:
 - No operation action was executed because the risk gate blocked the request.
@@ -134,18 +175,19 @@ npm run rax -- eval
 npm run rax -- eval --regression
 npm run rax -- eval --redteam
 npm run rax -- chat --once "what tests exist in this repo?"
+npm run rax -- chat --once "approve all memory candidates"
 ```
 
 Observed results:
 
 ```txt
 npm run typecheck: passed
-npm test: 47 files / 186 tests passed
+npm test: 47 files / 191 tests passed
 npm run rax -- eval: 16/16 passed
 npm run rax -- eval --regression: 43/43 passed
 npm run rax -- eval --redteam: 9/9 passed
-npm run rax -- chat --once "what tests exist in this repo?": passed; receipt reported tests found but not run, pass/fail unknown
-npm run rax -- chat --once "approve all memory candidates": passed; hard-block no-action receipt
+npm run rax -- chat --once "what tests exist in this repo?": passed; Direct Answer reported tests found but not run, pass/fail unknown, and One Next Step gave `npm test` plus paste-back instructions
+npm run rax -- chat --once "approve all memory candidates": passed; hard-block Direct Answer reported no action executed
 ```
 
 ## Remaining Limitations
@@ -156,3 +198,5 @@ npm run rax -- chat --once "approve all memory candidates": passed; hard-block n
 - Receipts do not auto-promote anything.
 - ProofQuality is intentionally conservative and currently favors `partial`
   unless there is direct command/eval/runtime proof.
+- Outcome Header v0 does not persist next actions into an Action Board; that is
+  intentionally deferred until the answer-first behavior proves useful.

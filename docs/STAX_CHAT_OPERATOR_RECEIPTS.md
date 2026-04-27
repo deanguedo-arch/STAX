@@ -3,11 +3,20 @@
 Chat Operator v1B adds Operation Receipts so normal-language control requests
 cannot look complete without proof.
 
+Outcome Header v0 sits in front of those receipts so STAX cannot hide a weak
+answer behind proof sections. The useful answer comes first; the receipt comes
+after.
+
 The receipt is a control surface, not a new promotion system.
 
 ## Required Sections
 
 ```md
+## Direct Answer
+## One Next Step
+## Why This Step
+## Proof Status
+## Receipt
 ## Operation
 ## Evidence Required
 ## Actions Run
@@ -22,6 +31,11 @@ The receipt is a control surface, not a new promotion system.
 
 ## Rules
 
+- answer the user's actual request before rendering the receipt
+- provide exactly one primary next step
+- reject generic next steps such as `review the evidence`, `continue analysis`,
+  `improve the repo`, `check the tests`, and `investigate further`
+- manual or external command steps must say what to paste back
 - every verified claim cites evidence
 - pasted claims are not local command proof
 - file listings prove file presence only
@@ -55,6 +69,12 @@ Claims Verified:
 Good:
 
 ```txt
+Direct Answer:
+STAX found test/script evidence, but it did not run tests; pass/fail is unknown.
+
+One Next Step:
+Run `npm test` in the target repo and paste back the full output, exit code if available, and failing test names if any.
+
 Claims Verified:
 - package.json scripts were extracted read-only [evidence: repo-script:test]
 

@@ -106,11 +106,17 @@ Use:
 npm run rax -- workspace create canvas-helper --repo ../canvas-helper --use
 ```
 
-## Operation Receipts
+## Outcome Header And Operation Receipts
 
-Every recognized Chat Operator request now starts with a receipt:
+Every recognized Chat Operator request now answers first, gives one concrete
+next step, then renders the receipt:
 
 ```md
+## Direct Answer
+## One Next Step
+## Why This Step
+## Proof Status
+## Receipt
 ## Operation
 ## Evidence Required
 ## Actions Run
@@ -125,6 +131,9 @@ Every recognized Chat Operator request now starts with a receipt:
 
 Rules:
 
+- the direct answer must address the user's actual request
+- the next step must be concrete and non-generic
+- manual or external command steps must say what to paste back
 - verified claims must cite concrete evidence references
 - vague evidence like "repo evidence pack" cannot support a verified completion claim
 - if tests or scripts are found but not run, pass/fail remains unknown
@@ -132,7 +141,7 @@ Rules:
 - `PromotionStatus` remains `not_allowed` or `blocked`
 - `MutationStatus` remains `none`
 
-This prevents proof theater: sections, traces, or file listings cannot make a shallow or unsupported answer look complete.
+This prevents proof theater: sections, traces, or file listings cannot make a shallow or unsupported answer look complete, and the receipt can no longer appear before the useful answer.
 
 ## Accepted v1B Scope
 
