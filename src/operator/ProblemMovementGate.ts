@@ -62,7 +62,9 @@ export class ProblemMovementGate {
         !/\buser-supplied command evidence\b/i.test(input.directAnswer)) {
         blockingReasons.push("Direct Answer must label stored command evidence when command evidence artifacts are used.");
       }
-      if (!/\bnpm (run|test)\b/i.test(primaryStep)) {
+      if (!/\bnpm (run|test)\b/i.test(primaryStep) &&
+        !(hasFailedCommandEvidence(input) && /\bnpm ls\b/i.test(primaryStep)) &&
+        !(hasFailedCommandEvidence(input) && /\bAsk for human approval\b/i.test(primaryStep) && /\bdependency\b/i.test(primaryStep))) {
         blockingReasons.push("One Next Step must name the exact test command when tests/scripts were found.");
       }
     }
@@ -214,6 +216,12 @@ function hasUserSuppliedCommandEvidence(input: ProblemMovementInput): boolean {
 
 function hasCommandEvidenceRecord(input: ProblemMovementInput): boolean {
   return input.evidenceChecked.some((item) => /^command-evidence:/.test(item));
+}
+
+function hasFailedCommandEvidence(input: ProblemMovementInput): boolean {
+  return /\bnpm run [a-z0-9:_-]+\s+failed\b/i.test(input.userTask) ||
+    /\bnpm test\s+failed\b/i.test(input.userTask) ||
+    input.evidenceChecked.some((item) => /^command-evidence:[^:]+:.+:failed:/.test(item));
 }
 
 function hasCommandOrTraceEvidence(input: ProblemMovementInput): boolean {

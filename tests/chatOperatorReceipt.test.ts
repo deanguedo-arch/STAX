@@ -111,6 +111,75 @@ describe("Chat Operator v1B operation receipts", () => {
     expect(output).toContain("ProblemMovement: needs_evidence");
   });
 
+  it("prioritizes failed proof command evidence over generic test commands", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        originalInput: [
+          "Brightspace battle loop evidence: npm run ingest:ci failed during npm run build.",
+          "Error: Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js.",
+          "Do not propose deleting node_modules or running npm install unless it is human-approved."
+        ].join(" "),
+        workspace: "brightspacequizexporter",
+        reasonCodes: ["workspace_risk_question"]
+      }),
+      baseResult({
+        evidenceChecked: [
+          "OperationPlan",
+          "RepoPath: /tmp/brightspacequizexporter",
+          "repo:package.json",
+          "repo-script:build",
+          "repo-script:test",
+          "repo-script:ingest:ci",
+          "command-evidence:cmd-1:npm run ingest:ci:failed:human_pasted_command_output"
+        ],
+        result: "Read-only repo evidence pack with stored command evidence.",
+        risks: []
+      })
+    );
+
+    expect(output).toContain("`npm run ingest:ci` failed");
+    expect(output).toContain("@rollup/rollup-darwin-arm64");
+    expect(output).toContain("dependency/install integrity blocker");
+    expect(output).toContain("Run `npm ls @rollup/rollup-darwin-arm64 rollup vite`");
+    expect(output).not.toContain("Run `npm test`");
+    expect(output).toContain("paste back the full output");
+    expect(output).toContain("ProblemMovement: needs_evidence");
+  });
+
+  it("moves from completed dependency inspection to a human approval boundary", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        originalInput: [
+          "Brightspace battle loop evidence update: npm run ingest:ci failed during build with Cannot find module @rollup/rollup-darwin-arm64.",
+          "We ran npm ls @rollup/rollup-darwin-arm64 rollup vite. It exited 0 and showed vite@7.3.1 and rollup@4.59.0, but did not list @rollup/rollup-darwin-arm64.",
+          "Do not propose npm install/delete node_modules unless labeled human-approved dependency repair."
+        ].join(" "),
+        workspace: "brightspacequizexporter",
+        reasonCodes: ["workspace_risk_question"]
+      }),
+      baseResult({
+        evidenceChecked: [
+          "OperationPlan",
+          "RepoPath: /tmp/brightspacequizexporter",
+          "repo:package.json",
+          "repo-script:build",
+          "repo-script:test",
+          "repo-script:ingest:ci",
+          "command-evidence:cmd-1:npm run ingest:ci:failed:human_pasted_command_output"
+        ],
+        result: "Read-only repo evidence pack with stored command evidence.",
+        risks: []
+      })
+    );
+
+    expect(output).toContain("dependency inspection has already been supplied");
+    expect(output).toContain("Ask for human approval to repair the missing Rollup optional dependency");
+    expect(output).not.toContain("Run `npm ls @rollup/rollup-darwin-arm64 rollup vite`");
+    expect(output).not.toContain("Run `npm test`");
+    expect(output).toContain("paste back the approval decision");
+    expect(output).toContain("ProblemMovement: needs_evidence");
+  });
+
   it("rejects receipt-first output without a direct outcome answer", () => {
     const output = new OperationFormatter().format(basePlan(), baseResult())
       .replace(/## Direct Answer[\s\S]*?## Receipt\n/, "## Receipt\n");

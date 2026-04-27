@@ -100,6 +100,9 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
   const foundTestsOrScripts = hasTestsOrScripts(result);
   const suppliedCommandEvidence = commandEvidenceStatements(plan.originalInput);
   const storedCommandEvidence = storedCommandEvidenceStatements(result);
+  const failedCommand = failedCommandEvidence(plan, result);
+  const dependencyBlocker = dependencyRepairBlocker(plan, result);
+  const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
   if (result.blocked) {
     return "Blocked. STAX did not execute the requested operation, approve anything, promote anything, or mutate durable state.";
   }
@@ -128,15 +131,23 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
     }
     return "STAX did not modify the repo. It performed read-only inspection and a governed audit so the next move can be based on evidence instead of a broad fix request.";
   }
-  if (isOperatingStateQuestion(plan)) {
-    return operatingStateAnswer(result, foundTestsOrScripts);
-  }
   if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
     return [
       "STAX created a bounded Codex prompt candidate from read-only repo evidence.",
       foundTestsOrScripts ? "Tests/scripts were found, but STAX did not run them, so pass/fail is unknown." : "No executable proof command was run.",
       "The prompt is candidate-only and did not mutate the linked repo."
     ].join(" ");
+  }
+  if (failedCommand) {
+    const sourceLabel = failedCommand.source === "supplied" ? "User-supplied command evidence" : "Stored command evidence";
+    return [
+      `${sourceLabel} says \`${failedCommand.command}\` failed, so the current blocker is the failed proof gate rather than ordinary unrun tests.`,
+      inspectedDependencyBlocker ? `The dependency inspection has already been supplied and still points at ${dependencyBlocker}, so the next decision is whether to approve dependency repair.` : dependencyBlocker ? `The failure appears to be a dependency/install integrity blocker (${dependencyBlocker}), so STAX should not claim repo behavior passed or move on to generic test commands.` : "STAX should not claim repo behavior passed or move on to generic test commands until the failed command is explained.",
+      "Treat this as partial proof for that failed command only; no repair, approval, promotion, or source mutation happened."
+    ].join(" ");
+  }
+  if (isOperatingStateQuestion(plan)) {
+    return operatingStateAnswer(result, foundTestsOrScripts);
   }
   if ((suppliedCommandEvidence.length || storedCommandEvidence.length) && (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit")) {
     const sourceLabel = suppliedCommandEvidence.length ? "User-supplied command evidence" : "Stored command evidence";
@@ -159,6 +170,9 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
 }
 
 function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): string {
+  const failedCommand = failedCommandEvidence(plan, result);
+  const dependencyBlocker = dependencyRepairBlocker(plan, result);
+  const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
   if (result.blocked) {
     return "Run `npm run rax -- learn queue` to inspect candidates before any approval or promotion path; paste back the output.";
   }
@@ -166,6 +180,15 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return ensurePasteBack(result.nextAllowedActions[0]?.trim() || "Use the explicit slash or CLI command for this operation and paste back the output.");
   }
   if (isOperatingStateQuestion(plan)) {
+    if (failedCommand) {
+      if (dependencyBlocker) {
+        if (inspectedDependencyBlocker) {
+          return `Ask for human approval to repair the missing Rollup optional dependency in ${repoPath(result) ?? "the target repo"}; paste back the approval decision before any dependency install or deletion command runs.`;
+        }
+        return `Run \`npm ls @rollup/rollup-darwin-arm64 rollup vite\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and dependency tree lines for the missing package.`;
+      }
+      return `Rerun \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
+    }
     const debtCommand = verificationDebtCommand(result);
     if (debtCommand) {
       return `Run \`${debtCommand}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
@@ -178,6 +201,15 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
   }
   if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
     return `Run \`${boundedPromptCommand(result) ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the Codex final report.`;
+  }
+  if (failedCommand) {
+    if (dependencyBlocker) {
+      if (inspectedDependencyBlocker) {
+        return `Ask for human approval to repair the missing Rollup optional dependency in ${repoPath(result) ?? "the target repo"}; paste back the approval decision before any dependency install or deletion command runs.`;
+      }
+      return `Run \`npm ls @rollup/rollup-darwin-arm64 rollup vite\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and dependency tree lines for the missing package.`;
+    }
+    return `Rerun \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
   }
   if (hasTestsOrScripts(result)) {
     const debtCommand = verificationDebtCommand(result);
@@ -201,6 +233,18 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
 function whyThisStep(plan: OperationPlan, result: OperationExecutionResult): string {
   if (result.blocked || result.deferred || !result.executed) {
     return "This prevents plain-English chat from silently becoming an approval, promotion, tool, lab, eval, or source-mutation path.";
+  }
+  const failedCommand = failedCommandEvidence(plan, result);
+  const dependencyBlocker = dependencyRepairBlocker(plan, result);
+  const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
+  if (failedCommand) {
+    if (inspectedDependencyBlocker) {
+      return "The non-mutating dependency inspection is already done; dependency repair can change the local install state, so the next useful move is a human approval boundary before running any repair command.";
+    }
+    if (dependencyBlocker) {
+      return `The named proof command already failed before behavior could be verified; inspecting the dependency tree is the smallest non-mutating step before any human-approved dependency repair.`;
+    }
+    return `The named proof command already failed, so the next useful move is to capture the failing output instead of switching to an unrelated proof command.`;
   }
   if (hasTestsOrScripts(result)) {
     if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
@@ -424,6 +468,58 @@ function storedNpmRunScripts(result: OperationExecutionResult): Set<string> {
     if (/^command-evidence:[^:]+:npm test:(passed|failed|partial|unknown):/.test(item)) scripts.add("test");
   }
   return scripts;
+}
+
+type FailedCommandEvidence = {
+  command: string;
+  source: "supplied" | "stored";
+};
+
+function failedCommandEvidence(plan: OperationPlan, result: OperationExecutionResult): FailedCommandEvidence | undefined {
+  const suppliedRun = Array.from(plan.originalInput.matchAll(/\b(npm run [a-z0-9:_-]+|npm test|npx tsx --test\s+.+?)\s+failed\b/gi))
+    .map((match) => match[1]?.trim().replace(/\s+/g, " "))
+    .filter((command): command is string => Boolean(command))[0];
+  if (suppliedRun) {
+    return {
+      command: suppliedRun,
+      source: "supplied"
+    };
+  }
+
+  for (const item of result.evidenceChecked) {
+    const match = item.match(/^command-evidence:[^:]+:(.+):failed:(human_pasted_command_output|codex_reported_command_output|local_stax_command_output)$/);
+    if (match?.[1]) {
+      return {
+        command: match[1],
+        source: "stored"
+      };
+    }
+  }
+  return undefined;
+}
+
+function dependencyRepairBlocker(plan: OperationPlan, result: OperationExecutionResult): string | undefined {
+  const haystack = [
+    plan.originalInput,
+    result.result,
+    ...result.risks,
+    ...result.evidenceChecked
+  ].join("\n");
+  if (/@rollup\/rollup-darwin-arm64/i.test(haystack)) return "@rollup/rollup-darwin-arm64 missing";
+  if (/\boptional dependency\b/i.test(haystack) && /\brollup\b/i.test(haystack)) return "Rollup optional dependency missing";
+  if (/\bCannot find module\b/i.test(haystack) && /\bnode_modules\b/i.test(haystack)) return "node_modules dependency resolution failure";
+  return undefined;
+}
+
+function dependencyInspectionComplete(plan: OperationPlan, result: OperationExecutionResult): boolean {
+  const haystack = [
+    plan.originalInput,
+    result.result,
+    ...result.evidenceChecked
+  ].join("\n");
+  return /\bnpm ls\s+@rollup\/rollup-darwin-arm64\s+rollup\s+vite\b/i.test(haystack) &&
+    /\b(exited\s+0|exit code\s+0|passed)\b/i.test(haystack) &&
+    /\b(did not list|not listed|absent|missing|not present)\b/i.test(haystack);
 }
 
 function verificationDebtCommand(result: OperationExecutionResult): string | undefined {

@@ -123,3 +123,79 @@ Run the same compare loop on:
 - `app-admissions`
 - `canvas-helper`
 - another Brightspace prompt after `npm run ingest:ci` output is available
+
+## Follow-Up Loop: Failed Proof Command Handling
+
+After the prompt battle, the chosen proof command was run in `brightspacequizexporter`:
+
+```bash
+npm run ingest:ci
+```
+
+Observed result:
+
+- failed during `npm run build`
+- failed before `ingest:promotion-check`
+- error named missing `@rollup/rollup-darwin-arm64`
+- no build, test, or ingest promotion check passed
+
+STAX initially mishandled that evidence by moving to a generic `npm test` next step even though the actual blocker was the failed proof command.
+
+Patch added:
+
+- failed command evidence now outranks generic test discovery
+- Rollup optional dependency failures are classified as dependency/install integrity blockers
+- the first next step becomes a non-mutating dependency inspection:
+
+```bash
+npm ls @rollup/rollup-darwin-arm64 rollup vite
+```
+
+That inspection was then run in `brightspacequizexporter` and returned Vite/Rollup entries but did not list `@rollup/rollup-darwin-arm64`.
+
+STAX then correctly moved to a human approval boundary instead of repeating the inspection:
+
+```txt
+Ask for human approval to repair the missing Rollup optional dependency...
+```
+
+## Additional Tests Added
+
+- failed `npm run ingest:ci` evidence must not produce `npm test` as the next step
+- missing Rollup optional dependency evidence must produce an inspect-only `npm ls` step
+- completed dependency inspection must not loop; it must ask for human approval before any dependency install/deletion repair
+
+## Follow-Up Validation
+
+Targeted validation:
+
+```bash
+npm test -- tests/chatOperatorReceipt.test.ts
+```
+
+Observed result:
+
+```txt
+Test Files  1 passed (1)
+Tests  11 passed (11)
+```
+
+Full STAX validation after the follow-up patch:
+
+```bash
+npm run typecheck
+npm test
+npm run rax -- eval
+npm run rax -- eval --regression
+npm run rax -- eval --redteam
+```
+
+Observed result:
+
+```txt
+npm run typecheck: passed
+npm test: 48 files / 219 tests passed
+npm run rax -- eval: 16/16 passed
+npm run rax -- eval --regression: 43/43 passed
+npm run rax -- eval --redteam: 9/9 passed
+```
