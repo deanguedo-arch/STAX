@@ -83,27 +83,29 @@ Learning Lab chat commands expose lab state without promoting candidates. `/lab 
 
 ## Plain-English Controls
 
-Slash commands are shortcuts, not the only interface. STAX Chat also recognizes common plain-English requests:
+Slash commands are shortcuts, not the only interface. STAX Chat now has a proof-first operator for the safest daily control requests:
 
 ```txt
-what just happened?
-show status
-show queue
-show metrics
-learn from that
-audit last answer
-I disagree because ...
-run evals
-run regression
-replay last run
-unleash the sandbox
-show sandbox report
-show sandbox failures
-show sandbox patches
-reset mode to auto
+audit this repo
+audit canvas-helper
+what needs my judgment?
+what did the last run prove?
 ```
 
-Plain-English sandbox requests run only the safe cautious profile. They do not approve, promote, merge, train, or enable tools.
+These requests create a typed `OperationPlan`, pass through `OperationRiskGate`, and then run only the allowlisted backend operation.
+
+Broad or artifact-heavy work still requires an explicit slash command or CLI command:
+
+```txt
+/eval
+/regression
+/replay last
+/lab go cautious 1
+/compare external <answer>
+/prompt <task>
+```
+
+High-risk requests like approving memory, promoting training data, enabling tools, merging, pushing, or changing policies are hard-blocked from plain English. Chat does not approve, promote, merge, train, or enable tools.
 
 ## Thread Storage
 

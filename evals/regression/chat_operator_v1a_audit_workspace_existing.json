@@ -1,0 +1,26 @@
+{
+  "id": "chat_operator_v1a_audit_workspace_existing",
+  "mode": "planning",
+  "input": "Plan the STAX Chat Operator v1A audit_workspace behavior. It must let Dean type audit canvas-helper, require the workspace to exist, collect local proof, run a governed audit, and avoid any promotion or repo mutation.",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "auto-promote",
+    "audit whatever repo is nearby",
+    "write to the linked repo"
+  ],
+  "requiredSections": [
+    "## Objective",
+    "## Current State",
+    "## Concrete Changes Required",
+    "## Files To Create Or Modify",
+    "## Tests / Evals To Add",
+    "## Commands To Run",
+    "## Acceptance Criteria",
+    "## Risks",
+    "## Rollback Plan",
+    "## Evidence Required",
+    "## Codex Prompt"
+  ],
+  "critical": true,
+  "tags": ["chat_operator", "workspace", "v1a"]
+}

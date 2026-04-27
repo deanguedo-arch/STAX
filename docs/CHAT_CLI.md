@@ -79,26 +79,29 @@ Trace: <trace path>
 - `/compact` writes a thread summary candidate under `chats/summary_candidates/` and requires review before any memory promotion.
 - `/lab report`, `/lab queue`, `/lab redteam summary`, `/lab failures`, `/lab patches`, and `/lab handoffs` are Learning Lab views. `/lab go cautious 1` may generate a cautious lab cycle. Chat does not approve, promote, merge, or run balanced/aggressive lab profiles.
 
-Plain-English requests are also supported for the common paths:
+Plain-English requests are supported for the safest daily proof operations:
 
 ```txt
-what just happened?
-show status
-show queue
-show metrics
-learn from that
-audit last answer
-I disagree because ...
-/compare external <answer>
-run evals
-run regression
-replay last run
-unleash the sandbox
-show sandbox report
-show sandbox failures
-show sandbox patches
-reset mode to auto
+audit this repo
+audit canvas-helper
+what needs my judgment?
+what did the last run prove?
 ```
+
+These requests go through the Chat Operator: `OperationPlan` -> `OperationRiskGate` -> allowlisted backend operation -> proof-backed response.
+
+Artifact-heavy or risky operations remain explicit slash/CLI commands:
+
+```txt
+/eval
+/regression
+/replay last
+/lab go cautious 1
+/compare external <answer>
+/prompt <task>
+```
+
+Plain-English approval, promotion, tool enablement, merge, push, model training, source mutation, and external-repo mutation requests are hard-blocked or deferred. Chat does not approve, promote, merge, train, or enable tools.
 
 ## Threads
 

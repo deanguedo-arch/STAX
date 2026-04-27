@@ -19,6 +19,10 @@ import { ReviewLedger } from "../review/ReviewLedger.js";
 import { ReviewQueue as ReviewQueueStore } from "../review/ReviewQueue.js";
 import { ReviewRouter } from "../review/ReviewRouter.js";
 import type { ReviewRecord } from "../review/ReviewSchemas.js";
+import { ChatIntentClassifier } from "../operator/ChatIntentClassifier.js";
+import { OperationExecutor } from "../operator/OperationExecutor.js";
+import { OperationFormatter } from "../operator/OperationFormatter.js";
+import type { OperationExecutionResult, OperationPlan } from "../operator/OperationSchemas.js";
 import type { RaxMode } from "../schemas/Config.js";
 import { RepoSearch } from "../workspace/RepoSearch.js";
 import { RepoSummary } from "../workspace/RepoSummary.js";
@@ -73,6 +77,11 @@ export class ChatSession {
     if (!input) return { output: "" };
     if (input.startsWith("/")) {
       return this.handleCommand(input);
+    }
+
+    const operatorResult = await this.handleOperator(input);
+    if (operatorResult) {
+      return operatorResult;
     }
 
     const naturalControl = await this.handleNaturalControl(input);
@@ -468,6 +477,183 @@ export class ChatSession {
     return { output: `Unknown command: ${command}\n${this.helpText()}` };
   }
 
+  private async handleOperator(input: string): Promise<ChatTurnResult | undefined> {
+    const registry = await new WorkspaceStore(this.rootDir).list().catch(() => ({ workspaces: [] }));
+    const plan = new ChatIntentClassifier().classify(input, {
+      knownWorkspaces: registry.workspaces.map((workspace) => workspace.name),
+      currentWorkspace: this.workspace
+    });
+    if (plan.intent === "unknown" && plan.executionClass === "fallback") {
+      return undefined;
+    }
+
+    const result = await new OperationExecutor().execute(plan, {
+      auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      judgmentDigest: (operationPlan) => this.executeJudgmentDigestOperation(operationPlan),
+      auditLastProof: (operationPlan) => this.executeAuditLastProofOperation(operationPlan)
+    });
+    return { output: new OperationFormatter().format(plan, result) };
+  }
+
+  private async executeAuditWorkspaceOperation(plan: OperationPlan): Promise<OperationExecutionResult> {
+    const actionsRun: string[] = ["OperationRiskGate"];
+    const artifactsCreated: string[] = [];
+    const evidenceChecked = ["OperationPlan"];
+    try {
+      const workspaceContext = plan.workspace
+        ? await new WorkspaceContext(this.rootDir).resolve({ workspace: plan.workspace, requireWorkspace: true })
+        : { source: "current" as const };
+      const targetRepoPath = plan.workspace
+        ? workspaceContext.linkedRepoPath
+        : this.rootDir;
+      const workspaceLabel = workspaceContext.workspace ?? (plan.workspace ? plan.workspace : "current_repo");
+      const workspaceDocs = workspaceContext.workspace
+        ? await new WorkspaceStore(this.rootDir).readWorkspaceDocs(workspaceContext.workspace)
+        : [];
+      const repoSummary = targetRepoPath
+        ? await new RepoSummary(targetRepoPath).summarize()
+        : undefined;
+      const localEvidence = await collectLocalEvidence(this.rootDir, {
+        includeProjectDocs: true,
+        includeModeMaturity: true
+      });
+
+      actionsRun.push(plan.workspace ? "WorkspaceContext.resolve" : "current repo root");
+      actionsRun.push("collectLocalEvidence", ...(repoSummary ? ["RepoSummary.summarize"] : []), "RaxRuntime.run codex_audit");
+      evidenceChecked.push(
+        `Workspace: ${workspaceLabel}`,
+        `WorkspaceSource: ${workspaceContext.source}`,
+        ...(targetRepoPath ? [`RepoPath: ${targetRepoPath}`] : ["RepoPath: none"]),
+        "LocalEvidenceCollector",
+        ...workspaceDocs.filter((doc) => doc.exists).map((doc) => doc.path),
+        ...(repoSummary?.safeFilesRead.map((file) => `repo:${file}`) ?? [])
+      );
+
+      const auditInput = [
+        "Audit this STAX workspace or repo using only the local proof below.",
+        "",
+        "## Operator Plan",
+        `- Operation: ${plan.intent}`,
+        `- Original Input: ${plan.originalInput}`,
+        `- Workspace: ${workspaceLabel}`,
+        `- RepoPath: ${targetRepoPath ?? "none"}`,
+        "",
+        repoSummary?.markdown ?? "## Repo Summary\n- No linked repo path configured for this workspace.",
+        "",
+        workspaceDocs.length
+          ? [
+              "## Workspace Docs",
+              ...workspaceDocs.map((doc) => [
+                `### ${doc.path}`,
+                doc.exists ? ["```txt", doc.excerpt ?? "", "```"].join("\n") : "- Missing"
+              ].join("\n"))
+            ].join("\n")
+          : "## Workspace Docs\n- No workspace docs were available.",
+        "",
+        formatLocalEvidence(localEvidence),
+        "",
+        "## Audit Request",
+        "Return a proof-aware audit. State what is verified, what is not verified, risks, missing evidence, and the next allowed action. Do not claim approval or promotion."
+      ].join("\n");
+      const auditOutput = await this.run(auditInput, "codex_audit");
+      const runId = auditOutput.match(/\bRun: (run-[^\s]+)/)?.[1];
+      if (runId) artifactsCreated.push(`runs/${runId}`);
+      return {
+        executed: true,
+        blocked: false,
+        deferred: false,
+        actionsRun,
+        artifactsCreated,
+        evidenceChecked,
+        result: auditOutput,
+        risks: [
+          ...(workspaceContext.workspace ? [] : ["No registered workspace was selected; audited the current STAX repo only."]),
+          ...(targetRepoPath ? [] : ["Workspace has no linked repo path, so repo summary evidence is missing."])
+        ],
+        nextAllowedActions: ["Use the Codex Prompt or Required Next Proof from the audit. Promotions still require explicit CLI approval commands."]
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return {
+        executed: false,
+        blocked: false,
+        deferred: true,
+        actionsRun,
+        artifactsCreated,
+        evidenceChecked,
+        result: [
+          "Workspace audit was not run.",
+          message,
+          "",
+          "STAX did not fall back to another repo because that could audit the wrong project."
+        ].join("\n"),
+        risks: ["Missing or ambiguous workspace."],
+        nextAllowedActions: [
+          plan.workspace
+            ? `Create or link it first: rax workspace create ${plan.workspace} --repo <path> --use`
+            : "Set a workspace with rax workspace use <name>, or say \"audit this repo\"."
+        ]
+      };
+    }
+  }
+
+  private async executeJudgmentDigestOperation(_plan: OperationPlan): Promise<OperationExecutionResult> {
+    const queue = new ReviewQueueStore(this.rootDir);
+    const records = await queue.list();
+    const dispositionCounts = this.countReviewRecords(records, "disposition");
+    const formatted = queue.formatInbox(records, "Judgment Digest");
+    return {
+      executed: true,
+      blocked: false,
+      deferred: false,
+      actionsRun: ["ReviewQueue.list"],
+      artifactsCreated: [],
+      evidenceChecked: ["review/queue"],
+      result: [
+        formatted,
+        "",
+        "Visible Judgment Counts:",
+        `- total: ${records.length}`,
+        `- human_review: ${dispositionCounts.human_review ?? 0}`,
+        `- hard_block: ${dispositionCounts.hard_block ?? 0}`,
+        `- batch_review: ${dispositionCounts.batch_review ?? 0}`,
+        "",
+        "This read the current persisted review queue only. It did not refresh, apply, approve, reject, archive, or promote anything."
+      ].join("\n"),
+      risks: records.length ? [] : ["No persisted judgment items were found. A dry-run refresh may reveal new candidate review items."],
+      nextAllowedActions: ["Use /review digest for a dry-run discovery, or CLI `rax review inbox` to refresh persisted review metadata."]
+    };
+  }
+
+  private async executeAuditLastProofOperation(_plan: OperationPlan): Promise<OperationExecutionResult> {
+    if (!this.runIds.at(-1)) {
+      return {
+        executed: false,
+        blocked: false,
+        deferred: true,
+        actionsRun: [],
+        artifactsCreated: [],
+        evidenceChecked: ["current thread run list"],
+        result: "No chat run is available to audit with proof yet.",
+        risks: ["Missing last run."],
+        nextAllowedActions: ["Ask STAX something normally first, then ask what the last run proved."]
+      };
+    }
+    const output = await this.auditLastWithProof();
+    const runId = output.match(/\bRun: (run-[^\s]+)/)?.[1];
+    return {
+      executed: true,
+      blocked: false,
+      deferred: false,
+      actionsRun: ["auditLastWithProof", "RaxRuntime.run codex_audit"],
+      artifactsCreated: runId ? [`runs/${runId}`] : [],
+      evidenceChecked: ["last chat-linked run", "trace.json", "learning_event.json if linked", "local evidence"],
+      result: output,
+      risks: [],
+      nextAllowedActions: ["Use the Required Next Proof from the audit before claiming completion."]
+    };
+  }
+
   private async handleNaturalControl(input: string): Promise<ChatTurnResult | undefined> {
     const normalized = input
       .toLowerCase()
@@ -812,7 +998,7 @@ export class ChatSession {
   private async explainLastRun(): Promise<string> {
     const runId = this.runIds.at(-1);
     if (!runId) {
-      return "No chat run is available yet. Say something normally, or say \"unleash the sandbox\" to run a safe lab cycle.";
+      return "No chat run is available yet. Say something normally first, then ask what happened or what the last run proved.";
     }
     const runDir = await this.findRunDir(runId);
     const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
@@ -1187,6 +1373,10 @@ export class ChatSession {
     return [
       "You can talk normally. I understand these plain-English controls:",
       "",
+      "- \"audit canvas-helper\"",
+      "- \"audit this repo\"",
+      "- \"what needs my judgment?\"",
+      "- \"what did the last run prove?\"",
       "- \"what just happened?\"",
       "- \"show status\"",
       "- \"show queue\"",
@@ -1195,17 +1385,14 @@ export class ChatSession {
       "- \"audit last answer\"",
       "- \"I disagree because ...\"",
       "- \"/compare external <answer>\"",
-      "- \"run evals\"",
-      "- \"run regression\"",
       "- \"replay last run\"",
-      "- \"unleash the sandbox\"",
       "- \"show sandbox report\"",
       "- \"show sandbox failures\"",
       "- \"show sandbox patches\"",
       "- \"/review\"",
       "- \"reset mode to auto\"",
       "",
-      "Guardrails stay on: plain chat can run the safe sandbox profile, inspect proof, and run checks. It cannot approve, promote, merge, train, or enable tools."
+      "Guardrails stay on: plain chat can inspect proof and judgment items. Lab runs, evals, regression, comparison, and approvals remain explicit slash or CLI actions."
     ].join("\n");
   }
 

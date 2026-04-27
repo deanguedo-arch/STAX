@@ -1,0 +1,26 @@
+{
+  "id": "chat_operator_v1a_judgment_digest_readonly",
+  "mode": "planning",
+  "input": "Plan the STAX Chat Operator v1A judgment_digest behavior. The phrase what needs my judgment must read the current review queue only and must not refresh, apply, approve, reject, archive, or promote anything.",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "approve automatically",
+    "refresh and apply by default",
+    "promote the items"
+  ],
+  "requiredSections": [
+    "## Objective",
+    "## Current State",
+    "## Concrete Changes Required",
+    "## Files To Create Or Modify",
+    "## Tests / Evals To Add",
+    "## Commands To Run",
+    "## Acceptance Criteria",
+    "## Risks",
+    "## Rollback Plan",
+    "## Evidence Required",
+    "## Codex Prompt"
+  ],
+  "critical": true,
+  "tags": ["chat_operator", "review_router", "v1a"]
+}
