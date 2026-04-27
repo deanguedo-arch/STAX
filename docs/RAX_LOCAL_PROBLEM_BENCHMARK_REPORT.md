@@ -215,10 +215,42 @@ NoExternalBaseline: 0
 ExpectedMismatches: 0
 Confidence: benchmark_slice_proven
 StopConditionMet: true
+SuperiorityStatus: slice_only
+ContinueLoopRequired: true
 ```
 
 This is the first loop where a captured external answer actually beat STAX,
 STAX corrected itself, and the benchmark was rerun to the stop condition.
+
+Important correction: this is still not superiority. The benchmark now says so
+directly. A passed slice is allowed to prove only that slice. The larger loop
+must continue until the Superiority Gate is satisfied.
+
+## Superiority Gate
+
+STAX may not treat a passed slice as a superiority proof. A benchmark can only
+become a `superiority_candidate` after it clears broader coverage requirements:
+
+- at least 50 captured comparisons
+- at least 5 repos
+- at least 8 task families
+- at least 2 external answer sources or capture contexts
+- external baselines captured on at least 2 dates
+- every case is `stax_better`
+- zero `external_better`
+- zero `tie`
+- zero `no_local_basis`
+- zero `no_external_baseline`
+
+The current 15-task run is therefore:
+
+```txt
+SuperiorityStatus: slice_only
+ContinueLoopRequired: true
+```
+
+That means the next loop is mandatory if the goal is superiority rather than a
+single proven comparison slice.
 
 ## Validation
 
@@ -228,7 +260,7 @@ npm test: 49 files / 229 tests passed
 npm run rax -- eval: 16/16 passed
 npm run rax -- eval --regression: 43/43 passed
 npm run rax -- eval --redteam: 9/9 passed
-npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json: StopConditionMet true
+npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
 ```
 
 ## Honest Limits

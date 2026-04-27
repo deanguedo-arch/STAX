@@ -51,6 +51,9 @@ export const ProblemBenchmarkResultSchema = z.object({
   matchedExpectedWinner: z.boolean().optional(),
   staxScore: ProblemBenchmarkDimensionScoreSchema,
   externalScore: ProblemBenchmarkDimensionScoreSchema,
+  externalAnswerSource: z.string().optional(),
+  externalCapturedAt: z.string().optional(),
+  externalPrompt: z.string().optional(),
   reasons: z.array(z.string()),
   missingLocalEvidence: z.array(z.string()),
   externalBaselineGaps: z.array(z.string()),
@@ -68,6 +71,9 @@ export const ProblemBenchmarkSummarySchema = z.object({
   noExternalBaseline: z.number().int().nonnegative(),
   expectedMismatches: z.number().int().nonnegative(),
   confidence: z.enum(["not_proven", "promising", "benchmark_slice_proven"]),
+  superiorityStatus: z.enum(["not_proven", "slice_only", "superiority_candidate"]),
+  superiorityGaps: z.array(z.string()),
+  continueLoopRequired: z.boolean(),
   stopConditionMet: z.boolean(),
   results: z.array(ProblemBenchmarkResultSchema)
 });

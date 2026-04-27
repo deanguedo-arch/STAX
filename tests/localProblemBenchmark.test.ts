@@ -84,5 +84,8 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.noExternalBaseline).toBe(0);
     expect(summary.stopConditionMet).toBe(true);
     expect(summary.confidence).toBe("benchmark_slice_proven");
+    expect(summary.superiorityStatus).toBe("slice_only");
+    expect(summary.continueLoopRequired).toBe(true);
+    expect(summary.superiorityGaps.join(" ")).toContain("Need at least 50 captured comparisons");
   });
 });

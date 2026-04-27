@@ -15,6 +15,11 @@ import {
 } from "./ProblemBenchmarkSchemas.js";
 
 const WIN_MARGIN = 8;
+const SUPERIORITY_MIN_CASES = 50;
+const SUPERIORITY_MIN_REPOS = 5;
+const SUPERIORITY_MIN_TASK_FAMILIES = 8;
+const SUPERIORITY_MIN_EXTERNAL_SOURCES = 2;
+const SUPERIORITY_MIN_CAPTURE_DAYS = 2;
 
 export class LocalProblemBenchmark {
   constructor(private rootDir = process.cwd()) {}
@@ -35,6 +40,9 @@ export class LocalProblemBenchmark {
       matchedExpectedWinner: problem.expectedWinner ? problem.expectedWinner === winner : undefined,
       staxScore,
       externalScore,
+      externalAnswerSource: problem.externalAnswerSource,
+      externalCapturedAt: problem.externalCapturedAt,
+      externalPrompt: problem.externalPrompt,
       reasons,
       missingLocalEvidence,
       externalBaselineGaps,
@@ -99,6 +107,8 @@ export class LocalProblemBenchmark {
       `ExpectedMismatches: ${summary.expectedMismatches}`,
       `Confidence: ${summary.confidence}`,
       `StopConditionMet: ${summary.stopConditionMet}`,
+      `SuperiorityStatus: ${summary.superiorityStatus}`,
+      `ContinueLoopRequired: ${summary.continueLoopRequired}`,
       "",
       "## Results",
       ...summary.results.map((result) => [
@@ -110,10 +120,16 @@ export class LocalProblemBenchmark {
         result.correctionCandidate ? `  - CorrectionCandidate: ${result.correctionCandidate}` : undefined
       ].filter(Boolean).join("\n")),
       "",
-      "## Stop Rule",
+      "## Slice Stop Rule",
       summary.stopConditionMet
         ? "Benchmark slice passes: no external_better, no_local_basis, or no_external_baseline cases remain."
-        : "Continue the loop: fix external_better/no_local_basis/no_external_baseline cases, add tests, and rerun this benchmark."
+        : "Continue this slice: fix external_better/no_local_basis/no_external_baseline cases, add tests, and rerun this benchmark.",
+      "",
+      "## Superiority Gate",
+      summary.superiorityStatus === "superiority_candidate"
+        ? "This is a superiority candidate, not a global proof. Continue challenging it with fresh repos, dates, and external baselines."
+        : "Do not stop for superiority. Continue the loop until the gaps below are closed.",
+      ...summary.superiorityGaps.map((gap) => `- ${gap}`)
     ].join("\n");
   }
 }
@@ -236,6 +252,12 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
   const noExternalBaseline = results.filter((item) => item.winner === "no_external_baseline").length;
   const expectedMismatches = results.filter((item) => item.expectedWinner && !item.matchedExpectedWinner).length;
   const stopConditionMet = results.length > 0 && externalBetter === 0 && noLocalBasis === 0 && noExternalBaseline === 0 && expectedMismatches === 0;
+  const superiorityGaps = superiorityGapsFor(results, stopConditionMet);
+  const superiorityStatus = !stopConditionMet
+    ? "not_proven"
+    : superiorityGaps.length
+    ? "slice_only"
+    : "superiority_candidate";
   const confidence = stopConditionMet
     ? "benchmark_slice_proven"
     : staxBetter + ties > externalBetter && noLocalBasis === 0 && noExternalBaseline === 0
@@ -250,9 +272,51 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
     noExternalBaseline,
     expectedMismatches,
     confidence,
+    superiorityStatus,
+    superiorityGaps,
+    continueLoopRequired: superiorityStatus !== "superiority_candidate",
     stopConditionMet,
     results
   });
+}
+
+function superiorityGapsFor(results: ProblemBenchmarkResult[], slicePassed: boolean): string[] {
+  const gaps: string[] = [];
+  if (!slicePassed) {
+    gaps.push("Current benchmark slice has not passed; fix slice failures before evaluating superiority.");
+    return gaps;
+  }
+  const repos = new Set(results.map((item) => item.repo));
+  const taskFamilies = new Set(results.map((item) => taskFamily(item.caseId)));
+  const externalSources = new Set(results.map((item) => item.externalAnswerSource).filter(Boolean));
+  const captureDays = new Set(results.map((item) => item.externalCapturedAt?.slice(0, 10)).filter(Boolean));
+  const notBetter = results.filter((item) => item.winner !== "stax_better");
+  if (results.length < SUPERIORITY_MIN_CASES) {
+    gaps.push(`Need at least ${SUPERIORITY_MIN_CASES} captured comparisons for a superiority candidate; current ${results.length}.`);
+  }
+  if (repos.size < SUPERIORITY_MIN_REPOS) {
+    gaps.push(`Need at least ${SUPERIORITY_MIN_REPOS} repos; current ${repos.size}.`);
+  }
+  if (taskFamilies.size < SUPERIORITY_MIN_TASK_FAMILIES) {
+    gaps.push(`Need at least ${SUPERIORITY_MIN_TASK_FAMILIES} task families; current ${taskFamilies.size}.`);
+  }
+  if (externalSources.size < SUPERIORITY_MIN_EXTERNAL_SOURCES) {
+    gaps.push(`Need at least ${SUPERIORITY_MIN_EXTERNAL_SOURCES} external answer sources or capture contexts; current ${externalSources.size}.`);
+  }
+  if (captureDays.size < SUPERIORITY_MIN_CAPTURE_DAYS) {
+    gaps.push(`Need external baselines captured on at least ${SUPERIORITY_MIN_CAPTURE_DAYS} dates; current ${captureDays.size}.`);
+  }
+  if (notBetter.length) {
+    gaps.push(`Every case must be stax_better for a superiority candidate; current non-wins ${notBetter.length}.`);
+  }
+  return gaps;
+}
+
+function taskFamily(caseId: string): string {
+  return caseId
+    .replace(/^(brightspace|canvas|admissions|app|course|stax|repo)[_-]/i, "")
+    .replace(/^[a-z0-9]+_(biggest|proof|fake|codex|next)/i, "$1")
+    .replace(/_[0-9]+$/i, "");
 }
 
 function winnerReasons(
