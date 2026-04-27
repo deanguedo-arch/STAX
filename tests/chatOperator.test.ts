@@ -273,6 +273,53 @@ describe("Chat Operator v1B", () => {
     expect(result.output).not.toContain("Deferred. STAX did not execute");
   });
 
+  it("routes slash prompt requests through linked repo evidence when a workspace is named", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-brightspace");
+    await fs.mkdir(path.join(linkedRepo, "scripts", "config"), { recursive: true });
+    await fs.mkdir(path.join(linkedRepo, "src", "test", "unit", "ingest"), { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({
+        scripts: {
+          test: "vitest run",
+          "ingest:ci": "npm run build && npm run ingest:promotion-check",
+          "ingest:promotion-check": "node scripts/ingest-promotion-check.mjs"
+        }
+      }),
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(linkedRepo, "README.md"),
+      [
+        "# Brightspace Assessment Factory",
+        "",
+        "The ingest system is under trust repair: reviewed fixtures are treated as truth, parser output is treated as a candidate snapshot.",
+        "Do not assume parser snapshots are gold."
+      ].join("\n"),
+      "utf8"
+    );
+    await fs.writeFile(path.join(linkedRepo, "scripts", "ingest-promotion-check.mjs"), "console.log('promotion check');\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "scripts", "config", "frozen-manifests.json"), "[]\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "src", "test", "unit", "ingest", "ingestBenchmark.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "brightspacequizexporter", repoPath: "linked-brightspace", use: false });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine(
+      "/prompt For brightspacequizexporter, create one bounded Codex patch prompt based on repo evidence with files to inspect, exactly one command, acceptance criteria, and stop condition."
+    );
+
+    expect(result.output).toContain("Operation: workspace_repo_audit");
+    expect(result.output).toContain("ingest trust drift");
+    expect(result.output).toContain("scripts/ingest-promotion-check.mjs");
+    expect(result.output).toContain("scripts/config/frozen-manifests.json");
+    expect(result.output).toContain("npm run ingest:ci");
+    expect(result.output).toContain("Run `npm run ingest:ci`");
+    expect(result.output).not.toContain("- AGENTS.md");
+    expect(result.output).not.toContain("- src/cli.ts");
+  });
+
   it("labels pasted command results as partial user-supplied evidence instead of ignoring them", async () => {
     const rootDir = await tempRoot();
     const linkedRepo = path.join(rootDir, "linked-canvas");

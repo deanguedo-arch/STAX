@@ -176,6 +176,9 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     const debtCommand = verificationDebtCommand(result);
     return `Run \`${debtCommand ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, plus the Codex file list and diff summary if available.`;
   }
+  if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
+    return `Run \`${boundedPromptCommand(result) ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the Codex final report.`;
+  }
   if (hasTestsOrScripts(result)) {
     const debtCommand = verificationDebtCommand(result);
     if (debtCommand) {
@@ -200,6 +203,9 @@ function whyThisStep(plan: OperationPlan, result: OperationExecutionResult): str
     return "This prevents plain-English chat from silently becoming an approval, promotion, tool, lab, eval, or source-mutation path.";
   }
   if (hasTestsOrScripts(result)) {
+    if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
+      return "The bounded prompt named one proof command for the target repo; that command is the proof boundary before claiming the patch worked.";
+    }
     return "Static repo evidence can show that tests or scripts exist, but only command output can prove whether they pass or fail.";
   }
   if (plan.intent === "judgment_digest") {
@@ -256,6 +262,11 @@ function operatingProofCommand(result: OperationExecutionResult, originalInput =
   for (const script of storedNpmRunScripts(result)) supplied.add(script);
   if (scripts.includes("typecheck") && !supplied.has("typecheck")) return "npm run typecheck";
   return testCommand(result, originalInput);
+}
+
+function boundedPromptCommand(result: OperationExecutionResult): string | undefined {
+  const match = result.result.match(/## Bounded Codex Prompt Candidate[\s\S]*?## Commands To Run\s*\n-\s*([^\n]+)/);
+  return match?.[1]?.trim();
 }
 
 function repoPath(result: OperationExecutionResult): string | undefined {

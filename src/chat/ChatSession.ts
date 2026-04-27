@@ -476,6 +476,8 @@ export class ChatSession {
 
     if (command === "/prompt") {
       if (!arg) return { output: "Usage: /prompt <task>" };
+      const operatorPrompt = await this.handleWorkspacePromptCommand(arg);
+      if (operatorPrompt) return operatorPrompt;
       const output = await this.run(arg, "prompt_factory");
       return { output };
     }
@@ -538,6 +540,29 @@ export class ChatSession {
       return undefined;
     }
 
+    const result = await new OperationExecutor().execute(plan, {
+      auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      workspaceRepoAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      codexReportAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      judgmentDigest: (operationPlan) => this.executeJudgmentDigestOperation(operationPlan),
+      auditLastProof: (operationPlan) => this.executeAuditLastProofOperation(operationPlan)
+    });
+    return { output: new OperationFormatter().format(plan, result) };
+  }
+
+  private async handleWorkspacePromptCommand(arg: string): Promise<ChatTurnResult | undefined> {
+    const registry = await new WorkspaceStore(this.rootDir).list().catch(() => ({ workspaces: [] }));
+    const currentWorkspace = this.workspace === "default" ? undefined : this.workspace;
+    const plan = new ChatIntentClassifier().classify(`create one bounded Codex prompt ${arg}`, {
+      knownWorkspaces: registry.workspaces.map((workspace) => workspace.name),
+      currentWorkspace
+    });
+    if (plan.intent !== "workspace_repo_audit" || !plan.reasonCodes.includes("workspace_codex_prompt_request")) {
+      return undefined;
+    }
+    if (!plan.workspace && !currentWorkspace) {
+      return undefined;
+    }
     const result = await new OperationExecutor().execute(plan, {
       auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       workspaceRepoAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
@@ -1753,15 +1778,22 @@ function formatBoundedCodexPromptCandidate(input: {
 }): string {
   const scripts = input.repoEvidencePack?.scripts.map((script) => script.name) ?? [];
   const proofCommand = input.verificationDebts[0]?.requiredCommand ?? preferredProofCommand(scripts);
+  const repoFiles = input.repoEvidencePack?.importantFiles ?? [];
+  const evidenceText = [
+    ...(input.repoEvidencePack?.snippets.map((snippet) => snippet.excerpt) ?? []),
+    ...(input.repoEvidencePack?.scripts.map((script) => `${script.name}: ${script.command}`) ?? [])
+  ].join("\n");
+  const focusedFiles = focusedPromptFiles(repoFiles, evidenceText);
   const files = [
     "package.json",
     "README.md",
+    ...focusedFiles,
     ...(input.repoEvidencePack?.operationalFiles.slice(0, 3) ?? []),
     ...(input.repoEvidencePack?.sourceFiles.slice(0, 3) ?? []),
     ...(input.repoEvidencePack?.testFiles.slice(0, 3) ?? [])
   ].filter(Boolean);
   const risks = input.repoEvidencePack?.riskFlags ?? [];
-  const riskSummary = risks.length ? risks.slice(0, 3).join(", ") : "missing command proof";
+  const riskSummary = promptRiskSummary(evidenceText, risks);
   return [
     "## Bounded Codex Prompt Candidate",
     "This is a candidate prompt only. STAX did not run Codex, modify source, approve memory, promote evals, or mutate the linked repo.",
@@ -1772,18 +1804,30 @@ function formatBoundedCodexPromptCandidate(input: {
     `Move ${input.workspace} forward by addressing the highest read-only risk signal: ${riskSummary}.`,
     "",
     "## Files To Inspect",
-    ...listOrNone(files.map((file) => `- ${file}`)),
+    ...listOrNone([...new Set(files)].slice(0, 12).map((file) => `- ${file}`)),
     "",
     "## Commands To Run",
     `- ${proofCommand}`,
     "",
     "## Acceptance Criteria",
+    ...(isIngestTrustRepo(evidenceText)
+      ? [
+          "- Preserve the README rule: reviewed fixtures are truth and parser/candidate snapshots are not gold.",
+          "- Promotion-check behavior or output clearly distinguishes reviewed fixture inputs from parser candidate outputs.",
+          "- Candidate snapshots cannot silently satisfy or replace reviewed expected fixtures."
+        ]
+      : []),
     "- Name every file inspected and every file modified.",
     "- Do not claim tests pass without command output.",
     "- If no fix is made, report the exact blocker and missing evidence.",
     "",
     "## Stop Conditions",
-    "- Stop before source mutation if the task requires policy, schema, tool permission, memory, training, or promotion changes.",
+    ...(isIngestTrustRepo(evidenceText)
+      ? [
+          "- Stop if the patch would treat parser candidate snapshots as reviewed truth.",
+          "- Stop if the patch requires rewriting the parser architecture."
+        ]
+      : ["- Stop before source mutation if the task requires policy, schema, tool permission, memory, training, or promotion changes."]),
     "- Stop if the selected proof command is missing or fails before claiming completion.",
     "",
     "## Final Report Required",
@@ -1795,6 +1839,8 @@ function formatBoundedCodexPromptCandidate(input: {
 }
 
 function preferredProofCommand(scripts: string[]): string {
+  if (scripts.includes("ingest:ci")) return "npm run ingest:ci";
+  if (scripts.includes("ingest:promotion-check")) return "npm run ingest:promotion-check";
   if (scripts.includes("test")) return "npm test";
   const priority = [
     "typecheck",
@@ -1811,6 +1857,30 @@ function preferredProofCommand(scripts: string[]): string {
     scripts.find((script) => /test|check|build|lint|ci/i.test(script)) ??
     scripts[0];
   return preferred ? `npm run ${preferred}` : "npm test";
+}
+
+function focusedPromptFiles(files: string[], evidenceText: string): string[] {
+  if (isIngestTrustRepo(evidenceText)) {
+    return [
+      ...files.filter((file) =>
+        /^scripts\/(ingest-promotion-check\.mjs|config\/frozen-manifests\.json|seed-ingest-gold-fixtures\.ts|promote-ingest-fix\.mjs|promote-corrections-to-benchmark\.ts)$/.test(file)
+      ),
+      ...files.filter((file) => /^src\/test\/unit\/ingest\//.test(file)).slice(0, 4),
+      ...files.filter((file) => /^src\/test\/integration\//.test(file)).slice(0, 2)
+    ];
+  }
+  return [];
+}
+
+function promptRiskSummary(evidenceText: string, risks: string[]): string {
+  if (isIngestTrustRepo(evidenceText)) {
+    return "ingest trust drift: reviewed fixtures must remain the truth source while parser output and candidate snapshots stay candidate-only";
+  }
+  return risks.length ? risks.slice(0, 3).join(", ") : "missing command proof";
+}
+
+function isIngestTrustRepo(evidenceText: string): boolean {
+  return /ingest/i.test(evidenceText) && /(trust repair|reviewed fixtures|candidate snapshots|parser output|promotion-check|ingest:ci)/i.test(evidenceText);
 }
 
 function listOrNone(items: string[]): string[] {
