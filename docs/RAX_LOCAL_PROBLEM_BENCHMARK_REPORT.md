@@ -17,9 +17,9 @@ This patch adds a deterministic local benchmark so "loop" means:
 ```txt
 run real repo comparison cases
 score STAX vs external answers
-fix any external_better, no_local_basis, or no_external_baseline case
+fix any external_better, tie, no_local_basis, or no_external_baseline case
 rerun
-stop only when the benchmark slice has zero external_better, zero no_local_basis, and zero no_external_baseline cases
+stop only when the benchmark slice has zero external_better, zero tie, zero no_local_basis, and zero no_external_baseline cases
 ```
 
 Follow-up hardening: the benchmark now also requires a valid captured external
@@ -34,6 +34,9 @@ a real ChatGPT STAX comparison.
 - `tests/localProblemBenchmark.test.ts`
 - `fixtures/problem_benchmark/real_repo_15_tasks.json`
 - `fixtures/problem_benchmark/real_repo_50_tasks.json`
+- `fixtures/problem_benchmark/fresh_holdout_25_tasks.json`
+- `fixtures/problem_benchmark/locked/fresh_holdout_25_tasks.stax_locked.json`
+- `fixtures/problem_benchmark/candidates/fresh_holdout_25_tie_correction_candidates.json`
 - `docs/RAX_LOCAL_PROBLEM_BENCHMARK_REPORT.md`
 
 ## Files Modified
@@ -66,6 +69,7 @@ Winners:
 - `external_better`
 - `tie`
 - `no_local_basis`
+- `no_external_baseline`
 
 The benchmark refuses to pick a winner when local evidence is missing.
 
@@ -315,16 +319,94 @@ honest loop needs fresh external baselines on another date or a deliberate
 policy change to replace the multi-date requirement with another anti-overfit
 control. Do not silently remove that gate.
 
+## Fresh Holdout Benchmark v1
+
+The outside audit correctly warned that the 50-case slice could become
+benchmark overfitting if STAX only learns the same task shapes. A fresh holdout
+was added with 25 new task shapes across:
+
+- `brightspacequizexporter`
+- `canvas-helper`
+- `studentbudgetwars`
+- `Course-factoryPERFECT`
+- `ADMISSION-APP`
+- `Brightpsace-converter-project`
+- `STAX`
+
+This holdout deliberately avoids the previous task families:
+
+- biggest current operating risk
+- biggest proof gap
+- fake Codex report
+- bounded Codex prompt
+- next move after current evidence
+
+The protocol preserves exam order:
+
+1. STAX answers were locked first in
+   `fixtures/problem_benchmark/locked/fresh_holdout_25_tasks.stax_locked.json`.
+2. External answers were captured afterward from the open ChatGPT STAX browser
+   thread using a repo-pointed prompt.
+3. The scored fixture was written to
+   `fixtures/problem_benchmark/fresh_holdout_25_tasks.json`.
+4. The first score was accepted as evidence. STAX answers were not polished
+   after seeing the external answers.
+
+The first-pass result was:
+
+```txt
+Total: 25
+STAXBetter: 19
+ExternalBetter: 0
+Ties: 6
+NoLocalBasis: 0
+NoExternalBaseline: 0
+ExpectedMismatches: 6
+Confidence: promising
+StopConditionMet: false
+SuperiorityStatus: not_proven
+ContinueLoopRequired: true
+```
+
+Tie cases:
+
+- `brightspace_docx_vs_pdf_split`
+- `brightspace_ocr_boundary`
+- `canvas_course_shell_vs_full_e2e`
+- `course_factory_fixtures_contract`
+- `admissions_no_test_script`
+- `converter_validate_vs_convert`
+
+Those ties are useful learning pressure, not a reason to fake a win. They were
+queued as candidate corrections in:
+
+```txt
+fixtures/problem_benchmark/candidates/fresh_holdout_25_tie_correction_candidates.json
+```
+
+Local ignored learning-queue artifacts were also created on this machine, but
+the tracked correction candidate fixture above is the durable artifact that
+travels with the repo.
+
+No memory, eval, training, policy, schema, mode, or source-code promotion was
+performed from those candidates.
+
+The benchmark stop rule was also tightened: ties now block
+`StopConditionMet`. A holdout slice has not passed until every valid case is
+`stax_better`.
+
 ## Validation
 
 ```txt
 npm run typecheck: passed
-npm test: 49 files / 230 tests passed
+npm test: 49 files / 232 tests passed
 npm run rax -- eval: 16/16 passed
 npm run rax -- eval --regression: 43/43 passed
 npm run rax -- eval --redteam: 9/9 passed
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-27T19-48-26-853Z-jp9xj3
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
+npm run rax -- compare benchmark --file fixtures/problem_benchmark/fresh_holdout_25_tasks.json: StopConditionMet false; SuperiorityStatus not_proven; ContinueLoopRequired true
 ```
 
 ## Honest Limits

@@ -39,6 +39,8 @@ export class LocalProblemBenchmark {
       expectedWinner: problem.expectedWinner,
       matchedExpectedWinner: problem.expectedWinner ? problem.expectedWinner === winner : undefined,
       staxScore,
+      staxAnswerSource: problem.staxAnswerSource,
+      staxCapturedAt: problem.staxCapturedAt,
       externalScore,
       externalAnswerSource: problem.externalAnswerSource,
       externalCapturedAt: problem.externalCapturedAt,
@@ -59,6 +61,8 @@ export class LocalProblemBenchmark {
     const parsed = ProblemBenchmarkCollectionSchema.parse(collection);
     const cases = parsed.cases.map((item) => ProblemBenchmarkCaseSchema.parse({
       ...item,
+      staxAnswerSource: item.staxAnswerSource ?? parsed.staxAnswerSource,
+      staxCapturedAt: item.staxCapturedAt ?? parsed.staxCapturedAt,
       externalAnswerSource: item.externalAnswerSource ?? parsed.externalAnswerSource,
       externalCapturedAt: item.externalCapturedAt ?? parsed.externalCapturedAt,
       externalPrompt: item.externalPrompt ?? parsed.externalPrompt
@@ -87,7 +91,14 @@ export class LocalProblemBenchmark {
       }
       const maybeCollection = ProblemBenchmarkCollectionSchema.safeParse(parsed);
       if (maybeCollection.success) {
-        cases.push(...maybeCollection.data.cases);
+        cases.push(...maybeCollection.data.cases.map((item) => ProblemBenchmarkCaseSchema.parse({
+          ...item,
+          staxAnswerSource: item.staxAnswerSource ?? maybeCollection.data.staxAnswerSource,
+          staxCapturedAt: item.staxCapturedAt ?? maybeCollection.data.staxCapturedAt,
+          externalAnswerSource: item.externalAnswerSource ?? maybeCollection.data.externalAnswerSource,
+          externalCapturedAt: item.externalCapturedAt ?? maybeCollection.data.externalCapturedAt,
+          externalPrompt: item.externalPrompt ?? maybeCollection.data.externalPrompt
+        })));
         continue;
       }
       cases.push(ProblemBenchmarkCaseSchema.parse(parsed));
@@ -122,8 +133,8 @@ export class LocalProblemBenchmark {
       "",
       "## Slice Stop Rule",
       summary.stopConditionMet
-        ? "Benchmark slice passes: no external_better, no_local_basis, or no_external_baseline cases remain."
-        : "Continue this slice: fix external_better/no_local_basis/no_external_baseline cases, add tests, and rerun this benchmark.",
+        ? "Benchmark slice passes: no external_better, tie, no_local_basis, or no_external_baseline cases remain."
+        : "Continue this slice: fix external_better/tie/no_local_basis/no_external_baseline cases, add tests, and rerun this benchmark.",
       "",
       "## Superiority Gate",
       summary.superiorityStatus === "superiority_candidate"
@@ -251,7 +262,7 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
   const noLocalBasis = results.filter((item) => item.winner === "no_local_basis").length;
   const noExternalBaseline = results.filter((item) => item.winner === "no_external_baseline").length;
   const expectedMismatches = results.filter((item) => item.expectedWinner && !item.matchedExpectedWinner).length;
-  const stopConditionMet = results.length > 0 && externalBetter === 0 && noLocalBasis === 0 && noExternalBaseline === 0 && expectedMismatches === 0;
+  const stopConditionMet = results.length > 0 && externalBetter === 0 && ties === 0 && noLocalBasis === 0 && noExternalBaseline === 0 && expectedMismatches === 0;
   const superiorityGaps = superiorityGapsFor(results, stopConditionMet);
   const superiorityStatus = !stopConditionMet
     ? "not_proven"

@@ -1,0 +1,309 @@
+{
+  "id": "fresh_holdout_25_tasks_stax_locked_v0",
+  "createdAt": "2026-04-27",
+  "purpose": "STAX answers locked before capturing external ChatGPT STAX baselines.",
+  "staxAnswerSource": "codex-local-stax-holdout-pre-external",
+  "staxCapturedAt": "2026-04-27T13:30:00.000Z",
+  "cases": [
+    {
+      "id": "brightspace_command_contract",
+      "repo": "brightspacequizexporter",
+      "task": "Which Brightspace ingest command should be treated as the canonical promotion gate, and which commands are only supporting diagnostics?",
+      "localEvidence": "workspace brightspacequizexporter; package.json scripts ingest:ci = npm run build && npm run ingest:promotion-check; ingest:promotion-gate = npm run ingest:promotion-check; ingest:promotion-check = node scripts/ingest-promotion-check.mjs; supporting scripts ingest:bench, ingest:parity-gate, ingest:check-focused, ingest:env-check, ingest:intake-check; command-evidence for current gate not supplied.",
+      "staxAnswer": "Treat `npm run ingest:ci` as the canonical promotion gate because it runs the build and then `npm run ingest:promotion-check`; `ingest:bench`, `ingest:parity-gate`, `ingest:check-focused`, `ingest:env-check`, and `ingest:intake-check` are supporting diagnostics, not final promotion proof. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run ingest:ci` and paste back the full output and exit code before accepting any ingest promotion claim.",
+      "requiredQualities": [
+        "canonical command",
+        "diagnostic split",
+        "ingest:ci"
+      ]
+    },
+    {
+      "id": "brightspace_correction_safety",
+      "repo": "brightspacequizexporter",
+      "task": "Where could a teacher correction accidentally become benchmark truth too early, and what approval boundary should block that?",
+      "localEvidence": "workspace brightspacequizexporter; package.json scripts ingest:record-correction = vite-node --script scripts/record-ingest-correction.ts; ingest:promote-corrections = vite-node --script scripts/promote-corrections-to-benchmark.ts; promote-ingest-fix = node scripts/promote-ingest-fix.mjs; tests promoteCorrections.test.ts and promoteCorrectionsScript.test.ts exist; reviewed fixtures are truth, parser output/candidate snapshots are not gold.",
+      "staxAnswer": "The risk is the path from `ingest:record-correction` into `ingest:promote-corrections` or `promote-ingest-fix`: a teacher correction could become benchmark truth before review. The approval boundary is that corrections remain candidate evidence until promotion scripts and tests prove reviewed-fixture intent. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Inspect `scripts/promote-ingest-fix.mjs`, `scripts/promote-corrections-to-benchmark.ts`, `src/test/unit/ingest/promoteCorrections.test.ts`, and `src/test/unit/ingest/promoteCorrectionsScript.test.ts`, then paste back the guarded promotion path.",
+      "requiredQualities": [
+        "correction boundary",
+        "promotion scripts",
+        "candidate not truth"
+      ]
+    },
+    {
+      "id": "brightspace_docx_vs_pdf_split",
+      "repo": "brightspacequizexporter",
+      "task": "If DOCX parsing passes but PDF parsing fails, which focused test family should STAX ask for first, and why?",
+      "localEvidence": "workspace brightspacequizexporter; repo tests include parseDocx.core.test.ts, parseDocx.matching.test.ts, parseDocx.multipleChoice.test.ts, parseDocx.writtenResponse.test.ts, parsePdf.core.test.ts, parsePdf.matching.test.ts, parsePdf.multipleChoice.test.ts, parsePdf.ordering.test.ts, parsePdf.shortAnswer.test.ts, parsePdf.trueFalse.test.ts, parsePdf.writtenResponse.test.ts, parsePdfBrowser.test.ts, parsePdfPythonMode.test.ts; package script ingest:check-focused runs both DOCX and PDF ingest tests.",
+      "staxAnswer": "If DOCX passes but PDF fails, ask first for the PDF-focused family: `parsePdf.core.test.ts` plus the failing PDF type tests such as matching, multiple choice, ordering, short answer, true/false, or written response. DOCX proof does not verify PDF extraction, browser/Python PDF paths, or PDF-specific question assembly. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the smallest failing PDF test file first, for example `npm test -- src/test/unit/ingest/parsePdf.core.test.ts`, and paste back the output.",
+      "requiredQualities": [
+        "DOCX/PDF split",
+        "PDF focused tests",
+        "smallest failing test"
+      ]
+    },
+    {
+      "id": "brightspace_benchmark_drift",
+      "repo": "brightspacequizexporter",
+      "task": "How should STAX detect that an ingest benchmark improvement is real rather than caused by fixture drift?",
+      "localEvidence": "workspace brightspacequizexporter; package scripts ingest:bench = node scripts/run-ingest-benchmark.mjs; ingest:parity-scoreboard = vite-node --script scripts/build-ingest-parity-scoreboard.ts; ingest:parity-gate = vite-node --script scripts/build-ingest-parity-scoreboard.ts --gate; ingest:track-path-drift = vite-node --script scripts/track-pdf-path-drift.ts; reviewed fixtures are truth and candidate/parser output is not gold.",
+      "staxAnswer": "A real ingest improvement should pass `ingest:bench` and `ingest:parity-gate` without silently changing reviewed fixtures, and path drift should be checked with `ingest:track-path-drift`. If scores improve only because expected fixtures changed, that is fixture drift, not parser improvement. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run ingest:parity-gate` and paste back the scoreboard output plus any fixture/path changes.",
+      "requiredQualities": [
+        "fixture drift",
+        "parity gate",
+        "path drift"
+      ]
+    },
+    {
+      "id": "brightspace_ocr_boundary",
+      "repo": "brightspacequizexporter",
+      "task": "When OCR-related tests pass but structured recovery tests fail, what should STAX treat as verified and what should remain unverified?",
+      "localEvidence": "workspace brightspacequizexporter; repo tests include ocrFallback.test.ts, ocrTargeting.test.ts, regionOcr.test.ts, selectPreferredOcrQuestions.test.ts, parseDocxStructuredRecovery.test.ts, buildQuestionsFromBlockDocument.test.ts, questionAssembly.test.ts; package script ingest:check-focused covers OCR and structured ingest tests.",
+      "staxAnswer": "Passing OCR tests verifies only OCR targeting/fallback/region behavior, not structured recovery or final question assembly. If `parseDocxStructuredRecovery.test.ts`, `buildQuestionsFromBlockDocument.test.ts`, or `questionAssembly.test.ts` fails, recovered structured output remains unverified. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the failing structured recovery test file, starting with `npm test -- src/test/unit/ingest/parseDocxStructuredRecovery.test.ts`, and paste back output.",
+      "requiredQualities": [
+        "OCR boundary",
+        "structured recovery unverified",
+        "focused test"
+      ]
+    },
+    {
+      "id": "canvas_export_surface_split",
+      "repo": "canvas-helper",
+      "task": "How should STAX distinguish proof for SCORM export, Apps Script export, Google-hosted export, and Brightspace export instead of treating all exports as one thing?",
+      "localEvidence": "workspace canvas-helper; package.json scripts test:scorm, test:apps-script, test:google-hosted, test:exports = npm run test:scorm && npm run test:google-hosted && npm run test:apps-script; export:brightspace, export:brightspace:zip, export:scorm, export:apps-script, export:google-hosted; google-hosted deploy has deploy:google-hosted and test:report-all-progress includes google-hosted-deploy.test.ts.",
+      "staxAnswer": "STAX should treat each export surface separately: `test:scorm` proves SCORM behavior, `test:apps-script` proves Apps Script packaging, `test:google-hosted` proves Google-hosted export, and Brightspace export needs `export:brightspace` or `export:brightspace:zip` proof rather than being covered by `test:exports`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the specific export test for the changed surface, or `npm run test:exports` only when SCORM, Google-hosted, and Apps Script all need coverage; paste back output.",
+      "requiredQualities": [
+        "export split",
+        "specific commands",
+        "Brightspace separate"
+      ]
+    },
+    {
+      "id": "canvas_course_shell_vs_full_e2e",
+      "repo": "canvas-helper",
+      "task": "If test:course-shell passes, what still remains unproven before claiming the whole course experience works?",
+      "localEvidence": "workspace canvas-helper; package scripts test:course-shell = tsx --test scripts/tests/course-shell.test.ts; test:e2e = playwright test -c e2e/playwright.config.ts; test:e2e:project = tsx scripts/run-e2e-project.ts; build:studio and studio:codex:session exist; rendered preview comments are layout truth.",
+      "staxAnswer": "`test:course-shell` proves course-shell logic only; it does not prove full Playwright e2e behavior, project-specific runtime, Studio preview rendering, or visual layout correctness. Whole-course claims still need `test:e2e` or `test:e2e:project` plus rendered preview evidence when the issue is visual. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run test:e2e:project -- <project-slug>` for the affected project or `npm run test:e2e` for broad coverage, then paste back output.",
+      "requiredQualities": [
+        "course shell boundary",
+        "e2e proof",
+        "visual evidence"
+      ]
+    },
+    {
+      "id": "canvas_metadata_policy",
+      "repo": "canvas-helper",
+      "task": "Which tests should guard a project-manifest or generation-context change, and what would still require manual review?",
+      "localEvidence": "workspace canvas-helper; package scripts validate:manifests = tsx scripts/validate-project-metadata.ts; test:metadata-policy = tsx --test scripts/tests/project-manifest-policy.test.ts scripts/tests/generation-context-builder.test.ts; migrate:projects creates noisy manifest churn and should be explicit only.",
+      "staxAnswer": "Guard project-manifest or generation-context changes with `npm run validate:manifests` and `npm run test:metadata-policy`, especially `project-manifest-policy.test.ts` and `generation-context-builder.test.ts`. Manual review is still required for broad `migrate:projects` churn, policy changes, or many project manifest edits. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run test:metadata-policy` and paste back output plus the manifest files changed.",
+      "requiredQualities": [
+        "metadata tests",
+        "manual review boundary",
+        "migrate churn"
+      ]
+    },
+    {
+      "id": "canvas_google_hosted_deploy_boundary",
+      "repo": "canvas-helper",
+      "task": "What evidence proves Google-hosted packaging is valid without claiming that live deployment succeeded?",
+      "localEvidence": "workspace canvas-helper; package scripts test:google-hosted, export:google-hosted, deploy:google-hosted; script tests include google-hosted-export.test.ts and google-hosted-deploy.test.ts; deployment is separate from local packaging.",
+      "staxAnswer": "`test:google-hosted` and `export:google-hosted` can prove local Google-hosted packaging behavior, but they do not prove live deployment succeeded. Deployment success needs `deploy:google-hosted` output and any remote confirmation; absent that, live deployment remains unverified. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run test:google-hosted` and paste back output before making any packaging-valid claim.",
+      "requiredQualities": [
+        "packaging vs deploy",
+        "google hosted commands",
+        "no live claim"
+      ]
+    },
+    {
+      "id": "canvas_assessment_import_export",
+      "repo": "canvas-helper",
+      "task": "If assessment import works but export fails, which command should STAX ask for first and what local files should it inspect?",
+      "localEvidence": "workspace canvas-helper; package scripts assessment:import, assessment:export, test:assessments = tsx --test scripts/tests/assessments-engine.test.ts; verification-assessment-delivery.test.ts exists; assessment-delivery.js is assignment visibility source of truth.",
+      "staxAnswer": "If import works but export fails, ask first for `npm run assessment:export` output because the failing surface is export, then inspect `scripts/assessment-export.ts`, `scripts/tests/assessments-engine.test.ts`, and assignment delivery logic such as `assessment-delivery.js` if visibility is involved. Import proof does not prove export behavior. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run assessment:export` and paste back output plus the affected assessment file names.",
+      "requiredQualities": [
+        "import/export split",
+        "assessment command",
+        "files to inspect"
+      ]
+    },
+    {
+      "id": "budgetwars_mode_boundary",
+      "repo": "studentbudgetwars",
+      "task": "How should STAX determine whether a bug belongs to Classic, Desktop, or the shared simulation/session core?",
+      "localEvidence": "workspace studentbudgetwars; README says Classic and Desktop frontends share one authoritative simulation/session core; repo layout src/budgetwars/core, src/budgetwars/engine, src/budgetwars/games/classic, src/budgetwars/games/desktop; tests include test_mode_architecture.py, test_simulation.py, tests/games/classic/test_main_window.py, test_desktop_windowing.py.",
+      "staxAnswer": "Classify by boundary first: UI-only behavior in `src/budgetwars/games/classic` is Classic, UI-only behavior in `src/budgetwars/games/desktop` is Desktop, and monthly resolution/session/content behavior in `src/budgetwars/core` or `src/budgetwars/engine` is shared simulation/session core. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the smallest boundary test, such as `python -m pytest -q tests/test_mode_architecture.py`, and paste back output plus the affected file path.",
+      "requiredQualities": [
+        "mode boundary",
+        "shared core",
+        "smallest test"
+      ]
+    },
+    {
+      "id": "budgetwars_content_precedence",
+      "repo": "studentbudgetwars",
+      "task": "What risk comes from mode-aware content resolution order, and what evidence would prove the correct file was loaded?",
+      "localEvidence": "workspace studentbudgetwars; README Content Loading order: content/<mode>/<relative-path>, content/shared/<relative-path>; tests include test_content_loading.py; data directory has legacy shared content baseline; mode-specific overlays exist under content.",
+      "staxAnswer": "The risk is that a mode-specific override in `content/<mode>/...` silently shadows `content/shared/...`, so a bug may appear mode-specific while shared content remains unchanged. Proof requires showing which path was loaded and running content-loading tests. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `python -m pytest -q tests/test_content_loading.py` and paste back output plus the resolved content path.",
+      "requiredQualities": [
+        "content precedence",
+        "loaded path proof",
+        "test_content_loading"
+      ]
+    },
+    {
+      "id": "budgetwars_save_load_contract",
+      "repo": "studentbudgetwars",
+      "task": "What proof is needed to show save/load works across both Classic and Desktop launch paths?",
+      "localEvidence": "workspace studentbudgetwars; README has launchers budgetwars --mode classic and budgetwars --mode desktop; dedicated open_classic.command and open_desktop.command; shared saves layer src/budgetwars/saves; tests include test_save_load.py and test_mode_architecture.py; ACTIVE_HANDOFF says Desktop intentionally untouched in recent Classic work.",
+      "staxAnswer": "Save/load proof needs shared save-layer tests plus launch-path coverage for both modes; `test_save_load.py` alone does not prove the Classic and Desktop launchers both exercise the same save contract. Since recent work left Desktop untouched, Desktop save/load remains unverified without mode-specific proof. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `python -m pytest -q tests/test_save_load.py tests/test_mode_architecture.py` and paste back output plus which launch paths were checked.",
+      "requiredQualities": [
+        "save/load",
+        "Classic and Desktop",
+        "mode proof"
+      ]
+    },
+    {
+      "id": "budgetwars_balance_simulation",
+      "repo": "studentbudgetwars",
+      "task": "Which deterministic simulation command should be used after a content/balance change, and what output should be pasted back?",
+      "localEvidence": "workspace studentbudgetwars; tools/simulate_runs.py exists; tests include test_simulation.py, test_month_resolution.py, test_status_arcs.py; research/balancing_notes.md and research/assumption_log.md exist; pyproject.toml exists.",
+      "staxAnswer": "After a content or balance change, use deterministic simulation evidence, not only UI checks. The local tool surface is `tools/simulate_runs.py`, backed by tests such as `test_simulation.py` and `test_month_resolution.py`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `python tools/simulate_runs.py` or the repo-documented simulation command and paste back the scenario count, seed/config if shown, and pass/fail summary.",
+      "requiredQualities": [
+        "simulation command",
+        "balance proof",
+        "paste output"
+      ]
+    },
+    {
+      "id": "budgetwars_frontend_duplication",
+      "repo": "studentbudgetwars",
+      "task": "How should STAX check that Classic and Desktop did not accidentally fork duplicate game-engine behavior?",
+      "localEvidence": "workspace studentbudgetwars; README says Classic and Desktop frontends share one authoritative simulation/session core; core paths src/budgetwars/core and src/budgetwars/engine; frontend paths src/budgetwars/games/classic and src/budgetwars/games/desktop; tests test_mode_architecture.py and test_simulation.py.",
+      "staxAnswer": "STAX should check that game rules remain in `src/budgetwars/core` or `src/budgetwars/engine`, not duplicated inside `games/classic` or `games/desktop`. Mode architecture and simulation tests should prove both frontends use the shared core. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `python -m pytest -q tests/test_mode_architecture.py tests/test_simulation.py` and paste back output plus any frontend files changed.",
+      "requiredQualities": [
+        "duplication check",
+        "shared engine",
+        "mode architecture"
+      ]
+    },
+    {
+      "id": "course_factory_release_vs_export",
+      "repo": "Course-factoryPERFECT",
+      "task": "How should STAX distinguish an export parity failure from a release-gate failure?",
+      "localEvidence": "workspace Course-factoryPERFECT; package scripts exports:verify, exports:parity, exports:fixtures, release:check, validate = npm run build && npm run lint && npm run release:check; scripts/exports_parity.mjs and scripts/release_gate.mjs exist; baselines/exports_baseline.json exists.",
+      "staxAnswer": "An export parity failure belongs to `exports:parity` or `exports:verify`; a release-gate failure belongs to `release:check` or the full `validate` chain. Do not treat a release-gate failure as proof that export parity changed unless the export scripts also fail. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run exports:parity` first for export-parity questions, or `npm run release:check` for release-gate questions, and paste back the exact failing command output.",
+      "requiredQualities": [
+        "export vs release",
+        "specific command",
+        "baseline proof"
+      ]
+    },
+    {
+      "id": "course_factory_baseline_update",
+      "repo": "Course-factoryPERFECT",
+      "task": "If export baselines change, what proof is needed to show the baseline update is intentional and not a regression?",
+      "localEvidence": "workspace Course-factoryPERFECT; baselines/exports_baseline.json and baselines/project_baseline.json exist; package scripts exports:baseline, exports:verify, exports:parity, exports:fixtures; release:check and validate exist.",
+      "staxAnswer": "A baseline update is intentional only if the diff is explained and the export checks pass against the new baseline; changed `baselines/exports_baseline.json` alone is not proof. STAX should require before/after baseline diff plus `exports:verify`, `exports:parity`, and ideally `validate`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run exports:verify` and paste back output plus the baseline diff summary.",
+      "requiredQualities": [
+        "baseline diff",
+        "intentional update",
+        "exports verify"
+      ]
+    },
+    {
+      "id": "course_factory_deploy_boundary",
+      "repo": "Course-factoryPERFECT",
+      "task": "What command proves deploy packaging readiness without claiming GitHub Pages deployment succeeded?",
+      "localEvidence": "workspace Course-factoryPERFECT; package script deploy = vite build && gh-pages -d dist; build = vite build; validate = npm run build && npm run lint && npm run release:check; deploy includes remote gh-pages action after build.",
+      "staxAnswer": "`npm run build` or `npm run validate` can prove local packaging readiness, but `npm run deploy` includes the actual GitHub Pages publish step. Do not claim live deployment succeeded from build output alone. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run validate` and paste back output; only discuss deployment after explicit approval to run `npm run deploy`.",
+      "requiredQualities": [
+        "deploy boundary",
+        "validate not deploy",
+        "approval"
+      ]
+    },
+    {
+      "id": "course_factory_composer_ui_gap",
+      "repo": "Course-factoryPERFECT",
+      "task": "If composer drag/resize behavior changes, why is npm run validate not enough by itself, and what additional evidence should STAX request?",
+      "localEvidence": "workspace Course-factoryPERFECT; package script validate runs build lint release:check; scripts include verify_composer_canvas_validation.mjs, verify_composer_canvas_overlay_redesign.mjs, verify_composer_fixtures.mjs, verify_phase1_micro_controls.mjs, playwright-temp.spec.js; composer docs/backlog exist.",
+      "staxAnswer": "`npm run validate` proves build/lint/release checks, but drag/resize is interactive composer UI behavior and may require Playwright or composer-specific verification. Local evidence names composer validation scripts and `playwright-temp.spec.js`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the relevant composer verification script, such as `node scripts/verify_composer_canvas_validation.mjs`, and paste back output plus a screenshot if visual behavior changed.",
+      "requiredQualities": [
+        "UI gap",
+        "composer scripts",
+        "screenshot if visual"
+      ]
+    },
+    {
+      "id": "course_factory_fixtures_contract",
+      "repo": "Course-factoryPERFECT",
+      "task": "What does exports:fixtures prove, and what does it not prove about the rendered exported course?",
+      "localEvidence": "workspace Course-factoryPERFECT; package script exports:fixtures = node scripts/verify_composer_fixtures.mjs; exports:render = node scripts/render_exports.mjs; exports:verify and exports:parity exist; baselines exist.",
+      "staxAnswer": "`exports:fixtures` proves composer fixture expectations, not necessarily rendered exported-course behavior. Rendered output still needs `exports:render`, `exports:verify`, or `exports:parity` depending on the claim. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run exports:fixtures` for fixture integrity, then run `npm run exports:verify` before claiming rendered export quality; paste back both outputs if both claims are made.",
+      "requiredQualities": [
+        "fixtures boundary",
+        "rendered export unproven",
+        "exports verify"
+      ]
+    },
+    {
+      "id": "admissions_no_test_script",
+      "repo": "ADMISSION-APP",
+      "task": "How should STAX answer if someone asks whether ADMISSION-APP is tested when the only script is build:pages?",
+      "localEvidence": "workspace ADMISSION-APP; package.json only known script build:pages = node tools/build-pages.js; no npm test script detected; tools/build-pages.js exists.",
+      "staxAnswer": "STAX should say no conventional test script is proven by the local evidence; the only known proof command is `npm run build:pages`. A successful pages build would prove static generation, not a test suite. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run build:pages` and paste back the output and exit code, without claiming `npm test` exists.",
+      "requiredQualities": [
+        "no test script",
+        "build pages",
+        "no hallucinated test"
+      ]
+    },
+    {
+      "id": "admissions_build_pages_contract",
+      "repo": "ADMISSION-APP",
+      "task": "What does npm run build:pages prove, and what does it not prove about the admissions app?",
+      "localEvidence": "workspace ADMISSION-APP; package script build:pages = node tools/build-pages.js; no npm test script detected; pages build is static generation proof only unless output says otherwise.",
+      "staxAnswer": "`npm run build:pages` proves the static Pages build path can run for the current revision if it exits cleanly. It does not prove browser behavior, deployment success, form correctness, or a general test suite. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run build:pages` and paste back the full output and exit code before making any build-readiness claim.",
+      "requiredQualities": [
+        "build contract",
+        "not deployment",
+        "not tests"
+      ]
+    },
+    {
+      "id": "converter_validate_vs_convert",
+      "repo": "Brightpsace-converter-project",
+      "task": "How should STAX distinguish successful conversion from Brightspace validation success?",
+      "localEvidence": "workspace Brightpsace-converter-project; package scripts cf:convert = node packages/cli/src/index.js convert; cf:validate = node packages/cli/src/index.js validate --brightspace; cf:build, cf:release, cf:doctor exist; README says CLI-first Brightspace Course Builder packages SCORM 1.2 zips.",
+      "staxAnswer": "`cf:convert` proves conversion ran; it does not prove Brightspace validation passed. Brightspace readiness requires `cf:validate --brightspace` and, for release, `cf:release` with the configured gate. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:validate` after conversion and paste back the full output and exit code.",
+      "requiredQualities": [
+        "convert vs validate",
+        "cf validate",
+        "Brightspace readiness"
+      ]
+    },
+    {
+      "id": "converter_cf_doctor",
+      "repo": "Brightpsace-converter-project",
+      "task": "What does cf:doctor prove, and what should still be checked before claiming a course build is ready?",
+      "localEvidence": "workspace Brightpsace-converter-project; package script cf:doctor = node packages/cli/src/index.js doctor; cf:build, cf:validate, cf:release exist; README workflow starts with npm run cf:doctor and later build/release commands.",
+      "staxAnswer": "`cf:doctor` proves the local CLI/tooling health check, not that a specific course builds, validates, or releases. Course readiness still needs `cf:build`, `cf:validate`, and release-gate output for the target course/unit. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:doctor` first and paste back output, then only proceed to the target `cf:validate` or `cf:release` command if doctor passes.",
+      "requiredQualities": [
+        "doctor boundary",
+        "build readiness unproven",
+        "next command"
+      ]
+    },
+    {
+      "id": "stax_holdout_overfit",
+      "repo": "STAX",
+      "task": "What evidence would show the benchmark is overfitting to fixture language instead of measuring real usefulness?",
+      "localEvidence": "workspace STAX; LocalProblemBenchmark scores actual answer, local specificity, command specificity, bounded next action, proof honesty, Codex readiness, risk control; current 50-case benchmark passed after fixture answer corrections; docs warn benchmark is heuristic and deterministic; fresh holdout rule says do not edit STAX answers after seeing external score.",
+      "staxAnswer": "Overfitting evidence would be STAX winning known fixtures while failing fresh holdout cases, especially when answers merely include benchmark-friendly phrases without solving the task. The control is to freeze STAX answers before external scoring, capture external answers separately, and turn losses/ties into correction candidates after scoring. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run rax -- compare benchmark --file fixtures/problem_benchmark/fresh_holdout_25_tasks.json` and paste back any `external_better`, `tie`, or baseline-gap case ids.",
+      "requiredQualities": [
+        "overfit detection",
+        "freeze before scoring",
+        "holdout command"
+      ]
+    }
+  ]
+}

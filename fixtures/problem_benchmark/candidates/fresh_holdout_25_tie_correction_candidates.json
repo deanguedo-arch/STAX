@@ -1,0 +1,67 @@
+{
+  "id": "fresh_holdout_25_tie_correction_candidates_v0",
+  "createdAt": "2026-04-27T13:50:00.000Z",
+  "sourceFixture": "fixtures/problem_benchmark/fresh_holdout_25_tasks.json",
+  "lockedStaxFixture": "fixtures/problem_benchmark/locked/fresh_holdout_25_tasks.stax_locked.json",
+  "externalAnswerSource": "chatgpt-stax-browser-thread-holdout-v1",
+  "externalCapturedAt": "2026-04-27T13:45:00.000Z",
+  "approvalRequired": true,
+  "noAutoPromotion": true,
+  "summary": "Fresh holdout v1 found zero external_better cases but six ties. These are candidate corrections only; the locked STAX answers remain unchanged.",
+  "candidates": [
+    {
+      "caseId": "brightspace_docx_vs_pdf_split",
+      "repo": "brightspacequizexporter",
+      "failureType": "tie",
+      "staxScore": 81,
+      "externalScore": 74,
+      "candidateCorrection": "Prefer the repo-level focused ingest command first, then isolate the smallest PDF-specific test. The improved answer should name `npm run ingest:check-focused` as the first broad split and keep DOCX pass/fail separate from PDF proof.",
+      "suggestedEval": "Add a holdout regression requiring DOCX-pass/PDF-fail answers to ask for PDF-focused evidence without treating DOCX proof as PDF proof."
+    },
+    {
+      "caseId": "brightspace_ocr_boundary",
+      "repo": "brightspacequizexporter",
+      "failureType": "tie",
+      "staxScore": 81,
+      "externalScore": 77,
+      "candidateCorrection": "Name the OCR tests as verified only for OCR targeting/selection and ask for a focused command that separates OCR pass/fail from structured recovery pass/fail.",
+      "suggestedEval": "Add a holdout regression requiring OCR pass claims to exclude structured recovery and final question assembly unless those tests also pass."
+    },
+    {
+      "caseId": "canvas_course_shell_vs_full_e2e",
+      "repo": "canvas-helper",
+      "failureType": "tie",
+      "staxScore": 72,
+      "externalScore": 70,
+      "candidateCorrection": "Include the exact `test:course-shell` implementation path and ask for the project-specific e2e command before whole-course claims, while preserving rendered preview evidence for visual/layout issues.",
+      "suggestedEval": "Add a holdout regression requiring course-shell pass claims to separate script-level proof from full e2e and rendered preview proof."
+    },
+    {
+      "caseId": "course_factory_fixtures_contract",
+      "repo": "Course-factoryPERFECT",
+      "failureType": "tie",
+      "staxScore": 73,
+      "externalScore": 67,
+      "candidateCorrection": "Use one next proof step for the claim being made. If the claim is fixture integrity, ask for `npm run exports:fixtures`; if the claim is rendered export correctness, require render/verify/parity output instead of bundling both as one action.",
+      "suggestedEval": "Add a holdout regression requiring exports fixture proof to stay separate from rendered export correctness."
+    },
+    {
+      "caseId": "admissions_no_test_script",
+      "repo": "ADMISSION-APP",
+      "failureType": "tie",
+      "staxScore": 67,
+      "externalScore": 65,
+      "candidateCorrection": "State explicitly that no `npm test` proof path is detected and cite `build:pages = node tools/build-pages.js` as static generation proof only.",
+      "suggestedEval": "Add a holdout regression requiring minimal repos to avoid hallucinated test scripts and to cite the only known script source."
+    },
+    {
+      "caseId": "converter_validate_vs_convert",
+      "repo": "Brightpsace-converter-project",
+      "failureType": "tie",
+      "staxScore": 74,
+      "externalScore": 68,
+      "candidateCorrection": "Distinguish `cf:convert` from `cf:validate --brightspace` using the underlying package script evidence, and ask for validation output before Brightspace-readiness claims.",
+      "suggestedEval": "Add a holdout regression requiring conversion success and Brightspace validation success to remain separate proof claims."
+    }
+  ]
+}
