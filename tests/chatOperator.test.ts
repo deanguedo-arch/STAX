@@ -202,6 +202,37 @@ describe("Chat Operator v1B", () => {
     expect(directAnswer).not.toContain("pass/fail is unknown");
   });
 
+  it("does not repeat a proof command that was already supplied as passed", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "scripts", "tests"), { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({
+        scripts: {
+          typecheck: "tsc --noEmit",
+          "build:studio": "vite build",
+          "test:course-shell": "tsx --test scripts/tests/course-shell.test.ts",
+          "test:e2e:smoke": "playwright test --grep @smoke"
+        }
+      }),
+      "utf8"
+    );
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "scripts", "tests", "course-shell.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine(
+      "audit canvas-helper after this command evidence: npm run typecheck passed; npm run test:course-shell passed 4/4; npm run build:studio passed."
+    );
+
+    expect(result.output).toContain("npm run test:course-shell passed 4/4");
+    expect(result.output).not.toContain("Run `npm run test:course-shell`");
+    expect(result.output).toContain("Run `npm run test:e2e:smoke`");
+  });
+
   it("turns fix-this-repo language into an audit plan without mutating the linked repo", async () => {
     const rootDir = await tempRoot();
     const linkedRepo = path.join(rootDir, "linked-canvas");

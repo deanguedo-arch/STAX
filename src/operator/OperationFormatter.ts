@@ -149,10 +149,10 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return ensurePasteBack(result.nextAllowedActions[0]?.trim() || "Use the explicit slash or CLI command for this operation and paste back the output.");
   }
   if (isOperatingStateQuestion(plan)) {
-    return `Run \`${operatingProofCommand(result)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
+    return `Run \`${operatingProofCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
   }
   if (hasTestsOrScripts(result)) {
-    return `Run \`${testCommand(result)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing test names if any.`;
+    return `Run \`${testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing test names if any.`;
   }
   if (plan.intent === "judgment_digest") {
     return "Run `npm run rax -- review inbox` to refresh persisted review metadata; paste back the output if you want STAX to interpret it.";
@@ -206,17 +206,20 @@ function testFiles(result: OperationExecutionResult): string[] {
     .filter(Boolean);
 }
 
-function testCommand(result: OperationExecutionResult): string {
+function testCommand(result: OperationExecutionResult, originalInput = ""): string {
   const scripts = scriptNames(result);
-  if (scripts.includes("test")) return "npm test";
-  const testScript = scripts.find((script) => /test/i.test(script));
+  const supplied = suppliedNpmRunScripts(originalInput);
+  if (scripts.includes("test") && !supplied.has("test")) return "npm test";
+  const testScript = scripts.find((script) => /test/i.test(script) && !supplied.has(script)) ||
+    scripts.find((script) => /test/i.test(script));
   return testScript ? `npm run ${testScript}` : "npm test";
 }
 
-function operatingProofCommand(result: OperationExecutionResult): string {
+function operatingProofCommand(result: OperationExecutionResult, originalInput = ""): string {
   const scripts = scriptNames(result);
-  if (scripts.includes("typecheck")) return "npm run typecheck";
-  return testCommand(result);
+  const supplied = suppliedNpmRunScripts(originalInput);
+  if (scripts.includes("typecheck") && !supplied.has("typecheck")) return "npm run typecheck";
+  return testCommand(result, originalInput);
 }
 
 function repoPath(result: OperationExecutionResult): string | undefined {
@@ -298,7 +301,7 @@ function hasChangedFiles(gitStatus: string): boolean {
 function commandEvidenceStatements(input: string): string[] {
   const statements = new Set<string>();
   const patterns = [
-    /\bnpm run ([a-z0-9:_-]+)\s+(passed|failed)\b/gi,
+    /\bnpm run ([a-z0-9:_-]+)\s+(passed|failed)(?:\s+\d+\s*\/\s*\d+)?\b/gi,
     /\bnpm test\s+(passed|failed)\b/gi,
     /\bnpx tsx --test\s+(.+?)\s+passed\s+(\d+\s*\/\s*\d+)?(?=;|\.|$)/gi
   ];
@@ -308,6 +311,15 @@ function commandEvidenceStatements(input: string): string[] {
     }
   }
   return Array.from(statements);
+}
+
+function suppliedNpmRunScripts(input: string): Set<string> {
+  const scripts = new Set<string>();
+  for (const match of input.matchAll(/\bnpm run ([a-z0-9:_-]+)\s+(?:passed|failed)(?:\s+\d+\s*\/\s*\d+)?\b/gi)) {
+    if (match[1]) scripts.add(match[1]);
+  }
+  if (/\bnpm test\s+(passed|failed)\b/i.test(input)) scripts.add("test");
+  return scripts;
 }
 
 function matchResultLine(result: string, pattern: RegExp): string | undefined {
