@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { LearningEvent, LearningQueueType } from "./LearningEvent.js";
@@ -125,7 +126,7 @@ export class LearningMetricsStore {
       const raw = await fs.readFile(path.join(this.rootDir, "learning", "metrics", "learning_metrics.json"), "utf8");
       return JSON.parse(raw) as LearningMetrics;
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT" && !(error instanceof SyntaxError)) throw error;
       return this.update();
     }
   }
@@ -221,9 +222,11 @@ export class LearningMetricsStore {
   private async readCached(): Promise<LearningMetrics | undefined> {
     try {
       const raw = await fs.readFile(path.join(this.rootDir, "learning", "metrics", "learning_metrics.json"), "utf8");
+      if (!raw.trim()) return undefined;
       return JSON.parse(raw) as LearningMetrics;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+      if (error instanceof SyntaxError) return undefined;
       throw error;
     }
   }
@@ -231,7 +234,10 @@ export class LearningMetricsStore {
   private async write(metrics: LearningMetrics): Promise<void> {
     const metricsDir = path.join(this.rootDir, "learning", "metrics");
     await fs.mkdir(metricsDir, { recursive: true });
-    await fs.writeFile(path.join(metricsDir, "learning_metrics.json"), JSON.stringify(metrics, null, 2), "utf8");
+    const target = path.join(metricsDir, "learning_metrics.json");
+    const temp = path.join(metricsDir, `learning_metrics.${process.pid}.${Date.now()}.${randomUUID()}.tmp`);
+    await fs.writeFile(temp, JSON.stringify(metrics, null, 2), "utf8");
+    await fs.rename(temp, target);
   }
 
   private repeatFailureCount(events: LearningEvent[]): number {

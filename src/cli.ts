@@ -56,6 +56,7 @@ import { ReviewQueue } from "./review/ReviewQueue.js";
 import { ReviewRouter } from "./review/ReviewRouter.js";
 import { ReviewStatsStore } from "./review/ReviewStats.js";
 import { ReviewDispositionSchema, ReviewRiskLevelSchema } from "./review/ReviewSchemas.js";
+import { GeneralSuperiorityGate } from "./superiority/GeneralSuperiorityGate.js";
 
 type ParsedArgs = {
   command: string;
@@ -84,6 +85,7 @@ const knownCommands = new Set([
   "workspace",
   "disagree",
   "compare",
+  "superiority",
   "mine",
   "review",
   "help"
@@ -706,6 +708,43 @@ async function compareCommand(args: ParsedArgs): Promise<void> {
   ], result.runId);
 }
 
+async function superiorityCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "status";
+  if (["status", "score", "campaign"].includes(action)) {
+    const gate = new GeneralSuperiorityGate();
+    const file = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    const dir = typeof args.flags.fixtures === "string" ? args.flags.fixtures : undefined;
+    const report = file
+      ? await gate.evaluateFile(file)
+      : await gate.evaluateDirectory(dir ?? "fixtures/problem_benchmark");
+    const outputText = gate.format(report);
+    logInfo(outputText);
+    await recordCommandEvent(`superiority ${action}`, args, report.status === "superiority_candidate", JSON.stringify(report), []);
+    return;
+  }
+  if (action === "failures") {
+    const gate = new GeneralSuperiorityGate();
+    const file = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    const dir = typeof args.flags.fixtures === "string" ? args.flags.fixtures : undefined;
+    const report = file
+      ? await gate.evaluateFile(file)
+      : await gate.evaluateDirectory(dir ?? "fixtures/problem_benchmark");
+    const outputText = report.nonWinningCases.length
+      ? report.nonWinningCases.map((item) => `${item.caseId} (${item.repo}): ${item.winner}`).join("\n")
+      : "No non-winning cases.";
+    logInfo(outputText);
+    await recordCommandEvent("superiority failures", args, report.nonWinningCases.length === 0, outputText, []);
+    return;
+  }
+  if (action === "prompt") {
+    const outputText = generalSuperiorityExternalPrompt();
+    logInfo(outputText);
+    await recordCommandEvent("superiority prompt", args, true, outputText, []);
+    return;
+  }
+  throw new Error("Usage: rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]");
+}
+
 async function mineCommand(args: ParsedArgs): Promise<void> {
   const action = args.positional[0] ?? "report";
   const miner = new BehaviorMiner();
@@ -1220,6 +1259,7 @@ function help(): void {
     "  rax disagree --reason \"...\" [--run <run-id>]",
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
     "  rax compare benchmark [--fixtures fixtures/problem_benchmark | --file fixture.json]",
+    "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
@@ -1270,6 +1310,8 @@ async function main(): Promise<void> {
     await disagreeCommand(args);
   } else if (args.command === "compare") {
     await compareCommand(args);
+  } else if (args.command === "superiority") {
+    await superiorityCommand(args);
   } else if (args.command === "mine") {
     await mineCommand(args);
   } else if (args.command === "review") {
@@ -1283,6 +1325,21 @@ main().catch((error: unknown) => {
   logError(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 });
+
+function generalSuperiorityExternalPrompt(): string {
+  return [
+    "You are the external baseline for a STAX general superiority campaign.",
+    "",
+    "Answer the task using ONLY the supplied evidence/context.",
+    "Do not drift into STAX architecture advice unless the task is about STAX.",
+    "Give a direct answer and one concrete next proof/action step.",
+    "Do not claim tests pass, builds pass, deployment works, or fixes are complete unless supplied evidence includes command output proving it.",
+    "If evidence is missing, say exactly what evidence is missing.",
+    "Return 2-4 sentences only.",
+    "",
+    "The benchmark is blind: STAX must answer before this external answer is captured."
+  ].join("\n");
+}
 
 async function readFileOrLiteral(value: string): Promise<string> {
   try {

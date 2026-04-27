@@ -1,0 +1,208 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { LocalProblemBenchmark } from "../compare/LocalProblemBenchmark.js";
+import {
+  ProblemBenchmarkCaseSchema,
+  ProblemBenchmarkCollectionSchema,
+  type ProblemBenchmarkCase,
+  type ProblemBenchmarkCollection,
+  type ProblemBenchmarkSummary
+} from "../compare/ProblemBenchmarkSchemas.js";
+import {
+  GeneralSuperiorityReportSchema,
+  GeneralSuperiorityThresholdsSchema,
+  type GeneralSuperiorityReport,
+  type GeneralSuperiorityThresholds
+} from "./GeneralSuperioritySchemas.js";
+
+const DEFAULT_THRESHOLDS = GeneralSuperiorityThresholdsSchema.parse({});
+
+type LoadedCampaign = {
+  id: string;
+  cases: ProblemBenchmarkCase[];
+};
+
+export class GeneralSuperiorityGate {
+  constructor(private rootDir = process.cwd(), private thresholds: GeneralSuperiorityThresholds = DEFAULT_THRESHOLDS) {}
+
+  async evaluateFile(filePath: string): Promise<GeneralSuperiorityReport> {
+    const loaded = await this.loadFile(filePath);
+    return this.evaluateLoaded(loaded, await new LocalProblemBenchmark(this.rootDir).scoreFile(filePath));
+  }
+
+  async evaluateDirectory(dirPath: string): Promise<GeneralSuperiorityReport> {
+    const loaded = await this.loadDirectory(dirPath);
+    return this.evaluateLoaded(loaded, await new LocalProblemBenchmark(this.rootDir).scoreDirectory(dirPath));
+  }
+
+  evaluateCollection(collection: ProblemBenchmarkCollection): GeneralSuperiorityReport {
+    const parsed = ProblemBenchmarkCollectionSchema.parse(collection);
+    const cases = this.applyCollectionDefaults(parsed);
+    const summary = new LocalProblemBenchmark(this.rootDir).scoreCollection(parsed);
+    return this.evaluateLoaded({ id: parsed.id, cases }, summary);
+  }
+
+  format(report: GeneralSuperiorityReport): string {
+    return [
+      "## General Superiority Gate",
+      `Status: ${report.status}`,
+      `Comparisons: ${report.metrics.comparisons}/${report.thresholds.minComparisons}`,
+      `BlindComparisons: ${report.metrics.blindComparisons}/${report.thresholds.minBlindComparisons}`,
+      `WorkLanes: ${report.metrics.workLanes}/${report.thresholds.minWorkLanes}`,
+      `TaskFamilies: ${report.metrics.taskFamilies}/${report.thresholds.minTaskFamilies}`,
+      `ReposOrDomains: ${report.metrics.reposOrDomains}/${report.thresholds.minReposOrDomains}`,
+      `ExternalSources: ${report.metrics.externalSources}/${report.thresholds.minExternalSources}`,
+      `CaptureDates: ${report.metrics.captureDates}/${report.thresholds.minCaptureDates}`,
+      `ExternalBetter: ${report.metrics.externalBetter}`,
+      `Ties: ${report.metrics.ties}`,
+      `NoLocalBasis: ${report.metrics.noLocalBasis}`,
+      `NoExternalBaseline: ${report.metrics.noExternalBaseline}`,
+      `ExpectedMismatches: ${report.metrics.expectedMismatches}`,
+      "",
+      "## Covered Work Lanes",
+      report.workLanesCovered.length ? report.workLanesCovered.map((item) => `- ${item}`).join("\n") : "- None",
+      "",
+      "## Gaps",
+      report.gaps.length ? report.gaps.map((item) => `- ${item}`).join("\n") : "- None",
+      "",
+      "## Next Actions",
+      ...report.nextActions.map((item) => `- ${item}`),
+      "",
+      "## Non-Winning Cases",
+      report.nonWinningCases.length
+        ? report.nonWinningCases.map((item) => `- ${item.caseId} (${item.repo}): ${item.winner}`).join("\n")
+        : "- None"
+    ].join("\n");
+  }
+
+  private evaluateLoaded(loaded: LoadedCampaign, summary: ProblemBenchmarkSummary): GeneralSuperiorityReport {
+    const casesById = new Map(loaded.cases.map((item) => [item.id, item]));
+    const workLanes = new Set(loaded.cases.map((item) => item.workLane ?? inferWorkLane(item)).filter(Boolean));
+    const taskFamilies = new Set(loaded.cases.map((item) => item.taskFamily ?? inferTaskFamily(item)).filter(Boolean));
+    const repos = new Set(summary.results.map((item) => item.repo));
+    const externalSources = new Set(summary.results.map((item) => item.externalAnswerSource).filter(Boolean));
+    const captureDates = new Set(summary.results.map((item) => item.externalCapturedAt?.slice(0, 10)).filter(Boolean));
+    const blindComparisons = summary.results.filter((result) => isBlindCase(casesById.get(result.caseId), result.externalCapturedAt)).length;
+    const nonWinningCases = summary.results.filter((item) => item.winner !== "stax_better");
+    const metrics = {
+      comparisons: summary.total,
+      blindComparisons,
+      workLanes: workLanes.size,
+      taskFamilies: taskFamilies.size,
+      reposOrDomains: repos.size,
+      externalSources: externalSources.size,
+      captureDates: captureDates.size,
+      externalBetter: summary.externalBetter,
+      ties: summary.ties,
+      noLocalBasis: summary.noLocalBasis,
+      noExternalBaseline: summary.noExternalBaseline,
+      expectedMismatches: summary.expectedMismatches
+    };
+    const gaps = gateGaps(metrics, this.thresholds);
+    const status = gaps.length === 0 ? "superiority_candidate" : summary.stopConditionMet ? "campaign_slice" : "not_proven";
+    return GeneralSuperiorityReportSchema.parse({
+      target: "general_superiority",
+      status,
+      createdAt: new Date().toISOString(),
+      thresholds: this.thresholds,
+      metrics,
+      benchmarkSummary: summary,
+      gaps,
+      nextActions: nextActionsFor(gaps, nonWinningCases),
+      nonWinningCases,
+      workLanesCovered: Array.from(workLanes).sort(),
+      taskFamiliesCovered: Array.from(taskFamilies).sort(),
+      externalSourcesCovered: Array.from(externalSources).sort(),
+      captureDatesCovered: Array.from(captureDates).sort()
+    });
+  }
+
+  private async loadDirectory(dirPath: string): Promise<LoadedCampaign> {
+    const absolute = path.isAbsolute(dirPath) ? dirPath : path.join(this.rootDir, dirPath);
+    const entries = (await fs.readdir(absolute)).filter((entry) => entry.endsWith(".json")).sort();
+    const cases: ProblemBenchmarkCase[] = [];
+    for (const entry of entries) {
+      const loaded = await this.loadFile(path.join(absolute, entry));
+      cases.push(...loaded.cases);
+    }
+    return { id: path.basename(dirPath), cases };
+  }
+
+  private async loadFile(filePath: string): Promise<LoadedCampaign> {
+    const absolute = path.isAbsolute(filePath) ? filePath : path.join(this.rootDir, filePath);
+    const parsed = JSON.parse(await fs.readFile(absolute, "utf8")) as unknown;
+    if (Array.isArray(parsed)) {
+      return { id: path.basename(filePath), cases: parsed.map((item) => ProblemBenchmarkCaseSchema.parse(item)) };
+    }
+    const collection = ProblemBenchmarkCollectionSchema.parse(parsed);
+    return { id: collection.id, cases: this.applyCollectionDefaults(collection) };
+  }
+
+  private applyCollectionDefaults(collection: ProblemBenchmarkCollection): ProblemBenchmarkCase[] {
+    return collection.cases.map((item) => ProblemBenchmarkCaseSchema.parse({
+      ...item,
+      staxAnswerSource: item.staxAnswerSource ?? collection.staxAnswerSource,
+      staxCapturedAt: item.staxCapturedAt ?? collection.staxCapturedAt,
+      externalAnswerSource: item.externalAnswerSource ?? collection.externalAnswerSource,
+      externalCapturedAt: item.externalCapturedAt ?? collection.externalCapturedAt,
+      externalPrompt: item.externalPrompt ?? collection.externalPrompt
+    }));
+  }
+}
+
+function gateGaps(metrics: GeneralSuperiorityReport["metrics"], thresholds: GeneralSuperiorityThresholds): string[] {
+  const gaps: string[] = [];
+  if (metrics.externalBetter > 0) gaps.push(`External baseline beat STAX in ${metrics.externalBetter} case(s).`);
+  if (metrics.ties > 0) gaps.push(`STAX tied the external baseline in ${metrics.ties} case(s); ties do not prove superiority.`);
+  if (metrics.noLocalBasis > 0) gaps.push(`${metrics.noLocalBasis} case(s) lacked enough local/source evidence to score.`);
+  if (metrics.noExternalBaseline > 0) gaps.push(`${metrics.noExternalBaseline} case(s) lacked a valid captured external baseline.`);
+  if (metrics.expectedMismatches > 0) gaps.push(`${metrics.expectedMismatches} case(s) did not match the expected winner.`);
+  if (metrics.comparisons < thresholds.minComparisons) gaps.push(`Need at least ${thresholds.minComparisons} total comparisons; current ${metrics.comparisons}.`);
+  if (metrics.blindComparisons < thresholds.minBlindComparisons) gaps.push(`Need at least ${thresholds.minBlindComparisons} locked-before-external blind comparisons; current ${metrics.blindComparisons}.`);
+  if (metrics.workLanes < thresholds.minWorkLanes) gaps.push(`Need at least ${thresholds.minWorkLanes} broad work lanes; current ${metrics.workLanes}.`);
+  if (metrics.taskFamilies < thresholds.minTaskFamilies) gaps.push(`Need at least ${thresholds.minTaskFamilies} task families; current ${metrics.taskFamilies}.`);
+  if (metrics.reposOrDomains < thresholds.minReposOrDomains) gaps.push(`Need at least ${thresholds.minReposOrDomains} repos/domains; current ${metrics.reposOrDomains}.`);
+  if (metrics.externalSources < thresholds.minExternalSources) gaps.push(`Need at least ${thresholds.minExternalSources} external sources or capture contexts; current ${metrics.externalSources}.`);
+  if (metrics.captureDates < thresholds.minCaptureDates) gaps.push(`Need external baselines captured on at least ${thresholds.minCaptureDates} dates; current ${metrics.captureDates}.`);
+  return gaps;
+}
+
+function nextActionsFor(gaps: string[], nonWinningCases: GeneralSuperiorityReport["nonWinningCases"]): string[] {
+  if (gaps.length === 0) return ["Treat as a superiority candidate, then challenge it with another fresh external baseline before product claims."];
+  const actions = new Set<string>();
+  if (nonWinningCases.length) actions.add("Convert every external_better or tie case into correction and eval candidates before rerunning.");
+  if (gaps.some((item) => item.includes("blind comparisons"))) actions.add("Generate fresh blind tasks across non-repo work lanes, lock STAX answers first, then capture external answers separately.");
+  if (gaps.some((item) => item.includes("work lanes"))) actions.add("Add tasks for strategy, creative ideation, teaching, research synthesis, writing/editing, planning, tool/document work, memory, and messy judgment.");
+  if (gaps.some((item) => item.includes("external sources") || item.includes("dates"))) actions.add("Capture external baselines from at least two contexts across at least three dates.");
+  if (gaps.some((item) => item.includes("local/source evidence"))) actions.add("Add source evidence or mark the case out of scope before scoring.");
+  if (gaps.some((item) => item.includes("external baseline"))) actions.add("Recapture drifted or missing external answers with the baseline prompt.");
+  return Array.from(actions);
+}
+
+function isBlindCase(problem: ProblemBenchmarkCase | undefined, externalCapturedAt: string | undefined): boolean {
+  if (!problem) return false;
+  if (problem.blind === true) return true;
+  if (!problem.staxCapturedAt || !externalCapturedAt) return false;
+  return Date.parse(problem.staxCapturedAt) <= Date.parse(externalCapturedAt);
+}
+
+function inferTaskFamily(problem: ProblemBenchmarkCase): string {
+  return problem.id
+    .replace(/^(brightspace|canvas|admissions|app|course|stax|repo|budgetwars|converter)[_-]/i, "")
+    .replace(/_[0-9]+$/i, "");
+}
+
+function inferWorkLane(problem: ProblemBenchmarkCase): string {
+  const text = `${problem.repo} ${problem.id} ${problem.task}`.toLowerCase();
+  if (/\b(strategy|product|business|priority|prioritization|roadmap)\b/.test(text)) return "strategy";
+  if (/\bcreative|ideation|story|voice|analogy|design\b/.test(text)) return "creative_ideation";
+  if (/\bteach|course|lesson|student|assessment|canvas|brightspace|admission\b/.test(text)) return "teaching_education";
+  if (/\bresearch|synthesis|compare|literature|source\b/.test(text)) return "research_synthesis";
+  if (/\bwrite|edit|copy|memo|email|document\b/.test(text)) return "writing_editing";
+  if (/\bplan|next|sequence|schedule|decision\b/.test(text)) return "planning";
+  if (/\bcode|codex|implement|fix|test|repo|script|build|validate|export|ingest\b/.test(text)) return "local_repo";
+  if (/\bmemory|preference|project state|remember\b/.test(text)) return "memory";
+  if (/\bbrowser|spreadsheet|slide|docx|tool\b/.test(text)) return "tool_work";
+  if (/\beval|benchmark|self|improve|superiority|holdout\b/.test(text)) return "self_improvement";
+  return "messy_judgment";
+}

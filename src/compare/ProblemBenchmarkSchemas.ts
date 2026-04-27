@@ -22,6 +22,10 @@ export const ProblemBenchmarkDimensionScoreSchema = z.object({
 export const ProblemBenchmarkCaseSchema = z.object({
   id: z.string().min(1),
   repo: z.string().min(1),
+  workLane: z.string().min(1).optional(),
+  taskFamily: z.string().min(1).optional(),
+  blind: z.boolean().optional(),
+  sourceContext: z.string().min(1).optional(),
   task: z.string().min(1),
   localEvidence: z.string().default(""),
   staxAnswer: z.string().min(1),
