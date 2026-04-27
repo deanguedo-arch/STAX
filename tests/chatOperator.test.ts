@@ -40,6 +40,8 @@ describe("Chat Operator v1B", () => {
     expect(classifier.classify("audit canvas-helper", { knownWorkspaces: ["canvas-helper"] }).intent).toBe("audit_workspace");
     expect(classifier.classify("what needs my judgment?").intent).toBe("judgment_digest");
     expect(classifier.classify("what did the last run prove?").intent).toBe("audit_last_proof");
+    expect(classifier.classify("audit this Codex final report for canvas-helper", { knownWorkspaces: ["canvas-helper"], currentWorkspace: "canvas-helper" }).intent).toBe("codex_report_audit");
+    expect(classifier.classify("create one bounded Codex prompt for canvas-helper based only on current repo evidence", { knownWorkspaces: ["canvas-helper"] }).reasonCodes).toContain("workspace_codex_prompt_request");
     expect(classifier.classify("hello, can you reason with me?").executionClass).toBe("fallback");
     expect(classifier.classify("approve all memory candidates").executionClass).toBe("hard_block");
     expect(classifier.classify("stress test planning").executionClass).toBe("review_only");
@@ -172,6 +174,103 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("Operation: workspace_repo_audit");
     expect(result.output).toContain("docs/ops/ACTIVE_HANDOFF.md");
     expect(result.output).not.toContain("STAX found test/script evidence");
+  });
+
+  it("does not suggest npm test when no test script exists", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-admissions");
+    await fs.mkdir(linkedRepo, { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { "build:pages": "node tools/build-pages.js" } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Admissions\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "app-admissions", repoPath: "linked-admissions", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("what tests exist in app-admissions and what proof is missing?");
+
+    expect(result.output).toContain("repo-script:build:pages");
+    expect(result.output).toContain("Run `npm run build:pages`");
+    expect(result.output).not.toContain("Run `npm test`");
+  });
+
+  it("does not treat STAX eval command evidence as linked repo proof", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "scripts", "tests"), { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({ scripts: { typecheck: "tsc --noEmit", "test:course-shell": "tsx --test scripts/tests/course-shell.test.ts" } }),
+      "utf8"
+    );
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "scripts", "tests", "course-shell.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const store = new CommandEvidenceStore(rootDir);
+    await store.record({
+      command: "npm run rax -- eval",
+      args: ["npm", "run", "rax", "--", "eval"],
+      exitCode: 0,
+      summary: "STAX eval passed.",
+      workspace: "canvas-helper",
+      linkedRepoPath: rootDir
+    });
+    await store.record({
+      command: "npm run test:course-shell",
+      args: ["npm", "run", "test:course-shell"],
+      exitCode: 0,
+      summary: "Canvas focused test passed.",
+      workspace: "canvas-helper",
+      linkedRepoPath: linkedRepo
+    });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("what tests exist in canvas-helper and what proof is missing?");
+
+    const storedEvidenceSection = result.output.match(/## Stored Command Evidence[\s\S]*?## Verification Debt/)?.[0] ?? "";
+    const receiptEvidenceSection = result.output.match(/## Evidence Checked[\s\S]*?## Artifacts Created/)?.[0] ?? "";
+    expect(result.output).toContain("npm run test:course-shell");
+    expect(storedEvidenceSection).not.toContain("npm run rax -- eval");
+    expect(receiptEvidenceSection).not.toContain("npm run rax -- eval");
+  });
+
+  it("audits fake-complete Codex reports instead of routing them as generic repo audits", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { test: "vitest run" } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("audit this Codex final report for canvas-helper: Codex says it fixed the repo and all tests pass, but provides no file list or command output.");
+
+    expect(result.output).toContain("Operation: codex_report_audit");
+    expect(result.output).toContain("supplied Codex report as unverified");
+    expect(result.output).toContain("Run `npm test`");
+    expect(result.output).toContain("no approval");
+  });
+
+  it("creates a bounded Codex prompt candidate from repo evidence without deferring or mutating", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-brightspace");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { build: "tsc -b", test: "vitest run" } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Brightspace\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "brightspacequizexporter", repoPath: "linked-brightspace", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("create one bounded Codex prompt for brightspacequizexporter based only on current repo evidence; include files to inspect, command to run, acceptance criteria, and stop condition.");
+
+    expect(result.output).toContain("STAX created a bounded Codex prompt candidate");
+    expect(result.output).toContain("## Bounded Codex Prompt Candidate");
+    expect(result.output).toContain("## Files To Inspect");
+    expect(result.output).toContain("## Commands To Run");
+    expect(result.output).toContain("npm test");
+    expect(result.output).toContain("Operation: workspace_repo_audit");
+    expect(result.output).not.toContain("Deferred. STAX did not execute");
   });
 
   it("labels pasted command results as partial user-supplied evidence instead of ignoring them", async () => {

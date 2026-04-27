@@ -20,6 +20,11 @@ export class OperationRegistry {
         autoExecutable: true
       },
       {
+        intent: "codex_report_audit",
+        description: "Audit a supplied Codex report against read-only repo evidence and proof requirements.",
+        autoExecutable: true
+      },
+      {
         intent: "judgment_digest",
         description: "Read current review items that need human judgment.",
         autoExecutable: true

@@ -200,7 +200,7 @@ function verifiedClaims(plan: OperationPlan, result: OperationExecutionResult): 
     });
   }
 
-  if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
+  if (isRepoInspectionIntent(plan)) {
     claims.push({
       claim: "No source files were modified by the Chat Operator operation.",
       evidenceRefs: ["OperationRiskGate", "RepoEvidencePack.build"]
@@ -222,7 +222,7 @@ function notVerifiedClaims(plan: OperationPlan, result: OperationExecutionResult
     claims.add("Tests were found, but no test command was executed by this operator; pass/fail is unknown.");
     claims.add("Test presence does not verify coverage or runtime behavior.");
   }
-  if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
+  if (isRepoInspectionIntent(plan)) {
     claims.add("Source behavior was not executed.");
     claims.add("Linked repo tests were not run.");
     claims.add("The audit did not approve, promote, merge, train, or modify durable system state.");
@@ -255,7 +255,7 @@ function fakeCompleteRisks(plan: OperationPlan, result: OperationExecutionResult
   if (plan.intent === "judgment_digest") {
     risks.add("A persisted review queue may be stale until an explicit refresh command is run.");
   }
-  if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
+  if (isRepoInspectionIntent(plan)) {
     risks.add("Read-only repo inspection can miss dynamic/runtime failures.");
   }
   return Array.from(risks);
@@ -267,7 +267,7 @@ function missingEvidence(plan: OperationPlan, result: OperationExecutionResult):
   if (foundTestsOrScripts) {
     missing.add("Local command output for test/typecheck pass or fail.");
   }
-  if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
+  if (isRepoInspectionIntent(plan)) {
     missing.add("Runtime execution evidence for source behavior.");
     missing.add("Human approval reason for any promotion or source mutation.");
   }
@@ -282,6 +282,10 @@ function missingEvidence(plan: OperationPlan, result: OperationExecutionResult):
 
 function findEvidence(result: OperationExecutionResult, pattern: RegExp): string | undefined {
   return result.evidenceChecked.find((item) => pattern.test(item));
+}
+
+function isRepoInspectionIntent(plan: OperationPlan): boolean {
+  return plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit" || plan.intent === "codex_report_audit";
 }
 
 function dedupeClaims(claims: OperationReceiptClaim[]): OperationReceiptClaim[] {

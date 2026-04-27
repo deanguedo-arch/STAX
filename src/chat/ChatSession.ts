@@ -306,15 +306,16 @@ export class ChatSession {
         linkedRepoPath: workspace.linkedRepoPath
       });
       const stdout = JSON.stringify(result);
+      const evidenceCommand = command === "/regression" ? "npm run rax -- eval --regression" : "npm run rax -- eval";
       const evidence = await new CommandEvidenceStore(this.rootDir).record({
-        command,
-        args: [command],
+        command: evidenceCommand,
+        args: evidenceCommand.split(" "),
         exitCode: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
         stdout,
         stderr: "",
         summary: `${command} ${result.passed}/${result.total} passed.`,
-        workspace: workspace.workspace ?? this.workspace ?? "default",
-        linkedRepoPath: workspace.linkedRepoPath
+        workspace: "stax",
+        linkedRepoPath: this.rootDir
       });
       await new LearningRecorder(this.rootDir).recordCommand({
         commandName: command === "/regression" ? "chat regression" : "chat eval",
@@ -323,7 +324,7 @@ export class ChatSession {
         outputSummary: stdout,
         exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
         artifactPaths: [commandEvidencePathFor(evidence), evidence.stdoutPath, evidence.stderrPath],
-        workspace: workspace.workspace ?? this.workspace ?? "default"
+        workspace: "stax"
       });
       return {
         output: [
@@ -540,6 +541,7 @@ export class ChatSession {
     const result = await new OperationExecutor().execute(plan, {
       auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       workspaceRepoAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      codexReportAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       judgmentDigest: (operationPlan) => this.executeJudgmentDigestOperation(operationPlan),
       auditLastProof: (operationPlan) => this.executeAuditLastProofOperation(operationPlan)
     });
@@ -590,9 +592,10 @@ export class ChatSession {
         recordedCommandEvidence.push(evidence);
         await verificationDebtStore.satisfyMatching(evidence);
       }
-      const storedCommandEvidence = await commandEvidenceStore.list({
+      const storedCommandEvidenceRaw = await commandEvidenceStore.list({
         workspace: workspaceLabel === "current_repo" ? undefined : workspaceLabel
       });
+      const storedCommandEvidence = storedCommandEvidenceRaw.filter((item) => isLinkedRepoCommandEvidence(item, targetRepoPath));
       const openVerificationDebts = await this.refreshWorkspaceVerificationDebt({
         store: verificationDebtStore,
         workspace: workspaceLabel === "current_repo" ? undefined : workspaceLabel,
@@ -602,7 +605,9 @@ export class ChatSession {
       });
       const localEvidence = await collectLocalEvidence(this.rootDir, {
         includeProjectDocs: true,
-        includeModeMaturity: true
+        includeModeMaturity: true,
+        includeLatestEval: workspaceResolution === "current_repo",
+        includeLatestRun: workspaceResolution === "current_repo"
       });
 
       actionsRun.push(plan.workspace ? "WorkspaceContext.resolve named" : useActiveWorkspace ? "WorkspaceContext.resolve active" : "current repo root");
@@ -622,7 +627,9 @@ export class ChatSession {
       );
 
       const auditInput = [
-        plan.intent === "workspace_repo_audit"
+        plan.intent === "codex_report_audit"
+          ? "Audit this supplied Codex report against the read-only repo evidence below. Treat missing file lists, diffs, and command output as unverified."
+          : plan.intent === "workspace_repo_audit"
           ? "Audit this linked workspace repo using only the read-only repo evidence below."
           : "Audit this STAX workspace or repo using only the local proof below.",
         "",
@@ -650,6 +657,15 @@ export class ChatSession {
         "",
         formatVerificationDebtSection(openVerificationDebts),
         "",
+        plan.reasonCodes.includes("workspace_codex_prompt_request")
+          ? formatBoundedCodexPromptCandidate({
+              workspace: workspaceLabel,
+              repoPath: targetRepoPath,
+              repoEvidencePack,
+              verificationDebts: openVerificationDebts
+            })
+          : undefined,
+        "",
         formatLocalEvidence(localEvidence),
         "",
         "## Audit Request",
@@ -660,6 +676,15 @@ export class ChatSession {
       if (runId) artifactsCreated.push(`runs/${runId}`);
       const resultOutput = [
         repoEvidencePack?.markdown,
+        "",
+        plan.reasonCodes.includes("workspace_codex_prompt_request")
+          ? formatBoundedCodexPromptCandidate({
+              workspace: workspaceLabel,
+              repoPath: targetRepoPath,
+              repoEvidencePack,
+              verificationDebts: openVerificationDebts
+            })
+          : undefined,
         "",
         "## Governed Audit",
         auditOutput
@@ -1363,15 +1388,16 @@ export class ChatSession {
       linkedRepoPath: workspace.linkedRepoPath
     });
     const stdout = JSON.stringify(result);
+    const evidenceCommand = folder === "regression" ? "npm run rax -- eval --regression" : "npm run rax -- eval";
     const evidence = await new CommandEvidenceStore(this.rootDir).record({
-      command: label.toLowerCase(),
-      args: [label.toLowerCase()],
+      command: evidenceCommand,
+      args: evidenceCommand.split(" "),
       exitCode: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
       stdout,
       stderr: "",
       summary: `${label}: ${result.passed}/${result.total} passed.`,
-      workspace: workspace.workspace ?? this.workspace ?? "default",
-      linkedRepoPath: workspace.linkedRepoPath
+      workspace: "stax",
+      linkedRepoPath: this.rootDir
     });
     await new LearningRecorder(this.rootDir).recordCommand({
       commandName: `chat ${label.toLowerCase()}`,
@@ -1380,7 +1406,7 @@ export class ChatSession {
       outputSummary: stdout,
       exitStatus: result.failed === 0 && result.criticalFailures === 0 ? 0 : 1,
       artifactPaths: [commandEvidencePathFor(evidence), evidence.stdoutPath, evidence.stderrPath],
-      workspace: workspace.workspace ?? this.workspace ?? "default"
+      workspace: "stax"
     });
     return [
       `${label}: ${result.passed}/${result.total}`,
@@ -1710,6 +1736,85 @@ function formatVerificationDebtSection(debts: VerificationDebt[]): string {
         )
       : ["- None"])
   ].join("\n");
+}
+
+function isLinkedRepoCommandEvidence(evidence: CommandEvidence, targetRepoPath?: string): boolean {
+  if (!targetRepoPath) return !evidence.linkedRepoPath || evidence.linkedRepoPath === process.cwd();
+  if (evidence.linkedRepoPath !== targetRepoPath) return false;
+  if (/^npm run rax\b|^rax\b|^\/(eval|regression)\b/i.test(evidence.command)) return false;
+  return true;
+}
+
+function formatBoundedCodexPromptCandidate(input: {
+  workspace: string;
+  repoPath?: string;
+  repoEvidencePack?: Awaited<ReturnType<RepoEvidencePackBuilder["build"]>>;
+  verificationDebts: VerificationDebt[];
+}): string {
+  const scripts = input.repoEvidencePack?.scripts.map((script) => script.name) ?? [];
+  const proofCommand = input.verificationDebts[0]?.requiredCommand ?? preferredProofCommand(scripts);
+  const files = [
+    "package.json",
+    "README.md",
+    ...(input.repoEvidencePack?.operationalFiles.slice(0, 3) ?? []),
+    ...(input.repoEvidencePack?.sourceFiles.slice(0, 3) ?? []),
+    ...(input.repoEvidencePack?.testFiles.slice(0, 3) ?? [])
+  ].filter(Boolean);
+  const risks = input.repoEvidencePack?.riskFlags ?? [];
+  const riskSummary = risks.length ? risks.slice(0, 3).join(", ") : "missing command proof";
+  return [
+    "## Bounded Codex Prompt Candidate",
+    "This is a candidate prompt only. STAX did not run Codex, modify source, approve memory, promote evals, or mutate the linked repo.",
+    "",
+    "# Codex Task",
+    "",
+    "## Objective",
+    `Move ${input.workspace} forward by addressing the highest read-only risk signal: ${riskSummary}.`,
+    "",
+    "## Files To Inspect",
+    ...listOrNone(files.map((file) => `- ${file}`)),
+    "",
+    "## Commands To Run",
+    `- ${proofCommand}`,
+    "",
+    "## Acceptance Criteria",
+    "- Name every file inspected and every file modified.",
+    "- Do not claim tests pass without command output.",
+    "- If no fix is made, report the exact blocker and missing evidence.",
+    "",
+    "## Stop Conditions",
+    "- Stop before source mutation if the task requires policy, schema, tool permission, memory, training, or promotion changes.",
+    "- Stop if the selected proof command is missing or fails before claiming completion.",
+    "",
+    "## Final Report Required",
+    "- Files inspected.",
+    "- Files modified.",
+    "- Commands run with pass/fail output.",
+    "- Remaining verification debt."
+  ].join("\n");
+}
+
+function preferredProofCommand(scripts: string[]): string {
+  if (scripts.includes("test")) return "npm test";
+  const priority = [
+    "typecheck",
+    "test:e2e",
+    "test:e2e:smoke",
+    "test:course-shell",
+    "build",
+    "build:studio",
+    "ingest:ci",
+    "ingest:promotion-check",
+    "build:pages"
+  ];
+  const preferred = priority.find((script) => scripts.includes(script)) ??
+    scripts.find((script) => /test|check|build|lint|ci/i.test(script)) ??
+    scripts[0];
+  return preferred ? `npm run ${preferred}` : "npm test";
+}
+
+function listOrNone(items: string[]): string[] {
+  return items.length ? items : ["- None"];
 }
 
 function commandsEquivalent(left: string, right: string): boolean {

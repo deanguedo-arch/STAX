@@ -115,6 +115,13 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
   if (plan.intent === "audit_last_proof") {
     return "STAX audited the current thread's last chat-linked run. That proves only what the selected run/trace can support; it does not prove broader repo correctness without command or eval evidence.";
   }
+  if (plan.intent === "codex_report_audit") {
+    return [
+      "STAX treated the supplied Codex report as unverified until it has file lists, diff summary, and command output.",
+      foundTestsOrScripts ? "Tests/scripts were found by read-only inspection, but STAX did not run them, so pass/fail is unknown." : "No executable proof command was run.",
+      "It inspected the linked repo read-only; no approval, promotion, or source mutation happened."
+    ].join(" ");
+  }
   if (plan.reasonCodes.includes("repo_fix_request_no_mutation") || plan.reasonCodes.includes("workspace_fix_request_no_mutation")) {
     if (foundTestsOrScripts) {
       return "STAX did not modify the repo. It performed read-only inspection and a governed audit; tests or scripts were found, but STAX did not run them, so pass/fail is unknown.";
@@ -124,11 +131,18 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
   if (isOperatingStateQuestion(plan)) {
     return operatingStateAnswer(result, foundTestsOrScripts);
   }
+  if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
+    return [
+      "STAX created a bounded Codex prompt candidate from read-only repo evidence.",
+      foundTestsOrScripts ? "Tests/scripts were found, but STAX did not run them, so pass/fail is unknown." : "No executable proof command was run.",
+      "The prompt is candidate-only and did not mutate the linked repo."
+    ].join(" ");
+  }
   if ((suppliedCommandEvidence.length || storedCommandEvidence.length) && (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit")) {
     const sourceLabel = suppliedCommandEvidence.length ? "User-supplied command evidence" : "Stored command evidence";
     const statements = suppliedCommandEvidence.length ? suppliedCommandEvidence : storedCommandEvidence;
     return [
-      `${sourceLabel} says ${statements.join("; ")}.`,
+      `${sourceLabel} says ${summarizeCommandEvidence(statements)}.`,
       foundTestsOrScripts ? "STAX also found test/script evidence by read-only inspection." : "STAX also inspected the target repo read-only.",
       "Treat this as partial proof for the named commands only; it does not prove full repo behavior or approve any mutation."
     ].join(" ");
@@ -157,6 +171,10 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
       return `Run \`${debtCommand}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
     }
     return `Run \`${operatingProofCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing command/test names if any.`;
+  }
+  if (plan.intent === "codex_report_audit") {
+    const debtCommand = verificationDebtCommand(result);
+    return `Run \`${debtCommand ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, plus the Codex file list and diff summary if available.`;
   }
   if (hasTestsOrScripts(result)) {
     const debtCommand = verificationDebtCommand(result);
@@ -224,7 +242,12 @@ function testCommand(result: OperationExecutionResult, originalInput = ""): stri
   if (scripts.includes("test") && !supplied.has("test")) return "npm test";
   const testScript = scripts.find((script) => /test/i.test(script) && !supplied.has(script)) ||
     scripts.find((script) => /test/i.test(script));
-  return testScript ? `npm run ${testScript}` : "npm test";
+  if (testScript) return `npm run ${testScript}`;
+  const proofScript = scripts.find((script) => /typecheck|check|build|lint|ci/i.test(script) && !supplied.has(script)) ||
+    scripts.find((script) => /typecheck|check|build|lint|ci/i.test(script)) ||
+    scripts.find((script) => !supplied.has(script)) ||
+    scripts[0];
+  return proofScript ? `npm run ${proofScript}` : "npm test";
 }
 
 function operatingProofCommand(result: OperationExecutionResult, originalInput = ""): string {
@@ -240,7 +263,12 @@ function repoPath(result: OperationExecutionResult): string | undefined {
 }
 
 function isOperatingStateQuestion(plan: OperationPlan): boolean {
-  return plan.reasonCodes.some((code) => code === "repo_operating_state_question" || code === "workspace_operating_state_question");
+  return plan.reasonCodes.some((code) =>
+    code === "repo_operating_state_question" ||
+    code === "workspace_operating_state_question" ||
+    code === "repo_risk_question" ||
+    code === "workspace_risk_question"
+  );
 }
 
 function operatingStateAnswer(result: OperationExecutionResult, foundTestsOrScripts: boolean): string {
@@ -250,9 +278,14 @@ function operatingStateAnswer(result: OperationExecutionResult, foundTestsOrScri
   const gitStatus = gitStatusBlock(result.result);
   const testHonesty = foundTestsOrScripts ? " Tests/scripts were found, but STAX did not run them, so pass/fail is unknown." : "";
   const evidenceSuffix = [
-    gitStatus && !hasChangedFiles(gitStatus) ? "git status is clean" : undefined,
+    gitStatus && !hasChangedFiles(gitStatus) && !branchDrift(gitStatus) ? "git status is clean" : undefined,
     operationalFiles.length ? `operational docs inspected (${operationalFiles.slice(0, 2).join(", ")})` : undefined
   ].filter(Boolean).join("; ");
+
+  const gitRisk = gitStatusRisk(gitStatus);
+  if (gitRisk) {
+    return `${gitRisk}${testHonesty}${evidenceSuffix ? ` Verified context: ${evidenceSuffix}.` : ""}`;
+  }
 
   const lead = highestOperatingRisk(risks, missingEvidence);
   if (lead) {
@@ -311,6 +344,26 @@ function hasChangedFiles(gitStatus: string): boolean {
   return /\n\s*[MADRCU?]{1,2}\s+/m.test(gitStatus);
 }
 
+function branchDrift(gitStatus: string): boolean {
+  return /\[(?:ahead|behind|gone|diverged)[^\]]*\]/i.test(gitStatus);
+}
+
+function gitStatusRisk(gitStatus?: string): string | undefined {
+  if (!gitStatus) return undefined;
+  const firstLine = gitStatus.split(/\r?\n/)[0] ?? "";
+  if (/\[behind\s+(\d+)\]/i.test(firstLine)) {
+    const count = firstLine.match(/\[behind\s+(\d+)\]/i)?.[1];
+    return `Biggest verified operating problem: stale branch. The linked repo is behind origin${count ? ` by ${count} commit(s)` : ""}, so local audit results may be outdated until the repo is pulled.`;
+  }
+  if (/\[(?:ahead|diverged)[^\]]*\]/i.test(firstLine)) {
+    return "Biggest verified operating problem: branch drift. The linked repo is not aligned with origin, so proof needs a clean sync boundary before broad claims.";
+  }
+  if (hasChangedFiles(gitStatus)) {
+    return "Biggest verified operating problem: worktree ambiguity. The linked repo has uncommitted changes, so any audit or fix could mix current work with stale assumptions.";
+  }
+  return undefined;
+}
+
 function commandEvidenceStatements(input: string): string[] {
   const statements = new Set<string>();
   const patterns = [
@@ -331,6 +384,16 @@ function storedCommandEvidenceStatements(result: OperationExecutionResult): stri
     .map((item) => item.match(/^command-evidence:[^:]+:(.+):(passed|failed|partial|unknown):(human_pasted_command_output|codex_reported_command_output|local_stax_command_output)$/))
     .filter((match): match is RegExpMatchArray => Boolean(match))
     .map((match) => `${match[1]} ${match[2]}`);
+}
+
+function summarizeCommandEvidence(statements: string[]): string {
+  const unique = Array.from(new Set(statements));
+  if (unique.length <= 4) return unique.join("; ");
+  const passed = unique.filter((item) => /\bpassed$/i.test(item)).length;
+  const failed = unique.filter((item) => /\bfailed$/i.test(item)).length;
+  const unknown = unique.length - passed - failed;
+  const examples = unique.slice(0, 3).join("; ");
+  return `${unique.length} stored command result(s) (${passed} passed, ${failed} failed, ${unknown} partial/unknown), including ${examples}`;
 }
 
 function suppliedNpmRunScripts(input: string): Set<string> {

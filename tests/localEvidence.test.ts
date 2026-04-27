@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
-import { formatLocalEvidence, type LocalEvidence } from "../src/evidence/LocalEvidenceCollector.js";
+import { collectLocalEvidence, formatLocalEvidence, type LocalEvidence } from "../src/evidence/LocalEvidenceCollector.js";
 
 async function tempRoot(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "rax-local-evidence-"));
@@ -59,5 +59,28 @@ describe("local evidence", () => {
     expect(output.output).toContain("Local git/eval/run evidence was collected read-only.");
     expect(output.output).toContain("src/foo.ts");
     expect(loggedInput).toContain("## Local Evidence");
+  });
+
+  it("can omit latest eval and run evidence for linked-repo audits", async () => {
+    const rootDir = await tempRoot();
+    await fs.mkdir(path.join(rootDir, "evals", "eval_results"), { recursive: true });
+    await fs.mkdir(path.join(rootDir, "runs", "2026-04-27", "run-proof"), { recursive: true });
+    await fs.writeFile(path.join(rootDir, "evals", "eval_results", "latest.json"), JSON.stringify({
+      total: 1,
+      passed: 1,
+      failed: 0,
+      passRate: 1,
+      criticalFailures: 0
+    }), "utf8");
+
+    const evidence = await collectLocalEvidence(rootDir, {
+      includeLatestEval: false,
+      includeLatestRun: false
+    });
+
+    expect(evidence.latestEval).toBeUndefined();
+    expect(evidence.latestRunFolder).toBeUndefined();
+    expect(formatLocalEvidence(evidence)).toContain("No eval result found.");
+    expect(formatLocalEvidence(evidence)).toContain("No run folder found.");
   });
 });

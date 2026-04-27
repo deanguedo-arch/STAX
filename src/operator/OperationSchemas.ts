@@ -5,6 +5,7 @@ export const CHAT_OPERATOR_VERSION = "v1B";
 export const OperationIntentSchema = z.enum([
   "audit_workspace",
   "workspace_repo_audit",
+  "codex_report_audit",
   "judgment_digest",
   "audit_last_proof",
   "unknown"

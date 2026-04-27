@@ -35,6 +35,8 @@ export type LocalEvidence = {
 export type LocalEvidenceOptions = {
   includeProjectDocs?: boolean;
   includeModeMaturity?: boolean;
+  includeLatestEval?: boolean;
+  includeLatestRun?: boolean;
 };
 
 const PROJECT_DOCS = [
@@ -61,8 +63,8 @@ export async function collectLocalEvidence(
   ]);
 
   const [latestEval, latestRunFolder, projectDocs, modeMaturity] = await Promise.all([
-    readLatestEval(rootDir, errors),
-    readLatestRunFolder(rootDir, errors),
+    options.includeLatestEval === false ? Promise.resolve(undefined) : readLatestEval(rootDir, errors),
+    options.includeLatestRun === false ? Promise.resolve(undefined) : readLatestRunFolder(rootDir, errors),
     options.includeProjectDocs ? readProjectDocs(rootDir, errors) : Promise.resolve([]),
     options.includeModeMaturity ? new ModeRegistry(rootDir).maturity().catch((error: unknown) => {
       errors.push(`mode maturity unavailable: ${error instanceof Error ? error.message : String(error)}`);

@@ -18,7 +18,7 @@ export class RepoEvidencePackBuilder {
   async build(input: RepoEvidencePackInput): Promise<RepoEvidencePack> {
     const repoRoot = await resolveEvidenceRepoRoot(input.repoPath);
     const reader = new RepoSafeFileReader(repoRoot);
-    const [packageJson, readme, tsconfig, rootConfigs, operationalReads, gitStatus, sourceTree, scriptsTree, scriptsTestsTree, testsTree, testTree, e2eTree, docsTree] = await Promise.all([
+    const [packageJson, readme, tsconfig, rootConfigs, operationalReads, gitStatus, sourceTree, srcTestTree, scriptsTree, scriptsTestsTree, testsTree, testTree, e2eTree, docsTree] = await Promise.all([
       reader.readText("package.json"),
       reader.readText("README.md"),
       reader.readText("tsconfig.json"),
@@ -26,6 +26,7 @@ export class RepoEvidencePackBuilder {
       this.readOperationalFiles(reader),
       this.readGitStatus(repoRoot),
       reader.listTree("src", 3),
+      reader.listTree(path.join("src", "test"), 4),
       reader.listTree("scripts", 2),
       reader.listTree(path.join("scripts", "tests"), 3),
       reader.listTree("tests", 3),
@@ -38,12 +39,13 @@ export class RepoEvidencePackBuilder {
     const inspectedFiles = safeReads.filter((item) => item.text !== undefined).map((item) => item.path);
     const configFiles = inspectedFiles.filter((file) => isConfigFile(file));
     const sourceFiles = sourceTree.files;
-    const testFiles = [...testsTree.files, ...testTree.files, ...scriptsTestsTree.files, ...e2eTree.files].filter(isTestLikeFile);
+    const testFiles = [...testsTree.files, ...testTree.files, ...scriptsTestsTree.files, ...srcTestTree.files, ...e2eTree.files].filter(isTestLikeFile);
     const docsFiles = docsTree.files;
     const operationalFiles = operationalReads.filter((item) => item.text !== undefined).map((item) => item.path);
     const skippedPaths = [
       ...safeReads.filter((item) => item.skipped).map((item) => ({ path: item.path, reason: item.skipped! })),
       ...sourceTree.skipped,
+      ...srcTestTree.skipped,
       ...scriptsTree.skipped,
       ...scriptsTestsTree.skipped,
       ...testsTree.skipped,
@@ -159,6 +161,9 @@ export class RepoEvidencePackBuilder {
     if (input.testFiles.length === 0) risks.push("no_test_tree_detected");
     if (!input.gitStatus) risks.push("git_status_unavailable");
     else if (/\n\s*[MADRCU?]{1,2}\s+/m.test(input.gitStatus)) risks.push("git_worktree_has_changes");
+    if (input.gitStatus && /\[(?:ahead|behind|diverged|gone)[^\]]*\]/i.test(input.gitStatus.split(/\r?\n/)[0] ?? "")) {
+      risks.push("git_branch_drift_detected");
+    }
     if (input.importantFiles.some((file) => /(^|[/\\]).* 2(\.|$)/.test(file))) risks.push("duplicate_copy_file_names_detected");
     const activeHandoff = input.operationalReads.find((item) => item.path === path.join("docs", "ops", "ACTIVE_HANDOFF.md"))?.text;
     if (activeHandoff && /\b(fails?|failing|red test|still red)\b/i.test(activeHandoff)) risks.push("active_handoff_mentions_red_or_failing_test");
@@ -242,7 +247,7 @@ function isConfigFile(file: string): boolean {
 }
 
 function isTestLikeFile(file: string): boolean {
-  return /(^|[/\\])(tests?|scripts[/\\]tests|e2e)([/\\].*)?\.(test|spec)\.[cm]?[jt]sx?$|(^|[/\\])(tests?|scripts[/\\]tests|e2e)[/\\]/i.test(file);
+  return /(^|[/\\])(tests?|scripts[/\\]tests|src[/\\]test|e2e)([/\\].*)?\.(test|spec)\.[cm]?[jt]sx?$|(^|[/\\])(tests?|scripts[/\\]tests|src[/\\]test|e2e)[/\\]/i.test(file);
 }
 
 function uniqueReads(reads: Array<SafeRepoText | undefined>): SafeRepoText[] {

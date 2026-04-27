@@ -49,6 +49,55 @@ export class ChatIntentClassifier {
       });
     }
 
+    if (this.isJudgmentDigest(normalized)) {
+      return this.plan({
+        intent: "judgment_digest",
+        originalInput,
+        objective: "Show only current persisted items that need human judgment.",
+        riskLevel: "low",
+        executionClass: "read_only",
+        operationsToRun: ["ReviewQueue.list"],
+        evidenceRequired: ["review queue"],
+        outputContract: ["needs judgment", "blocked", "batch review", "missing refresh note"],
+        reasonCodes: ["judgment_digest_intent"],
+        confidence: "high"
+      });
+    }
+
+    const codexReportWorkspace = this.extractCodexReportAuditWorkspace(normalized, context);
+    if (codexReportWorkspace !== undefined) {
+      return this.plan({
+        intent: "codex_report_audit",
+        originalInput,
+        workspace: codexReportWorkspace,
+        objective: "Audit the supplied Codex report against read-only repo evidence and proof requirements.",
+        riskLevel: "low",
+        executionClass: "low_risk_artifact_creating",
+        operationsToRun: ["WorkspaceContext.resolve", "RepoEvidencePack.build", "RaxRuntime.run codex_audit"],
+        evidenceRequired: ["supplied Codex report", "workspace registry or current repo", "repo evidence pack", "codex_audit run"],
+        outputContract: ["codex report claim", "evidence checked", "claims verified", "claims not verified", "missing command proof", "next proof command"],
+        reasonCodes: ["codex_report_audit_intent"],
+        confidence: "high"
+      });
+    }
+
+    const boundedPromptWorkspace = this.extractBoundedPromptWorkspace(normalized, context);
+    if (boundedPromptWorkspace !== undefined) {
+      return this.plan({
+        intent: "workspace_repo_audit",
+        originalInput,
+        workspace: boundedPromptWorkspace,
+        objective: "Create one bounded Codex prompt candidate from read-only repo evidence without mutating the linked repo.",
+        riskLevel: "low",
+        executionClass: "low_risk_artifact_creating",
+        operationsToRun: ["WorkspaceContext.resolve", "RepoEvidencePack.build", "RaxRuntime.run codex_audit"],
+        evidenceRequired: ["workspace registry or current repo", "repo evidence pack", "codex_audit run"],
+        outputContract: ["bounded Codex prompt", "files to inspect", "command to run", "acceptance criteria", "stop condition"],
+        reasonCodes: ["workspace_codex_prompt_request"],
+        confidence: "high"
+      });
+    }
+
     const deferred = this.deferredReason(normalized);
     if (deferred) {
       return this.plan({
@@ -61,21 +110,6 @@ export class ChatIntentClassifier {
         evidenceRequired: ["OperationPlan"],
         outputContract: ["state deferred scope", "name slash or CLI power tool", "state no action executed"],
         reasonCodes: [deferred, "deferred_outside_v1a"],
-        confidence: "high"
-      });
-    }
-
-    if (this.isJudgmentDigest(normalized)) {
-      return this.plan({
-        intent: "judgment_digest",
-        originalInput,
-        objective: "Show only current persisted items that need human judgment.",
-        riskLevel: "low",
-        executionClass: "read_only",
-        operationsToRun: ["ReviewQueue.list"],
-        evidenceRequired: ["review queue"],
-        outputContract: ["needs judgment", "blocked", "batch review", "missing refresh note"],
-        reasonCodes: ["judgment_digest_intent"],
         confidence: "high"
       });
     }
@@ -284,6 +318,23 @@ export class ChatIntentClassifier {
     const exact = this.matchKnownWorkspace(raw, context);
     if (exact) return exact;
     return raw;
+  }
+
+  private extractCodexReportAuditWorkspace(input: string, context: ChatIntentContext): string | undefined {
+    if (!/\baudit\b/.test(input) || !/\bcodex\b/.test(input) || !/\b(report|final report|claims?|says|said)\b/.test(input)) {
+      return undefined;
+    }
+    return this.findMentionedWorkspace(input, context) ?? context.currentWorkspace;
+  }
+
+  private extractBoundedPromptWorkspace(input: string, context: ChatIntentContext): string | undefined {
+    if (!/\b(create|make|write|generate)\b/.test(input) || !/\b(codex prompt|prompt for codex|bounded prompt)\b/.test(input)) {
+      return undefined;
+    }
+    if (!/\b(repo evidence|current repo evidence|evidence|proof|bounded|one bounded|next patch|next fix)\b/.test(input)) {
+      return undefined;
+    }
+    return this.findMentionedWorkspace(input, context) ?? context.currentWorkspace;
   }
 
   private matchKnownWorkspace(candidate: string, context: ChatIntentContext): string | undefined {

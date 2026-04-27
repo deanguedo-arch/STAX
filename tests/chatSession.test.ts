@@ -126,12 +126,12 @@ describe("ChatSession", () => {
     const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
 
     const result = await session.handleLine("/eval");
-    const evidence = await new CommandEvidenceStore(rootDir).list({ workspace: "default" });
+    const evidence = await new CommandEvidenceStore(rootDir).list({ workspace: "stax" });
 
     expect(result.output).toContain("Eval:");
     expect(evidence).toHaveLength(1);
     expect(evidence[0]?.source).toBe("local_stax_command_output");
-    expect(evidence[0]?.command).toBe("/eval");
+    expect(evidence[0]?.command).toBe("npm run rax -- eval");
     expect(evidence[0]?.commandFamily).toBe("eval");
   });
 

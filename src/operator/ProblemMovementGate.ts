@@ -56,7 +56,10 @@ export class ProblemMovementGate {
       if (suppliedCommandEvidence && !/\buser-supplied command evidence\b/i.test(input.directAnswer)) {
         blockingReasons.push("Direct Answer must label pasted command results as user-supplied command evidence.");
       }
-      if (commandEvidenceRecord && !/\bstored command evidence\b/i.test(input.directAnswer) && !/\buser-supplied command evidence\b/i.test(input.directAnswer)) {
+      if (commandEvidenceRecord &&
+        !/pass\/fail.*unknown|unknown.*pass\/fail/i.test(input.directAnswer) &&
+        !/\bstored command evidence\b/i.test(input.directAnswer) &&
+        !/\buser-supplied command evidence\b/i.test(input.directAnswer)) {
         blockingReasons.push("Direct Answer must label stored command evidence when command evidence artifacts are used.");
       }
       if (!/\bnpm (run|test)\b/i.test(primaryStep)) {

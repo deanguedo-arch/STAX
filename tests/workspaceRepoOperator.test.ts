@@ -13,6 +13,7 @@ async function tempRepo(): Promise<string> {
 async function createFixtureRepo(): Promise<string> {
   const repo = await tempRepo();
   await fs.mkdir(path.join(repo, "src"), { recursive: true });
+  await fs.mkdir(path.join(repo, "src", "test", "unit"), { recursive: true });
   await fs.mkdir(path.join(repo, "tests"), { recursive: true });
   await fs.mkdir(path.join(repo, "scripts", "tests"), { recursive: true });
   await fs.mkdir(path.join(repo, "docs", "ops"), { recursive: true });
@@ -26,6 +27,7 @@ async function createFixtureRepo(): Promise<string> {
   );
   await fs.writeFile(path.join(repo, "README.md"), "# Fixture Repo\n\nProof fixture.", "utf8");
   await fs.writeFile(path.join(repo, "src", "index.ts"), "export const ok = true;\n", "utf8");
+  await fs.writeFile(path.join(repo, "src", "test", "unit", "ingest.test.ts"), "expect(true).toBe(true);\n", "utf8");
   await fs.writeFile(path.join(repo, "tests", "index.test.ts"), "expect(true).toBe(true);\n", "utf8");
   await fs.writeFile(path.join(repo, "scripts", "tests", "operator.test.ts"), "expect(true).toBe(true);\n", "utf8");
   await fs.writeFile(
@@ -61,6 +63,7 @@ describe("workspace repo operator evidence pack", () => {
     expect(pack.inspectedFiles).toContain("README.md");
     expect(pack.sourceFiles).toContain(path.join("src", "index.ts"));
     expect(pack.testFiles).toContain(path.join("tests", "index.test.ts"));
+    expect(pack.testFiles).toContain(path.join("src", "test", "unit", "ingest.test.ts"));
     expect(pack.testFiles).toContain(path.join("scripts", "tests", "operator.test.ts"));
     expect(pack.operationalFiles).toContain(path.join("docs", "ops", "ACTIVE_HANDOFF.md"));
     expect(pack.scripts).toContainEqual({ name: "test", command: "vitest run" });
