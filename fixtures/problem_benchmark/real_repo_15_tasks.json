@@ -1,7 +1,10 @@
 {
   "id": "real_repo_15_tasks_v0",
   "createdAt": "2026-04-27",
-  "stopCondition": "STAX benchmark slice is acceptable only when there are zero external_better and zero no_local_basis cases.",
+  "stopCondition": "STAX benchmark slice is acceptable only when there are zero external_better, zero no_local_basis, and zero no_external_baseline cases.",
+  "externalAnswerSource": "chatgpt-stax-browser-thread",
+  "externalCapturedAt": "2026-04-27T00:00:00.000Z",
+  "externalPrompt": "Answer the same real repo task with local evidence; stay pointed at the repo and do not drift into STAX architecture.",
   "cases": [
     {
       "id": "brightspace_biggest_risk",
@@ -68,8 +71,8 @@
       "repo": "canvas-helper",
       "task": "What proof gap matters most in canvas-helper?",
       "localEvidence": "repo-script:test:e2e; stored focused command evidence exists; verification debt full e2e open; sportswellness rendered preview issue needs screenshot proof",
-      "staxAnswer": "The broad proof gap is still full e2e coverage, but for Sports Wellness visual work the sharper proof gap is rendered preview evidence. Stored focused checks do not prove the current card layout. One next step: Capture the rendered Sports Wellness preview and paste back whether text fits, borders look symmetrical, and the SMART goals checkmark stays inside its box.",
-      "externalAnswer": "Run the full e2e tests and visually inspect Sports Wellness. Focused checks are not enough for visual regressions.",
+      "staxAnswer": "The proof gap that matters most in canvas-helper is missing full e2e proof for the Sports Wellness rendered surface. Stored focused checks do not prove text fit, border symmetry, or SMART goals checkmark containment, and no source mutation or UI correctness claim is justified. Treat pass/fail as unknown. One next step: Run `npm run test:e2e` in canvas-helper and paste back the full command output and exit code; do not claim tests pass or visual correctness until that proof exists.",
+      "externalAnswer": "The proof gap that matters most in canvas-helper is that full e2e and rendered preview coverage are still unverified; focused tests and source edits do not prove the Sports Wellness layout. Run exactly `npm run test:e2e` and do not claim full coverage from focused tests.",
       "expectedWinner": "stax_better",
       "requiredQualities": ["distinguish e2e from visual proof", "paste back"]
     },

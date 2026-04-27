@@ -10,7 +10,10 @@ describe("LocalProblemBenchmark", () => {
       task: "What is the biggest current operating risk in brightspacequizexporter?",
       localEvidence: "repo-script:ingest:ci; command-evidence npm run ingest:ci failed; @rollup/rollup-darwin-arm64 missing",
       staxAnswer: "Stored command evidence says `npm run ingest:ci` failed because @rollup/rollup-darwin-arm64 is missing. Treat this as partial proof only; no source mutation happened. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` and paste back the full output.",
-      externalAnswer: "Review the repo, run tests, and fix the dependency issue.",
+      externalAnswer: "The biggest risk is the blocked ingest gate. Inspect the Rollup optional dependency issue before trusting the build or ingest process.",
+      externalAnswerSource: "chatgpt-stax",
+      externalCapturedAt: "2026-04-27T00:00:00.000Z",
+      externalPrompt: "Answer the brightspacequizexporter operating-risk task using local repo evidence.",
       requiredQualities: []
     });
 
@@ -27,6 +30,9 @@ describe("LocalProblemBenchmark", () => {
       localEvidence: "sportswellness; projects/sportswellness/workspace/styles.css; SMART goals checkmark containment; rendered preview",
       staxAnswer: "Review the evidence and improve the repo.",
       externalAnswer: "Capture the rendered Sports Wellness preview for SMART goals checkmark containment and text fit; paste back a screenshot before claiming the fix is verified.",
+      externalAnswerSource: "chatgpt-stax",
+      externalCapturedAt: "2026-04-27T00:00:00.000Z",
+      externalPrompt: "Answer the canvas-helper Sports Wellness proof task using local repo evidence.",
       requiredQualities: []
     });
 
@@ -43,11 +49,30 @@ describe("LocalProblemBenchmark", () => {
       localEvidence: "",
       staxAnswer: "Run `npm run build:pages` and paste back output.",
       externalAnswer: "Sync origin first.",
+      externalAnswerSource: "chatgpt-stax",
+      externalCapturedAt: "2026-04-27T00:00:00.000Z",
+      externalPrompt: "Answer the app-admissions risk task using local repo evidence.",
       requiredQualities: []
     });
 
     expect(result.winner).toBe("no_local_basis");
     expect(result.missingLocalEvidence).not.toHaveLength(0);
+  });
+
+  it("refuses to declare a winner without a captured external baseline", () => {
+    const benchmark = new LocalProblemBenchmark();
+    const result = benchmark.scoreCase({
+      id: "no-external-baseline",
+      repo: "canvas-helper",
+      task: "What proof is needed for Sports Wellness?",
+      localEvidence: "repo-script:test:e2e; sportswellness; projects/sportswellness/workspace/styles.css; rendered preview",
+      staxAnswer: "One next step: capture the rendered Sports Wellness preview and paste back whether the SMART goals checkmark fits.",
+      externalAnswer: "Review the repo and fix the issue.",
+      requiredQualities: []
+    });
+
+    expect(result.winner).toBe("no_external_baseline");
+    expect(result.externalBaselineGaps).not.toHaveLength(0);
   });
 
   it("passes the real 15-task fixture slice with no external-better cases", async () => {
@@ -56,6 +81,7 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.total).toBe(15);
     expect(summary.externalBetter).toBe(0);
     expect(summary.noLocalBasis).toBe(0);
+    expect(summary.noExternalBaseline).toBe(0);
     expect(summary.stopConditionMet).toBe(true);
     expect(summary.confidence).toBe("benchmark_slice_proven");
   });

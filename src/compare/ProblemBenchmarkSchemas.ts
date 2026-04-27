@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const ProblemBenchmarkWinnerSchema = z.enum(["stax_better", "external_better", "tie", "no_local_basis"]);
+export const ProblemBenchmarkWinnerSchema = z.enum([
+  "stax_better",
+  "external_better",
+  "tie",
+  "no_local_basis",
+  "no_external_baseline"
+]);
 
 export const ProblemBenchmarkDimensionScoreSchema = z.object({
   actualAnswer: z.number().min(0).max(1),
@@ -20,6 +26,9 @@ export const ProblemBenchmarkCaseSchema = z.object({
   localEvidence: z.string().default(""),
   staxAnswer: z.string().min(1),
   externalAnswer: z.string().min(1),
+  externalAnswerSource: z.string().optional(),
+  externalCapturedAt: z.string().optional(),
+  externalPrompt: z.string().optional(),
   expectedWinner: ProblemBenchmarkWinnerSchema.optional(),
   requiredQualities: z.array(z.string()).default([])
 });
@@ -28,6 +37,9 @@ export const ProblemBenchmarkCollectionSchema = z.object({
   id: z.string().min(1),
   createdAt: z.string().min(1).optional(),
   stopCondition: z.string().optional(),
+  externalAnswerSource: z.string().optional(),
+  externalCapturedAt: z.string().optional(),
+  externalPrompt: z.string().optional(),
   cases: z.array(ProblemBenchmarkCaseSchema).min(1)
 });
 
@@ -41,6 +53,7 @@ export const ProblemBenchmarkResultSchema = z.object({
   externalScore: ProblemBenchmarkDimensionScoreSchema,
   reasons: z.array(z.string()),
   missingLocalEvidence: z.array(z.string()),
+  externalBaselineGaps: z.array(z.string()),
   correctionCandidate: z.string().optional(),
   suggestedEval: z.string(),
   suggestedPromptPatch: z.string()
@@ -52,6 +65,7 @@ export const ProblemBenchmarkSummarySchema = z.object({
   externalBetter: z.number().int().nonnegative(),
   ties: z.number().int().nonnegative(),
   noLocalBasis: z.number().int().nonnegative(),
+  noExternalBaseline: z.number().int().nonnegative(),
   expectedMismatches: z.number().int().nonnegative(),
   confidence: z.enum(["not_proven", "promising", "benchmark_slice_proven"]),
   stopConditionMet: z.boolean(),

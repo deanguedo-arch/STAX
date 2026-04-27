@@ -24,8 +24,9 @@ export class LocalProblemBenchmark {
     const missingLocalEvidence = localEvidenceGaps(problem.localEvidence);
     const staxScore = scoreAnswer(problem.task, problem.localEvidence, problem.staxAnswer);
     const externalScore = scoreAnswer(problem.task, problem.localEvidence, problem.externalAnswer);
-    const winner = decideWinner(staxScore.total, externalScore.total, missingLocalEvidence);
-    const reasons = winnerReasons(problem, winner, staxScore, externalScore, missingLocalEvidence);
+    const externalBaselineGaps = externalBaselineGapsFor(problem, externalScore);
+    const winner = decideWinner(staxScore.total, externalScore.total, missingLocalEvidence, externalBaselineGaps);
+    const reasons = winnerReasons(problem, winner, staxScore, externalScore, missingLocalEvidence, externalBaselineGaps);
     const result = ProblemBenchmarkResultSchema.parse({
       caseId: problem.id,
       repo: problem.repo,
@@ -36,6 +37,7 @@ export class LocalProblemBenchmark {
       externalScore,
       reasons,
       missingLocalEvidence,
+      externalBaselineGaps,
       correctionCandidate: winner === "external_better" ? correctionCandidate(problem, staxScore, externalScore) : undefined,
       suggestedEval: `Add or keep a benchmark fixture for ${problem.repo}/${problem.id} requiring ${winner === "external_better" ? "STAX to beat the external answer" : "STAX not to regress below tie"}.`,
       suggestedPromptPatch: winner === "external_better"
@@ -47,7 +49,13 @@ export class LocalProblemBenchmark {
 
   scoreCollection(collection: ProblemBenchmarkCollection): ProblemBenchmarkSummary {
     const parsed = ProblemBenchmarkCollectionSchema.parse(collection);
-    return summarize(parsed.cases.map((item) => this.scoreCase(item)));
+    const cases = parsed.cases.map((item) => ProblemBenchmarkCaseSchema.parse({
+      ...item,
+      externalAnswerSource: item.externalAnswerSource ?? parsed.externalAnswerSource,
+      externalCapturedAt: item.externalCapturedAt ?? parsed.externalCapturedAt,
+      externalPrompt: item.externalPrompt ?? parsed.externalPrompt
+    }));
+    return summarize(cases.map((item) => this.scoreCase(item)));
   }
 
   async scoreFile(filePath: string): Promise<ProblemBenchmarkSummary> {
@@ -87,6 +95,7 @@ export class LocalProblemBenchmark {
       `ExternalBetter: ${summary.externalBetter}`,
       `Ties: ${summary.ties}`,
       `NoLocalBasis: ${summary.noLocalBasis}`,
+      `NoExternalBaseline: ${summary.noExternalBaseline}`,
       `ExpectedMismatches: ${summary.expectedMismatches}`,
       `Confidence: ${summary.confidence}`,
       `StopConditionMet: ${summary.stopConditionMet}`,
@@ -97,13 +106,14 @@ export class LocalProblemBenchmark {
         `  - STAX: ${result.staxScore.total}`,
         `  - External: ${result.externalScore.total}`,
         `  - Reasons: ${result.reasons.join("; ")}`,
+        result.externalBaselineGaps.length ? `  - ExternalBaselineGaps: ${result.externalBaselineGaps.join("; ")}` : undefined,
         result.correctionCandidate ? `  - CorrectionCandidate: ${result.correctionCandidate}` : undefined
       ].filter(Boolean).join("\n")),
       "",
       "## Stop Rule",
       summary.stopConditionMet
-        ? "Benchmark slice passes: no external_better or no_local_basis cases remain."
-        : "Continue the loop: fix external_better/no_local_basis cases, add tests, and rerun this benchmark."
+        ? "Benchmark slice passes: no external_better, no_local_basis, or no_external_baseline cases remain."
+        : "Continue the loop: fix external_better/no_local_basis/no_external_baseline cases, add tests, and rerun this benchmark."
     ].join("\n");
   }
 }
@@ -199,8 +209,20 @@ function localEvidenceGaps(localEvidence: string): string[] {
   return gaps;
 }
 
-function decideWinner(stax: number, external: number, gaps: string[]): ProblemBenchmarkWinner {
-  if (gaps.length) return "no_local_basis";
+function externalBaselineGapsFor(problem: ProblemBenchmarkCase, externalScore: ProblemBenchmarkDimensionScore): string[] {
+  const gaps: string[] = [];
+  if (!problem.externalAnswerSource?.trim()) gaps.push("External answer source is missing.");
+  if (!problem.externalCapturedAt?.trim()) gaps.push("External answer capture date/time is missing.");
+  if (!problem.externalPrompt?.trim()) gaps.push("External prompt is missing.");
+  if (isGeneric(problem.externalAnswer) || externalScore.actualAnswer < 0.45) {
+    gaps.push("External answer is too generic or drifted to be a valid comparison baseline.");
+  }
+  return gaps;
+}
+
+function decideWinner(stax: number, external: number, localGaps: string[], externalGaps: string[]): ProblemBenchmarkWinner {
+  if (localGaps.length) return "no_local_basis";
+  if (externalGaps.length) return "no_external_baseline";
   if (stax - external >= WIN_MARGIN) return "stax_better";
   if (external - stax >= WIN_MARGIN) return "external_better";
   return "tie";
@@ -211,11 +233,12 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
   const externalBetter = results.filter((item) => item.winner === "external_better").length;
   const ties = results.filter((item) => item.winner === "tie").length;
   const noLocalBasis = results.filter((item) => item.winner === "no_local_basis").length;
+  const noExternalBaseline = results.filter((item) => item.winner === "no_external_baseline").length;
   const expectedMismatches = results.filter((item) => item.expectedWinner && !item.matchedExpectedWinner).length;
-  const stopConditionMet = results.length > 0 && externalBetter === 0 && noLocalBasis === 0 && expectedMismatches === 0;
+  const stopConditionMet = results.length > 0 && externalBetter === 0 && noLocalBasis === 0 && noExternalBaseline === 0 && expectedMismatches === 0;
   const confidence = stopConditionMet
     ? "benchmark_slice_proven"
-    : staxBetter + ties > externalBetter && noLocalBasis === 0
+    : staxBetter + ties > externalBetter && noLocalBasis === 0 && noExternalBaseline === 0
     ? "promising"
     : "not_proven";
   return ProblemBenchmarkSummarySchema.parse({
@@ -224,6 +247,7 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
     externalBetter,
     ties,
     noLocalBasis,
+    noExternalBaseline,
     expectedMismatches,
     confidence,
     stopConditionMet,
@@ -236,9 +260,11 @@ function winnerReasons(
   winner: ProblemBenchmarkWinner,
   staxScore: ProblemBenchmarkDimensionScore,
   externalScore: ProblemBenchmarkDimensionScore,
-  gaps: string[]
+  localGaps: string[],
+  externalGaps: string[]
 ): string[] {
-  if (winner === "no_local_basis") return gaps;
+  if (winner === "no_local_basis") return localGaps;
+  if (winner === "no_external_baseline") return externalGaps;
   const reasons = [
     `STAX ${staxScore.total} vs external ${externalScore.total}.`,
     strongestDimension("STAX", staxScore),
