@@ -9,6 +9,7 @@ import { loadConfig, mergeConfig } from "./core/ConfigLoader.js";
 import { runEvals } from "./core/EvalRunner.js";
 import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
+import { BehaviorMiner } from "./compare/BehaviorMiner.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
@@ -81,6 +82,7 @@ const knownCommands = new Set([
   "workspace",
   "disagree",
   "compare",
+  "mine",
   "review",
   "help"
 ]);
@@ -691,6 +693,58 @@ async function compareCommand(args: ParsedArgs): Promise<void> {
   ], result.runId);
 }
 
+async function mineCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "report";
+  const miner = new BehaviorMiner();
+
+  if (action === "prompt") {
+    logInfo(miner.safePrompt());
+    return;
+  }
+
+  if (action === "report" || action === "saturation") {
+    const windowSize = typeof args.flags.window === "string" ? Number(args.flags.window) : 3;
+    const report = await miner.report(Number.isFinite(windowSize) && windowSize > 0 ? windowSize : 3);
+    logInfo(miner.formatReport(report));
+    return;
+  }
+
+  if (action === "requirements") {
+    const requirements = await miner.readRequirements();
+    logInfo(JSON.stringify(requirements, null, 2));
+    return;
+  }
+
+  if (action === "round") {
+    const staxFile = typeof args.flags.stax === "string" ? args.flags.stax : undefined;
+    const externalFile = typeof args.flags.external === "string" ? args.flags.external : undefined;
+    if (!staxFile || !externalFile) {
+      throw new Error("Usage: rax mine round --stax stax-answer.md --external external-answer.md [--task task.md|text] [--evidence evidence.md] [--source chatgpt-stax]");
+    }
+    const task = typeof args.flags.task === "string"
+      ? await readFileOrLiteral(args.flags.task)
+      : args.positional.slice(1).join(" ") || "Mine observable behavior from an external STAX-like assistant.";
+    const staxAnswer = await fs.readFile(staxFile, "utf8");
+    const externalAnswer = await fs.readFile(externalFile, "utf8");
+    const localEvidence = typeof args.flags.evidence === "string" ? await fs.readFile(args.flags.evidence, "utf8") : "";
+    const result = await miner.recordRound({
+      task,
+      staxAnswer,
+      externalAnswer,
+      localEvidence,
+      sourceSystem: typeof args.flags.source === "string" ? args.flags.source : "chatgpt-stax",
+      staxAnswerPath: staxFile,
+      externalAnswerPath: externalFile,
+      evidencePath: typeof args.flags.evidence === "string" ? args.flags.evidence : undefined
+    });
+    logInfo(miner.formatRound(result.round, result.report));
+    await recordCommandEvent("mine round", args, true, JSON.stringify(result.round), [result.path, result.report.latestReportPath ?? "learning/extraction/latest_report.json"]);
+    return;
+  }
+
+  throw new Error("Usage: rax mine prompt|round|report|saturation|requirements");
+}
+
 async function reviewCommand(args: ParsedArgs): Promise<void> {
   const action = args.positional[0] ?? "inbox";
   const router = new ReviewRouter();
@@ -1142,6 +1196,7 @@ function help(): void {
     "  rax workspace create <name> --repo <path> [--use] | use <name> | status | list | show <name> | repo-summary | search <query>",
     "  rax disagree --reason \"...\" [--run <run-id>]",
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
+    "  rax mine prompt|round|report|requirements",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
 }
@@ -1191,6 +1246,8 @@ async function main(): Promise<void> {
     await disagreeCommand(args);
   } else if (args.command === "compare") {
     await compareCommand(args);
+  } else if (args.command === "mine") {
+    await mineCommand(args);
   } else if (args.command === "review") {
     await reviewCommand(args);
   } else {
@@ -1202,3 +1259,13 @@ main().catch((error: unknown) => {
   logError(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 });
+
+async function readFileOrLiteral(value: string): Promise<string> {
+  try {
+    const stat = await fs.stat(value);
+    if (stat.isFile()) return fs.readFile(value, "utf8");
+  } catch {
+    // Treat non-file values as literal task text.
+  }
+  return value;
+}

@@ -5,6 +5,7 @@ import { redactProofText } from "../audit/ProofRedactor.js";
 import { runEvals } from "../core/EvalRunner.js";
 import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
+import { BehaviorMiner } from "../compare/BehaviorMiner.js";
 import { collectLocalEvidence, formatLocalEvidence } from "../evidence/LocalEvidenceCollector.js";
 import { LearningMetricsStore } from "../learning/LearningMetrics.js";
 import { LearningProposalGenerator } from "../learning/LearningProposalGenerator.js";
@@ -58,6 +59,7 @@ export class ChatSession {
   private modeOverride: RaxMode | undefined;
   private workspace = "default";
   private runIds: string[] = [];
+  private lastUserInput = "";
   private lastAssistantOutput = "";
   private threadId = "thread_default";
   private thread?: ChatThread;
@@ -408,6 +410,34 @@ export class ChatSession {
         "model_comparison"
       );
       return { output };
+    }
+
+    if (command === "/mine") {
+      const [mineAction = "", ...mineRest] = arg.split(/\s+/);
+      const miner = new BehaviorMiner(this.rootDir);
+      if (mineAction === "prompt") {
+        return { output: miner.safePrompt() };
+      }
+      if (mineAction === "report" || mineAction === "saturation") {
+        return { output: miner.formatReport(await miner.report()) };
+      }
+      if (mineAction === "requirements") {
+        return { output: JSON.stringify(await miner.readRequirements(), null, 2) };
+      }
+      if (mineAction === "external") {
+        const externalAnswer = mineRest.join(" ").trim();
+        if (!externalAnswer) return { output: "Usage: /mine external <external answer or behavior spec>" };
+        if (!this.lastAssistantOutput) return { output: "No STAX answer is available to mine against yet." };
+        const result = await miner.recordRound({
+          task: this.lastUserInput || "Mine observable behavior from an external STAX-like assistant.",
+          staxAnswer: this.lastAssistantOutput,
+          externalAnswer,
+          localEvidence: `LastRun: ${this.runIds.at(-1) ?? "none"}`,
+          sourceSystem: "chatgpt-stax"
+        });
+        return { output: miner.formatRound(result.round, result.report) };
+      }
+      return { output: "Usage: /mine prompt | report | requirements | external <external answer or behavior spec>" };
     }
 
     if (command === "/state") {
@@ -939,6 +969,7 @@ export class ChatSession {
       validation?: { valid?: boolean };
     };
     this.runIds.push(result.runId);
+    this.lastUserInput = input;
     this.lastAssistantOutput = result.output;
     this.context.push(`User: ${input}`);
     this.context.push(`RAX: ${result.output}`);
@@ -1425,6 +1456,9 @@ export class ChatSession {
       "- \"audit last answer\"",
       "- \"I disagree because ...\"",
       "- \"/compare external <answer>\"",
+      "- \"/mine prompt\"",
+      "- \"/mine external <clean-room behavior spec>\"",
+      "- \"/mine report\"",
       "- \"replay last run\"",
       "- \"show sandbox report\"",
       "- \"show sandbox failures\"",
@@ -1541,6 +1575,7 @@ export class ChatSession {
       "/audit-last --proof",
       "/disagree <reason>",
       "/compare external <answer>",
+      "/mine prompt|report|requirements|external <answer>",
       "/eval",
       "/regression",
       "/replay last|<run-id>",
