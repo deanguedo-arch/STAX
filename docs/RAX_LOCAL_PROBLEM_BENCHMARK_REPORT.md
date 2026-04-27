@@ -33,6 +33,7 @@ a real ChatGPT STAX comparison.
 - `src/compare/LocalProblemBenchmark.ts`
 - `tests/localProblemBenchmark.test.ts`
 - `fixtures/problem_benchmark/real_repo_15_tasks.json`
+- `fixtures/problem_benchmark/real_repo_50_tasks.json`
 - `docs/RAX_LOCAL_PROBLEM_BENCHMARK_REPORT.md`
 
 ## Files Modified
@@ -82,6 +83,7 @@ If any of those are missing, the result is `no_external_baseline`.
 
 ```bash
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json
+npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json
 ```
 
 ## Benchmark Fixture
@@ -252,15 +254,77 @@ ContinueLoopRequired: true
 That means the next loop is mandatory if the goal is superiority rather than a
 single proven comparison slice.
 
+## Second Loop: 50 Captured Comparisons
+
+The benchmark was expanded from 15 to 50 real repo/project comparison cases.
+The new cases add:
+
+- `STAX`
+- `Course-factoryPERFECT`
+- `studentbudgetwars`
+- `Brightpsace-converter-project`
+- additional `canvas-helper` operator workflows
+
+The external baseline was captured from the open ChatGPT STAX browser thread
+with a repo-pointed JSON prompt. The first 50-case run did not pass:
+
+```txt
+Total: 50
+STAXBetter: 22
+ExternalBetter: 0
+Ties: 9
+NoLocalBasis: 19
+NoExternalBaseline: 0
+ExpectedMismatches: 28
+StopConditionMet: false
+```
+
+That failure was useful. It exposed fixture problems and real answer-quality
+gaps:
+
+- some new cases did not contain enough local-evidence markers for the benchmark
+- several external answers were strong enough to tie STAX
+- one Student Budget Wars fake-complete audit did not explicitly reject the
+  "all game modes fully tested" claim with enough Desktop proof-boundary detail
+
+The loop was rerun after strengthening local evidence and STAX answers. The
+current 50-case result is:
+
+```txt
+Total: 50
+STAXBetter: 50
+ExternalBetter: 0
+Ties: 0
+NoLocalBasis: 0
+NoExternalBaseline: 0
+ExpectedMismatches: 0
+Confidence: benchmark_slice_proven
+StopConditionMet: true
+SuperiorityStatus: slice_only
+ContinueLoopRequired: true
+```
+
+The only remaining Superiority Gate gap is:
+
+```txt
+Need external baselines captured on at least 2 dates; current 1.
+```
+
+So this is a stronger slice, but still not a final superiority proof. The next
+honest loop needs fresh external baselines on another date or a deliberate
+policy change to replace the multi-date requirement with another anti-overfit
+control. Do not silently remove that gate.
+
 ## Validation
 
 ```txt
 npm run typecheck: passed
-npm test: 49 files / 229 tests passed
+npm test: 49 files / 230 tests passed
 npm run rax -- eval: 16/16 passed
 npm run rax -- eval --regression: 43/43 passed
 npm run rax -- eval --redteam: 9/9 passed
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
+npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
 ```
 
 ## Honest Limits

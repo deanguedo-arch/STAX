@@ -88,4 +88,20 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.continueLoopRequired).toBe(true);
     expect(summary.superiorityGaps.join(" ")).toContain("Need at least 50 captured comparisons");
   });
+
+  it("passes the real 50-task benchmark but keeps the loop open until multi-date baselines exist", async () => {
+    const summary = await new LocalProblemBenchmark(process.cwd()).scoreFile("fixtures/problem_benchmark/real_repo_50_tasks.json");
+
+    expect(summary.total).toBe(50);
+    expect(summary.staxBetter).toBe(50);
+    expect(summary.externalBetter).toBe(0);
+    expect(summary.ties).toBe(0);
+    expect(summary.noLocalBasis).toBe(0);
+    expect(summary.noExternalBaseline).toBe(0);
+    expect(summary.stopConditionMet).toBe(true);
+    expect(summary.confidence).toBe("benchmark_slice_proven");
+    expect(summary.superiorityStatus).toBe("slice_only");
+    expect(summary.continueLoopRequired).toBe(true);
+    expect(summary.superiorityGaps).toEqual(["Need external baselines captured on at least 2 dates; current 1."]);
+  });
 });

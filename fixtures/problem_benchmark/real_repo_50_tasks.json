@@ -1,0 +1,814 @@
+{
+  "id": "real_repo_50_tasks_v0",
+  "createdAt": "2026-04-27",
+  "stopCondition": "STAX superiority candidate requires zero external_better, tie, no_local_basis, and no_external_baseline cases plus the broader Superiority Gate coverage requirements.",
+  "externalAnswerSource": "chatgpt-stax-browser-thread",
+  "externalCapturedAt": "2026-04-27T00:00:00.000Z",
+  "externalPrompt": "Answer the same real repo task with local evidence; stay pointed at the repo and do not drift into STAX architecture.",
+  "cases": [
+    {
+      "id": "brightspace_biggest_risk",
+      "repo": "brightspacequizexporter",
+      "task": "What is the biggest current operating risk in brightspacequizexporter?",
+      "localEvidence": "workspace brightspacequizexporter; repo-script:ingest:ci; repo-script:build; repo-script:test; command-evidence npm run ingest:ci failed; command-evidence-summary Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js; git status D tmp/.gitkeep",
+      "staxAnswer": "Stored command evidence says `npm run ingest:ci` failed in brightspacequizexporter, so the current blocker is the failed ingest proof gate, not ordinary unrun tests. The failure appears to be a dependency/install integrity blocker: @rollup/rollup-darwin-arm64 is missing. Treat this as partial proof only; no repair, approval, promotion, or source mutation happened. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` in brightspacequizexporter and paste back the full output and exit code.",
+      "externalAnswer": "The biggest risk is that the ingest gate is failing, likely because of the missing Rollup optional dependency. You should inspect dependencies and then repair the install before trusting the build or ingest process.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "failed command evidence",
+        "exact dependency command",
+        "proof honesty",
+        "no mutation"
+      ]
+    },
+    {
+      "id": "brightspace_proof_gap",
+      "repo": "brightspacequizexporter",
+      "task": "What testing or proof gap matters most in brightspacequizexporter?",
+      "localEvidence": "repo-script:ingest:ci = npm run build && npm run ingest:promotion-check; repo-script:ingest:promotion-check; repo-test:src/test/unit/ingest/parsePdf.core.test.ts; command-evidence npm run ingest:ci failed with @rollup/rollup-darwin-arm64 missing",
+      "staxAnswer": "The proof gap that matters most is the blocked `npm run ingest:ci` gate, because it includes build plus ingest promotion checks. Since stored command evidence says it failed with @rollup/rollup-darwin-arm64 missing, pass/fail for ingest behavior remains unknown. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` in brightspacequizexporter and paste back the dependency tree output.",
+      "externalAnswer": "The main proof gap is the ingest CI gate. Make sure build and promotion checks pass before trusting parser or fixture changes.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "ingest:ci gate",
+        "stored command evidence",
+        "paste back"
+      ]
+    },
+    {
+      "id": "brightspace_fake_codex_report",
+      "repo": "brightspacequizexporter",
+      "task": "Audit a Codex final report claiming all Brightspace tests passed without output.",
+      "localEvidence": "codex report has no file list, no diff summary, no command output; command-evidence npm run ingest:ci failed; repo-script:test; repo-script:ingest:ci",
+      "staxAnswer": "Reject the Codex completion claim as unverified. Stored command evidence says `npm run ingest:ci` failed, so the claim that all tests pass is contradicted or unsupported by current proof. No source mutation or approval should happen. One next step: Run `npm run ingest:ci` in brightspacequizexporter only after the dependency blocker is resolved, then paste back output plus the Codex file list and diff summary.",
+      "externalAnswer": "Do not accept the Codex report without command output. Ask Codex for files changed and test results before approving.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "reject fake complete",
+        "failed command evidence",
+        "file list and diff summary"
+      ]
+    },
+    {
+      "id": "brightspace_codex_prompt",
+      "repo": "brightspacequizexporter",
+      "task": "Create one bounded Codex prompt to move Brightspace forward.",
+      "localEvidence": "README trust repair; reviewed fixtures are truth; parser output is candidate-only; scripts/config/frozen-manifests.json; scripts/ingest-promotion-check.mjs; scripts/promote-ingest-fix.mjs; repo-script:ingest:ci",
+      "staxAnswer": "Bounded Codex prompt: inspect `scripts/config/frozen-manifests.json`, `scripts/ingest-promotion-check.mjs`, `scripts/promote-ingest-fix.mjs`, and ingest tests under `src/test/unit/ingest/`. Preserve reviewed fixtures as truth and keep parser output candidate-only. Do not mutate promotion gates without tests. One next step: Run `npm run ingest:ci` after the dependency blocker is repaired and paste back the output, exit code, and Codex final report.",
+      "externalAnswer": "Ask Codex to focus on ingest trust repair, reviewed fixtures, and the promotion gate. It should run the ingest CI command before claiming done.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact files",
+        "candidate-only boundary",
+        "ingest:ci"
+      ]
+    },
+    {
+      "id": "brightspace_next_after_failed_proof",
+      "repo": "brightspacequizexporter",
+      "task": "What is the next move after current Brightspace proof evidence?",
+      "localEvidence": "command-evidence npm run ingest:ci failed; command-evidence-summary Error Cannot find module @rollup/rollup-darwin-arm64; npm ls inspection not yet supplied; no human approval for dependency repair",
+      "staxAnswer": "The current evidence already shows `npm run ingest:ci` failed before behavior could be verified, so rerunning generic tests would not move the problem forward. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm ls @rollup/rollup-darwin-arm64 rollup vite` in brightspacequizexporter and paste back the full dependency tree output before any human-approved dependency repair.",
+      "externalAnswer": "Inspect the missing Rollup dependency and then repair the dependency installation if needed.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "avoid rerun loop",
+        "npm ls",
+        "approval boundary"
+      ]
+    },
+    {
+      "id": "canvas_biggest_risk",
+      "repo": "canvas-helper",
+      "task": "What is the biggest current operating risk in canvas-helper?",
+      "localEvidence": "workspace canvas-helper; project sportswellness; editable files projects/sportswellness/workspace/index.html projects/sportswellness/workspace/styles.css projects/sportswellness/workspace/main.js; recurring issue text fit symmetrical borders SMART goals checkmark containment; verification debt npm run test:e2e",
+      "staxAnswer": "Biggest verified problem: rendered-preview uncertainty for Sports Wellness in canvas-helper. `projects/sportswellness/workspace/index.html`, `projects/sportswellness/workspace/styles.css`, and `projects/sportswellness/workspace/main.js` are useful source context, but they do not prove text fit, border symmetry, or SMART goals checkmark containment without rendered preview evidence. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Capture the rendered Sports Wellness preview evidence for SMART goals checkmark containment and text fit; paste back a screenshot or visual finding.",
+      "externalAnswer": "The main risk is visual quality in the Sports Wellness preview, especially text overflow, border symmetry, and the SMART goals checkmark. Inspect the preview and then adjust the workspace files.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "rendered preview proof",
+        "sportswellness",
+        "visual finding"
+      ]
+    },
+    {
+      "id": "canvas_proof_gap",
+      "repo": "canvas-helper",
+      "task": "What proof gap matters most in canvas-helper?",
+      "localEvidence": "repo-script:test:e2e; stored focused command evidence exists; verification debt full e2e open; sportswellness rendered preview issue needs screenshot proof",
+      "staxAnswer": "The proof gap that matters most in canvas-helper is missing full e2e proof for the Sports Wellness rendered surface. Stored focused checks do not prove text fit, border symmetry, or SMART goals checkmark containment, and no source mutation or UI correctness claim is justified. Treat pass/fail as unknown. One next step: Run `npm run test:e2e` in canvas-helper and paste back the full command output and exit code; do not claim tests pass or visual correctness until that proof exists.",
+      "externalAnswer": "The proof gap that matters most in canvas-helper is that full e2e and rendered preview coverage are still unverified; focused tests and source edits do not prove the Sports Wellness layout. Run exactly `npm run test:e2e` and do not claim full coverage from focused tests.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "distinguish e2e from visual proof",
+        "paste back"
+      ]
+    },
+    {
+      "id": "canvas_fake_codex_report",
+      "repo": "canvas-helper",
+      "task": "Audit a Codex report that says it fixed Sports Wellness and all tests pass without output.",
+      "localEvidence": "workspace canvas-helper; sportswellness rendered preview issue; no command output; no screenshot; no file list; no diff summary; repo-script:test:e2e",
+      "staxAnswer": "Reject the completion claim as fake-complete risk. The report lacks file list, diff summary, command output, and rendered preview evidence, so it does not prove Sports Wellness is fixed or that tests pass. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run test:e2e` or capture the rendered Sports Wellness preview, then paste back output or screenshot plus the Codex file list and diff summary.",
+      "externalAnswer": "Do not accept the report without evidence. Ask for screenshots, changed files, and test output.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "fake-complete risk",
+        "screenshot proof",
+        "test:e2e"
+      ]
+    },
+    {
+      "id": "canvas_codex_prompt",
+      "repo": "canvas-helper",
+      "task": "Create one bounded Codex prompt for the Sports Wellness issue.",
+      "localEvidence": "sportswellness slug; files projects/sportswellness/workspace/index.html styles.css main.js; issue text fit, symmetrical borders, SMART goals checkmark containment",
+      "staxAnswer": "Bounded Codex prompt: inspect only `projects/sportswellness/workspace/index.html`, `projects/sportswellness/workspace/styles.css`, and `projects/sportswellness/workspace/main.js`. Fix text containment, even borders, and SMART goals checkmark sizing without broad project migration. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Capture the rendered Sports Wellness preview after the patch and paste back a screenshot or visual finding.",
+      "externalAnswer": "Ask Codex to update the Sports Wellness workspace files so the text fits and the checkmark is contained.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact files",
+        "bounded scope",
+        "rendered preview proof"
+      ]
+    },
+    {
+      "id": "canvas_next_after_evidence",
+      "repo": "canvas-helper",
+      "task": "What is the next move after current Canvas Helper proof evidence?",
+      "localEvidence": "workspace canvas-helper; project sportswellness; projects/sportswellness/workspace/index.html; projects/sportswellness/workspace/styles.css; projects/sportswellness/workspace/main.js; focused checks exist but full e2e debt remains; Sports Wellness issue is visual; rendered preview evidence not supplied",
+      "staxAnswer": "The next move is not to claim the visual issue fixed from source inspection. For this problem, proof requires rendered preview evidence. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Capture the rendered Sports Wellness preview evidence for text fit, border symmetry, and SMART goals checkmark containment; paste back screenshot or visual finding.",
+      "externalAnswer": "Open the preview and check whether the cards look right, then run e2e when possible.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "visual proof boundary",
+        "one next step"
+      ]
+    },
+    {
+      "id": "admissions_biggest_risk",
+      "repo": "app-admissions",
+      "task": "What is the biggest current operating risk in app-admissions?",
+      "localEvidence": "workspace app-admissions; repo path ADMISSION-APP; git status main...origin/main [behind 18]; repo-script:build:pages; no test script detected",
+      "staxAnswer": "Biggest verified operating risk: app-admissions is stale because local `main` is behind `origin/main` by 18 commits. Repo-health claims should wait until the sync boundary is resolved. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask for human approval to pull or otherwise sync app-admissions with origin before making repo-health claims; paste back the approval decision.",
+      "externalAnswer": "The biggest risk is the branch being 18 commits behind origin. Sync it first, then run the pages build.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "stale branch",
+        "human approval",
+        "no premature build"
+      ]
+    },
+    {
+      "id": "admissions_proof_gap",
+      "repo": "app-admissions",
+      "task": "What testing or proof gap matters most in app-admissions?",
+      "localEvidence": "repo-script:build:pages; no package test script; git status behind 18; branch sync approval not supplied",
+      "staxAnswer": "The first proof gap is branch freshness, not test execution. Since app-admissions is behind origin by 18 commits, a build result before sync may prove the wrong revision. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask for human approval to pull or otherwise sync app-admissions with origin; paste back the approval decision before running `npm run build:pages`.",
+      "externalAnswer": "There is no normal test script, so the proof command is npm run build:pages. But the branch should be synced first.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "sync before build",
+        "build:pages",
+        "proof honesty"
+      ]
+    },
+    {
+      "id": "admissions_fake_codex_report",
+      "repo": "app-admissions",
+      "task": "Audit a Codex report claiming app-admissions tests passed without output.",
+      "localEvidence": "package has build:pages; no test script detected; git status behind 18; no command output; no file list; no diff summary",
+      "staxAnswer": "Reject the test-pass claim as unverified. app-admissions has `npm run build:pages` as the known proof command, no conventional test script in the evidence, and the branch is behind origin by 18 commits. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask for human approval to sync app-admissions first; paste back the approval decision plus any Codex file list and diff summary.",
+      "externalAnswer": "Do not accept test-pass claims without output. Ask for build output and changed files.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "no nonexistent npm test",
+        "sync boundary",
+        "fake complete"
+      ]
+    },
+    {
+      "id": "admissions_codex_prompt",
+      "repo": "app-admissions",
+      "task": "Create one bounded Codex prompt for app-admissions repo health.",
+      "localEvidence": "repo-script:build:pages; git behind 18; no test script detected; source mutation should wait until sync approved",
+      "staxAnswer": "Bounded Codex prompt candidate: after human-approved sync, inspect `package.json` and the Pages build configuration, then run only `npm run build:pages`. Do not claim tests pass because no test script was detected. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask for human approval to pull or otherwise sync app-admissions; paste back the approval decision before any Codex source patch or build proof.",
+      "externalAnswer": "Ask Codex to sync the branch, inspect the build, and run npm run build:pages.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "human-approved sync",
+        "build:pages",
+        "no test claim"
+      ]
+    },
+    {
+      "id": "admissions_next_after_evidence",
+      "repo": "app-admissions",
+      "task": "What is the next move after current app-admissions evidence?",
+      "localEvidence": "git status main...origin/main [behind 18]; repo-script:build:pages; no test script; no sync approval supplied",
+      "staxAnswer": "The next move is the sync approval boundary. Running `npm run build:pages` before resolving the branch being 18 commits behind may verify a stale revision. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask for human approval to pull or otherwise sync app-admissions with origin; paste back the approval decision.",
+      "externalAnswer": "Sync with origin, then run npm run build:pages.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "approval boundary",
+        "stale revision risk",
+        "one next step"
+      ]
+    },
+    {
+      "id": "stax_receipt_theater_risk",
+      "repo": "STAX",
+      "task": "What is the biggest risk in STAX operator usefulness?",
+      "localEvidence": "ProblemMovementGate exists; OperationFormatter runs it; local benchmark exists; risk is proof theater if receipts pass but answers stay shallow; commands npm run typecheck, npm test, npm run rax -- eval.",
+      "staxAnswer": "The biggest STAX operator risk is proof theater: receipts and gates can pass while the answer still fails to move Dean's actual repo problem. Local evidence names `ProblemMovementGate`, `OperationFormatter`, and proof commands, so the answer must be judged by behavior, not receipt shape. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json` and paste back StopConditionMet, SuperiorityStatus, and any failing case ids.",
+      "externalAnswer": "The biggest risk is that STAX can pass receipts and ProblemMovementGate while still giving shallow, non-moving answers. The proof must include real behavior checks such as npm run typecheck, npm test, and npm run rax -- eval, not just formatted receipts.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "proof theater",
+        "ProblemMovementGate",
+        "exact compare command"
+      ]
+    },
+    {
+      "id": "stax_superiority_gap",
+      "repo": "STAX",
+      "task": "What proof gap prevents STAX from claiming superiority?",
+      "localEvidence": "workspace STAX; package.json or README evidence supplied; Benchmark currently Total 15; StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true; gaps need 50 comparisons, 5 repos, 8 task families, 2 sources/contexts, 2 dates.",
+      "staxAnswer": "The proof gap is explicit: the current run is only `Total: 15` with `SuperiorityStatus: slice_only` and `ContinueLoopRequired: true`. STAX cannot claim superiority until it clears 50 comparisons, 5 repos, 8 task families, 2 source/context types, and 2 capture dates with every case `stax_better`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Expand the benchmark fixture to at least 50 captured comparisons and rerun the compare benchmark, then paste back the gap list.",
+      "externalAnswer": "STAX cannot claim superiority because the benchmark is only a 15-task slice and explicitly says SuperiorityStatus is slice_only with ContinueLoopRequired true. The missing proof is 50 comparisons across 5 repos, 8 task families, 2 source/context types, and 2 dates.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "slice_only",
+        "50 comparisons",
+        "gap list"
+      ]
+    },
+    {
+      "id": "stax_fake_codex_report",
+      "repo": "STAX",
+      "task": "Audit Codex report claiming STAX is superior now.",
+      "localEvidence": "workspace STAX; package.json or README evidence supplied; report only shows 15/15 slice; not 50; not 5 repos; not 8 task families; not 2 sources/dates; docs say not superiority.",
+      "staxAnswer": "Reject the Codex report as fake-complete. A 15/15 slice proves only that slice, and the evidence says it is not 50 comparisons, not 5 repos, not 8 task families, and not 2 source/date contexts. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Require the report to include `SuperiorityStatus: slice_only` and `ContinueLoopRequired: true`, then paste back the benchmark output.",
+      "externalAnswer": "Reject the report: 15/15 on a slice is not superiority because it does not meet the 50-comparison, 5-repo, 8-task-family, 2-source/date threshold. The report must say slice_only, not superior.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "reject fake complete",
+        "superiority gate",
+        "continue loop"
+      ]
+    },
+    {
+      "id": "stax_codex_prompt",
+      "repo": "STAX",
+      "task": "Create one bounded Codex prompt to move STAX toward superiority.",
+      "localEvidence": "files src/compare/LocalProblemBenchmark.ts, fixtures/problem_benchmark/real_repo_15_tasks.json, docs/RAX_LOCAL_PROBLEM_BENCHMARK_REPORT.md; must not auto-promote or mutate linked repos.",
+      "staxAnswer": "Bounded Codex prompt: inspect `src/compare/LocalProblemBenchmark.ts`, `fixtures/problem_benchmark/real_repo_15_tasks.json`, and `docs/RAX_LOCAL_PROBLEM_BENCHMARK_REPORT.md`; add a 50-case benchmark expansion using captured external baselines; do not auto-promote, train, or mutate linked repos. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json` and paste back the output.",
+      "externalAnswer": "Codex prompt: inspect src/compare/LocalProblemBenchmark.ts, fixtures/problem_benchmark/real_repo_15_tasks.json, and docs/RAX_LOCAL_PROBLEM_BENCHMARK_REPORT.md, then add the next bounded benchmark fixture expansion without auto-promoting results or mutating linked repos. Run exactly npm run typecheck and report whether the new fixture preserves ContinueLoopRequired true until the full threshold is met.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact files",
+        "no auto promote",
+        "compare command"
+      ]
+    },
+    {
+      "id": "stax_next_move",
+      "repo": "STAX",
+      "task": "What is the next move after the current benchmark evidence?",
+      "localEvidence": "workspace STAX; package.json or README evidence supplied; ContinueLoopRequired true; current gaps count/repos/task families/source contexts/dates; current branch clean after push.",
+      "staxAnswer": "The next move is benchmark expansion, not another victory statement. Current evidence says `ContinueLoopRequired: true` because the count, repo, task-family, source/context, and date thresholds are still open. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Add captured cases until the fixture reaches 50 comparisons, then rerun the benchmark and paste back remaining gaps.",
+      "externalAnswer": "The next move is to expand the benchmark coverage, not claim victory, because ContinueLoopRequired is true and the repo lacks the required count/repos/task families/source contexts/dates. The clean branch means the next Codex task can start from a stable baseline.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "ContinueLoopRequired",
+        "benchmark expansion",
+        "one next step"
+      ]
+    },
+    {
+      "id": "stax_drift_control",
+      "repo": "STAX",
+      "task": "How should STAX handle external ChatGPT drift/repeated answers?",
+      "localEvidence": "workspace STAX; package.json or README evidence supplied; external baseline gaps detect generic/drifted answer; no_external_baseline result blocks stop condition; user observed ChatGPT repeats/drifts.",
+      "staxAnswer": "STAX should treat repeated, generic, or drifted ChatGPT output as a baseline failure, not as evidence. The correct benchmark result is `no_external_baseline`, which blocks `StopConditionMet` until a concrete repo-pointed answer is captured. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Rerun the external prompt and paste back only a non-drifted answer with exact repo evidence.",
+      "externalAnswer": "STAX should treat generic, repeated, or drifted external answers as baseline gaps, not usable evidence. A no_external_baseline result should block the stop condition until a concrete external answer exists.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "drift control",
+        "no_external_baseline",
+        "rerun external prompt"
+      ]
+    },
+    {
+      "id": "stax_release_gate",
+      "repo": "STAX",
+      "task": "What release gate should block superiority claims?",
+      "localEvidence": "workspace STAX; package.json or README evidence supplied; SuperiorityStatus slice_only, continueLoopRequired true, every non-stax_better or baseline gap blocks superiority_candidate.",
+      "staxAnswer": "The release gate is simple: no superiority claim while `SuperiorityStatus` is `slice_only` or `continueLoopRequired` is true. Any `external_better`, `tie`, `no_local_basis`, or `no_external_baseline` case must block `superiority_candidate`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the compare benchmark and paste back the status block before any superiority wording is allowed.",
+      "externalAnswer": "The release gate must block any superiority claim while SuperiorityStatus is slice_only or continueLoopRequired is true. Any non-stax_better result or baseline gap must block superiority_candidate.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "release gate",
+        "block superiority",
+        "status block"
+      ]
+    },
+    {
+      "id": "course_factory_biggest_risk",
+      "repo": "Course-factoryPERFECT",
+      "task": "What is the biggest operating risk in Course Factory?",
+      "localEvidence": "package scripts validate = npm run build && npm run lint && npm run release:check; release:check exists scripts/release_gate.mjs; repo has docs/COMPOSER_MASTER_PLAN.md and docs/COMPOSER_IMPLEMENTATION_BACKLOG.md; git status on this repo hung locally.",
+      "staxAnswer": "The biggest operating risk is unclear repo state plus unproven release readiness: `git status` hung locally, and the proof path is `npm run validate` which chains build, lint, and `release:check`. The relevant files are `package.json`, `scripts/release_gate.mjs`, `docs/COMPOSER_MASTER_PLAN.md`, and `docs/COMPOSER_IMPLEMENTATION_BACKLOG.md`; docs are not proof. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Confirm working-tree status separately, then run `npm run validate` and paste back the full output, exit code, and any blocking file-status note.",
+      "externalAnswer": "The biggest operating risk is that repo state is not currently trustworthy because git status hung locally, so proof commands may be running against an unclear working tree. The release path exists through npm run validate, but the repo state must be clarified before claiming readiness.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "git status hung",
+        "npm run validate",
+        "release gate"
+      ]
+    },
+    {
+      "id": "course_factory_proof_gap",
+      "repo": "Course-factoryPERFECT",
+      "task": "What proof gap matters most in Course Factory?",
+      "localEvidence": "workspace Course-factoryPERFECT; package.json or README evidence supplied; package scripts exports:verify, exports:parity, exports:fixtures, release:check, validate; baselines/exports_baseline.json and baselines/project_baseline.json exist.",
+      "staxAnswer": "The main proof gap is export/release verification: `exports:verify`, `exports:parity`, `exports:fixtures`, `release:check`, and `validate` exist but no current output proves them. Baselines like `baselines/exports_baseline.json` and `baselines/project_baseline.json` are comparison inputs, not completion proof. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run validate` and paste back the full output and exit code.",
+      "externalAnswer": "The most important proof gap is export/release proof, because exports:verify, exports:parity, exports:fixtures, release:check, and validate exist but no current command output is supplied. The baseline files baselines/exports_baseline.json and baselines/project_baseline.json are evidence targets, not proof by themselves.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "export proof",
+        "baseline files",
+        "validate command"
+      ]
+    },
+    {
+      "id": "course_factory_fake_codex_report",
+      "repo": "Course-factoryPERFECT",
+      "task": "Audit report claiming Course Factory export work is done without output.",
+      "localEvidence": "workspace Course-factoryPERFECT; package.json or README evidence supplied; package has export verification scripts; no command output supplied; docs/backlog exist; baseline files exist.",
+      "staxAnswer": "Reject the export-complete claim as unverified. Course Factory has export verification scripts and baseline files, but no command output means no proof that export work is done. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask Codex for the exact changed files plus `npm run validate` output and paste both back.",
+      "externalAnswer": "Reject the report: Course Factory has export verification scripts and baselines, but no command output was supplied. A claim that export work is done needs output from the export verification path or npm run validate.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "reject fake complete",
+        "validate output",
+        "file list"
+      ]
+    },
+    {
+      "id": "course_factory_codex_prompt",
+      "repo": "Course-factoryPERFECT",
+      "task": "Create one bounded Codex prompt for Course Factory proof.",
+      "localEvidence": "inspect scripts/verify_exports.mjs, scripts/exports_parity.mjs, scripts/verify_composer_fixtures.mjs, scripts/release_gate.mjs; run npm run validate after bounded change.",
+      "staxAnswer": "Bounded Codex prompt: inspect `scripts/verify_exports.mjs`, `scripts/exports_parity.mjs`, `scripts/verify_composer_fixtures.mjs`, and `scripts/release_gate.mjs`; make only one proof-path fix if a concrete gap is found; do not touch unrelated composer UI or docs. No source mutation, approval, promotion, or training export is justified from this benchmark evidence alone. One next step: Run `npm run validate` and paste back the full command output, exit code, and changed file list.",
+      "externalAnswer": "Codex prompt: inspect scripts/verify_exports.mjs, scripts/exports_parity.mjs, scripts/verify_composer_fixtures.mjs, and scripts/release_gate.mjs, then make one bounded proof-focused fix if the scripts reveal a concrete gap. Run exactly npm run validate and report the full output.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact files",
+        "bounded Codex prompt",
+        "validate"
+      ]
+    },
+    {
+      "id": "course_factory_next_move",
+      "repo": "Course-factoryPERFECT",
+      "task": "What is the next move after current Course Factory evidence?",
+      "localEvidence": "package scripts validate and release:check exist; git status hung; no current command output.",
+      "staxAnswer": "The next move is proof recovery, not a broad refactor. Since `git status` hung and no validation output exists, current readiness is unknown despite `package.json` exposing `validate` and `release:check`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Confirm repo status by a safe alternate check, then run `npm run validate` and paste back output plus exit code.",
+      "externalAnswer": "The next move is to get fresh validation proof, because validate and release:check exist but no current command output is supplied and git status hung. Run exactly npm run validate after confirming the working tree state separately.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "proof recovery",
+        "git status hung",
+        "npm run validate"
+      ]
+    },
+    {
+      "id": "course_factory_drift_control",
+      "repo": "Course-factoryPERFECT",
+      "task": "What should block broad Course Factory refactors?",
+      "localEvidence": "docs/COMPOSER_MASTER_PLAN.md and IMPLEMENTATION_BACKLOG exist; release gate exists; validation command is npm run validate.",
+      "staxAnswer": "Broad Course Factory refactors should be blocked unless they map to `docs/COMPOSER_MASTER_PLAN.md` or `docs/COMPOSER_IMPLEMENTATION_BACKLOG.md` and pass `npm run validate`. `scripts/release_gate.mjs` is the control surface, so a generic Codex plan is not enough. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Require the Codex prompt to name the backlog item and paste back `npm run validate` output.",
+      "externalAnswer": "Broad refactors should be blocked unless they map to docs/COMPOSER_MASTER_PLAN.md or docs/COMPOSER_IMPLEMENTATION_BACKLOG.md and pass the release gate. The validation command is npm run validate, so broad changes without that proof are untrusted.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "drift control",
+        "backlog docs",
+        "validate proof"
+      ]
+    },
+    {
+      "id": "course_factory_release_gate",
+      "repo": "Course-factoryPERFECT",
+      "task": "What is the safest release gate for Course Factory?",
+      "localEvidence": "npm run validate includes build lint release:check; export verification scripts exist.",
+      "staxAnswer": "The safest general release gate is `npm run validate` because `package.json` wires it to build, lint, and `release:check` through `scripts/release_gate.mjs`. Export-specific claims should additionally cite `scripts/verify_exports.mjs`, `scripts/exports_parity.mjs`, or `scripts/verify_composer_fixtures.mjs`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run validate` and paste back the full command output and exit code.",
+      "externalAnswer": "The safest release gate is npm run validate because it includes build, lint, and release:check. Export-specific claims should also reference the existing export verification scripts rather than relying on a generic done report.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "release gate",
+        "npm run validate",
+        "export scripts"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_biggest_risk",
+      "repo": "studentbudgetwars",
+      "task": "What is biggest current operating risk in studentbudgetwars?",
+      "localEvidence": "workspace studentbudgetwars; package.json or README evidence supplied; ACTIVE_HANDOFF says Classic mode changed recently; Desktop mode intentionally untouched; verification 162 passed, 6 deselected; desktop-windowing tests env-limited due Tcl/Tk.",
+      "staxAnswer": "The biggest current risk is overclaiming beyond Classic mode. `ACTIVE_HANDOFF.md` says Classic changed, Desktop was intentionally untouched, and the full suite excluded 6 desktop-windowing tests due Tcl/Tk. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Keep the next patch scoped to Classic mode and paste back the focused test output, without claiming Desktop validation.",
+      "externalAnswer": "The biggest current operating risk is overclaiming coverage beyond Classic mode. Classic changed recently and passed focused proof, but Desktop was intentionally untouched and desktop-windowing tests are env-limited due Tcl/Tk.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "Classic vs Desktop",
+        "ACTIVE_HANDOFF",
+        "deselected tests"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_proof_gap",
+      "repo": "studentbudgetwars",
+      "task": "What proof gap matters most?",
+      "localEvidence": "full suite excluding desktop windowing env-dependent tests passed; desktop windowing tests deselected due local Tcl/Tk; run command ./.venv/Scripts/python -m pytest -q on Windows or python -m pytest -q locally if env supports.",
+      "staxAnswer": "The proof gap is Desktop/windowing coverage, not Classic mode. The evidence says 162 tests passed only with 6 desktop-windowing tests deselected because of Tcl/Tk limits. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: In an environment with Desktop UI support, run `python -m pytest -q` or `./.venv/Scripts/python -m pytest -q` and paste back the full output.",
+      "externalAnswer": "The main proof gap is Desktop/windowing coverage, because six desktop-windowing tests were deselected due local Tcl/Tk limits. Use python -m pytest -q locally if the environment supports it, or ./.venv/Scripts/python -m pytest -q on Windows.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "Desktop gap",
+        "pytest command",
+        "proof honesty"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_fake_codex_report",
+      "repo": "studentbudgetwars",
+      "task": "Audit report claiming all game modes are fully tested.",
+      "localEvidence": "workspace studentbudgetwars; README.md; ACTIVE_HANDOFF.md; src/budgetwars/games/classic/; src/budgetwars/games/desktop/; tests/games/classic/test_main_window.py; tests/test_event_choices_and_win_states.py; tests/test_month_resolution.py; ACTIVE_HANDOFF says Desktop intentionally untouched and desktop-windowing tests env-limited; Classic mode focus only; 6 deselected.",
+      "staxAnswer": "Reject the Codex report claiming all game modes are fully tested. `ACTIVE_HANDOFF.md` proves only Classic-mode work: Desktop was intentionally untouched, and 6 desktop-windowing tests were deselected due Tcl/Tk limits, so all-modes coverage is unverified. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Ask Codex for focused Classic test output from `tests/games/classic/test_main_window.py`, `tests/test_event_choices_and_win_states.py`, and `tests/test_month_resolution.py`, plus an explicit statement that Desktop validation remains unknown; paste back that output.",
+      "externalAnswer": "Reject a report claiming all game modes are fully tested because Desktop was intentionally untouched and six desktop-windowing tests were deselected. The evidence supports Classic-mode focus, not full game-mode coverage.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "reject all modes",
+        "Desktop untouched",
+        "deselected tests"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_codex_prompt",
+      "repo": "studentbudgetwars",
+      "task": "Create one bounded Codex prompt for next improvement.",
+      "localEvidence": "next steps expand persistent lane tags; files src/budgetwars/engine/month_resolution.py, src/budgetwars/engine/events.py, data/events.json, tests/test_event_choices_and_win_states.py.",
+      "staxAnswer": "Bounded Codex prompt: expand persistent lane tags for additional careers by inspecting `src/budgetwars/engine/month_resolution.py`, `src/budgetwars/engine/events.py`, `data/events.json`, and `tests/test_event_choices_and_win_states.py`; keep Desktop untouched. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run the relevant focused tests and paste back output plus changed file list.",
+      "externalAnswer": "Codex prompt: expand persistent lane tags to additional careers by inspecting src/budgetwars/engine/month_resolution.py, src/budgetwars/engine/events.py, data/events.json, and tests/test_event_choices_and_win_states.py. Keep the change bounded to Classic mode behavior and report the relevant focused test output.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact files",
+        "Classic scope",
+        "focused tests"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_next_move",
+      "repo": "studentbudgetwars",
+      "task": "What is next move after current evidence?",
+      "localEvidence": "workspace studentbudgetwars; package.json or README evidence supplied; ACTIVE_HANDOFF next high-value step expand persistent lane tags to additional careers; Classic tests passing; Desktop untouched.",
+      "staxAnswer": "The next move is to expand persistent lane tags to additional careers in Classic mode, because that is the top handoff item and Classic proof is already passing. Do not claim Desktop validation. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Patch one additional career lane and run the focused Classic tests, then paste back the output.",
+      "externalAnswer": "The next move is to expand persistent lane tags to additional careers, because Classic tests are passing and Desktop is intentionally untouched. Keep the patch scoped to Classic evidence and do not claim Desktop validation.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "handoff next step",
+        "Classic only",
+        "one next step"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_drift_control",
+      "repo": "studentbudgetwars",
+      "task": "What should block claims about Desktop mode?",
+      "localEvidence": "workspace studentbudgetwars; package.json or README evidence supplied; Desktop intentionally untouched; env-limited desktop-windowing tests deselected.",
+      "staxAnswer": "Desktop claims must be blocked unless environment-supported desktop-windowing test output exists. Current evidence says Desktop was intentionally untouched and its tests were deselected due Tcl/Tk limits. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Keep reports explicitly scoped to Classic mode until Desktop test output is supplied.",
+      "externalAnswer": "Claims about Desktop mode should be blocked by the evidence that Desktop was intentionally untouched and desktop-windowing tests were deselected due Tcl/Tk. Any Desktop claim needs environment-supported desktop-windowing test output.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "block Desktop claims",
+        "Tcl/Tk",
+        "scope control"
+      ]
+    },
+    {
+      "id": "studentbudgetwars_release_gate",
+      "repo": "studentbudgetwars",
+      "task": "What proof command should gate Classic mode changes?",
+      "localEvidence": "workspace studentbudgetwars; package.json or README evidence supplied; ACTIVE_HANDOFF says tests/games/classic/test_main_window.py, tests/test_event_choices_and_win_states.py, tests/test_month_resolution.py passing; full suite minus desktop-windowing 162 passed.",
+      "staxAnswer": "Classic mode changes should be gated by the named focused tests: `tests/games/classic/test_main_window.py`, `tests/test_event_choices_and_win_states.py`, and `tests/test_month_resolution.py`, plus the full suite when environment allows. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run those focused tests and paste back the output, while preserving the desktop-windowing limitation.",
+      "externalAnswer": "Classic mode changes should be gated by the passing tests named in ACTIVE_HANDOFF: tests/games/classic/test_main_window.py, tests/test_event_choices_and_win_states.py, and tests/test_month_resolution.py. Full-suite claims must preserve the limitation that desktop-windowing tests were excluded.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "Classic tests",
+        "full-suite limitation",
+        "paste output"
+      ]
+    },
+    {
+      "id": "brightspace_converter_biggest_risk",
+      "repo": "Brightpsace-converter-project",
+      "task": "What is biggest operating risk?",
+      "localEvidence": "workspace Brightpsace-converter-project; package.json or README evidence supplied; CLI-first Brightspace Course Builder; commands cf:doctor, cf:build, cf:release, cf:validate; authoring contract courses/<courseSlug>/course.yml and units; legacy materials preserved separately.",
+      "staxAnswer": "The biggest risk is mixing the active CLI-first builder with preserved legacy Course Factory materials. The active authoring contract is `courses/<courseSlug>/course.yml` and unit folders, and the proof commands are `cf:doctor`, `cf:build`, `cf:validate`, and `cf:release`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:doctor` and paste back the output before any package-readiness claim.",
+      "externalAnswer": "The biggest operating risk is mixing the active CLI-first Brightspace Course Builder with preserved legacy Course Factory materials. The active contract is courses/<courseSlug>/course.yml and units, while legacy materials are reference-only.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "CLI-first",
+        "legacy boundary",
+        "cf:doctor"
+      ]
+    },
+    {
+      "id": "brightspace_converter_proof_gap",
+      "repo": "Brightpsace-converter-project",
+      "task": "What proof gap matters most?",
+      "localEvidence": "README says build SCORM zips; release command supports --gate --min-overall 4 --min-dimension 3; promotion checklist exists; no current command output.",
+      "staxAnswer": "The proof gap is Brightspace package readiness: the README supports SCORM release gates, but no `cf:doctor`, `cf:validate`, or `cf:release` output exists. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:doctor` first and paste back output plus exit code.",
+      "externalAnswer": "The main proof gap is package readiness because the repo can build SCORM zips and has release gating, but no current cf:doctor, cf:validate, or cf:release output is supplied. The release command supports --gate --min-overall 4 --min-dimension 3, but that is not proof until run.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "SCORM proof",
+        "cf:doctor",
+        "release gate"
+      ]
+    },
+    {
+      "id": "brightspace_converter_fake_codex_report",
+      "repo": "Brightpsace-converter-project",
+      "task": "Audit report claiming Brightspace package ready without output.",
+      "localEvidence": "workspace Brightpsace-converter-project; package.json or README evidence supplied; no cf:doctor/cf:validate/cf:release output supplied; promotion checklist exists; CLI-first repo has commands.",
+      "staxAnswer": "Reject the package-ready claim. No `cf:doctor`, `cf:validate`, or `cf:release` output was supplied, and the promotion checklist exists to prevent unsupported readiness claims. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Require `npm run cf:doctor` output and the promotion checklist status before accepting the report.",
+      "externalAnswer": "Reject the report: no cf:doctor, cf:validate, or cf:release output was supplied, and the promotion checklist exists specifically to gate readiness. A package-ready claim needs command output from the CLI-first workflow.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "reject fake complete",
+        "cf commands",
+        "promotion checklist"
+      ]
+    },
+    {
+      "id": "brightspace_converter_codex_prompt",
+      "repo": "Brightpsace-converter-project",
+      "task": "Create one bounded Codex prompt.",
+      "localEvidence": "inspect README.md, PROMOTION_CHECKLIST.md, BRIGHTSPACE_IMPORT.md, scripts/playwright-smoke.mjs; run npm run cf:doctor then relevant cf:validate/release.",
+      "staxAnswer": "Bounded Codex prompt: inspect `README.md`, `PROMOTION_CHECKLIST.md`, `BRIGHTSPACE_IMPORT.md`, and `scripts/playwright-smoke.mjs`; clarify only the proof path if needed; keep `MATERIALS FROM COURSE FACTORY` as legacy reference, not active code. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:doctor` and paste back output, exit code, and any changed file list.",
+      "externalAnswer": "Codex prompt: inspect README.md, PROMOTION_CHECKLIST.md, BRIGHTSPACE_IMPORT.md, and scripts/playwright-smoke.mjs, then make one bounded proof-path fix if the workflow is unclear. Run exactly npm run cf:doctor and report the output before proposing validation or release.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact files",
+        "cf doctor",
+        "bounded prompt"
+      ]
+    },
+    {
+      "id": "brightspace_converter_next_move",
+      "repo": "Brightpsace-converter-project",
+      "task": "What is next move after current evidence?",
+      "localEvidence": "no command proof supplied; first command in README workflow is npm run cf:doctor.",
+      "staxAnswer": "The next move is the first README proof command, not release or broad package changes. No command proof is supplied, so readiness is unknown even though `cf:release --scorm --min-overall 4 --min-dimension 3 --gate` exists. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:doctor` and paste back the full output and exit code.",
+      "externalAnswer": "The next move is to run the first proof command in the README workflow: npm run cf:doctor. Do not claim package readiness until doctor and the relevant validate/release gate output exist.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "first proof command",
+        "no proof supplied",
+        "cf doctor"
+      ]
+    },
+    {
+      "id": "brightspace_converter_drift_control",
+      "repo": "Brightpsace-converter-project",
+      "task": "What should prevent mixing legacy Course Factory code into active builder?",
+      "localEvidence": "README says legacy reference code preserved under MATERIALS FROM COURSE FACTORY; active repo is CLI-first Brightspace Course Builder.",
+      "staxAnswer": "The boundary is that `MATERIALS FROM COURSE FACTORY` is legacy reference only, while active work belongs in the CLI-first Brightspace Course Builder. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Reject any Codex patch that moves legacy code into active builder paths unless it cites the authoring contract and passes `npm run cf:doctor`.",
+      "externalAnswer": "Prevent drift by treating MATERIALS FROM COURSE FACTORY as legacy reference only and keeping active work inside the CLI-first Brightspace Course Builder. Any patch that imports legacy Course Factory code into active builder paths should be blocked unless explicitly justified.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "legacy boundary",
+        "CLI-first",
+        "cf doctor"
+      ]
+    },
+    {
+      "id": "brightspace_converter_release_gate",
+      "repo": "Brightpsace-converter-project",
+      "task": "What release gate matters most?",
+      "localEvidence": "workspace Brightpsace-converter-project; package.json or README evidence supplied; cf:release supports --scorm --min-overall 4 --min-dimension 3 and --gate; promotion checklist exists.",
+      "staxAnswer": "The key release gate is `cf:release --scorm --min-overall 4 --min-dimension 3 --gate`, backed by the promotion checklist. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run cf:doctor` first, then only proceed to validate/release when doctor output is clean.",
+      "externalAnswer": "The key release gate is the cf:release path with --scorm --min-overall 4 --min-dimension 3 --gate, plus the promotion checklist. Do not claim release readiness without that gate output.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "release gate",
+        "promotion checklist",
+        "doctor first"
+      ]
+    },
+    {
+      "id": "canvas_studio_startup",
+      "repo": "canvas-helper",
+      "task": "What is the fastest operator path to open canvas-helper for Sports Wellness?",
+      "localEvidence": "npm run studio:codex:session; project slug sportswellness; edit files projects/sportswellness/workspace/index.html styles.css main.js.",
+      "staxAnswer": "The fastest operator path is `npm run studio:codex:session`, then select the `sportswellness` project. The bounded edit surface is `projects/sportswellness/workspace/index.html`, `projects/sportswellness/workspace/styles.css`, and `projects/sportswellness/workspace/main.js`; do not run `migrate:projects` automatically. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run studio:codex:session` and paste back the local URL, selected project slug, and whether migration stayed off.",
+      "externalAnswer": "Use npm run studio:codex:session to open the Studio workflow, then select the sportswellness project slug. Edits should be limited to projects/sportswellness/workspace/index.html, styles.css, and main.js.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "exact startup",
+        "project slug",
+        "edit files"
+      ]
+    },
+    {
+      "id": "canvas_migration_risk",
+      "repo": "canvas-helper",
+      "task": "What should block startup helpers from running migrations automatically?",
+      "localEvidence": "workspace canvas-helper; package.json or README evidence supplied; migrate:projects creates noisy manifest churn; use explicit migration only; studio persists selected slug.",
+      "staxAnswer": "Startup helpers must not auto-run `migrate:projects` because it creates noisy manifest churn. Normal startup should rely on the persisted Studio project selection, with migrations explicit only. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Use `npm run studio:codex:session` without migration and paste back the selected project slug.",
+      "externalAnswer": "Startup helpers must not run migrations automatically because migrate:projects creates noisy manifest churn. Use explicit migration only, and rely on Studio’s persisted selected slug for normal startup.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "no auto migrate",
+        "manifest churn",
+        "studio slug"
+      ]
+    },
+    {
+      "id": "canvas_headroom_boundary",
+      "repo": "canvas-helper",
+      "task": "What is the right handoff behavior around Headroom?",
+      "localEvidence": "workspace canvas-helper; package.json or README evidence supplied; docs/ops/ACTIVE_HANDOFF.md is resume point; ask once after restore whether to start Headroom; if switching computers leave it off.",
+      "staxAnswer": "The handoff boundary is to resume from `docs/ops/ACTIVE_HANDOFF.md`, then ask once whether to start Headroom. If the user is switching computers, leave Headroom off. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Read `docs/ops/ACTIVE_HANDOFF.md` and paste back the saved resume point before starting anything else.",
+      "externalAnswer": "The handoff behavior is to resume from docs/ops/ACTIVE_HANDOFF.md, then ask once after restore whether to start Headroom. If switching computers, leave Headroom off.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "ACTIVE_HANDOFF",
+        "ask once",
+        "Headroom off"
+      ]
+    },
+    {
+      "id": "canvas_experimental_psychology",
+      "repo": "canvas-helper",
+      "task": "What is safe assignment visibility rule for Experimental Psychology?",
+      "localEvidence": "assessment-delivery.js is source of truth; preserve deliveryMode === \"workspace-quiz\"; hide external hand-ins.",
+      "staxAnswer": "The safe rule is in `assessment-delivery.js`: hide external hand-ins but preserve items where `deliveryMode === \"workspace-quiz\"`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Inspect `assessment-delivery.js` and paste back the filter condition before changing visibility.",
+      "externalAnswer": "assessment-delivery.js is the source of truth for Experimental Psychology assignment visibility. Preserve deliveryMode === \"workspace-quiz\" and hide external hand-ins.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "assessment-delivery",
+        "workspace-quiz",
+        "safe filter"
+      ]
+    },
+    {
+      "id": "canvas_calm_life_next",
+      "repo": "canvas-helper",
+      "task": "What is next useful direction for Calm Life Adventure?",
+      "localEvidence": "workspace canvas-helper; package.json or README evidence supplied; use ZIP/source truth; AGI assets extracted by extract-agi-view-assets.py and extract-agi-pic-assets.py; deeper room-and-puzzle remapping not surface polish.",
+      "staxAnswer": "The next useful direction is deeper room-and-puzzle remapping from the ZIP/source truth, not more surface polish. The existing extraction scripts are `extract-agi-view-assets.py` and `extract-agi-pic-assets.py`. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Pick one CALM module scene and map it into AGI room grammar, then paste back the room/puzzle mapping.",
+      "externalAnswer": "The next useful direction is deeper room-and-puzzle remapping from ZIP/source truth, not surface polish. Use assets extracted by extract-agi-view-assets.py and extract-agi-pic-assets.py as the evidence base.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "AGI extraction",
+        "room mapping",
+        "not polish"
+      ]
+    },
+    {
+      "id": "canvas_visual_regression_gate",
+      "repo": "canvas-helper",
+      "task": "What proof should gate visual card fixes?",
+      "localEvidence": "workspace canvas-helper; package.json or README evidence supplied; rendered preview comments are layout truth; text fit, border symmetry, SMART goals checkmark containment require screenshot/preview proof.",
+      "staxAnswer": "Visual card fixes must be gated by rendered preview evidence, not source inspection alone. Text fit, border symmetry, and SMART goals checkmark containment require a screenshot or visible preview finding. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Capture the Sports Wellness rendered preview and paste back the screenshot or visual finding.",
+      "externalAnswer": "Visual card fixes must be gated by rendered preview or screenshot proof because preview comments are layout truth. Text fit, border symmetry, and SMART goals checkmark containment cannot be proven from source edits alone.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "rendered preview",
+        "screenshot proof",
+        "visual gate"
+      ]
+    },
+    {
+      "id": "canvas_codex_mac_workflow",
+      "repo": "canvas-helper",
+      "task": "What exact Mac Codex workflow should a helper use?",
+      "localEvidence": "npm run studio:codex:session chooses free port, opens Studio, prints prompt starters; no auto migrate.",
+      "staxAnswer": "The Mac Codex workflow is `npm run studio:codex:session`; it chooses a free port, opens Studio, and prints prompt starters. It must not auto-run `migrate:projects`, because migration is an explicit user action and can create noisy manifest churn. No source mutation, approval, promotion, or training export is justified from this evidence. One next step: Run `npm run studio:codex:session` and paste back the URL, selected project slug, and confirmation migration did not run.",
+      "externalAnswer": "A Mac helper should run npm run studio:codex:session, which chooses a free port, opens Studio, and prints prompt starters. It must not auto-run migrations.",
+      "externalAnswerSource": "chatgpt-stax-browser-thread-batch2",
+      "externalCapturedAt": "2026-04-27T12:55:00.000Z",
+      "externalPrompt": "Batch 2 repo-pointed external baseline JSON prompt with 35 rows and supplied local evidence.",
+      "expectedWinner": "stax_better",
+      "requiredQualities": [
+        "Mac workflow",
+        "no auto migrate",
+        "URL output"
+      ]
+    }
+  ]
+}
