@@ -51,8 +51,8 @@ describe("workspace runtime metadata", () => {
     const session = new ChatSession(await createDefaultRuntime({ rootDir }), new MemoryStore(rootDir), rootDir);
 
     const state = await session.handleLine("/state");
-    expect(state.output).toContain("## Repo Summary");
-    expect(state.output).toContain("Workspace repo summary context was supplied");
+    expect(state.output).toContain("## Repo Evidence Pack");
+    expect(state.output).toContain("Workspace repo evidence context was supplied");
 
     const noWorkspaceRoot = await tempRoot();
     const noWorkspace = new ChatSession(await createDefaultRuntime({ rootDir: noWorkspaceRoot }), new MemoryStore(noWorkspaceRoot), noWorkspaceRoot);

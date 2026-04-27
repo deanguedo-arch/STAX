@@ -24,8 +24,8 @@ import { OperationExecutor } from "../operator/OperationExecutor.js";
 import { OperationFormatter } from "../operator/OperationFormatter.js";
 import type { OperationExecutionResult, OperationPlan } from "../operator/OperationSchemas.js";
 import type { RaxMode } from "../schemas/Config.js";
+import { RepoEvidencePackBuilder } from "../workspace/RepoEvidencePack.js";
 import { RepoSearch } from "../workspace/RepoSearch.js";
-import { RepoSummary } from "../workspace/RepoSummary.js";
 import { WorkspaceContext, type ResolvedWorkspaceContext } from "../workspace/WorkspaceContext.js";
 import { WorkspaceStore } from "../workspace/WorkspaceStore.js";
 import { ThreadStore, type ChatThread } from "./ThreadStore.js";
@@ -489,6 +489,7 @@ export class ChatSession {
 
     const result = await new OperationExecutor().execute(plan, {
       auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      workspaceRepoAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       judgmentDigest: (operationPlan) => this.executeJudgmentDigestOperation(operationPlan),
       auditLastProof: (operationPlan) => this.executeAuditLastProofOperation(operationPlan)
     });
@@ -519,8 +520,12 @@ export class ChatSession {
       const workspaceDocs = workspaceContext.workspace && (plan.workspace || useActiveWorkspace)
         ? await new WorkspaceStore(this.rootDir).readWorkspaceDocs(workspaceContext.workspace)
         : [];
-      const repoSummary = targetRepoPath
-        ? await new RepoSummary(targetRepoPath).summarize()
+      const repoEvidencePack = targetRepoPath
+        ? await new RepoEvidencePackBuilder().build({
+            repoPath: targetRepoPath,
+            workspace: workspaceLabel === "current_repo" ? undefined : workspaceLabel,
+            workspaceResolution
+          })
         : undefined;
       const localEvidence = await collectLocalEvidence(this.rootDir, {
         includeProjectDocs: true,
@@ -528,7 +533,7 @@ export class ChatSession {
       });
 
       actionsRun.push(plan.workspace ? "WorkspaceContext.resolve named" : useActiveWorkspace ? "WorkspaceContext.resolve active" : "current repo root");
-      actionsRun.push("collectLocalEvidence", ...(repoSummary ? ["RepoSummary.summarize"] : []), "RaxRuntime.run codex_audit");
+      actionsRun.push("collectLocalEvidence", ...(repoEvidencePack ? ["RepoEvidencePack.build"] : []), "RaxRuntime.run codex_audit");
       evidenceChecked.push(
         `Workspace: ${workspaceLabel}`,
         `WorkspaceResolution: ${workspaceResolution}`,
@@ -536,20 +541,25 @@ export class ChatSession {
         ...(targetRepoPath ? [`RepoPath: ${targetRepoPath}`] : ["RepoPath: none"]),
         "LocalEvidenceCollector",
         ...workspaceDocs.filter((doc) => doc.exists).map((doc) => doc.path),
-        ...(repoSummary?.safeFilesRead.map((file) => `repo:${file}`) ?? [])
+        ...(repoEvidencePack?.inspectedFiles.map((file) => `repo:${file}`) ?? []),
+        ...(repoEvidencePack?.testFiles.map((file) => `repo-test:${file}`) ?? []),
+        ...(repoEvidencePack?.scripts.map((script) => `repo-script:${script.name}`) ?? [])
       );
 
       const auditInput = [
-        "Audit this STAX workspace or repo using only the local proof below.",
+        plan.intent === "workspace_repo_audit"
+          ? "Audit this linked workspace repo using only the read-only repo evidence below."
+          : "Audit this STAX workspace or repo using only the local proof below.",
         "",
         "## Operator Plan",
         `- Operation: ${plan.intent}`,
         `- Original Input: ${plan.originalInput}`,
+        `- Objective: ${plan.objective}`,
         `- Workspace: ${workspaceLabel}`,
         `- WorkspaceResolution: ${workspaceResolution}`,
         `- RepoPath: ${targetRepoPath ?? "none"}`,
         "",
-        repoSummary?.markdown ?? "## Repo Summary\n- No linked repo path configured for this workspace.",
+        repoEvidencePack?.markdown ?? "## Repo Evidence Pack\n- No linked repo path configured for this workspace.",
         "",
         workspaceDocs.length
           ? [
@@ -569,6 +579,12 @@ export class ChatSession {
       const auditOutput = await this.run(auditInput, "codex_audit");
       const runId = auditOutput.match(/\bRun: (run-[^\s]+)/)?.[1];
       if (runId) artifactsCreated.push(`runs/${runId}`);
+      const resultOutput = [
+        repoEvidencePack?.markdown,
+        "",
+        "## Governed Audit",
+        auditOutput
+      ].filter(Boolean).join("\n");
       return {
         executed: true,
         blocked: false,
@@ -576,7 +592,7 @@ export class ChatSession {
         actionsRun,
         artifactsCreated,
         evidenceChecked,
-        result: auditOutput,
+        result: resultOutput,
         risks: [
           ...(workspaceResolution === "current_repo" && workspaceContext.workspace && !workspaceContext.linkedRepoPath
             ? [`Active workspace ${workspaceContext.workspace} has no linked repo path; audited the current STAX repo root.`]
@@ -584,7 +600,7 @@ export class ChatSession {
           ...(workspaceResolution === "current_repo" && !workspaceContext.workspace
             ? ["No active linked workspace was selected; audited the current STAX repo root."]
             : []),
-          ...(targetRepoPath ? [] : ["Workspace has no linked repo path, so repo summary evidence is missing."])
+          ...(targetRepoPath ? [] : ["Workspace has no linked repo path, so repo evidence is missing."])
         ],
         nextAllowedActions: ["Use the Codex Prompt or Required Next Proof from the audit. Promotions still require explicit CLI approval commands."]
       };
@@ -890,7 +906,11 @@ export class ChatSession {
     if (action === "repo-summary") {
       const context = await this.resolveWorkspace(true);
       if (!context.linkedRepoPath) return `Workspace has no linked repo path: ${context.workspace ?? "none"}`;
-      return (await new RepoSummary(context.linkedRepoPath).summarize()).markdown;
+      return (await new RepoEvidencePackBuilder().build({
+        repoPath: context.linkedRepoPath,
+        workspace: context.workspace,
+        workspaceResolution: "active_workspace"
+      })).markdown;
     }
     if (action === "search") {
       const query = rest.join(" ");
@@ -1196,8 +1216,12 @@ export class ChatSession {
     }
     const docs = await new WorkspaceStore(this.rootDir).readWorkspaceDocs(context.workspace);
     const repoSummary = context.linkedRepoPath
-      ? (await new RepoSummary(context.linkedRepoPath).summarize()).markdown
-      : "## Repo Summary\n- No linked repo path configured.";
+      ? (await new RepoEvidencePackBuilder().build({
+          repoPath: context.linkedRepoPath,
+          workspace: context.workspace,
+          workspaceResolution: "active_workspace"
+        })).markdown
+      : "## Repo Evidence Pack\n- No linked repo path configured.";
     return [
       "## Workspace Context",
       `- Workspace: ${context.workspace}`,

@@ -15,6 +15,11 @@ export class OperationRegistry {
         autoExecutable: true
       },
       {
+        intent: "workspace_repo_audit",
+        description: "Build a read-only evidence pack for a workspace repo and audit it.",
+        autoExecutable: true
+      },
+      {
         intent: "judgment_digest",
         description: "Read current review items that need human judgment.",
         autoExecutable: true

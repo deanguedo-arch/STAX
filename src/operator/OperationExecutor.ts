@@ -3,6 +3,7 @@ import type { OperationExecutionResult, OperationPlan } from "./OperationSchemas
 
 export type OperationExecutorHandlers = {
   auditWorkspace: (plan: OperationPlan) => Promise<OperationExecutionResult>;
+  workspaceRepoAudit: (plan: OperationPlan) => Promise<OperationExecutionResult>;
   judgmentDigest: (plan: OperationPlan) => Promise<OperationExecutionResult>;
   auditLastProof: (plan: OperationPlan) => Promise<OperationExecutionResult>;
 };
@@ -27,6 +28,7 @@ export class OperationExecutor {
     }
 
     if (plan.intent === "audit_workspace") return handlers.auditWorkspace(plan);
+    if (plan.intent === "workspace_repo_audit") return handlers.workspaceRepoAudit(plan);
     if (plan.intent === "judgment_digest") return handlers.judgmentDigest(plan);
     if (plan.intent === "audit_last_proof") return handlers.auditLastProof(plan);
 

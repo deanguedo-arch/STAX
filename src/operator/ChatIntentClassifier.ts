@@ -102,10 +102,27 @@ export class ChatIntentClassifier {
         objective: "Audit the active/current repository with local proof.",
         riskLevel: "low",
         executionClass: "low_risk_artifact_creating",
-        operationsToRun: ["WorkspaceContext.resolve", "collectLocalEvidence", "RepoSummary.summarize", "RaxRuntime.run codex_audit"],
-        evidenceRequired: ["workspace registry or current repo", "repo summary", "local evidence", "codex_audit run"],
+        operationsToRun: ["WorkspaceContext.resolve", "collectLocalEvidence", "RepoEvidencePack.build", "RaxRuntime.run codex_audit"],
+        evidenceRequired: ["workspace registry or current repo", "repo evidence pack", "local evidence", "codex_audit run"],
         outputContract: ["operation plan", "evidence checked", "claims verified", "claims not verified", "risks", "next allowed action"],
         reasonCodes: ["audit_workspace_intent"],
+        confidence: "high"
+      });
+    }
+
+    const repoQuestion = this.extractRepoQuestion(normalized, context);
+    if (repoQuestion) {
+      return this.plan({
+        intent: "workspace_repo_audit",
+        originalInput,
+        workspace: repoQuestion.workspace,
+        objective: repoQuestion.objective,
+        riskLevel: "low",
+        executionClass: "low_risk_artifact_creating",
+        operationsToRun: ["WorkspaceContext.resolve", "RepoEvidencePack.build", "RaxRuntime.run codex_audit"],
+        evidenceRequired: ["workspace registry or current repo", "repo evidence pack", "codex_audit run"],
+        outputContract: ["workspace/repo", "evidence checked", "files inspected", "scripts found", "risks", "next allowed action"],
+        reasonCodes: [repoQuestion.reasonCode],
         confidence: "high"
       });
     }
@@ -119,8 +136,8 @@ export class ChatIntentClassifier {
         objective: `Audit workspace ${workspace} with local proof.`,
         riskLevel: "low",
         executionClass: "low_risk_artifact_creating",
-        operationsToRun: ["WorkspaceContext.resolve", "collectLocalEvidence", "RepoSummary.summarize", "RaxRuntime.run codex_audit"],
-        evidenceRequired: ["workspace registry or current repo", "repo summary", "local evidence", "codex_audit run"],
+        operationsToRun: ["WorkspaceContext.resolve", "collectLocalEvidence", "RepoEvidencePack.build", "RaxRuntime.run codex_audit"],
+        evidenceRequired: ["workspace registry or current repo", "repo evidence pack", "local evidence", "codex_audit run"],
         outputContract: ["operation plan", "evidence checked", "claims verified", "claims not verified", "risks", "next allowed action"],
         reasonCodes: ["audit_workspace_intent"],
         confidence: "high"
@@ -198,15 +215,75 @@ export class ChatIntentClassifier {
     return /\baudit (this|current) (repo|repository|project|workspace)\b/.test(input);
   }
 
+  private extractRepoQuestion(input: string, context: ChatIntentContext): { workspace?: string; objective: string; reasonCode: string } | undefined {
+    const currentRepo = /\b(this|current) (repo|repository|project|workspace)\b/.test(input);
+    const mentionedWorkspace = this.findMentionedWorkspace(input, context);
+    if (
+      /\bwhat tests? (exist|are there|are in|does).*\b(repo|repository|project|workspace)\b/.test(input) ||
+      /\bwhat tests exist in this repo\b/.test(input) ||
+      (/\bwhat tests?\b/.test(input) && mentionedWorkspace)
+    ) {
+      return {
+        workspace: mentionedWorkspace,
+        objective: "Inspect the target repo for test scripts and test files without running tests.",
+        reasonCode: mentionedWorkspace ? "workspace_tests_question" : "repo_tests_question"
+      };
+    }
+    if (/\bwhat (is|looks) risky\b/.test(input) && (/\b(repo|repository|project|workspace)\b/.test(input) || mentionedWorkspace)) {
+      return {
+        workspace: mentionedWorkspace,
+        objective: "Inspect the target repo for read-only risk signals and missing evidence.",
+        reasonCode: mentionedWorkspace ? "workspace_risk_question" : "repo_risk_question"
+      };
+    }
+    if (/\bfix (this|current) (repo|repository|project|workspace)\b/.test(input) || /\bfix it\b/.test(input) && currentRepo) {
+      return {
+        objective: "Audit and plan next allowed actions for the target repo without mutating it.",
+        reasonCode: "repo_fix_request_no_mutation"
+      };
+    }
+    const fixWorkspace = input.match(/\bfix\s+([a-z0-9_-]+)\b/);
+    if (fixWorkspace?.[1]) {
+      const workspace = this.matchKnownWorkspace(fixWorkspace[1], context);
+      if (workspace) {
+        return {
+          workspace,
+          objective: `Audit and plan next allowed actions for workspace ${workspace} without mutating it.`,
+          reasonCode: "workspace_fix_request_no_mutation"
+        };
+      }
+    }
+    const testsWorkspace = input.match(/\bwhat tests (?:exist|are there|are in).*\b([a-z0-9_-]+)\b/);
+    if (testsWorkspace?.[1]) {
+      const workspace = this.matchKnownWorkspace(testsWorkspace[1], context);
+      if (workspace) {
+        return {
+          workspace,
+          objective: `Inspect workspace ${workspace} for test scripts and test files without running tests.`,
+          reasonCode: "workspace_tests_question"
+        };
+      }
+    }
+    return undefined;
+  }
+
   private extractAuditWorkspace(input: string, context: ChatIntentContext): string | undefined {
     const match = input.match(/\baudit\s+(?:workspace\s+|project\s+|repo\s+|repository\s+)?([a-z0-9_-]+(?:\s+[a-z0-9_-]+){0,2})\b/);
     const raw = match?.[1]?.trim();
     if (!raw || /^(this|current|the|my|last|it|that)$/.test(raw)) return undefined;
     const candidate = raw.replace(/\s+/g, "-");
-    const known = context.knownWorkspaces ?? [];
-    const exact = known.find((workspace) => workspace.toLowerCase() === candidate);
+    const exact = this.matchKnownWorkspace(candidate, context);
     if (exact) return exact;
     return candidate;
+  }
+
+  private matchKnownWorkspace(candidate: string, context: ChatIntentContext): string | undefined {
+    const known = context.knownWorkspaces ?? [];
+    return known.find((workspace) => workspace.toLowerCase() === candidate.toLowerCase());
+  }
+
+  private findMentionedWorkspace(input: string, context: ChatIntentContext): string | undefined {
+    return (context.knownWorkspaces ?? []).find((workspace) => input.includes(workspace.toLowerCase()));
   }
 
   private plan(input: PlanInput): OperationPlan {

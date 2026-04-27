@@ -15,6 +15,7 @@ normal language
 ## Supported Intents
 
 - `audit_workspace`
+- `workspace_repo_audit`
 - `judgment_digest`
 - `audit_last_proof`
 - `unknown_fallback`
@@ -24,6 +25,9 @@ normal language
 ```txt
 audit canvas-helper
 audit this repo
+what tests exist in this repo?
+what is risky in canvas-helper?
+fix this repo
 what needs my judgment?
 what did the last run prove?
 ```
@@ -42,6 +46,47 @@ The operator does not:
 - perform model comparison in v1A
 
 High-risk requests become a hard-block response. Broad artifact-heavy requests are deferred to explicit slash or CLI commands.
+
+## Workspace Repo Operator
+
+`workspace_repo_audit` is the first plain-English repo operator surface.
+
+It builds a read-only evidence pack for the active workspace repo, a named workspace repo, or the current STAX repo root if no active linked workspace exists.
+
+Supported plain-language requests include:
+
+```txt
+what tests exist in this repo?
+what is risky in this repo?
+what tests exist in canvas-helper?
+fix this repo
+```
+
+The operator reports:
+
+- workspace / repo resolved
+- evidence checked
+- files inspected
+- scripts and test commands found
+- claims verified
+- claims not verified
+- risks
+- missing evidence
+- next allowed action
+
+It deliberately does not run linked repo tests, patch linked repo files, read secret-like files, or treat “fix this repo” as permission to mutate source.
+
+Ignored or blocked repo paths include:
+
+- `node_modules`
+- `.git`
+- `dist`
+- `build`
+- `coverage`
+- `.env` and `.env.*`
+- `*.pem`, `*.key`, and other secret-like paths
+- symlinks
+- large files and obvious binary files
 
 ## Workspace Safety
 

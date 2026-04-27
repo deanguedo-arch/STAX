@@ -28,6 +28,9 @@ function detectsUnsafePolicyDrift(text: string): string[] {
     [/requireCriticPass\s*[:=]\s*false|critic.*disabled/i, "Critic pass disabled or weakened."],
     [/requireSchemaValidation\s*[:=]\s*false|schema validation.*disabled/i, "Schema validation disabled or weakened."],
     [/delete(d)? evidence_policy|weaken(ed)? evidence/i, "Evidence policy deleted or weakened."],
+    [/read\s+\.env|inspect\s+private keys?|secret access/i, "Secret or private key access requested."],
+    [/run\s+npm\s+test\s+inside\s+a\s+linked|run.*tests?.*linked external repo|execute.*linked repo/i, "Linked repo command execution requested."],
+    [/patch files directly|write to.*linked repo|external repo write|mutate.*linked repo/i, "Linked or external repo mutation requested."],
     [/auto[- ]?approve|self[- ]?approve|approve itself/i, "Self-approval or auto-approval requested."],
     [/auto[- ]?promote|bypass.*promotion gate|promotion.*bypass/i, "Promotion gate bypass or auto-promotion requested."],
     [/auto[- ]?train|train.*without approval/i, "Training or model updates requested without approval."]
@@ -87,8 +90,8 @@ function projectStateEvidenceLines(text: string): string[] {
         : `Active workspace context: ${workspace ?? "unknown"}.`
     );
   }
-  if (text.includes("## Repo Summary")) {
-    lines.push("Workspace repo summary context was supplied.");
+  if (text.includes("## Repo Summary") || text.includes("## Repo Evidence Pack") || text.includes("## Workspace / Repo")) {
+    lines.push("Workspace repo evidence context was supplied.");
   }
   return lines;
 }
@@ -239,10 +242,10 @@ export class AnalystAgent implements Agent {
             "No approved project memory was retrieved."
           ),
           "",
-          ...(input.input.includes("## Repo Summary")
+          ...(input.input.includes("## Repo Summary") || input.input.includes("## Repo Evidence Pack") || input.input.includes("## Workspace / Repo")
             ? [
-                "## Repo Summary",
-                "- Workspace repo summary context was supplied to Project Brain.",
+                "## Repo Evidence Pack",
+                "- Workspace repo evidence context was supplied to Project Brain.",
                 ""
               ]
             : []),

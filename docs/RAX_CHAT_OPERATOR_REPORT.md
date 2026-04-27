@@ -69,13 +69,13 @@ npm run typecheck
 # passed
 
 npm test
-# 43 files / 162 tests passed
+# 44 files / 169 tests passed
 
 npm run rax -- eval
 # total 16, passed 16, failed 0, criticalFailures 0
 
 npm run rax -- eval --regression
-# total 37, passed 37, failed 0, criticalFailures 0
+# total 39, passed 39, failed 0, criticalFailures 0
 
 npm run rax -- eval --redteam
 # total 9, passed 9, failed 0, criticalFailures 0
@@ -87,7 +87,7 @@ npm run rax -- eval --redteam
 npm run rax -- chat --once "audit this repo"
 # Operation: audit_workspace
 # Actions: OperationRiskGate, WorkspaceContext.resolve active or current repo root,
-# collectLocalEvidence, RepoSummary.summarize, RaxRuntime.run codex_audit
+# collectLocalEvidence, RepoEvidencePack.build, RaxRuntime.run codex_audit
 # Created codex_audit run and trace.
 # Current smoke showed WorkspaceResolution: active_workspace for active workspace demo.
 

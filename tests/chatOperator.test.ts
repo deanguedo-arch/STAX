@@ -57,7 +57,8 @@ describe("Chat Operator v1A", () => {
 
     expect(result.output).toContain("Operation: audit_workspace");
     expect(result.output).toContain("Workspace: canvas-helper");
-    expect(result.output).toContain("RepoSummary.summarize");
+    expect(result.output).toContain("RepoEvidencePack.build");
+    expect(result.output).toContain("## Scripts / Test Commands Found");
     expect(result.output).toContain("## Audit Type");
     expect(result.output).toContain("Mode: codex_audit");
     expect(result.output).toContain("Promotions still require explicit CLI approval commands.");
@@ -80,7 +81,7 @@ describe("Chat Operator v1A", () => {
     expect(result.output).toContain("Workspace: canvas-helper");
     expect(result.output).toContain("WorkspaceResolution: active_workspace");
     expect(result.output).toContain(`RepoPath: ${linkedRepo}`);
-    expect(result.output).toContain("RepoSummary.summarize");
+    expect(result.output).toContain("RepoEvidencePack.build");
     expect(result.output).not.toContain("audited the current STAX repo root");
   });
 
@@ -96,6 +97,50 @@ describe("Chat Operator v1A", () => {
     expect(result.output).toContain("WorkspaceResolution: current_repo");
     expect(result.output).toContain(`RepoPath: ${rootDir}`);
     expect(result.output).toContain("audited the current STAX repo root");
+  });
+
+  it("answers repo test questions from read-only evidence instead of running linked repo commands", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.mkdir(path.join(linkedRepo, "tests"), { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { test: "vitest run" } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n\nActive workspace proof.", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "tests", "canvas.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("what tests exist in this repo?");
+
+    expect(result.output).toContain("Operation: workspace_repo_audit");
+    expect(result.output).toContain("RepoEvidencePack.build");
+    expect(result.output).toContain("## Scripts / Test Commands Found");
+    expect(result.output).toContain("test: vitest run");
+    expect(result.output).toContain("tests/canvas.test.ts");
+    expect(result.output).toContain("Tests were not run in the linked repo.");
+  });
+
+  it("turns fix-this-repo language into an audit plan without mutating the linked repo", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { test: "vitest run" } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n\nDo not edit me.", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "src", "index.ts"), "export const value = 1;\n", "utf8");
+    const before = await fs.readdir(linkedRepo, { recursive: true });
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("fix this repo");
+    const after = await fs.readdir(linkedRepo, { recursive: true });
+
+    expect(result.output).toContain("Operation: workspace_repo_audit");
+    expect(result.output).toContain("Audit and plan next allowed actions");
+    expect(result.output).toContain("No source files were modified.");
+    expect(result.output).toContain("Do not mutate the linked repo");
+    expect(after.sort()).toEqual(before.sort());
   });
 
   it("does not audit the wrong repo when a named workspace is missing", async () => {
