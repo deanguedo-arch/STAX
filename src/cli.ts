@@ -57,6 +57,7 @@ import { ReviewRouter } from "./review/ReviewRouter.js";
 import { ReviewStatsStore } from "./review/ReviewStats.js";
 import { ReviewDispositionSchema, ReviewRiskLevelSchema } from "./review/ReviewSchemas.js";
 import { GeneralSuperiorityGate } from "./superiority/GeneralSuperiorityGate.js";
+import { StrategicBenchmark } from "./strategy/StrategicBenchmark.js";
 
 type ParsedArgs = {
   command: string;
@@ -86,6 +87,7 @@ const knownCommands = new Set([
   "disagree",
   "compare",
   "superiority",
+  "strategy",
   "mine",
   "review",
   "help"
@@ -745,6 +747,40 @@ async function superiorityCommand(args: ParsedArgs): Promise<void> {
   throw new Error("Usage: rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]");
 }
 
+async function strategyCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "benchmark";
+  if (action === "benchmark" || action === "score") {
+    const benchmark = new StrategicBenchmark();
+    const file = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    const dir = typeof args.flags.fixtures === "string" ? args.flags.fixtures : undefined;
+    const summary = file ? await benchmark.scoreFile(file) : await benchmark.scoreDirectory(dir ?? "fixtures/strategy_benchmark");
+    const outputText = benchmark.format(summary);
+    logInfo(outputText);
+    await recordCommandEvent(`strategy ${action}`, args, summary.status !== "not_proven", JSON.stringify(summary), []);
+    return;
+  }
+  if (action === "prompt") {
+    const outputText = strategicExternalPrompt();
+    logInfo(outputText);
+    await recordCommandEvent("strategy prompt", args, true, outputText, []);
+    return;
+  }
+  throw new Error("Usage: rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]");
+}
+
+function strategicExternalPrompt(): string {
+  return [
+    "You are the external baseline for a STAX broad strategic reasoning benchmark.",
+    "",
+    "Answer using ONLY the supplied task and context.",
+    "Do not drift into repo-proof mechanics unless the task asks about repo proof.",
+    "Give one strategic decision, not a long roadmap.",
+    "Include the option you choose, why it beats alternatives, the biggest tradeoff, one next proof step, and one kill criterion.",
+    "Do not claim certainty if the evidence is missing.",
+    "Return 4-8 sentences."
+  ].join("\n");
+}
+
 async function mineCommand(args: ParsedArgs): Promise<void> {
   const action = args.positional[0] ?? "report";
   const miner = new BehaviorMiner();
@@ -1260,6 +1296,7 @@ function help(): void {
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
     "  rax compare benchmark [--fixtures fixtures/problem_benchmark | --file fixture.json]",
     "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
+    "  rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
@@ -1312,6 +1349,8 @@ async function main(): Promise<void> {
     await compareCommand(args);
   } else if (args.command === "superiority") {
     await superiorityCommand(args);
+  } else if (args.command === "strategy") {
+    await strategyCommand(args);
   } else if (args.command === "mine") {
     await mineCommand(args);
   } else if (args.command === "review") {

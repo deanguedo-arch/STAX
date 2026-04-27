@@ -2,6 +2,8 @@ import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
+import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
+import { StrategicDecisionFormatter } from "../strategy/StrategicDecisionFormatter.js";
 
 function bulletize(items: string[], fallback: string): string[] {
   return items.length ? items.map((item) => `- ${item}`) : [`- ${fallback}`];
@@ -471,6 +473,21 @@ export class AnalystAgent implements Agent {
       };
     }
 
+    if (input.mode === "strategic_deliberation") {
+      const decision = new StrategicDeliberation().decide({
+        question: strategicQuestionFrom(input.input),
+        rawInput: input.input,
+        config: input.config
+      });
+      return {
+        agent: this.name,
+        schema: "strategic_deliberation",
+        confidence: decision.decisionConfidence,
+        metadata: { providerText: providerResponse.text, providerCapability: decision.providerCapability },
+        output: new StrategicDecisionFormatter().format(decision)
+      };
+    }
+
     if (input.mode === "code_review") {
       return {
         agent: this.name,
@@ -608,4 +625,10 @@ export class AnalystAgent implements Agent {
       ].join("\n")
     };
   }
+}
+
+function strategicQuestionFrom(input: string): string {
+  const match = input.match(/(?:question|task|ask)\s*:\s*(.+)/i);
+  if (match?.[1]) return match[1].trim();
+  return input.trim() || "What strategic direction should STAX choose next?";
 }

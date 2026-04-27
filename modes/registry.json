@@ -134,6 +134,15 @@
       "goldens": [],
       "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
       "maturity": "usable"
+    },
+    {
+      "mode": "strategic_deliberation",
+      "schema": "StrategicDeliberationOutput",
+      "validator": "StrategicDeliberationValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": [],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
+      "maturity": "usable"
     }
   ]
 }

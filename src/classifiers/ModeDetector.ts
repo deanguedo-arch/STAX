@@ -97,6 +97,23 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
     "which answer is better",
     "compare answers",
     "better answer for this project"
+  ],
+  strategic_deliberation: [
+    "strategic deliberation",
+    "strategy",
+    "strategic",
+    "big-picture",
+    "big picture",
+    "product direction",
+    "broad reasoning",
+    "creative planning",
+    "cross-domain",
+    "ambiguous judgment",
+    "what should stax become",
+    "best next direction",
+    "what are we missing",
+    "highest-leverage",
+    "better than chatgpt"
   ]
 };
 
@@ -167,7 +184,8 @@ export class ModeDetector {
       teaching: 2,
       general_chat: 1,
       learning_unit: 14,
-      model_comparison: 12
+      model_comparison: 12,
+      strategic_deliberation: 15
     };
 
     const ranked = Object.entries(MODE_TERMS)

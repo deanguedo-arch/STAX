@@ -1,0 +1,18 @@
+{
+  "id": "strategy_mode_requires_kill_criteria",
+  "mode": "strategic_deliberation",
+  "input": "What is the best next direction for STAX if the goal is broad reasoning superiority?",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "roadmap only",
+    "fix everything"
+  ],
+  "requiredSections": [
+    "## Options Considered",
+    "## Decision",
+    "## Next Proof Step",
+    "## Kill Criteria"
+  ],
+  "critical": true,
+  "tags": ["strategic_deliberation", "kill_criteria"]
+}

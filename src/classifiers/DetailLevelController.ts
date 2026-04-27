@@ -13,6 +13,7 @@ export class DetailLevelController {
       mode === "prompt_factory" ||
       mode === "test_gap_audit" ||
       mode === "policy_drift" ||
+      mode === "strategic_deliberation" ||
       mode === "learning_unit"
     ) return "surgical";
     if (mode === "teaching") return "deep";

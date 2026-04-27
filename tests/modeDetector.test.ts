@@ -49,4 +49,10 @@ describe("ModeDetector", () => {
 
     expect(result.mode).toBe("model_comparison");
   });
+
+  it("detects strategic deliberation mode for broad reasoning", () => {
+    const result = new ModeDetector().detect("What is the best next direction for STAX broad reasoning?");
+
+    expect(result.mode).toBe("strategic_deliberation");
+  });
 });

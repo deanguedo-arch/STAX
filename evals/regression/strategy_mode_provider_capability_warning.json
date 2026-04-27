@@ -1,0 +1,16 @@
+{
+  "id": "strategy_mode_provider_capability_warning",
+  "mode": "strategic_deliberation",
+  "input": "Should STAX rely on its current provider to beat ChatGPT at ambiguous strategic judgment?",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "high confidence"
+  ],
+  "requiredSections": [
+    "## Capability Warning",
+    "## Evidence Missing",
+    "## Next Proof Step"
+  ],
+  "critical": true,
+  "tags": ["strategic_deliberation", "provider_capability"]
+}

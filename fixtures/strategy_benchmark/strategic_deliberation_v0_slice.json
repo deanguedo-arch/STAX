@@ -1,0 +1,17 @@
+{
+  "id": "strategic_deliberation_v0_slice",
+  "createdAt": "2026-04-27T00:00:00.000Z",
+  "externalAnswerSource": "chatgpt-stax-browser",
+  "externalCapturedAt": "2026-04-27T00:00:00.000Z",
+  "cases": [
+    {
+      "id": "stax_broad_reasoning_direction",
+      "workLane": "product_strategy",
+      "task": "What should STAX build next to become better at broad reasoning?",
+      "context": "STAX has local proof gates and local problem benchmarks, but broad reasoning superiority is not proven.",
+      "staxAnswer": "## Strategic Question\n- What should STAX build next to become better at broad reasoning?\n\n## Capability Warning\n- Capability warning: provider capability is limited_mock. Treat this as draft strategy only and compare against a strong external answer before acting.\n\n## Options Considered\n1. Build Strategic Deliberation Mode v0 - value high; cost medium; reversibility=reversible.\n2. Build more autonomy - value medium; cost high; reversibility=costly_to_reverse.\n3. Only upgrade provider - value medium; cost low; reversibility=reversible.\n\n## Best Option\n- Build Strategic Deliberation Mode v0\n\n## Why This Beats The Alternatives\n- It directly targets strategic reasoning quality and rejects more autonomy because automating weak strategy is risky.\n\n## Red-Team Failure Modes\n- Could become generic.\n- Could overfit benchmark wording.\n\n## Opportunity Cost\n- Delays automation.\n\n## Reversibility\n- reversible\n\n## Evidence Used\n- Local proof gates already exist.\n\n## Evidence Missing\n- Fresh external strategic baseline.\n\n## Decision\n- Select Strategic Deliberation. Confidence: low.\n\n## Next Proof Step\n- Run `npm run rax -- strategy benchmark` and paste back the output.\n\n## Kill Criteria\n- If 3 of 10 outputs are generic, stop.",
+      "externalAnswer": "STAX should improve broad reasoning by adding better strategy, memory, and agents. The next step is to make a roadmap and keep improving it over time.",
+      "expectedWinner": "stax_better"
+    }
+  ]
+}

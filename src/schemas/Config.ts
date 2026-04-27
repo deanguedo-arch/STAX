@@ -17,7 +17,8 @@ export type RaxMode =
   | "test_gap_audit"
   | "policy_drift"
   | "learning_unit"
-  | "model_comparison";
+  | "model_comparison"
+  | "strategic_deliberation";
 
 export type Mode = RaxMode;
 

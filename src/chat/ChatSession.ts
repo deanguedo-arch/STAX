@@ -55,7 +55,8 @@ const VALID_MODES: RaxMode[] = [
   "test_gap_audit",
   "policy_drift",
   "learning_unit",
-  "model_comparison"
+  "model_comparison",
+  "strategic_deliberation"
 ];
 
 export class ChatSession {
@@ -491,6 +492,12 @@ export class ChatSession {
     if (command === "/policy-drift") {
       if (!arg) return { output: "Usage: /policy-drift <change>" };
       const output = await this.run(arg, "policy_drift");
+      return { output };
+    }
+
+    if (command === "/strategy") {
+      if (!arg) return { output: "Usage: /strategy <strategic question>" };
+      const output = await this.run(arg, "strategic_deliberation");
       return { output };
     }
 
@@ -1141,6 +1148,9 @@ export class ChatSession {
     if (/\b(model comparison|compare external|external answer|chatgpt answer|compare answers)\b/i.test(input)) {
       return "model_comparison";
     }
+    if (/\b(strategic|strategy|big-picture|big picture|product direction|broad reasoning|creative planning|cross-domain|ambiguous judgment|what should stax become|best next direction|what are we missing|highest-leverage|better than chatgpt)\b/i.test(input)) {
+      return "strategic_deliberation";
+    }
     return undefined;
   }
 
@@ -1712,6 +1722,7 @@ export class ChatSession {
       "/prompt <task>",
       "/test-gap <feature>",
       "/policy-drift <change>",
+      "/strategy <strategic question>",
       "/audit-last",
       "/audit-last --proof",
       "/disagree <reason>",

@@ -1,0 +1,26 @@
+{
+  "id": "strategy_mode_make_stax_better_than_chatgpt",
+  "mode": "strategic_deliberation",
+  "input": "How should STAX become better than ChatGPT at broad reasoning, product strategy, and creative planning?",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "STAX should become smarter by improving reasoning, memory, and agents."
+  ],
+  "requiredSections": [
+    "## Strategic Question",
+    "## Capability Warning",
+    "## Options Considered",
+    "## Best Option",
+    "## Why This Beats The Alternatives",
+    "## Red-Team Failure Modes",
+    "## Opportunity Cost",
+    "## Reversibility",
+    "## Evidence Used",
+    "## Evidence Missing",
+    "## Decision",
+    "## Next Proof Step",
+    "## Kill Criteria"
+  ],
+  "critical": true,
+  "tags": ["strategic_deliberation", "broad_reasoning", "chatgpt_comparison"]
+}
