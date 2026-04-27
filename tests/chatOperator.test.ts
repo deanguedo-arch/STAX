@@ -64,6 +64,40 @@ describe("Chat Operator v1A", () => {
     expect(result.output).not.toContain("## Signal Units");
   });
 
+  it("uses the active linked workspace when auditing this repo", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { test: "vitest run" } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n\nActive workspace proof.", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("audit this repo");
+
+    expect(result.output).toContain("Operation: audit_workspace");
+    expect(result.output).toContain("Workspace: canvas-helper");
+    expect(result.output).toContain("WorkspaceResolution: active_workspace");
+    expect(result.output).toContain(`RepoPath: ${linkedRepo}`);
+    expect(result.output).toContain("RepoSummary.summarize");
+    expect(result.output).not.toContain("audited the current STAX repo root");
+  });
+
+  it("falls back to the current repo root when no active linked workspace exists", async () => {
+    const rootDir = await tempRoot();
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("audit this repo");
+
+    expect(result.output).toContain("Operation: audit_workspace");
+    expect(result.output).toContain("Workspace: current_repo");
+    expect(result.output).toContain("WorkspaceResolution: current_repo");
+    expect(result.output).toContain(`RepoPath: ${rootDir}`);
+    expect(result.output).toContain("audited the current STAX repo root");
+  });
+
   it("does not audit the wrong repo when a named workspace is missing", async () => {
     const rootDir = await tempRoot();
     const runtime = await createDefaultRuntime({ rootDir });

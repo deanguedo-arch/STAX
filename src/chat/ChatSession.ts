@@ -500,14 +500,23 @@ export class ChatSession {
     const artifactsCreated: string[] = [];
     const evidenceChecked = ["OperationPlan"];
     try {
+      const workspaceResolver = new WorkspaceContext(this.rootDir);
       const workspaceContext = plan.workspace
-        ? await new WorkspaceContext(this.rootDir).resolve({ workspace: plan.workspace, requireWorkspace: true })
-        : { source: "current" as const };
-      const targetRepoPath = plan.workspace
+        ? await workspaceResolver.resolve({ workspace: plan.workspace, requireWorkspace: true })
+        : await workspaceResolver.resolve({ requireWorkspace: false });
+      const useActiveWorkspace = !plan.workspace && Boolean(workspaceContext.workspace && workspaceContext.linkedRepoPath);
+      const workspaceResolution = plan.workspace
+        ? "named_workspace"
+        : useActiveWorkspace
+          ? "active_workspace"
+          : "current_repo";
+      const targetRepoPath = plan.workspace || useActiveWorkspace
         ? workspaceContext.linkedRepoPath
         : this.rootDir;
-      const workspaceLabel = workspaceContext.workspace ?? (plan.workspace ? plan.workspace : "current_repo");
-      const workspaceDocs = workspaceContext.workspace
+      const workspaceLabel = plan.workspace || useActiveWorkspace
+        ? workspaceContext.workspace ?? plan.workspace ?? "unknown_workspace"
+        : "current_repo";
+      const workspaceDocs = workspaceContext.workspace && (plan.workspace || useActiveWorkspace)
         ? await new WorkspaceStore(this.rootDir).readWorkspaceDocs(workspaceContext.workspace)
         : [];
       const repoSummary = targetRepoPath
@@ -518,10 +527,11 @@ export class ChatSession {
         includeModeMaturity: true
       });
 
-      actionsRun.push(plan.workspace ? "WorkspaceContext.resolve" : "current repo root");
+      actionsRun.push(plan.workspace ? "WorkspaceContext.resolve named" : useActiveWorkspace ? "WorkspaceContext.resolve active" : "current repo root");
       actionsRun.push("collectLocalEvidence", ...(repoSummary ? ["RepoSummary.summarize"] : []), "RaxRuntime.run codex_audit");
       evidenceChecked.push(
         `Workspace: ${workspaceLabel}`,
+        `WorkspaceResolution: ${workspaceResolution}`,
         `WorkspaceSource: ${workspaceContext.source}`,
         ...(targetRepoPath ? [`RepoPath: ${targetRepoPath}`] : ["RepoPath: none"]),
         "LocalEvidenceCollector",
@@ -536,6 +546,7 @@ export class ChatSession {
         `- Operation: ${plan.intent}`,
         `- Original Input: ${plan.originalInput}`,
         `- Workspace: ${workspaceLabel}`,
+        `- WorkspaceResolution: ${workspaceResolution}`,
         `- RepoPath: ${targetRepoPath ?? "none"}`,
         "",
         repoSummary?.markdown ?? "## Repo Summary\n- No linked repo path configured for this workspace.",
@@ -567,7 +578,12 @@ export class ChatSession {
         evidenceChecked,
         result: auditOutput,
         risks: [
-          ...(workspaceContext.workspace ? [] : ["No registered workspace was selected; audited the current STAX repo only."]),
+          ...(workspaceResolution === "current_repo" && workspaceContext.workspace && !workspaceContext.linkedRepoPath
+            ? [`Active workspace ${workspaceContext.workspace} has no linked repo path; audited the current STAX repo root.`]
+            : []),
+          ...(workspaceResolution === "current_repo" && !workspaceContext.workspace
+            ? ["No active linked workspace was selected; audited the current STAX repo root."]
+            : []),
           ...(targetRepoPath ? [] : ["Workspace has no linked repo path, so repo summary evidence is missing."])
         ],
         nextAllowedActions: ["Use the Codex Prompt or Required Next Proof from the audit. Promotions still require explicit CLI approval commands."]

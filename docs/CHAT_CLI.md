@@ -90,6 +90,8 @@ what did the last run prove?
 
 These requests go through the Chat Operator: `OperationPlan` -> `OperationRiskGate` -> allowlisted backend operation -> proof-backed response.
 
+`audit this repo` uses the active linked workspace when one is set; otherwise it audits the current STAX repo root and says so. Named workspace audits, such as `audit canvas-helper`, never fall back to a different repo when missing.
+
 Artifact-heavy or risky operations remain explicit slash/CLI commands:
 
 ```txt

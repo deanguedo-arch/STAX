@@ -47,6 +47,12 @@ High-risk requests become a hard-block response. Broad artifact-heavy requests a
 
 Named workspaces must exist in the workspace registry. If the user says `audit canvas-helper` and no `canvas-helper` workspace exists, STAX does not silently audit the current repo.
 
+`audit this repo` is workspace-aware:
+
+- if an active workspace has a linked repo path, STAX audits that active workspace repo
+- if no active linked workspace exists, STAX audits the current STAX repo root and says so
+- if a named workspace is missing, STAX asks for setup and does not audit another repo
+
 Use:
 
 ```bash

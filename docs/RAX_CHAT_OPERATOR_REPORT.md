@@ -2,6 +2,9 @@
 
 Status: implemented.
 
+Follow-up audit note: external red-team review found one blocker after the initial push:
+`audit this repo` needed to respect an active linked workspace when one exists. That blocker is fixed.
+
 ## Scope
 
 Added STAX Chat Operator v1A: a proof-first natural-language operation router for the first three daily control requests.
@@ -36,7 +39,7 @@ Normal chat can now infer:
 
 ```txt
 audit canvas-helper -> audit_workspace
-audit this repo -> audit_workspace
+audit this repo -> audit_workspace using the active linked workspace, or current repo root if none exists
 what needs my judgment? -> judgment_digest
 what did the last run prove? -> audit_last_proof
 ```
@@ -53,6 +56,7 @@ approve all memory candidates -> hard-blocked operator response
 ## Safety
 
 - Missing named workspaces do not fall back to another repo.
+- `audit this repo` uses the active linked workspace when available and otherwise clearly audits the current STAX repo root.
 - Judgment digest reads the current persisted review queue only.
 - High-risk natural-language requests hard-block before execution.
 - Broad lab/eval/comparison/Codex-prompt requests are deferred to explicit slash or CLI commands.
@@ -65,7 +69,7 @@ npm run typecheck
 # passed
 
 npm test
-# 43 files / 160 tests passed
+# 43 files / 162 tests passed
 
 npm run rax -- eval
 # total 16, passed 16, failed 0, criticalFailures 0
@@ -82,9 +86,16 @@ npm run rax -- eval --redteam
 ```bash
 npm run rax -- chat --once "audit this repo"
 # Operation: audit_workspace
-# Actions: OperationRiskGate, current repo root, collectLocalEvidence,
-# RepoSummary.summarize, RaxRuntime.run codex_audit
+# Actions: OperationRiskGate, WorkspaceContext.resolve active or current repo root,
+# collectLocalEvidence, RepoSummary.summarize, RaxRuntime.run codex_audit
 # Created codex_audit run and trace.
+# Current smoke showed WorkspaceResolution: active_workspace for active workspace demo.
+
+npm run rax -- chat --once "audit missing-workspace-name"
+# Operation: audit_workspace
+# Artifacts Created: None
+# Result: Workspace audit was not run; workspace not found.
+# STAX did not fall back to another repo.
 
 npm run rax -- chat --once "what did the last run prove?"
 # Operation: audit_last_proof

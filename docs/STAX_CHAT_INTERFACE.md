@@ -94,6 +94,8 @@ what did the last run prove?
 
 These requests create a typed `OperationPlan`, pass through `OperationRiskGate`, and then run only the allowlisted backend operation.
 
+`audit this repo` uses the active linked workspace when one is set; otherwise it audits the current STAX repo root and names that resolution in the output. A named workspace like `audit canvas-helper` must exist and will not fall back to another repo.
+
 Broad or artifact-heavy work still requires an explicit slash command or CLI command:
 
 ```txt
