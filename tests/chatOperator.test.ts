@@ -172,6 +172,36 @@ describe("Chat Operator v1B", () => {
     expect(result.output).not.toContain("STAX found test/script evidence");
   });
 
+  it("labels pasted command results as partial user-supplied evidence instead of ignoring them", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "scripts", "tests"), { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({ scripts: { typecheck: "tsc --noEmit", "build:studio": "vite build", "test:course-shell": "tsx --test scripts/tests/course-shell.test.ts" } }),
+      "utf8"
+    );
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "scripts", "tests", "course-shell.test.ts"), "expect(true).toBe(true);\n", "utf8");
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine(
+      "audit canvas-helper after this command evidence: npm run typecheck passed; npx tsx --test scripts/tests/course-shell.test.ts passed 1/1; npm run build:studio passed."
+    );
+
+    expect(result.output).toMatch(/^## Direct Answer/);
+    const directAnswer = result.output.split("## One Next Step")[0] ?? "";
+    expect(result.output).toContain("User-supplied command evidence says");
+    expect(result.output).toContain("npm run typecheck passed");
+    expect(result.output).toContain("npx tsx --test scripts/tests/course-shell.test.ts passed 1/1");
+    expect(result.output).toContain("partial proof for the named commands only");
+    expect(result.output).toContain("ProblemMovement: needs_evidence");
+    expect(result.output).toContain("Run `npm run test:course-shell`");
+    expect(directAnswer).not.toContain("pass/fail is unknown");
+  });
+
   it("turns fix-this-repo language into an audit plan without mutating the linked repo", async () => {
     const rootDir = await tempRoot();
     const linkedRepo = path.join(rootDir, "linked-canvas");

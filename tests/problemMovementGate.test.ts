@@ -83,6 +83,18 @@ describe("ProblemMovementGate", () => {
     expect(result.blockingReasons.join(" ")).toContain("pass/fail is unknown");
   });
 
+  it("accepts bounded user-supplied command evidence without upgrading it to full repo proof", () => {
+    const result = new ProblemMovementGate().evaluate(baseInput({
+      userTask: "audit canvas-helper after this command evidence: npm run typecheck passed; npx tsx --test scripts/tests/foo.test.ts passed 1/1; npm run build:studio passed.",
+      directAnswer: "User-supplied command evidence says npm run typecheck passed; npx tsx --test scripts/tests/foo.test.ts passed 1/1; npm run build:studio passed. STAX also found test/script evidence by read-only inspection. Treat this as partial proof for the named commands only; it does not prove full repo behavior or approve any mutation.",
+      oneNextStep: "Run `npm run test:course-shell` in the target repo and paste back the full output, exit code if available, and failing test names if any."
+    }));
+
+    expect(result.valid).toBe(true);
+    expect(result.disposition).toBe("needs_evidence");
+    expect(result.movesProblemForward).toBe(true);
+  });
+
   it("rejects completion claims without command or eval evidence", () => {
     const result = new ProblemMovementGate().evaluate(baseInput({
       evidenceChecked: ["OperationPlan", "repo:package.json"],

@@ -98,6 +98,7 @@ function renderOutcomeHeader(outcome: OutcomeHeader, movement: ProblemMovementRe
 
 function directAnswer(plan: OperationPlan, result: OperationExecutionResult): string {
   const foundTestsOrScripts = hasTestsOrScripts(result);
+  const suppliedCommandEvidence = commandEvidenceStatements(plan.originalInput);
   if (result.blocked) {
     return "Blocked. STAX did not execute the requested operation, approve anything, promote anything, or mutate durable state.";
   }
@@ -121,6 +122,13 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
   }
   if (isOperatingStateQuestion(plan)) {
     return operatingStateAnswer(result, foundTestsOrScripts);
+  }
+  if (suppliedCommandEvidence.length && (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit")) {
+    return [
+      `User-supplied command evidence says ${suppliedCommandEvidence.join("; ")}.`,
+      foundTestsOrScripts ? "STAX also found test/script evidence by read-only inspection." : "STAX also inspected the target repo read-only.",
+      "Treat this as partial proof for the named commands only; it does not prove full repo behavior or approve any mutation."
+    ].join(" ");
   }
   if (foundTestsOrScripts) {
     const scripts = scriptNames(result);
@@ -285,6 +293,21 @@ function gitStatusBlock(markdown: string): string | undefined {
 
 function hasChangedFiles(gitStatus: string): boolean {
   return /\n\s*[MADRCU?]{1,2}\s+/m.test(gitStatus);
+}
+
+function commandEvidenceStatements(input: string): string[] {
+  const statements = new Set<string>();
+  const patterns = [
+    /\bnpm run ([a-z0-9:_-]+)\s+(passed|failed)\b/gi,
+    /\bnpm test\s+(passed|failed)\b/gi,
+    /\bnpx tsx --test\s+(.+?)\s+passed\s+(\d+\s*\/\s*\d+)?(?=;|\.|$)/gi
+  ];
+  for (const pattern of patterns) {
+    for (const match of input.matchAll(pattern)) {
+      if (match[0]) statements.add(match[0].trim().replace(/\s+/g, " "));
+    }
+  }
+  return Array.from(statements);
 }
 
 function matchResultLine(result: string, pattern: RegExp): string | undefined {
