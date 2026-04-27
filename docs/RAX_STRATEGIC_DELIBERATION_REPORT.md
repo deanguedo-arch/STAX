@@ -74,6 +74,7 @@ STAXBetter: 25
 ExternalBetter: 0
 Ties: 0
 NoExternalBaseline: 0
+TemplateCollapseCases: 0
 WorkLanes: 5
 CaptureDates: 2
 ```
@@ -104,17 +105,31 @@ REASON: One valid strategic comparison proves the mechanism works, not broad rea
 That patch is now implemented as the v1 holdout fixture plus the drifted
 baseline rejection test.
 
+After the commit was pushed, the external STAX critic returned:
+
+```txt
+VERDICT: broad_reasoning_candidate_only
+NEXT_PATCH: Replace seeded-control strategic baselines with fresh captured external baselines and add a strategy-template-collapse gate that fails repeated one-size-fits-all STAX strategy answers.
+REASON: The pushed repo proves the strategic benchmark mechanism and breadth gate, but the report itself says the expanded v1 benchmark uses seeded control baselines pending clean external capture, so it is not enough to claim broad ChatGPT-level strategic superiority.
+```
+
+The template-collapse gate is now implemented. `StrategicBenchmark` counts
+repeated STAX strategy fingerprints and blocks a broad-reasoning candidate when
+the benchmark is being won by one repeated answer shape. The v1 holdout fixture
+was regenerated through the actual strategic generator so different lanes select
+different control surfaces, and the benchmark reports `TemplateCollapseCases: 0`.
+
 ## Validation
 
 ```txt
 npm run typecheck: passed
-npm test: passed; 52 files / 245 tests
+npm test: passed; 52 files / 246 tests
 npm run rax -- eval: passed; 16/16
 npm run rax -- eval --regression: passed; 46/46
 npm run rax -- eval --redteam: passed; 9/9
 npm test -- tests/strategicBenchmark.test.ts: passed; 4/4
 npm run rax -- eval --regression --mode strategic_deliberation: passed; 3/3
-npm run rax -- strategy benchmark: passed; Status broad_reasoning_candidate
+npm run rax -- strategy benchmark: passed; Status broad_reasoning_candidate; TemplateCollapseCases 0
 npm run rax -- strategy prompt: passed
 npm run rax -- run --mode strategic_deliberation "How should STAX become better than ChatGPT at broad reasoning?": passed
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed

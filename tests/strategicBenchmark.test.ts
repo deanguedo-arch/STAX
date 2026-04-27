@@ -36,6 +36,12 @@ const strongStax = [
 
 const weakExternal = "STAX should improve broad reasoning by adding more strategy, memory, and agents. The next step is to make a roadmap and improve it over time.";
 
+function variedStrongStax(index: number): string {
+  return strongStax
+    .replace(/Strategic Deliberation/g, `Strategic Deliberation ${index}`)
+    .replace(/Run `npm run rax -- strategy benchmark` and paste back the output\./, `Run npm run rax -- strategy benchmark --file fixtures/strategy_benchmark/case_${index}.json and paste back the output.`);
+}
+
 describe("StrategicBenchmark", () => {
   it("scores strategic answers with kill criteria and option comparison higher than generic strategy", () => {
     expect(scoreStrategicAnswer(strongStax).total).toBeGreaterThan(scoreStrategicAnswer(weakExternal).total);
@@ -105,7 +111,7 @@ describe("StrategicBenchmark", () => {
         workLane: lanes[index % lanes.length] ?? "product_strategy",
         task: `Choose the best strategic direction for case ${index}.`,
         context: `Broad strategy context for case ${index}.`,
-        staxAnswer: strongStax,
+        staxAnswer: variedStrongStax(index),
         externalAnswer: weakExternal,
         externalCapturedAt: `2026-04-${String((index % 2) + 26).padStart(2, "0")}T12:00:00.000Z`,
         externalAnswerSource: "chatgpt-stax-browser",
@@ -117,5 +123,28 @@ describe("StrategicBenchmark", () => {
 
     expect(summary.status).toBe("broad_reasoning_candidate");
     expect(summary.gaps).toEqual([]);
+  });
+
+  it("rejects repeated STAX strategy templates across a broad benchmark", () => {
+    const lanes = ["product_strategy", "creative_planning", "ambiguous_judgment", "cross_domain", "teaching_strategy"];
+    const collection: StrategicBenchmarkCollection = {
+      id: "template-collapse",
+      cases: Array.from({ length: 25 }, (_, index) => ({
+        id: `collapse_${index}`,
+        workLane: lanes[index % lanes.length] ?? "product_strategy",
+        task: `Choose the best strategic direction for case ${index}.`,
+        context: `Broad strategy context for case ${index}.`,
+        staxAnswer: strongStax,
+        externalAnswer: weakExternal,
+        externalCapturedAt: `2026-04-${String((index % 2) + 26).padStart(2, "0")}T12:00:00.000Z`,
+        externalAnswerSource: "chatgpt-stax-browser"
+      }))
+    };
+
+    const summary = new StrategicBenchmark().scoreCollection(collection);
+
+    expect(summary.status).toBe("not_proven");
+    expect(summary.templateCollapseCases).toBe(25);
+    expect(summary.gaps.join(" ")).toContain("repeated STAX strategy templates");
   });
 });

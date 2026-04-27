@@ -61,6 +61,7 @@ export const StrategicBenchmarkSummarySchema = z.object({
   ties: z.number().int().nonnegative(),
   noExternalBaseline: z.number().int().nonnegative(),
   expectedMismatches: z.number().int().nonnegative(),
+  templateCollapseCases: z.number().int().nonnegative(),
   workLanes: z.number().int().nonnegative(),
   captureDates: z.number().int().nonnegative(),
   status: z.enum(["not_proven", "strategy_slice", "broad_reasoning_candidate"]),

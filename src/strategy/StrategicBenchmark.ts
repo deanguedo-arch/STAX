@@ -85,6 +85,7 @@ export class StrategicBenchmark {
       `ExternalBetter: ${summary.externalBetter}`,
       `Ties: ${summary.ties}`,
       `NoExternalBaseline: ${summary.noExternalBaseline}`,
+      `TemplateCollapseCases: ${summary.templateCollapseCases}`,
       `WorkLanes: ${summary.workLanes}`,
       `CaptureDates: ${summary.captureDates}`,
       "",
@@ -224,9 +225,10 @@ function summarize(results: ReturnType<StrategicBenchmark["scoreCase"]>[], cases
   const ties = results.filter((item) => item.winner === "tie").length;
   const noExternalBaseline = results.filter((item) => item.winner === "no_external_baseline").length;
   const expectedMismatches = results.filter((item) => item.expectedWinner && !item.matchedExpectedWinner).length;
+  const templateCollapseCases = templateCollapseCount(cases);
   const workLanes = new Set(cases.map((item) => item.workLane)).size;
   const captureDates = new Set(cases.map((item) => item.externalCapturedAt?.slice(0, 10)).filter(Boolean)).size;
-  const gaps = gapsFor(results.length, workLanes, captureDates, externalBetter, ties, noExternalBaseline, expectedMismatches);
+  const gaps = gapsFor(results.length, workLanes, captureDates, externalBetter, ties, noExternalBaseline, expectedMismatches, templateCollapseCases);
   const status = gaps.length
     ? "not_proven"
     : results.length >= MIN_CANDIDATE_CASES
@@ -239,6 +241,7 @@ function summarize(results: ReturnType<StrategicBenchmark["scoreCase"]>[], cases
     ties,
     noExternalBaseline,
     expectedMismatches,
+    templateCollapseCases,
     workLanes,
     captureDates,
     status,
@@ -247,16 +250,45 @@ function summarize(results: ReturnType<StrategicBenchmark["scoreCase"]>[], cases
   });
 }
 
-function gapsFor(total: number, workLanes: number, captureDates: number, externalBetter: number, ties: number, noExternalBaseline: number, expectedMismatches: number): string[] {
+function gapsFor(
+  total: number,
+  workLanes: number,
+  captureDates: number,
+  externalBetter: number,
+  ties: number,
+  noExternalBaseline: number,
+  expectedMismatches: number,
+  templateCollapseCases: number
+): string[] {
   const gaps: string[] = [];
   if (externalBetter) gaps.push(`External baseline beat STAX in ${externalBetter} strategic case(s).`);
   if (ties) gaps.push(`STAX tied the external baseline in ${ties} strategic case(s); ties do not prove broad reasoning superiority.`);
   if (noExternalBaseline) gaps.push(`${noExternalBaseline} strategic case(s) lacked a usable external baseline.`);
   if (expectedMismatches) gaps.push(`${expectedMismatches} strategic case(s) did not match expected winner.`);
+  if (templateCollapseCases) gaps.push(`${templateCollapseCases} strategic case(s) collapsed into repeated STAX strategy templates.`);
   if (total < MIN_CANDIDATE_CASES) gaps.push(`Need at least ${MIN_CANDIDATE_CASES} strategic comparisons for a broad reasoning candidate; current ${total}.`);
   if (workLanes < MIN_WORK_LANES) gaps.push(`Need at least ${MIN_WORK_LANES} strategic work lanes; current ${workLanes}.`);
   if (captureDates < MIN_CAPTURE_DATES) gaps.push(`Need external captures on at least ${MIN_CAPTURE_DATES} dates; current ${captureDates}.`);
   return gaps;
+}
+
+function templateCollapseCount(cases: StrategicBenchmarkCase[]): number {
+  if (cases.length < 10) return 0;
+  const counts = new Map<string, number>();
+  for (const item of cases) {
+    const fingerprint = strategyFingerprint(item.staxAnswer);
+    counts.set(fingerprint, (counts.get(fingerprint) ?? 0) + 1);
+  }
+  const maxCount = Math.max(0, ...counts.values());
+  return maxCount >= Math.ceil(cases.length * 0.4) ? maxCount : 0;
+}
+
+function strategyFingerprint(answer: string): string {
+  return [
+    section(answer, "## Best Option"),
+    section(answer, "## Decision"),
+    section(answer, "## Next Proof Step")
+  ].join("\n").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 function reasonsFor(winner: StrategicBenchmarkWinner, stax: StrategicBenchmarkScore, external: StrategicBenchmarkScore, externalBaselineIssues: string[]): string[] {
