@@ -1,0 +1,23 @@
+{
+  "id": "review_router_prompt_factory_bounded",
+  "mode": "prompt_factory",
+  "input": "Create a bounded Codex prompt to implement the Review Router without adding agents, without approval commands, and without durable promotions.",
+  "expectedProperties": ["bounded_prompt"],
+  "forbiddenPatterns": [
+    "fix everything",
+    "build the whole system",
+    "approve automatically"
+  ],
+  "requiredSections": [
+    "## Objective",
+    "## Files To Inspect",
+    "## Files To Modify",
+    "## Tests To Add",
+    "## Commands To Run",
+    "## Acceptance Criteria",
+    "## Stop Conditions",
+    "## Final Report Required"
+  ],
+  "critical": false,
+  "tags": ["review_router", "prompt_factory"]
+}

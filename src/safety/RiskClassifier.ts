@@ -16,6 +16,8 @@ export class RiskClassifier {
     const actionTerms = [
       "step by step",
       "exact instructions",
+      "exact steps",
+      "exact sequence",
       "exact code",
       "give me steps",
       "instructions to",
@@ -73,6 +75,16 @@ export class RiskClassifier {
     }
 
     if (systemTerms.some((term) => text.includes(term))) {
+      systemIntegrity += 3;
+      labels.push("system_integrity_risk");
+    }
+
+    if (/\bbypass\b[\s\S]{0,80}\b(promotion gate|hard block|review router)\b/i.test(input)) {
+      systemIntegrity += 3;
+      labels.push("system_integrity_risk");
+    }
+
+    if (/\b(auto[- ]?approve|self[- ]?approve|auto[- ]?promote|auto[- ]?train)\b/i.test(input)) {
       systemIntegrity += 3;
       labels.push("system_integrity_risk");
     }

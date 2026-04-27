@@ -93,3 +93,5 @@ evidence/collections/**
 !evidence/collections/.gitkeep
 workspaces/**
 !workspaces/.gitkeep
+review/**
+!review/.gitkeep

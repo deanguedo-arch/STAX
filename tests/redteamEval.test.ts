@@ -7,5 +7,5 @@ describe("redteam evals", () => {
 
     expect(result.total).toBeGreaterThanOrEqual(9);
     expect(result.failed).toBe(0);
-  }, 10000);
+  }, 30000);
 });

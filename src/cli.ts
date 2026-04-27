@@ -47,6 +47,12 @@ import { WorkspaceContext, type ResolvedWorkspaceContext } from "./workspace/Wor
 import { WorkspaceStore } from "./workspace/WorkspaceStore.js";
 import { RepoSummary } from "./workspace/RepoSummary.js";
 import { RepoSearch } from "./workspace/RepoSearch.js";
+import { ReviewBatcher } from "./review/ReviewBatcher.js";
+import { ReviewLedger } from "./review/ReviewLedger.js";
+import { ReviewQueue } from "./review/ReviewQueue.js";
+import { ReviewRouter } from "./review/ReviewRouter.js";
+import { ReviewStatsStore } from "./review/ReviewStats.js";
+import { ReviewDispositionSchema, ReviewRiskLevelSchema } from "./review/ReviewSchemas.js";
 
 type ParsedArgs = {
   command: string;
@@ -75,6 +81,7 @@ const knownCommands = new Set([
   "workspace",
   "disagree",
   "compare",
+  "review",
   "help"
 ]);
 
@@ -684,6 +691,72 @@ async function compareCommand(args: ParsedArgs): Promise<void> {
   ], result.runId);
 }
 
+async function reviewCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "inbox";
+  const router = new ReviewRouter();
+  const queue = new ReviewQueue();
+  const ledger = new ReviewLedger();
+  if (action === "route") {
+    const sourceId = args.positional[1];
+    if (!sourceId) throw new Error("Usage: rax review route <source-id> [--apply]");
+    const result = await router.routeSourceId(sourceId, { apply: Boolean(args.flags.apply) });
+    logInfo(JSON.stringify(result, null, 2));
+    return;
+  }
+  if (action === "inbox" || action === "digest" || action === "staged" || action === "blocked" || action === "all") {
+    await router.refresh({ apply: true });
+    const disposition = action === "staged"
+      ? "auto_stage_for_review"
+      : action === "blocked"
+        ? "hard_block"
+        : typeof args.flags.disposition === "string"
+          ? ReviewDispositionSchema.parse(args.flags.disposition)
+          : undefined;
+    const risk = typeof args.flags.risk === "string" ? ReviewRiskLevelSchema.parse(args.flags.risk) : undefined;
+    const workspace = typeof args.flags.workspace === "string" ? args.flags.workspace : undefined;
+    const records = await queue.list({ workspace, disposition, risk, includeAuto: Boolean(args.flags.all) || action === "all" || action === "staged" });
+    const title = action === "digest" ? "Review Digest" : action === "staged" ? "Auto-Staged Review Items" : action === "blocked" ? "Blocked Review Items" : "Review Inbox";
+    logInfo(queue.formatInbox(records, title));
+    return;
+  }
+  if (action === "show") {
+    const reviewId = args.positional[1];
+    if (!reviewId) throw new Error("Usage: rax review show <review-id>");
+    const record = await ledger.get(reviewId);
+    if (!record) throw new Error(`Review item not found: ${reviewId}`);
+    logInfo(JSON.stringify(record, null, 2));
+    return;
+  }
+  if (action === "batch") {
+    await router.refresh({ apply: true });
+    const workspace = typeof args.flags.workspace === "string" ? args.flags.workspace : undefined;
+    const batch = await new ReviewBatcher().create({ workspace });
+    logInfo(batch.markdown);
+    return;
+  }
+  if (action === "ledger") {
+    const source = typeof args.flags.source === "string" ? args.flags.source : undefined;
+    logInfo(JSON.stringify(source ? await ledger.bySource(source) : await ledger.list(), null, 2));
+    return;
+  }
+  if (action === "stats" || action === "metrics") {
+    await router.refresh({ apply: true });
+    logInfo(JSON.stringify(await new ReviewStatsStore().update(), null, 2));
+    return;
+  }
+  if (action === "archive" || action === "reject" || action === "escalate") {
+    const reviewId = args.positional[1];
+    const reason = typeof args.flags.reason === "string" ? args.flags.reason : "";
+    if (!reviewId) throw new Error(`Usage: rax review ${action} <review-id> --reason "..."`);
+    const state = action === "archive" ? "archived" : action === "reject" ? "rejected" : "escalated";
+    const record = await ledger.transition(reviewId, state, reason);
+    await queue.write(record);
+    logInfo(JSON.stringify(record, null, 2));
+    return;
+  }
+  throw new Error("Usage: rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats|archive|reject|escalate");
+}
+
 async function learnCommand(args: ParsedArgs): Promise<void> {
   const action = args.positional[0];
   const queue = new LearningQueue();
@@ -1068,7 +1141,8 @@ function help(): void {
     "  rax evidence collect|list|show <id>",
     "  rax workspace create <name> --repo <path> [--use] | use <name> | status | list | show <name> | repo-summary | search <query>",
     "  rax disagree --reason \"...\" [--run <run-id>]",
-    "  rax compare --stax stax.md --external chatgpt.md [--task task.md]"
+    "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
+    "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
 }
 
@@ -1117,6 +1191,8 @@ async function main(): Promise<void> {
     await disagreeCommand(args);
   } else if (args.command === "compare") {
     await compareCommand(args);
+  } else if (args.command === "review") {
+    await reviewCommand(args);
   } else {
     help();
   }

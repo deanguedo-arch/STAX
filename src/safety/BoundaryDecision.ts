@@ -86,7 +86,7 @@ export class BoundaryDecision {
 }
 
 function isDefensiveGovernanceAudit(context: BoundaryContext): boolean {
-  if (context.mode !== "codex_audit") return false;
+  if (context.mode !== "codex_audit" && context.mode !== "policy_drift") return false;
   const text = (context.input ?? "").toLowerCase();
   if (!text.trim()) return false;
 
@@ -97,7 +97,7 @@ function isDefensiveGovernanceAudit(context: BoundaryContext): boolean {
   if (!defensiveFraming) return false;
 
   const directMisuseRequest =
-    /\b(tell me how to|show me how to|give me steps|step by step|walk me through|exact instructions|instructions to)\b/.test(text) &&
+    /\b(tell me|tell me how to|show me how to|give me steps|step by step|walk me through|exact steps|exact sequence|exact instructions|instructions to)\b/.test(text) &&
     /\b(bypass|poison memory|memory poisoning|misuse tools?|exploit|evad(e|ing)|weaken safety|disable (critic|schema|policy))\b/.test(text);
 
   const embeddedActionableMisuse =

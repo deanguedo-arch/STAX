@@ -217,7 +217,7 @@ export class LearningRecorder {
     }
     await new LearningQueue(this.rootDir).enqueue(event);
     await new LearningProposalGenerator(this.rootDir).generate(event);
-    await new LearningMetricsStore(this.rootDir).update();
+    await new LearningMetricsStore(this.rootDir).updateForEvent(event);
     return event;
   }
 

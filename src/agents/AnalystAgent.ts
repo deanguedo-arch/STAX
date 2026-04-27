@@ -27,7 +27,10 @@ function detectsUnsafePolicyDrift(text: string): string[] {
     [/autoSaveModelOutputs\s*[:=]\s*true|auto-save.*model output/i, "Model outputs would auto-save to memory."],
     [/requireCriticPass\s*[:=]\s*false|critic.*disabled/i, "Critic pass disabled or weakened."],
     [/requireSchemaValidation\s*[:=]\s*false|schema validation.*disabled/i, "Schema validation disabled or weakened."],
-    [/delete(d)? evidence_policy|weaken(ed)? evidence/i, "Evidence policy deleted or weakened."]
+    [/delete(d)? evidence_policy|weaken(ed)? evidence/i, "Evidence policy deleted or weakened."],
+    [/auto[- ]?approve|self[- ]?approve|approve itself/i, "Self-approval or auto-approval requested."],
+    [/auto[- ]?promote|bypass.*promotion gate|promotion.*bypass/i, "Promotion gate bypass or auto-promotion requested."],
+    [/auto[- ]?train|train.*without approval/i, "Training or model updates requested without approval."]
   ];
   return checks.filter(([pattern]) => pattern.test(text)).map(([, issue]) => issue);
 }

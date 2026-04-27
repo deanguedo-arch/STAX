@@ -15,6 +15,10 @@ import { FailureMiner } from "../lab/FailureMiner.js";
 import { LabMetrics } from "../lab/LabMetrics.js";
 import { LabOrchestrator } from "../lab/LabOrchestrator.js";
 import { MemoryStore } from "../memory/MemoryStore.js";
+import { ReviewLedger } from "../review/ReviewLedger.js";
+import { ReviewQueue as ReviewQueueStore } from "../review/ReviewQueue.js";
+import { ReviewRouter } from "../review/ReviewRouter.js";
+import type { ReviewRecord } from "../review/ReviewSchemas.js";
 import type { RaxMode } from "../schemas/Config.js";
 import { RepoSearch } from "../workspace/RepoSearch.js";
 import { RepoSummary } from "../workspace/RepoSummary.js";
@@ -271,6 +275,10 @@ export class ChatSession {
         };
       }
       return { output: "Usage: /lab report | queue | redteam summary | failures | patches | handoffs | go cautious <cycles>" };
+    }
+
+    if (command === "/review") {
+      return { output: await this.reviewCommand(arg) };
     }
 
     if (command === "/eval" || command === "/regression") {
@@ -839,6 +847,74 @@ export class ChatSession {
     }
   }
 
+  private async reviewCommand(arg: string): Promise<string> {
+    const [action = "inbox", ...rest] = arg.split(/\s+/).filter(Boolean);
+    const router = new ReviewRouter(this.rootDir);
+    const queue = new ReviewQueueStore(this.rootDir);
+    if (action === "route") {
+      const sourceId = rest.join(" ");
+      if (!sourceId) return "Usage: /review route <source-id-or-path>";
+      const result = await router.routeSourceId(sourceId, { apply: false });
+      return [
+        "Review route dry-run.",
+        JSON.stringify(result.record, null, 2),
+        "",
+        "No review metadata was written. No approval or promotion happened."
+      ].join("\n");
+    }
+    if (action === "show") {
+      const reviewId = rest[0];
+      if (!reviewId) return "Usage: /review show <review-id>";
+      const record = await new ReviewLedger(this.rootDir).get(reviewId);
+      return record ? JSON.stringify(record, null, 2) : `Review item not found: ${reviewId}`;
+    }
+    if (action === "stats" || action === "metrics") {
+      const records = await router.refresh({ apply: false });
+      return [
+        "Review metrics dry-run.",
+        `Total sources: ${records.length}`,
+        "By disposition:",
+        ...Object.entries(this.countReviewRecords(records, "disposition")).map(([key, count]) => `- ${key}: ${count}`),
+        "By risk:",
+        ...Object.entries(this.countReviewRecords(records, "riskLevel")).map(([key, count]) => `- ${key}: ${count}`),
+        "",
+        "No review metadata was written."
+      ].join("\n");
+    }
+    if (["inbox", "digest", "batch", "blocked", "staged", "all"].includes(action)) {
+      const records = this.filterReviewRecords(await router.refresh({ apply: false }), action);
+      const title = action === "blocked"
+        ? "Blocked Review Items (dry-run)"
+        : action === "staged"
+          ? "Auto-Staged Review Items (dry-run)"
+          : action === "all"
+            ? "All Review Items (dry-run)"
+            : "Review Inbox (dry-run)";
+      return [
+        queue.formatInbox(records, title),
+        "",
+        "Chat review is read-only in this slice. Use CLI `rax review inbox` to refresh persisted review metadata."
+      ].join("\n");
+    }
+    return "Usage: /review [inbox|digest|blocked|staged|all|stats|route <source>|show <review-id>]";
+  }
+
+  private filterReviewRecords(records: ReviewRecord[], action: string): ReviewRecord[] {
+    const active = records.filter((record) => record.state === "active");
+    if (action === "all") return active;
+    if (action === "staged") return active.filter((record) => record.disposition === "auto_stage_for_review");
+    if (action === "blocked") return active.filter((record) => record.disposition === "hard_block");
+    return active.filter((record) => ["batch_review", "human_review", "hard_block"].includes(record.disposition));
+  }
+
+  private countReviewRecords(records: ReviewRecord[], key: "disposition" | "riskLevel"): Record<string, number> {
+    const counts: Record<string, number> = {};
+    for (const record of records) {
+      counts[record[key]] = (counts[record[key]] ?? 0) + 1;
+    }
+    return counts;
+  }
+
   private async queueSummary(): Promise<string> {
     const items = await new LearningQueue(this.rootDir).list();
     if (items.length === 0) return "- No learning queue items.";
@@ -1126,6 +1202,7 @@ export class ChatSession {
       "- \"show sandbox report\"",
       "- \"show sandbox failures\"",
       "- \"show sandbox patches\"",
+      "- \"/review\"",
       "- \"reset mode to auto\"",
       "",
       "Guardrails stay on: plain chat can run the safe sandbox profile, inspect proof, and run checks. It cannot approve, promote, merge, train, or enable tools."
@@ -1229,6 +1306,7 @@ export class ChatSession {
       "/metrics",
       "/learn last",
       "/lab report|queue|redteam summary|failures|patches|handoffs|go cautious <cycles>",
+      "/review [inbox|digest|blocked|staged|all|stats|route <source>|show <review-id>]",
       "/prompt <task>",
       "/test-gap <feature>",
       "/policy-drift <change>",

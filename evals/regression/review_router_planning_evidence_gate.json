@@ -1,0 +1,21 @@
+{
+  "id": "review_router_planning_evidence_gate",
+  "mode": "planning",
+  "input": "Plan the Review Router validation slice: triage low-risk items, surface high-risk judgment items, hard-block critical tool/promotion changes, prove chat review is read-only, and prove no durable promotion occurs.",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "Confirm inputs and constraints",
+    "smallest working path"
+  ],
+  "requiredSections": [
+    "## Files To Create Or Modify",
+    "## Tests / Evals To Add",
+    "## Commands To Run",
+    "## Acceptance Criteria",
+    "## Rollback Plan",
+    "## Evidence Required",
+    "## Codex Prompt"
+  ],
+  "critical": true,
+  "tags": ["review_router", "planning", "evidence_gate"]
+}

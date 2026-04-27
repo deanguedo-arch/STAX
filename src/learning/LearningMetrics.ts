@@ -1,8 +1,18 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { LearningEvent, LearningQueueType } from "./LearningEvent.js";
-import { LearningEventSchema } from "./LearningEvent.js";
-import { LearningQueue } from "./LearningQueue.js";
+
+const queueDirs: Record<LearningQueueType, string> = {
+  trace_only: "trace_only",
+  correction_candidate: "correction_candidates",
+  eval_candidate: "eval_candidates",
+  memory_candidate: "memory_candidates",
+  training_candidate: "training_candidates",
+  policy_patch_candidate: "policy_patch_candidates",
+  schema_patch_candidate: "schema_patch_candidates",
+  mode_contract_patch_candidate: "mode_contract_patch_candidates",
+  codex_prompt_candidate: "codex_prompt_candidates"
+};
 
 export type LearningMetrics = {
   totalRuns: number;
@@ -46,7 +56,8 @@ export class LearningMetricsStore {
 
   async update(): Promise<LearningMetrics> {
     const events = await this.events();
-    const queueItems = await new LearningQueue(this.rootDir).list();
+    const queueCounts = await this.queueCounts();
+    const totalQueueItems = Object.values(queueCounts).reduce((sum, count) => sum + count, 0);
     const approved = await this.countFiles(path.join(this.rootDir, "learning", "approved"));
     const rejected = await this.countFiles(path.join(this.rootDir, "learning", "rejected"));
     const total = events.length || 1;
@@ -70,7 +81,7 @@ export class LearningMetricsStore {
       ).length;
       stats.genericOutputRate = stats.runs ? Number((generic / stats.runs).toFixed(3)) : 0;
     }
-    const queueCount = (type: LearningQueueType) => queueItems.filter((item) => item.queueType === type).length;
+    const queueCount = (type: LearningQueueType) => queueCounts[type] ?? 0;
     const planningEvents = events.filter((event) => event.output.mode === "planning");
     const planningSpecificityScore = planningEvents.length
       ? Number((planningEvents.reduce((sum, event) => sum + event.qualitySignals.specificityScore, 0) / planningEvents.length).toFixed(3))
@@ -99,15 +110,13 @@ export class LearningMetricsStore {
       evalPassRate: Number(((total - evalFailed) / total).toFixed(3)),
       evalFailureRate: Number((evalFailed / total).toFixed(3)),
       repeatFailureRate: Number((this.repeatFailureCount(events) / total).toFixed(3)),
-      candidateApprovalRate: queueItems.length + approved ? Number((approved / (queueItems.length + approved)).toFixed(3)) : 0,
-      candidateRejectionRate: queueItems.length + rejected ? Number((rejected / (queueItems.length + rejected)).toFixed(3)) : 0,
+      candidateApprovalRate: totalQueueItems + approved ? Number((approved / (totalQueueItems + approved)).toFixed(3)) : 0,
+      candidateRejectionRate: totalQueueItems + rejected ? Number((rejected / (totalQueueItems + rejected)).toFixed(3)) : 0,
       modeFailureRate: Number((failed.length / total).toFixed(3)),
       planningSpecificityScore,
       byMode
     };
-    const metricsDir = path.join(this.rootDir, "learning", "metrics");
-    await fs.mkdir(metricsDir, { recursive: true });
-    await fs.writeFile(path.join(metricsDir, "learning_metrics.json"), JSON.stringify(metrics, null, 2), "utf8");
+    await this.write(metrics);
     return metrics;
   }
 
@@ -121,16 +130,71 @@ export class LearningMetricsStore {
     }
   }
 
+  async updateForEvent(event: LearningEvent): Promise<LearningMetrics> {
+    const cached = await this.readCached();
+    if (!cached) return this.update();
+
+    const previousTotal = cached.learningEventsCreated || 0;
+    const nextTotal = previousTotal + 1;
+    const hasFailure = event.failureClassification.hasFailure;
+    const schemaFailure = !event.output.schemaValid || event.failureClassification.failureTypes.includes("schema_failure");
+    const criticFailure = !event.output.criticPassed || event.failureClassification.failureTypes.includes("critic_failure");
+    const genericFailure = event.failureClassification.failureTypes.includes("generic_output");
+    const evalFailure = event.failureClassification.failureTypes.includes("eval_failure");
+    const ratio = (previousRate: number, increment: boolean) =>
+      Number((((previousRate * previousTotal) + (increment ? 1 : 0)) / nextTotal).toFixed(3));
+    const passRatio = (previousRate: number, failed: boolean) =>
+      Number((((previousRate * previousTotal) + (failed ? 0 : 1)) / nextTotal).toFixed(3));
+    const byMode = { ...cached.byMode };
+    const mode = event.output.mode;
+    const modeStats = byMode[mode] ?? { runs: 0, failures: 0, corrections: 0, evalsAdded: 0, genericOutputRate: 0 };
+    const previousModeRuns = modeStats.runs;
+    const nextModeRuns = previousModeRuns + 1;
+    byMode[mode] = {
+      runs: nextModeRuns,
+      failures: modeStats.failures + (hasFailure ? 1 : 0),
+      corrections: modeStats.corrections + (event.proposedQueues.includes("correction_candidate") ? 1 : 0),
+      evalsAdded: modeStats.evalsAdded + (event.proposedQueues.includes("eval_candidate") ? 1 : 0),
+      genericOutputRate: Number((((modeStats.genericOutputRate * previousModeRuns) + (genericFailure ? 1 : 0)) / nextModeRuns).toFixed(3))
+    };
+
+    const metrics: LearningMetrics = {
+      ...cached,
+      learningEventsCreated: nextTotal,
+      totalRuns: cached.totalRuns + (event.command ? 0 : 1),
+      correctionCandidates: cached.correctionCandidates + (event.proposedQueues.includes("correction_candidate") ? 1 : 0),
+      evalCandidates: cached.evalCandidates + (event.proposedQueues.includes("eval_candidate") ? 1 : 0),
+      memoryCandidates: cached.memoryCandidates + (event.proposedQueues.includes("memory_candidate") ? 1 : 0),
+      trainingCandidates: cached.trainingCandidates + (event.proposedQueues.includes("training_candidate") ? 1 : 0),
+      policyPatchCandidates: cached.policyPatchCandidates + (event.proposedQueues.includes("policy_patch_candidate") ? 1 : 0),
+      schemaPatchCandidates: cached.schemaPatchCandidates + (event.proposedQueues.includes("schema_patch_candidate") ? 1 : 0),
+      modeContractPatchCandidates: cached.modeContractPatchCandidates + (event.proposedQueues.includes("mode_contract_patch_candidate") ? 1 : 0),
+      codexPromptCandidates: cached.codexPromptCandidates + (event.proposedQueues.includes("codex_prompt_candidate") ? 1 : 0),
+      schemaPassRate: passRatio(cached.schemaPassRate, schemaFailure),
+      schemaFailureRate: ratio(cached.schemaFailureRate, schemaFailure),
+      criticPassRate: passRatio(cached.criticPassRate, criticFailure),
+      criticFailureRate: ratio(cached.criticFailureRate, criticFailure),
+      repairRate: ratio(cached.repairRate, event.output.repairAttempted),
+      genericOutputRate: ratio(cached.genericOutputRate, genericFailure),
+      evalPassRate: passRatio(cached.evalPassRate, evalFailure),
+      evalFailureRate: ratio(cached.evalFailureRate, evalFailure),
+      modeFailureRate: ratio(cached.modeFailureRate, hasFailure),
+      planningSpecificityScore: mode === "planning"
+        ? Number(((cached.planningSpecificityScore * Math.max(0, previousModeRuns) + event.qualitySignals.specificityScore) / nextModeRuns).toFixed(3))
+        : cached.planningSpecificityScore,
+      byMode
+    };
+    await this.write(metrics);
+    return metrics;
+  }
+
   private async events(): Promise<LearningEvent[]> {
     const dir = path.join(this.rootDir, "learning", "events", "hot");
     try {
-      const events: LearningEvent[] = [];
-      for (const entry of await fs.readdir(dir)) {
-        if (!entry.endsWith(".json")) continue;
-        const raw = await fs.readFile(path.join(dir, entry), "utf8");
-        events.push(LearningEventSchema.parse(JSON.parse(raw)));
-      }
-      return events;
+      const entries = (await fs.readdir(dir)).filter((entry) => entry.endsWith(".json"));
+      return Promise.all(
+        entries.map(async (entry) => JSON.parse(await fs.readFile(path.join(dir, entry), "utf8")) as LearningEvent)
+      );
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
       throw error;
@@ -146,6 +210,30 @@ export class LearningMetricsStore {
     }
   }
 
+  private async queueCounts(): Promise<Record<LearningQueueType, number>> {
+    const counts = {} as Record<LearningQueueType, number>;
+    for (const [type, dir] of Object.entries(queueDirs) as Array<[LearningQueueType, string]>) {
+      counts[type] = await this.countFiles(path.join(this.rootDir, "learning", "queue", dir));
+    }
+    return counts;
+  }
+
+  private async readCached(): Promise<LearningMetrics | undefined> {
+    try {
+      const raw = await fs.readFile(path.join(this.rootDir, "learning", "metrics", "learning_metrics.json"), "utf8");
+      return JSON.parse(raw) as LearningMetrics;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+      throw error;
+    }
+  }
+
+  private async write(metrics: LearningMetrics): Promise<void> {
+    const metricsDir = path.join(this.rootDir, "learning", "metrics");
+    await fs.mkdir(metricsDir, { recursive: true });
+    await fs.writeFile(path.join(metricsDir, "learning_metrics.json"), JSON.stringify(metrics, null, 2), "utf8");
+  }
+
   private repeatFailureCount(events: LearningEvent[]): number {
     const seen = new Map<string, number>();
     for (const event of events) {
@@ -157,4 +245,3 @@ export class LearningMetricsStore {
     return Array.from(seen.values()).filter((count) => count > 1).length;
   }
 }
-
