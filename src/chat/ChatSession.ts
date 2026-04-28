@@ -29,6 +29,8 @@ import { OperationExecutor } from "../operator/OperationExecutor.js";
 import { OperationFormatter } from "../operator/OperationFormatter.js";
 import type { OperationExecutionResult, OperationPlan } from "../operator/OperationSchemas.js";
 import type { RaxMode } from "../schemas/Config.js";
+import { VerificationEconomy } from "../verification/VerificationEconomy.js";
+import { WorkPacketPlanner } from "../verification/WorkPacketPlanner.js";
 import { RepoEvidencePackBuilder } from "../workspace/RepoEvidencePack.js";
 import { RepoSearch } from "../workspace/RepoSearch.js";
 import { WorkspaceContext, type ResolvedWorkspaceContext } from "../workspace/WorkspaceContext.js";
@@ -1833,7 +1835,16 @@ function formatBoundedCodexPromptCandidate(input: {
   const riskSummary = dependencyInstallRepair
     ? "dependency/install integrity blocker for the missing Rollup native optional package on darwin arm64"
     : promptRiskSummary(evidenceText, risks);
+  const autoAdvanceReport = dependencyInstallRepair
+    ? new VerificationEconomy().formatReport(
+        new WorkPacketPlanner().brightspaceRollupInstallIntegrityPacket({
+          workspace: input.workspace,
+          repoPath: input.repoPath
+        })
+      )
+    : undefined;
   return [
+    ...(autoAdvanceReport ? [autoAdvanceReport, ""] : []),
     "## Bounded Codex Prompt Candidate",
     "This is a candidate prompt only. STAX did not run Codex, modify source, approve memory, promote evals, or mutate the linked repo.",
     "",

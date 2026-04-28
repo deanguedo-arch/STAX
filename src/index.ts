@@ -26,3 +26,8 @@ export { RedTeamGenerator } from "./lab/RedTeamGenerator.js";
 export { ReleaseGate } from "./lab/ReleaseGate.js";
 export { ScenarioGenerator } from "./lab/ScenarioGenerator.js";
 export { VerificationWorker } from "./lab/VerificationWorker.js";
+export { AutoAdvanceGate } from "./verification/AutoAdvanceGate.js";
+export { AutonomyWindowController } from "./verification/AutonomyWindow.js";
+export { CheckpointGate } from "./verification/CheckpointGate.js";
+export { VerificationEconomy } from "./verification/VerificationEconomy.js";
+export { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";

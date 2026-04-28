@@ -62,6 +62,9 @@ export class NextStepBuilder {
       return `Run \`${debtCommand ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, plus the Codex file list and diff summary if available.`;
     }
     if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
+      if (dependencyBlocker) {
+        return `Ask for human approval to open the dependency repair bounded sandbox window for ${repoPath(result) ?? "the target repo"}; paste back the approval decision before any dependency repair runs.`;
+      }
       return `Run \`${boundedPromptCommand(result) ?? testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the Codex final report.`;
     }
     if (failedCommand) {
@@ -119,6 +122,9 @@ export class NextStepBuilder {
     }
     if (hasTestsOrScripts(result)) {
       if (plan.reasonCodes.includes("workspace_codex_prompt_request")) {
+        if (dependencyBlocker) {
+          return "The safe micro-steps are already compressed into the Auto-Advanced packet; dependency repair is the first real authority boundary, so STAX should ask once for a bounded window instead of asking about each tiny step.";
+        }
         return "The bounded prompt named one proof command for the target repo; that command is the proof boundary before claiming the patch worked.";
       }
       return "Static repo evidence can show that tests or scripts exist, but only command output can prove whether they pass or fail.";

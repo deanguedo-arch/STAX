@@ -378,6 +378,17 @@ describe("Chat Operator v1B", () => {
     );
 
     expect(result.output).toContain("dependency/install integrity blocker");
+    const oneNextStep = result.output.match(/## One Next Step\n([\s\S]*?)\n## Why This Step/)?.[1] ?? "";
+    expect(oneNextStep).toContain("Ask for human approval to open the dependency repair bounded sandbox window");
+    expect(oneNextStep).not.toContain("Run `npm ls");
+    expect(result.output).toContain("## Auto-Advanced");
+    expect(result.output).toContain("## First Real Boundary");
+    expect(result.output).toContain("Approval required: dependency repair.");
+    expect(result.output).toContain("## Proposed Authorized Window");
+    expect(result.output).toContain("## Hard Stops");
+    expect(result.output).toContain("## Decision Needed");
+    expect(result.output).not.toContain("Can I inspect");
+    expect(result.output).not.toContain("Can I classify");
     expect(result.output).toContain("## Allowed Tracked File Changes");
     expect(result.output).toContain("- package-lock.json only if lockfile repair is required.");
     expect(result.output).toContain("- package.json only if absolutely necessary and explicitly justified.");
