@@ -692,9 +692,11 @@ export class ChatSession {
         "",
         plan.reasonCodes.includes("workspace_codex_prompt_request")
           ? formatBoundedCodexPromptCandidate({
+              originalInput: plan.originalInput,
               workspace: workspaceLabel,
               repoPath: targetRepoPath,
               repoEvidencePack,
+              commandEvidence: storedCommandEvidence,
               verificationDebts: openVerificationDebts
             })
           : undefined,
@@ -712,9 +714,11 @@ export class ChatSession {
         "",
         plan.reasonCodes.includes("workspace_codex_prompt_request")
           ? formatBoundedCodexPromptCandidate({
+              originalInput: plan.originalInput,
               workspace: workspaceLabel,
               repoPath: targetRepoPath,
               repoEvidencePack,
+              commandEvidence: storedCommandEvidence,
               verificationDebts: openVerificationDebts
             })
           : undefined,
@@ -1788,29 +1792,47 @@ function isLinkedRepoCommandEvidence(evidence: CommandEvidence, targetRepoPath?:
 }
 
 function formatBoundedCodexPromptCandidate(input: {
+  originalInput?: string;
   workspace: string;
   repoPath?: string;
   repoEvidencePack?: Awaited<ReturnType<RepoEvidencePackBuilder["build"]>>;
+  commandEvidence?: CommandEvidence[];
   verificationDebts: VerificationDebt[];
 }): string {
   const scripts = input.repoEvidencePack?.scripts.map((script) => script.name) ?? [];
-  const proofCommand = input.verificationDebts[0]?.requiredCommand ?? preferredProofCommand(scripts);
   const repoFiles = input.repoEvidencePack?.importantFiles ?? [];
   const evidenceText = [
     ...(input.repoEvidencePack?.snippets.map((snippet) => snippet.excerpt) ?? []),
     ...(input.repoEvidencePack?.scripts.map((script) => `${script.name}: ${script.command}`) ?? [])
   ].join("\n");
-  const focusedFiles = focusedPromptFiles(repoFiles, evidenceText);
+  const commandEvidenceText = (input.commandEvidence ?? [])
+    .map((item) => `${item.command}: ${item.status}; ${item.summary}`)
+    .join("\n");
+  const promptContext = [
+    input.originalInput ?? "",
+    input.workspace,
+    evidenceText,
+    commandEvidenceText,
+    ...(input.repoEvidencePack?.riskFlags ?? [])
+  ].join("\n");
+  const dependencyInstallRepair = isDependencyInstallRepairPrompt(promptContext);
+  const proofCommand = dependencyInstallRepair
+    ? "npm run ingest:ci"
+    : input.verificationDebts[0]?.requiredCommand ?? preferredProofCommand(scripts);
+  const focusedFiles = dependencyInstallRepair ? dependencyRepairPromptFiles(repoFiles) : focusedPromptFiles(repoFiles, evidenceText);
   const files = [
     "package.json",
+    ...(dependencyInstallRepair ? ["package-lock.json", ".gitignore", "tmp/.gitkeep"] : []),
     "README.md",
     ...focusedFiles,
-    ...(input.repoEvidencePack?.operationalFiles.slice(0, 3) ?? []),
-    ...(input.repoEvidencePack?.sourceFiles.slice(0, 3) ?? []),
-    ...(input.repoEvidencePack?.testFiles.slice(0, 3) ?? [])
+    ...(dependencyInstallRepair ? [] : input.repoEvidencePack?.operationalFiles.slice(0, 3) ?? []),
+    ...(dependencyInstallRepair ? [] : input.repoEvidencePack?.sourceFiles.slice(0, 3) ?? []),
+    ...(dependencyInstallRepair ? [] : input.repoEvidencePack?.testFiles.slice(0, 3) ?? [])
   ].filter(Boolean);
   const risks = input.repoEvidencePack?.riskFlags ?? [];
-  const riskSummary = promptRiskSummary(evidenceText, risks);
+  const riskSummary = dependencyInstallRepair
+    ? "dependency/install integrity blocker for the missing Rollup native optional package on darwin arm64"
+    : promptRiskSummary(evidenceText, risks);
   return [
     "## Bounded Codex Prompt Candidate",
     "This is a candidate prompt only. STAX did not run Codex, modify source, approve memory, promote evals, or mutate the linked repo.",
@@ -1820,11 +1842,85 @@ function formatBoundedCodexPromptCandidate(input: {
     "## Objective",
     `Move ${input.workspace} forward by addressing the highest read-only risk signal: ${riskSummary}.`,
     "",
+    ...(dependencyInstallRepair
+      ? [
+          "## Scope",
+          "- This is an install/dependency integrity repair only.",
+          "- Do not edit parser/source logic.",
+          "- Do not edit reviewed fixtures.",
+          "- Do not edit gold/benchmark data.",
+          "- Do not run ingest:seed-gold.",
+          "- Do not broaden scope.",
+          ""
+        ]
+      : [
+          "## Scope",
+          "- Keep the patch bounded to the stated repo problem and proof command.",
+          "- Do not broaden scope into unrelated parser, source, fixture, benchmark, policy, memory, training, or promotion work.",
+          ""
+        ]),
     "## Files To Inspect",
     ...listOrNone([...new Set(files)].slice(0, 12).map((file) => `- ${file}`)),
     "",
+    "## Allowed Tracked File Changes",
+    ...(dependencyInstallRepair
+      ? [
+          "- package-lock.json only if lockfile repair is required.",
+          "- package.json only if absolutely necessary and explicitly justified.",
+          "- tmp/.gitkeep only to preserve or explicitly resolve its current deletion."
+        ]
+      : [
+          "- Only the smallest files directly required by the stated objective.",
+          "- package-lock.json or package.json only for an explicitly justified dependency/install repair.",
+          "- docs/report files only for a doc-only task.",
+          "- dirty-state placeholder files only when the task explicitly names that repo state."
+        ]),
+    "",
+    "## Forbidden Tracked File Changes",
+    ...(dependencyInstallRepair
+      ? [
+          "- src/**",
+          "- scripts/**",
+          "- reviewed fixtures",
+          "- benchmark/gold data",
+          "- parser logic",
+          "- ingest promotion logic",
+          "- tests, unless the test failure is unrelated and explicitly approved later"
+        ]
+      : [
+          "- unrelated source logic",
+          "- tests or fixtures that merely make the proof command pass",
+          "- benchmark/gold data unless the task is explicitly an approved benchmark/truth update",
+          "- generated artifacts",
+          "- memory, eval, training, policy, schema, or mode promotion state"
+        ]),
+    "",
+    ...(dependencyInstallRepair
+      ? [
+          "## Before Repair",
+          "- Run `npm ls @rollup/rollup-darwin-arm64 rollup vite`.",
+          "- Report whether the native optional package is missing from install state, lockfile state, or both.",
+          "",
+          "## Repair Rules",
+          "- Use the smallest dependency/install repair needed.",
+          "- Do not change app behavior.",
+          "- Do not change ingest logic.",
+          "- Do not change tests.",
+          "",
+          "## After Repair",
+          "- Run `npm run build`.",
+          "- Run `npm run ingest:ci`.",
+          ""
+        ]
+      : []),
     "## Commands To Run",
-    `- ${proofCommand}`,
+    ...(dependencyInstallRepair
+      ? [
+          "- npm ls @rollup/rollup-darwin-arm64 rollup vite",
+          "- npm run build",
+          "- npm run ingest:ci"
+        ]
+      : [`- ${proofCommand}`]),
     "",
     "## Acceptance Criteria",
     ...(isIngestTrustRepo(evidenceText)
@@ -1837,6 +1933,16 @@ function formatBoundedCodexPromptCandidate(input: {
     "- Name every file inspected and every file modified.",
     "- Do not claim tests pass without command output.",
     "- If no fix is made, report the exact blocker and missing evidence.",
+    ...(dependencyInstallRepair
+      ? [
+          "- No source, parser, script, fixture, benchmark/gold, or test files changed.",
+          "- package-lock.json and any package.json changes are limited to dependency/install integrity.",
+          "- tmp/.gitkeep is preserved or explicitly resolved.",
+          "- npm run build output is supplied.",
+          "- npm run ingest:ci output is supplied.",
+          "- The first remaining failure is reported if either gate still fails."
+        ]
+      : []),
     "",
     "## Stop Conditions",
     ...(isIngestTrustRepo(evidenceText)
@@ -1846,12 +1952,36 @@ function formatBoundedCodexPromptCandidate(input: {
         ]
       : ["- Stop before source mutation if the task requires policy, schema, tool permission, memory, training, or promotion changes."]),
     "- Stop if the selected proof command is missing or fails before claiming completion.",
+    ...(dependencyInstallRepair
+      ? [
+          "- Stop if the repair would require parser logic, app source, ingest script, test, fixture, or benchmark/gold changes.",
+          "- Stop if ingest:seed-gold appears necessary."
+        ]
+      : []),
+    "",
+    "## Reject Run If",
+    ...(dependencyInstallRepair
+      ? [
+          "- Codex changes parser logic, app source, ingest scripts, tests, fixtures, or benchmark/gold data without separate explicit approval.",
+          "- Codex runs ingest:seed-gold.",
+          "- Codex claims success without command output.",
+          "- Codex ignores tmp/.gitkeep.",
+          "- Codex fixes ingest behavior before proving dependency repair."
+        ]
+      : [
+          "- Codex changes files outside the allowed write surface.",
+          "- Codex claims success without command output.",
+          "- Codex edits truth data to make tests pass.",
+          "- Codex ignores dirty worktree state.",
+          "- Codex expands into promotion, memory, eval, training, policy, schema, or mode changes."
+        ]),
     "",
     "## Final Report Required",
     "- Files inspected.",
     "- Files modified.",
     "- Commands run with pass/fail output.",
-    "- Remaining verification debt."
+    "- Remaining verification debt.",
+    "- If no tracked files changed, say that clearly."
   ].join("\n");
 }
 
@@ -1889,6 +2019,10 @@ function focusedPromptFiles(files: string[], evidenceText: string): string[] {
   return [];
 }
 
+function dependencyRepairPromptFiles(files: string[]): string[] {
+  return files.filter((file) => /^(package-lock\.json|package\.json|\.gitignore|tmp\/\.gitkeep)$/.test(file));
+}
+
 function promptRiskSummary(evidenceText: string, risks: string[]): string {
   if (isIngestTrustRepo(evidenceText)) {
     return "ingest trust drift: reviewed fixtures must remain the truth source while parser output and candidate snapshots stay candidate-only";
@@ -1898,6 +2032,11 @@ function promptRiskSummary(evidenceText: string, risks: string[]): string {
 
 function isIngestTrustRepo(evidenceText: string): boolean {
   return /ingest/i.test(evidenceText) && /(trust repair|reviewed fixtures|candidate snapshots|parser output|promotion-check|ingest:ci)/i.test(evidenceText);
+}
+
+function isDependencyInstallRepairPrompt(text: string): boolean {
+  return /\b(dependency|install|optional package|optional dependency|node_modules|rollup-darwin-arm64|@rollup\/rollup-darwin-arm64)\b/i.test(text) &&
+    /\b(rollup|vite|native|darwin arm64|darwin-arm64|ingest:ci|build)\b/i.test(text);
 }
 
 function listOrNone(items: string[]): string[] {

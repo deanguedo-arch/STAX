@@ -267,7 +267,10 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("STAX created a bounded Codex prompt candidate");
     expect(result.output).toContain("## Bounded Codex Prompt Candidate");
     expect(result.output).toContain("## Files To Inspect");
+    expect(result.output).toContain("## Allowed Tracked File Changes");
+    expect(result.output).toContain("## Forbidden Tracked File Changes");
     expect(result.output).toContain("## Commands To Run");
+    expect(result.output).toContain("## Reject Run If");
     expect(result.output).toContain("npm test");
     expect(result.output).toContain("Operation: workspace_repo_audit");
     expect(result.output).not.toContain("Deferred. STAX did not execute");
@@ -316,8 +319,85 @@ describe("Chat Operator v1B", () => {
     expect(result.output).toContain("scripts/config/frozen-manifests.json");
     expect(result.output).toContain("npm run ingest:ci");
     expect(result.output).toContain("Run `npm run ingest:ci`");
+    expect(result.output).toContain("## Allowed Tracked File Changes");
+    expect(result.output).toContain("## Forbidden Tracked File Changes");
+    expect(result.output).toContain("## Reject Run If");
     expect(result.output).not.toContain("- AGENTS.md");
     expect(result.output).not.toContain("- src/cli.ts");
+  });
+
+  it("locks the write surface for Brightspace dependency/install repair prompts", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-brightspace");
+    await fs.mkdir(linkedRepo, { recursive: true });
+    await fs.writeFile(
+      path.join(linkedRepo, "package.json"),
+      JSON.stringify({
+        scripts: {
+          build: "tsc -b && vite build",
+          test: "vitest run",
+          "ingest:ci": "npm run build && npm run ingest:promotion-check",
+          "ingest:promotion-check": "node scripts/ingest-promotion-check.mjs"
+        }
+      }),
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(linkedRepo, "package-lock.json"),
+      JSON.stringify({
+        packages: {
+          "node_modules/@rollup/rollup-darwin-arm64": { version: "4.59.0" }
+        }
+      }),
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(linkedRepo, "README.md"),
+      [
+        "# Brightspace Assessment Factory",
+        "",
+        "The ingest system is under trust repair: reviewed fixtures are treated as truth, parser output is treated as a candidate snapshot.",
+        "The local and CI ingest gate is npm run ingest:ci."
+      ].join("\n"),
+      "utf8"
+    );
+    await new WorkspaceStore(rootDir).create({ workspace: "brightspacequizexporter", repoPath: "linked-brightspace", use: false });
+    await new CommandEvidenceStore(rootDir).record({
+      command: "npm run ingest:ci",
+      exitCode: 1,
+      source: "human_pasted_command_output",
+      summary: "npm run ingest:ci failed during build. Error: Cannot find module @rollup/rollup-darwin-arm64 from node_modules/rollup/dist/native.js.",
+      workspace: "brightspacequizexporter",
+      linkedRepoPath: linkedRepo
+    });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine(
+      "/prompt For brightspacequizexporter, create one bounded Codex patch prompt to repair the dependency install blocker and prove the ingest gate."
+    );
+
+    expect(result.output).toContain("dependency/install integrity blocker");
+    expect(result.output).toContain("## Allowed Tracked File Changes");
+    expect(result.output).toContain("- package-lock.json only if lockfile repair is required.");
+    expect(result.output).toContain("- package.json only if absolutely necessary and explicitly justified.");
+    expect(result.output).toContain("- tmp/.gitkeep only to preserve or explicitly resolve its current deletion.");
+    expect(result.output).toContain("## Forbidden Tracked File Changes");
+    expect(result.output).toContain("- src/**");
+    expect(result.output).toContain("- scripts/**");
+    expect(result.output).toContain("- reviewed fixtures");
+    expect(result.output).toContain("- benchmark/gold data");
+    expect(result.output).toContain("- tests, unless the test failure is unrelated and explicitly approved later");
+    expect(result.output).toContain("## Before Repair");
+    expect(result.output).toContain("npm ls @rollup/rollup-darwin-arm64 rollup vite");
+    expect(result.output).toContain("## After Repair");
+    expect(result.output).toContain("npm run build");
+    expect(result.output).toContain("npm run ingest:ci");
+    expect(result.output).toContain("## Reject Run If");
+    expect(result.output).toContain("Codex runs ingest:seed-gold");
+    expect(result.output).toContain("Codex fixes ingest behavior before proving dependency repair");
+    expect(result.output).not.toContain("- scripts/ingest-promotion-check.mjs");
+    expect(result.output).not.toContain("- src/test/unit/ingest/ingestBenchmark.test.ts");
   });
 
   it("labels pasted command results as partial user-supplied evidence instead of ignoring them", async () => {
