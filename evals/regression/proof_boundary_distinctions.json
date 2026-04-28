@@ -1,0 +1,21 @@
+{
+  "id": "proof_boundary_distinctions",
+  "mode": "planning",
+  "input": "Add proof boundary distinctions: DOCX pass cannot verify PDF behavior, OCR pass cannot verify structured recovery, course-shell pass cannot verify full e2e/rendered preview, fixture checks cannot verify rendered export, cf:convert cannot verify cf:validate, and a repo with no test script cannot be treated as npm test passing.",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "DOCX pass verifies PDF",
+    "OCR pass verifies structured recovery",
+    "course-shell pass verifies full e2e",
+    "fixture checks verify rendered export",
+    "cf:convert verifies cf:validate",
+    "no test script means npm test passed"
+  ],
+  "requiredSections": [
+    "## Objective",
+    "## Tests / Evals To Add",
+    "## Evidence Required"
+  ],
+  "critical": true,
+  "tags": ["proof_boundary", "regression", "evidence"]
+}
