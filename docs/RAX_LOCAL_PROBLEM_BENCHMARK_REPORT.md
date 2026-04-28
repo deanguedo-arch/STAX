@@ -384,6 +384,42 @@ queued as candidate corrections in:
 fixtures/problem_benchmark/candidates/fresh_holdout_25_tie_correction_candidates.json
 ```
 
+The candidate corrections were then applied to the scored holdout fixture while
+preserving the locked first-pass fixture as the audit record. This is a
+post-failure correction loop, not a blind first-pass win. The corrected answers
+improved the six tied cases by adding the missing local proof splits:
+
+- PDF-focused ingest family before DOCX/PDF claims
+- OCR proof separated from structured recovery proof
+- course-shell proof separated from project e2e and rendered preview proof
+- fixture proof separated from rendered export proof
+- ADMISSION-APP's missing test-script boundary
+- conversion proof separated from Brightspace validation proof
+
+The corrected fresh holdout result is:
+
+```txt
+Total: 25
+STAXBetter: 25
+ExternalBetter: 0
+Ties: 0
+NoLocalBasis: 0
+NoExternalBaseline: 0
+ExpectedMismatches: 0
+Confidence: benchmark_slice_proven
+StopConditionMet: true
+SuperiorityStatus: slice_only
+ContinueLoopRequired: true
+```
+
+The remaining superiority gaps are deliberately still open:
+
+```txt
+Need at least 50 captured comparisons for a superiority candidate; current 25.
+Need at least 2 external answer sources or capture contexts; current 1.
+Need external baselines captured on at least 2 dates; current 1.
+```
+
 Local ignored learning-queue artifacts were also created on this machine, but
 the tracked correction candidate fixture above is the durable artifact that
 travels with the repo.
@@ -399,14 +435,15 @@ The benchmark stop rule was also tightened: ties now block
 
 ```txt
 npm run typecheck: passed
-npm test: 49 files / 232 tests passed
+npm test: 52 files / 246 tests passed
 npm run rax -- eval: 16/16 passed
-npm run rax -- eval --regression: 43/43 passed
+npm run rax -- eval --regression: 46/46 passed
 npm run rax -- eval --redteam: 9/9 passed
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-27T19-48-26-853Z-jp9xj3
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-28T00-20-28-951Z-rb3ie5
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
-npm run rax -- compare benchmark --file fixtures/problem_benchmark/fresh_holdout_25_tasks.json: StopConditionMet false; SuperiorityStatus not_proven; ContinueLoopRequired true
+npm run rax -- compare benchmark --file fixtures/problem_benchmark/fresh_holdout_25_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
+npm run rax -- superiority status --fixtures fixtures/problem_benchmark: Status campaign_slice; ExternalBetter 0; Ties 0; broader coverage/date gaps remain
 ```
 
 ## Honest Limits

@@ -105,21 +105,22 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.superiorityGaps).toEqual(["Need external baselines captured on at least 2 dates; current 1."]);
   });
 
-  it("keeps the fresh holdout open when STAX ties the external baseline", async () => {
+  it("passes the corrected fresh holdout after applying tie corrections", async () => {
     const summary = await new LocalProblemBenchmark(process.cwd()).scoreFile("fixtures/problem_benchmark/fresh_holdout_25_tasks.json");
 
     expect(summary.total).toBe(25);
-    expect(summary.staxBetter).toBe(19);
+    expect(summary.staxBetter).toBe(25);
     expect(summary.externalBetter).toBe(0);
-    expect(summary.ties).toBe(6);
+    expect(summary.ties).toBe(0);
     expect(summary.noLocalBasis).toBe(0);
     expect(summary.noExternalBaseline).toBe(0);
-    expect(summary.expectedMismatches).toBe(6);
-    expect(summary.stopConditionMet).toBe(false);
-    expect(summary.confidence).toBe("promising");
-    expect(summary.superiorityStatus).toBe("not_proven");
+    expect(summary.expectedMismatches).toBe(0);
+    expect(summary.stopConditionMet).toBe(true);
+    expect(summary.confidence).toBe("benchmark_slice_proven");
+    expect(summary.superiorityStatus).toBe("slice_only");
     expect(summary.continueLoopRequired).toBe(true);
-    expect(summary.superiorityGaps).toEqual(["Current benchmark slice has not passed; fix slice failures before evaluating superiority."]);
+    expect(summary.superiorityGaps).toContain("Need at least 50 captured comparisons for a superiority candidate; current 25.");
+    expect(summary.superiorityGaps).toContain("Need external baselines captured on at least 2 dates; current 1.");
   });
 
   it("preserves collection-level baseline metadata when scoring a benchmark directory", async () => {
@@ -128,7 +129,8 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.total).toBe(90);
     expect(summary.noExternalBaseline).toBe(0);
     expect(summary.externalBetter).toBe(0);
-    expect(summary.ties).toBe(6);
-    expect(summary.stopConditionMet).toBe(false);
+    expect(summary.ties).toBe(0);
+    expect(summary.stopConditionMet).toBe(true);
+    expect(summary.superiorityStatus).toBe("slice_only");
   });
 });

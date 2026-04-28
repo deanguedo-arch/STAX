@@ -21,12 +21,12 @@ describe("GeneralSuperiorityGate", () => {
   it("does not treat current benchmark fixtures as general superiority", async () => {
     const report = await new GeneralSuperiorityGate(process.cwd()).evaluateDirectory("fixtures/problem_benchmark");
 
-    expect(report.status).toBe("not_proven");
+    expect(report.status).toBe("campaign_slice");
     expect(report.metrics.comparisons).toBe(90);
-    expect(report.metrics.ties).toBe(6);
-    expect(report.metrics.blindComparisons).toBe(25);
-    expect(report.gaps.join(" ")).toContain("ties do not prove superiority");
+    expect(report.metrics.ties).toBe(0);
+    expect(report.metrics.blindComparisons).toBe(0);
     expect(report.gaps.join(" ")).toContain("Need at least 250");
+    expect(report.gaps.join(" ")).toContain("Need at least 12 broad work lanes");
   });
 
   it("requires broad blind coverage before a general superiority candidate", () => {

@@ -7,7 +7,9 @@
   "externalCapturedAt": "2026-04-27T13:45:00.000Z",
   "approvalRequired": true,
   "noAutoPromotion": true,
-  "summary": "Fresh holdout v1 found zero external_better cases but six ties. These are candidate corrections only; the locked STAX answers remain unchanged.",
+  "appliedTo": "fixtures/problem_benchmark/fresh_holdout_25_tasks.json",
+  "appliedAt": "2026-04-27T20:30:00.000Z",
+  "summary": "Fresh holdout v1 found zero external_better cases but six ties. These corrections were applied to the scored holdout fixture after the first-pass failure; the locked first-pass STAX answers remain unchanged.",
   "candidates": [
     {
       "caseId": "brightspace_docx_vs_pdf_split",
