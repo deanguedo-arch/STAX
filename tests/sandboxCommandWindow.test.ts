@@ -1,6 +1,8 @@
+import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 import { CommandEvidenceStore } from "../src/evidence/CommandEvidenceStore.js";
 import { SandboxCommandWindow, type SandboxCommandRunner } from "../src/verification/SandboxCommandWindow.js";
@@ -9,6 +11,8 @@ import { WorkPacketPlanner } from "../src/verification/WorkPacketPlanner.js";
 async function tempRoot(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "rax-sandbox-command-window-"));
 }
+
+const execFileAsync = promisify(execFile);
 
 describe("SandboxCommandWindow", () => {
   const packet = new WorkPacketPlanner().brightspaceRollupInstallIntegrityPacket({
@@ -229,4 +233,23 @@ describe("SandboxCommandWindow", () => {
     expect(result.commandsRun).toHaveLength(0);
     expect(calls).toBe(0);
   });
+
+  it("exposes an approved dry-run command window through the CLI", async () => {
+    const rootDir = await tempRoot();
+    const repoRoot = process.cwd();
+    const tsxBin = path.join(repoRoot, "node_modules", ".bin", process.platform === "win32" ? "tsx.cmd" : "tsx");
+    const cliPath = path.join(repoRoot, "src", "cli.ts");
+    const command = process.platform === "win32" ? "cmd.exe" : tsxBin;
+    const commandArgs = process.platform === "win32"
+      ? ["/c", tsxBin, cliPath, "auto-advance", "command-window", "brightspace-rollup", "--approve"]
+      : [cliPath, "auto-advance", "command-window", "brightspace-rollup", "--approve"];
+
+    const { stdout } = await execFileAsync(command, commandArgs, { cwd: rootDir });
+    const result = JSON.parse(stdout) as { status: string; execute: boolean; commandsRun: string[]; mutationStatus: string };
+
+    expect(result.status).toBe("ready");
+    expect(result.execute).toBe(false);
+    expect(result.commandsRun).toHaveLength(0);
+    expect(result.mutationStatus).toBe("none");
+  }, 30000);
 });

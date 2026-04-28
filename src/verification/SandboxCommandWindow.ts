@@ -72,6 +72,26 @@ export class SandboxCommandWindow {
     }
 
     for (const command of parsed.commands) {
+      if (!parsed.execute) {
+        const dryRunBlocker = dryRunCommandBlocker(command, controller, window);
+        if (dryRunBlocker) {
+          commandResults.push({ command, status: "blocked", summary: dryRunBlocker });
+          blockingReasons.push(dryRunBlocker);
+          return result({
+            status: "blocked",
+            parsed,
+            commandResults,
+            commandsRun,
+            evidenceIds,
+            blockingReasons,
+            nextCheckpoint: nextCheckpoint(completed),
+            summary: `Sandbox command window blocked ${command}.`
+          });
+        }
+        commandResults.push({ command, status: "planned", summary: "Command is allowlisted but was not executed in dry-run mode." });
+        continue;
+      }
+
       const blocker = commandBlocker(command, controller, window, completed);
       if (blocker) {
         commandResults.push({ command, status: "blocked", summary: blocker });
@@ -86,11 +106,6 @@ export class SandboxCommandWindow {
           nextCheckpoint: nextCheckpoint(completed),
           summary: `Sandbox command window blocked ${command}.`
         });
-      }
-
-      if (!parsed.execute) {
-        commandResults.push({ command, status: "planned", summary: "Command is allowlisted but was not executed in dry-run mode." });
-        continue;
       }
 
       const cwd = parsed.sandboxPath!;
@@ -163,6 +178,16 @@ export class SandboxCommandWindow {
         : "Sandbox command window recorded command evidence and needs the next checkpoint."
     });
   }
+}
+
+function dryRunCommandBlocker(
+  command: string,
+  controller: AutonomyWindowController,
+  window: ReturnType<AutonomyWindowController["forPacket"]>
+): string | undefined {
+  if (controller.isCommandHardBlocked(command, window)) return `${command} is hard-blocked for this packet.`;
+  if (!controller.isCommandAllowed(command, window)) return `${command} is not allowlisted for this packet.`;
+  return undefined;
 }
 
 function commandBlocker(

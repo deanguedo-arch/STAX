@@ -61,6 +61,8 @@ import { ReviewStatsStore } from "./review/ReviewStats.js";
 import { ReviewDispositionSchema, ReviewRiskLevelSchema } from "./review/ReviewSchemas.js";
 import { GeneralSuperiorityGate } from "./superiority/GeneralSuperiorityGate.js";
 import { StrategicBenchmark } from "./strategy/StrategicBenchmark.js";
+import { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";
+import { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
 
 type ParsedArgs = {
   command: string;
@@ -91,6 +93,7 @@ const knownCommands = new Set([
   "compare",
   "superiority",
   "strategy",
+  "auto-advance",
   "mine",
   "review",
   "help"
@@ -845,6 +848,47 @@ async function strategyCommand(args: ParsedArgs): Promise<void> {
   throw new Error("Usage: rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]");
 }
 
+async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "";
+  if (action === "command-window") {
+    const packetName = args.positional[1] ?? "brightspace-rollup";
+    if (!["brightspace-rollup", "repair_rollup_install_integrity"].includes(packetName)) {
+      throw new Error("Usage: rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]");
+    }
+    const workspace = await new WorkspaceContext().resolve({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+    });
+    const packet = new WorkPacketPlanner().brightspaceRollupInstallIntegrityPacket({
+      workspace: workspace.workspace,
+      repoPath: workspace.linkedRepoPath
+    });
+    const commands = typeof args.flags.command === "string"
+      ? [args.flags.command]
+      : packet.allowedCommands;
+    const completedCommands = [
+      args.flags["completed-ls"] === true ? { command: "npm ls @rollup/rollup-darwin-arm64 rollup vite", exitCode: 0 } : undefined,
+      args.flags["completed-build"] === true ? { command: "npm run build", exitCode: 0 } : undefined,
+      args.flags["completed-ingest"] === true ? { command: "npm run ingest:ci", exitCode: 0 } : undefined
+    ].filter((item): item is { command: string; exitCode: number } => Boolean(item));
+    const result = await new SandboxCommandWindow().run({
+      packet,
+      commands,
+      humanApprovedWindow: Boolean(args.flags.approve || args.flags["approved-window"]),
+      execute: Boolean(args.flags.execute),
+      sandboxPath: typeof args.flags["sandbox-path"] === "string" ? args.flags["sandbox-path"] : undefined,
+      linkedRepoPath: workspace.linkedRepoPath,
+      workspace: workspace.workspace,
+      completedCommands
+    });
+    const stdout = JSON.stringify(result, null, 2);
+    logInfo(stdout);
+    await recordCommandEvent("auto-advance command-window", args, result.status !== "blocked" && result.status !== "stopped", stdout, result.evidenceIds, undefined, workspace);
+    if (result.status === "blocked" || result.status === "stopped") process.exitCode = 1;
+    return;
+  }
+  throw new Error("Usage: rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]");
+}
+
 function strategicExternalPrompt(): string {
   return [
     "You are the external baseline for a STAX broad strategic reasoning benchmark.",
@@ -1376,6 +1420,7 @@ function help(): void {
     "  rax compare import-baseline --file external_baseline.json",
     "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
     "  rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]",
+    "  rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
@@ -1430,6 +1475,8 @@ async function main(): Promise<void> {
     await superiorityCommand(args);
   } else if (args.command === "strategy") {
     await strategyCommand(args);
+  } else if (args.command === "auto-advance") {
+    await autoAdvanceCommand(args);
   } else if (args.command === "mine") {
     await mineCommand(args);
   } else if (args.command === "review") {

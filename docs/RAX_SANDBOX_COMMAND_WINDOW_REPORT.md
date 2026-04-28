@@ -6,6 +6,15 @@ Auto-Advance v0B adds a narrow sandbox command window after the v0 approval boun
 
 Given an approved work packet, STAX may evaluate exact allowlisted commands and, only when explicitly requested, run those commands in a sandbox path and record command evidence. This is a command-proof window, not a patch window.
 
+## CLI Surface
+
+```bash
+npm run rax -- auto-advance command-window brightspace-rollup --approve
+npm run rax -- auto-advance command-window brightspace-rollup --approve --execute --sandbox-path /tmp/brightspace-sandbox
+```
+
+The first command is a dry-run that previews the approved command window and does not execute anything. The second form requires both approval and an explicit sandbox path before command execution can occur.
+
 ## What v0B Allows
 
 For the Brightspace Rollup install-integrity packet, the allowed commands are:
@@ -73,12 +82,14 @@ Coverage includes:
 
 ```txt
 npm test -- --run tests/sandboxCommandWindow.test.ts tests/verificationEconomy.test.ts tests/commandEvidence.test.ts
-                                                      passed, 3 files / 27 tests
+                                                      passed, 3 files / 28 tests
 npm run typecheck                                     passed
-npm test                                              passed, 69 files / 359 tests
+npm test                                              passed, 69 files / 360 tests
 npm run rax -- eval                                   passed, 16/16
 npm run rax -- eval --regression                      passed, 47/47
 npm run rax -- eval --redteam                         passed, 9/9
+npm run rax -- auto-advance command-window brightspace-rollup --approve
+                                                      passed dry-run CLI smoke; no commands executed
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
                                                       passed smoke
 npm run rax -- chat --once "/prompt For brightspacequizexporter, create one bounded Codex patch prompt to repair the dependency install blocker and prove the ingest gate."
