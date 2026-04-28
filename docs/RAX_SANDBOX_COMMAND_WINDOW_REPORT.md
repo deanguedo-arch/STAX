@@ -15,6 +15,8 @@ npm run rax -- auto-advance command-window brightspace-rollup --approve --execut
 
 The first command is a dry-run that previews the approved command window and does not execute anything. The second form requires both approval and an explicit sandbox path before command execution can occur.
 
+As of Auto-Advance v0C, CLI execution also requires a valid `.stax-sandbox.json` manifest from the sandbox copy guard before the command window can run.
+
 ## What v0B Allows
 
 For the Brightspace Rollup install-integrity packet, the allowed commands are:

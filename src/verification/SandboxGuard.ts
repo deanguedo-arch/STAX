@@ -1,0 +1,243 @@
+import crypto from "node:crypto";
+import fs from "node:fs/promises";
+import path from "node:path";
+import {
+  SandboxGuardInputSchema,
+  SandboxGuardResultSchema,
+  SandboxManifestSchema,
+  type SandboxGuardInput,
+  type SandboxGuardResult,
+  type SandboxManifest
+} from "./SandboxGuardSchemas.js";
+
+const MANIFEST_FILE = ".stax-sandbox.json";
+
+export class SandboxGuard {
+  async create(input: SandboxGuardInput): Promise<SandboxGuardResult> {
+    const parsed = SandboxGuardInputSchema.parse(input);
+    if (!parsed.humanApprovedSandbox) {
+      return guardResult({
+        status: "approval_required",
+        sandboxPath: parsed.sandboxPath,
+        sourceRepoPath: parsed.sourceRepoPath,
+        blockingReasons: ["Human approval is required before sandbox creation."],
+        summary: "Sandbox was not created because approval is missing."
+      });
+    }
+    const guard = await this.guardPaths(parsed);
+    if (guard) return guard;
+
+    const sourceRepoPath = path.resolve(parsed.sourceRepoPath!);
+    const sandboxPath = path.resolve(parsed.sandboxPath);
+    const existing = await existingTargetState(sandboxPath);
+    if (existing === "has_manifest") {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        manifestPath: manifestPath(sandboxPath),
+        blockingReasons: ["Sandbox target already has a STAX manifest; verify it or choose a new empty sandbox path."],
+        summary: "Sandbox creation refused to merge-copy into an existing STAX sandbox."
+      });
+    }
+    if (existing === "nonempty_without_manifest") {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        blockingReasons: ["Sandbox target already exists and is not an empty STAX sandbox."],
+        summary: "Sandbox creation refused to overwrite a non-empty directory without a STAX sandbox manifest."
+      });
+    }
+
+    await fs.mkdir(sandboxPath, { recursive: true });
+    const copied = await copyDirectory(sourceRepoPath, sandboxPath);
+    const manifest = SandboxManifestSchema.parse({
+      sandboxId: `sandbox-${new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 17)}-${crypto.randomBytes(3).toString("hex")}`,
+      workspace: parsed.workspace,
+      packetId: parsed.packetId,
+      sourceRepoPath,
+      sandboxPath,
+      createdAt: new Date().toISOString(),
+      copiedFiles: copied.copiedFiles,
+      skippedEntries: copied.skippedEntries,
+      guardVersion: "v0C"
+    });
+    await fs.writeFile(manifestPath(sandboxPath), JSON.stringify(manifest, null, 2), "utf8");
+    return guardResult({
+      status: "created",
+      allowedForCommandWindow: true,
+      sandboxPath,
+      sourceRepoPath,
+      manifestPath: manifestPath(sandboxPath),
+      copiedFiles: copied.copiedFiles,
+      skippedEntries: copied.skippedEntries,
+      summary: "Sandbox copy created and manifest recorded."
+    });
+  }
+
+  async verify(input: Omit<SandboxGuardInput, "humanApprovedSandbox">): Promise<SandboxGuardResult> {
+    const parsed = SandboxGuardInputSchema.parse({ ...input, humanApprovedSandbox: true });
+    const guard = await this.guardPaths(parsed);
+    if (guard) return guard;
+    const sourceRepoPath = path.resolve(parsed.sourceRepoPath!);
+    const sandboxPath = path.resolve(parsed.sandboxPath);
+    let manifest: SandboxManifest;
+    try {
+      manifest = SandboxManifestSchema.parse(JSON.parse(await fs.readFile(manifestPath(sandboxPath), "utf8")));
+    } catch {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        blockingReasons: ["Sandbox manifest is missing or invalid."],
+        summary: "Sandbox verification failed because .stax-sandbox.json was not valid."
+      });
+    }
+    const blockingReasons: string[] = [];
+    if (path.resolve(manifest.sourceRepoPath) !== sourceRepoPath) blockingReasons.push("Sandbox manifest sourceRepoPath does not match the linked repo.");
+    if (path.resolve(manifest.sandboxPath) !== sandboxPath) blockingReasons.push("Sandbox manifest sandboxPath does not match the requested path.");
+    if (manifest.packetId && parsed.packetId && manifest.packetId !== parsed.packetId) blockingReasons.push("Sandbox manifest packetId does not match the requested packet.");
+    if (blockingReasons.length) {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        manifestPath: manifestPath(sandboxPath),
+        copiedFiles: manifest.copiedFiles,
+        skippedEntries: manifest.skippedEntries,
+        blockingReasons,
+        summary: "Sandbox verification failed."
+      });
+    }
+    return guardResult({
+      status: "verified",
+      allowedForCommandWindow: true,
+      sandboxPath,
+      sourceRepoPath,
+      manifestPath: manifestPath(sandboxPath),
+      copiedFiles: manifest.copiedFiles,
+      skippedEntries: manifest.skippedEntries,
+      summary: "Sandbox manifest verified; command window may use this sandbox path."
+    });
+  }
+
+  private async guardPaths(input: ReturnType<typeof SandboxGuardInputSchema.parse>): Promise<SandboxGuardResult | undefined> {
+    if (!input.sourceRepoPath) {
+      return guardResult({
+        status: "blocked",
+        sandboxPath: input.sandboxPath,
+        blockingReasons: ["Linked repo source path is required."],
+        summary: "Sandbox guard cannot proceed without a linked repo source path."
+      });
+    }
+    const sourceRepoPath = path.resolve(input.sourceRepoPath);
+    const sandboxPath = path.resolve(input.sandboxPath);
+    const sourceStat = await fs.stat(sourceRepoPath).catch(() => undefined);
+    if (!sourceStat?.isDirectory()) {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        blockingReasons: ["Linked repo source path does not exist or is not a directory."],
+        summary: "Sandbox guard cannot proceed without a real linked repo directory."
+      });
+    }
+    if (samePath(sourceRepoPath, sandboxPath)) {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        blockingReasons: ["Sandbox path cannot equal linked repo path."],
+        summary: "Sandbox guard refused to use the linked repo as a sandbox."
+      });
+    }
+    if (isInside(sandboxPath, sourceRepoPath)) {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        blockingReasons: ["Sandbox path cannot be inside the linked repo path."],
+        summary: "Sandbox guard refused to create a sandbox inside the linked repo."
+      });
+    }
+    return undefined;
+  }
+}
+
+function guardResult(input: Partial<SandboxGuardResult> & { status: SandboxGuardResult["status"]; sandboxPath: string; summary: string }): SandboxGuardResult {
+  return SandboxGuardResultSchema.parse({
+    allowedForCommandWindow: false,
+    copiedFiles: 0,
+    skippedEntries: [],
+    blockingReasons: [],
+    ...input,
+    sandboxPath: path.resolve(input.sandboxPath)
+  });
+}
+
+async function copyDirectory(source: string, target: string): Promise<{ copiedFiles: number; skippedEntries: string[] }> {
+  const skippedEntries: string[] = [];
+  let copiedFiles = 0;
+  async function walk(currentSource: string, currentTarget: string, relative = ""): Promise<void> {
+    const entries = await fs.readdir(currentSource, { withFileTypes: true });
+    await fs.mkdir(currentTarget, { recursive: true });
+    for (const entry of entries) {
+      const nextRelative = relative ? `${relative}/${entry.name}` : entry.name;
+      if (shouldSkip(nextRelative, entry)) {
+        skippedEntries.push(nextRelative);
+        continue;
+      }
+      const sourcePath = path.join(currentSource, entry.name);
+      const targetPath = path.join(currentTarget, entry.name);
+      if (entry.isDirectory()) {
+        await walk(sourcePath, targetPath, nextRelative);
+        continue;
+      }
+      if (entry.isFile()) {
+        await fs.copyFile(sourcePath, targetPath);
+        copiedFiles += 1;
+        continue;
+      }
+      skippedEntries.push(nextRelative);
+    }
+  }
+  await walk(source, target);
+  return { copiedFiles, skippedEntries };
+}
+
+function shouldSkip(relativePath: string, entry: { name: string; isSymbolicLink(): boolean; isDirectory(): boolean }): boolean {
+  if (entry.isSymbolicLink()) return true;
+  const normalized = relativePath.replace(/\\/g, "/");
+  if (/^(node_modules|\.git|dist|build|coverage|runs|evidence)(\/|$)/.test(normalized)) return true;
+  if (/^\.env(?:\.|$)/.test(entry.name)) return true;
+  if (entry.name === ".npmrc") return true;
+  if (/\.(pem|key|p12|pfx)$/i.test(entry.name)) return true;
+  if (entry.name === ".DS_Store") return true;
+  return false;
+}
+
+async function existingTargetState(sandboxPath: string): Promise<"missing" | "empty" | "has_manifest" | "nonempty_without_manifest"> {
+  try {
+    const entries = await fs.readdir(sandboxPath);
+    if (entries.length === 0) return "empty";
+    if (entries.includes(MANIFEST_FILE)) return "has_manifest";
+    return "nonempty_without_manifest";
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return "missing";
+    throw error;
+  }
+}
+
+function manifestPath(sandboxPath: string): string {
+  return path.join(path.resolve(sandboxPath), MANIFEST_FILE);
+}
+
+function samePath(a: string, b: string): boolean {
+  return path.resolve(a) === path.resolve(b);
+}
+
+function isInside(child: string, parent: string): boolean {
+  const relative = path.relative(path.resolve(parent), path.resolve(child));
+  return Boolean(relative) && !relative.startsWith("..") && !path.isAbsolute(relative);
+}
