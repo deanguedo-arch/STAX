@@ -266,9 +266,32 @@ describe("Chat Operator v1B operation receipts", () => {
     );
 
     expect(output).toContain("rendered-preview uncertainty");
+    expect(output).toContain("VisualEvidenceProtocol: missing");
     expect(output).toContain("SMART goals checkmark containment");
     expect(output).toContain("Capture the rendered Sports Wellness preview evidence");
     expect(output).not.toContain("Run `npm run test:e2e`");
+  });
+
+  it("routes human judgment requests through a judgment packet without acting", () => {
+    const output = new OperationFormatter().format(
+      basePlan({
+        intent: "judgment_digest",
+        originalInput: "show me the current review queue decision point",
+        workspace: "STAX",
+        reasonCodes: ["human_judgment"]
+      }),
+      baseResult({
+        evidenceChecked: ["OperationPlan", "review-ledger:local"],
+        result: "human_review: 2\nhard_block: 1\nbatch_review: 3",
+        nextAllowedActions: ["Run review inbox if refresh is needed."]
+      })
+    );
+
+    expect(output).toContain("JudgmentPacket");
+    expect(output).toContain("requiresHumanApproval=true");
+    expect(output).toContain("recommendedOption=refresh review inbox");
+    expect(output).toContain("No review item was refreshed");
+    expect(output).toContain("Run `npm run rax -- review inbox`");
   });
 
   it("asks for approval before sync when branch is behind origin", () => {

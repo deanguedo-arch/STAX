@@ -88,7 +88,6 @@ function inferTaskFamily(input: HoldoutFreshnessCase): HoldoutTaskFamily {
   if (input.taskFamily) return input.taskFamily;
   const text = `${input.id} ${input.task} ${input.sourceContext ?? ""}`.toLowerCase();
   if (/\bvisual|screenshot|rendered|layout|ui|css|checkmark|text fit\b/.test(text)) return "visual_evidence";
-  if (/\bruntime|test|build|deploy|command output|exit code|script\b/.test(text)) return "runtime_evidence";
   if (/\bdeploy|release|environment|pages|hosting\b/.test(text)) return "deployment_boundary";
   if (/\bbaseline|external|drift|capture\b/.test(text)) return "baseline_drift";
   if (/\bstrategy|roadmap|product|creative|business\b/.test(text)) return "strategy";
@@ -96,12 +95,40 @@ function inferTaskFamily(input: HoldoutFreshnessCase): HoldoutTaskFamily {
   if (/\bexecute|sandbox|patch|apply|mutation|autonomous\b/.test(text)) return "execution_maturity";
   if (/\bprecedence|instruction|policy|content\b/.test(text)) return "content_precedence";
   if (/\bcommand contract|cli|usage\b/.test(text)) return "command_contract";
+  if (/\bruntime|test|build|command output|exit code|script\b/.test(text)) return "runtime_evidence";
   return "proof_boundary";
 }
 
 function inferProofBoundary(input: HoldoutFreshnessCase): string {
   if (input.proofBoundary?.trim()) return normalizeText(input.proofBoundary);
+  const taskText = input.task.toLowerCase();
+  if (/\bbug belongs to classic\b|\bdetermine whether a bug belongs to classic\b/.test(taskText)) return "mode_boundary";
+  if (/\bduplicate game-engine\b|\bfrontend duplication\b|\bfork duplicate\b/.test(taskText)) return "shared_engine_duplication";
+  if (/\bwhat does exports:fixtures prove\b|\brendered exported course\b/.test(taskText)) return "export_fixture_vs_render";
+  if (/\bexport parity failure\b.*\brelease-gate failure\b/.test(taskText)) return "release_vs_export_gate";
+  if (/\bwhat does npm run build:pages prove\b/.test(taskText)) return "static_pages_build_boundary";
+  if (/\bonly script is build:pages\b|\bno npm test script\b/.test(taskText)) return "missing_test_entrypoint";
   const text = `${input.task} ${input.localEvidence}`.toLowerCase();
+  if (/\bdocx\b.*\bpdf\b|\bpdf\b.*\bdocx\b/.test(text)) return "docx_pdf_parser_split";
+  if (/\bocr\b/.test(text)) return "ocr_structured_recovery";
+  if (/\bfixture drift|benchmark drift|parity|scoreboard|baseline update|baselines? change\b/.test(text)) return "benchmark_drift_control";
+  if (/\bexports:fixtures|rendered exported course|exports:render\b/.test(text)) return "export_fixture_vs_render";
+  if (/\bscorm|apps script|google-hosted|brightspace export|export surface|exports?:/.test(text)) return "export_surface_contract";
+  if (/\bcourse shell|full e2e|e2e\b/.test(text)) return "course_shell_vs_full_e2e";
+  if (/\bmetadata|manifest|generation-context|migrate:projects\b/.test(text)) return "metadata_policy_review";
+  if (/\bassessment import|assessment export|assessment-delivery\b/.test(text)) return "assessment_import_export";
+  if (/\bsave\/load|save load|saves layer\b/.test(text)) return "save_load_contract";
+  if (/\bsimulation|balance|simulate_runs|content\/balance\b/.test(text)) return "deterministic_simulation";
+  if (/\bduplicate game-engine|authoritative simulation|frontend duplication\b/.test(text)) return "shared_engine_duplication";
+  if (/\bclassic|desktop|shared simulation|mode architecture|mode-aware|content loading\b/.test(text)) return "mode_boundary";
+  if (/\bconversion|convert|validation|cf:validate|cf:convert\b/.test(text)) return "conversion_vs_validation";
+  if (/\bcf:doctor|doctor\b/.test(text)) return "doctor_preflight_boundary";
+  if (/\bcomposer|drag|resize|canvas\b/.test(text)) return "composer_ui_visual_boundary";
+  if (/\bwhat does npm run build:pages prove|build pages contract|build:pages prove\b/.test(text)) return "static_pages_build_boundary";
+  if (/\bno npm test|no test script|build:pages\b/.test(text)) return "missing_test_entrypoint";
+  if (/\bingest:ci|promotion gate|canonical promotion|diagnostic\b/.test(text)) return "command_promotion_contract";
+  if (/\bteacher correction|correction|candidate snapshots?|promote-corrections\b/.test(text)) return "correction_promotion_boundary";
+  if (/\boverfit|fixture language|benchmark.*usefulness\b/.test(text)) return "benchmark_overfit_control";
   if (/\bscreenshot|rendered|visual|layout|text fit|checkmark\b/.test(text)) return "rendered_visual_artifact";
   if (/\bcommand output|exit code|npm test|typecheck|build\b/.test(text)) return "scoped_command_output";
   if (/\bdeploy|release|production|hosting\b/.test(text)) return "deployment_evidence";

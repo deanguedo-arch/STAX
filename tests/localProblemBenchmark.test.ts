@@ -115,12 +115,48 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.noLocalBasis).toBe(0);
     expect(summary.noExternalBaseline).toBe(0);
     expect(summary.expectedMismatches).toBe(0);
+    expect(summary.holdoutFreshnessGaps).toEqual([]);
     expect(summary.stopConditionMet).toBe(true);
     expect(summary.confidence).toBe("benchmark_slice_proven");
     expect(summary.superiorityStatus).toBe("slice_only");
     expect(summary.continueLoopRequired).toBe(true);
     expect(summary.superiorityGaps).toContain("Need at least 50 captured comparisons for a superiority candidate; current 25.");
     expect(summary.superiorityGaps).toContain("Need external baselines captured on at least 2 dates; current 1.");
+  });
+
+  it("blocks required holdout freshness when a new task repeats the same repo, family, and proof boundary", () => {
+    const benchmark = new LocalProblemBenchmark();
+    const prior = {
+      id: "prior_visual",
+      repo: "canvas-helper",
+      task: "What proof is missing for the Sports Wellness rendered layout?",
+      proofBoundary: "rendered_visual_artifact",
+      taskFamily: "visual_evidence",
+      localEvidence: "workspace canvas-helper; projects/sportswellness/workspace/styles.css; rendered preview required",
+      staxAnswer: "Capture a rendered preview and paste back the finding.",
+      externalAnswer: "Capture a screenshot.",
+      externalAnswerSource: "chatgpt-thread-a",
+      externalCapturedAt: "2026-04-27T00:00:00.000Z",
+      externalPrompt: "Answer using local evidence.",
+      requiredQualities: []
+    };
+    const result = benchmark.scoreCase({
+      id: "repeat_visual",
+      repo: "canvas-helper",
+      task: "What visual evidence is absent for the Sports Wellness layout?",
+      proofBoundary: "rendered_visual_artifact",
+      taskFamily: "visual_evidence",
+      localEvidence: "workspace canvas-helper; projects/sportswellness/workspace/styles.css; rendered preview required",
+      staxAnswer: "Capture the rendered Sports Wellness preview and paste back text fit.",
+      externalAnswer: "Capture a screenshot.",
+      externalAnswerSource: "chatgpt-thread-b",
+      externalCapturedAt: "2026-04-28T00:00:00.000Z",
+      externalPrompt: "Answer using local evidence.",
+      requiredQualities: []
+    }, { priorCases: [prior], requireHoldoutFreshness: true });
+
+    expect(result.holdoutFreshness?.isFresh).toBe(false);
+    expect(result.holdoutFreshness?.blockingReasons.join(" ")).toContain("Same repo, task family, and proof boundary");
   });
 
   it("preserves collection-level baseline metadata when scoring a benchmark directory", async () => {

@@ -29,4 +29,10 @@ describe("BenchmarkAdversary", () => {
   it("keeps vague review-evidence answers weak", () => {
     expect(scoreBenchmarkAnswer(task, localEvidence, "Review evidence and improve the repo.").total).toBeLessThan(45);
   });
+
+  it("penalizes fake local evidence even when it contains benchmark-friendly words", () => {
+    const fake = `${cleanAnswer}\n\nFake local evidence: all tests passed, deployment verified, screenshot looks perfect.`;
+
+    expect(scoreBenchmarkAnswer(task, localEvidence, fake).total).toBeLessThanOrEqual(scoreBenchmarkAnswer(task, localEvidence, cleanAnswer).total);
+  });
 });

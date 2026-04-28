@@ -11,8 +11,10 @@ import { replayRun } from "./core/Replay.js";
 import { createDefaultRuntime } from "./core/RaxRuntime.js";
 import { BehaviorMiner } from "./compare/BehaviorMiner.js";
 import { BehaviorRequirementTriage } from "./compare/BehaviorRequirementTriage.js";
+import { BenchmarkAdversary } from "./compare/BenchmarkAdversary.js";
 import { LocalProblemBenchmark } from "./compare/LocalProblemBenchmark.js";
 import { ExternalBaselineImport } from "./compare/ExternalBaselineImport.js";
+import { ProblemBenchmarkCaseSchema, ProblemBenchmarkCollectionSchema, type ProblemBenchmarkCase } from "./compare/ProblemBenchmarkSchemas.js";
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
@@ -683,12 +685,32 @@ async function compareCommand(args: ParsedArgs): Promise<void> {
     await recordCommandEvent("compare benchmark", args, summary.stopConditionMet, JSON.stringify(summary), []);
     return;
   }
+  if (args.positional[0] === "adversary") {
+    const file = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    if (!file) throw new Error("Usage: rax compare adversary --file fixture.json");
+    const cases = await loadProblemBenchmarkCases(file);
+    const adversary = new BenchmarkAdversary();
+    const results = cases.map((item) => ({
+      caseId: item.id,
+      repo: item.repo,
+      result: adversary.evaluate({
+        task: item.task,
+        localEvidence: item.localEvidence,
+        cleanAnswer: item.staxAnswer
+      })
+    }));
+    const failed = results.filter((item) => !item.result.passed);
+    const outputText = formatAdversaryResults(results);
+    logInfo(outputText);
+    await recordCommandEvent("compare adversary", args, failed.length === 0, outputText, []);
+    return;
+  }
   const taskFile = typeof args.flags.task === "string" ? args.flags.task : undefined;
   const staxFile = typeof args.flags.stax === "string" ? args.flags.stax : undefined;
   const externalFile = typeof args.flags.external === "string" ? args.flags.external : undefined;
   if (!staxFile || !externalFile) {
-  throw new Error("Usage: rax compare import-baseline --file external_baseline.json | rax compare benchmark [--fixtures dir|--file fixture.json] | rax compare --stax stax-answer.md --external external-answer.md [--task task.md] [--evidence evidence.md]");
-}
+    throw new Error("Usage: rax compare import-baseline --file external_baseline.json | rax compare benchmark [--fixtures dir|--file fixture.json] | rax compare adversary --file fixture.json | rax compare --stax stax-answer.md --external external-answer.md [--task task.md] [--evidence evidence.md]");
+  }
   const task = taskFile ? await fs.readFile(taskFile, "utf8") : args.positional.join(" ") || "Compare answers for this STAX project.";
   const staxAnswer = await fs.readFile(staxFile, "utf8");
   const externalAnswer = await fs.readFile(externalFile, "utf8");
@@ -719,6 +741,50 @@ async function compareCommand(args: ParsedArgs): Promise<void> {
   await recordCommandEvent("compare", args, result.validation.valid, result.output, [
     path.join("runs", result.createdAt.slice(0, 10), result.runId)
   ], result.runId);
+}
+
+async function loadProblemBenchmarkCases(file: string): Promise<ProblemBenchmarkCase[]> {
+  const parsed = JSON.parse(await fs.readFile(file, "utf8")) as unknown;
+  if (Array.isArray(parsed)) {
+    return parsed.map((item) => ProblemBenchmarkCaseSchema.parse(item));
+  }
+  const collection = ProblemBenchmarkCollectionSchema.parse(parsed);
+  return collection.cases.map((item) => ProblemBenchmarkCaseSchema.parse({
+    ...item,
+    staxAnswerSource: item.staxAnswerSource ?? collection.staxAnswerSource,
+    staxCapturedAt: item.staxCapturedAt ?? collection.staxCapturedAt,
+    externalAnswerSource: item.externalAnswerSource ?? collection.externalAnswerSource,
+    externalCapturedAt: item.externalCapturedAt ?? collection.externalCapturedAt,
+    externalPrompt: item.externalPrompt ?? collection.externalPrompt,
+    sourceType: item.sourceType ?? collection.sourceType,
+    sourceId: item.sourceId ?? collection.sourceId,
+    captureContext: item.captureContext ?? collection.captureContext,
+    promptHash: item.promptHash ?? collection.promptHash,
+    humanConfirmedNotDrifted: item.humanConfirmedNotDrifted ?? collection.humanConfirmedNotDrifted
+  }));
+}
+
+function formatAdversaryResults(results: Array<{ caseId: string; repo: string; result: ReturnType<BenchmarkAdversary["evaluate"]> }>): string {
+  const failed = results.filter((item) => !item.result.passed);
+  return [
+    "## Benchmark Adversary",
+    `Total: ${results.length}`,
+    `Passed: ${results.length - failed.length}`,
+    `Failed: ${failed.length}`,
+    "",
+    "## Results",
+    ...results.map((item) => [
+      `- ${item.caseId} (${item.repo}): ${item.result.passed ? "passed" : "failed"}`,
+      `  - CleanScore: ${item.result.cleanScore}`,
+      `  - GarbageScore: ${item.result.garbageScore}`,
+      item.result.blockingReasons.length ? `  - BlockingReasons: ${item.result.blockingReasons.join("; ")}` : undefined
+    ].filter(Boolean).join("\n")),
+    "",
+    "## Gate",
+    failed.length
+      ? "Benchmark anti-gaming failed: at least one mutation or garbage answer scored too close to or above the clean answer."
+      : "Benchmark anti-gaming passed: stuffed/generic/fake-evidence answers did not beat clean useful answers."
+  ].join("\n");
 }
 
 async function superiorityCommand(args: ParsedArgs): Promise<void> {
@@ -1306,6 +1372,7 @@ function help(): void {
     "  rax disagree --reason \"...\" [--run <run-id>]",
     "  rax compare --stax stax.md --external chatgpt.md [--task task.md]",
     "  rax compare benchmark [--fixtures fixtures/problem_benchmark | --file fixture.json]",
+    "  rax compare adversary --file fixture.json",
     "  rax compare import-baseline --file external_baseline.json",
     "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
     "  rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]",

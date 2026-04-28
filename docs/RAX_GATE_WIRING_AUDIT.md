@@ -25,15 +25,15 @@ The honest distinction:
 |---|---:|---:|---:|---:|---:|---:|---:|---|
 | `FirstPassIntegrityGate` | yes | yes | via benchmark/superiority | no direct chat path | yes | yes | yes | Strong. Used by `LocalProblemBenchmark` and `GeneralSuperiorityGate`; can keep post-correction or unlocked blind evidence out of superiority. |
 | `ProofBoundaryClassifier` | yes | yes | via `codex-audit-local` / model comparison output | yes, through `EvidenceDecisionGate` in `AnalystAgent` | regression eval only | yes, for audit scope and next proof | yes | Strong for audit/model-comparison answers; not yet a benchmark scoring primitive. |
-| `RuntimeEvidenceGate` | yes | yes | via `codex-audit-local` / model comparison output | yes, through `EvidenceDecisionGate` in `AnalystAgent` | no direct benchmark gate | yes, blocks failed runtime claims in audits | yes | Useful and live in audit answers; still not deeply wired into `OperationFormatter` or benchmark scoring. |
-| `HoldoutFreshnessGate` | yes | yes | via `compare benchmark` when fixture opts in | no | optional | yes, if `requireHoldoutFreshness` is set | yes | Partial. It can block opted-in benchmark fixtures, but current default fixture scoring does not require it. |
+| `RuntimeEvidenceGate` | yes | yes | via `codex-audit-local` / model comparison output | yes, through `EvidenceDecisionGate` and `EvidenceRequestBuilder` fallback requests | no direct benchmark gate | yes, blocks failed runtime claims in audits and shapes missing-evidence requests | yes | Live in audit answers and low-evidence request construction; still not a benchmark scoring primitive. |
+| `HoldoutFreshnessGate` | yes | yes | via `compare benchmark` for required fresh holdouts | no | yes for `fresh_holdout_25_tasks` and opted-in collections | yes, failed freshness contributes summary gaps | yes | Stronger. The fresh holdout fixture now opts in, and scoring reports freshness gaps instead of silently treating recycled cases as fresh. |
 | `ExternalBaselineImport` | yes | yes | yes: `compare import-baseline --file` | no | partial metadata logic exists separately in benchmark | yes in import CLI | yes | Partial. The import validator is live CLI, but benchmark scoring does not consume an imported baseline artifact yet. |
 | `BaselineDateGate` | yes | yes | via `superiority status/score/campaign` | no | yes, through `GeneralSuperiorityGate` | yes | yes | Strong for superiority. It contributes date status and blocks broad claims. |
 | `ExternalSourceDiversityGate` | yes | yes | via `superiority status/score/campaign` | no | yes, through `GeneralSuperiorityGate` | yes | yes | Strong for superiority. It canonicalizes source identity for broad-campaign status. |
-| `BenchmarkAdversary` | yes | yes | no | no | partial, via scorer anti-gaming penalties | yes, indirectly through lower scores | yes | Partial. The adversary class is test-only; the scorer has anti-gaming penalties, but there is no CLI adversary report yet. |
-| `VisualEvidenceProtocol` | yes | yes | no | no | no | no live answer path yet | yes | Utility-only. It defines the right visual proof contract but is not yet called by chat, audit, benchmark, or operator output. |
-| `EvidenceRequestBuilder` | yes | yes | no | no | no | no live answer path yet | yes | Utility-only. It composes runtime/proof-boundary requests, but `no_local_basis` and operator next steps do not call it yet. |
-| `JudgmentPacketBuilder` | yes | yes | no | no | no | no live approval path yet | yes | Utility-only. Review routing exists elsewhere, but decision packets are not yet emitted by `review`, chat, or operator commands. |
+| `BenchmarkAdversary` | yes | yes | yes: `compare adversary --file` | no | partial, via scorer anti-gaming penalties | yes, CLI fails when mutations beat clean answers | yes | Live CLI control. The scorer still carries penalties, and adversary reporting is now visible instead of unit-test-only. |
+| `VisualEvidenceProtocol` | yes | yes | no direct CLI | yes, through `OperationFormatter` rendered-preview outputs | no | yes, visual claims remain missing/partial and force screenshot/finding next step | yes | Live for operator visual proof gaps. Broader audit integration remains a future slice. |
+| `EvidenceRequestBuilder` | yes | yes | no direct CLI | yes, through `OperationFormatter` missing-evidence fallback | no | yes, low-evidence operator answers now ask for a typed minimal evidence packet | yes | Live for operator fallback requests. Benchmark `no_local_basis` scoring still reports gaps separately. |
+| `JudgmentPacketBuilder` | yes | yes | no direct CLI | yes, through `OperationFormatter` `judgment_digest` output | no | yes, judgment output names human approval and a recommendation without acting | yes | Live for judgment digest output. Review subcommands can still be upgraded to emit full packets. |
 | `StrategyMode` | yes | yes | no; existing `strategy` CLI uses older strategy system | no | no | no live answer path yet | yes | Utility-only. Safe wrapper exists, but live strategy behavior still comes from `StrategicDeliberation` / `StrategicBenchmark`. |
 | `ExecutionMaturity` | yes | yes | no | no | no | no live answer path yet | yes | Utility-only by design. It is a read-only maturity calculator and does not unlock execution. |
 | `ExecutionLane` / `ExecutionRiskGate` | yes | yes | no | no | no | yes only when called directly | yes | Utility-only by design. It is a pure risk gate and does not execute, patch, sandbox, commit, push, or mutate linked repos. |
@@ -49,46 +49,40 @@ The honest distinction:
 2. The audit/model-comparison nervous system is real but narrower.
    `RuntimeEvidenceGate` and `ProofBoundaryClassifier` shape `codex_audit` and
    `model_comparison` output through `EvidenceDecisionGate` and `AnalystAgent`.
-   They are not yet central to `OperationFormatter`.
+   `EvidenceRequestBuilder` now also uses them for operator missing-evidence
+   requests.
 
-3. Several new modules are intentionally not live controllers yet.
-   `VisualEvidenceProtocol`, `EvidenceRequestBuilder`, `JudgmentPacketBuilder`,
-   `StrategyMode`, `ExecutionMaturity`, and `ExecutionLane` are tested,
-   documented control surfaces. They are not finished as user-facing behavior
-   until a CLI/chat/operator path calls them.
+3. Some former utility-only gates now control operator output.
+   `VisualEvidenceProtocol`, `EvidenceRequestBuilder`, and
+   `JudgmentPacketBuilder` are called from `OperationFormatter`. Their failures
+   do not mutate state; they change the direct answer or required next proof.
 
-4. Execution remains restrained.
+4. Several modules are intentionally not live controllers yet.
+   `StrategyMode`, `ExecutionMaturity`, and `ExecutionLane` remain tested,
+   documented control surfaces. They are not finished as broad user-facing
+   behavior until a CLI/chat/operator path calls them.
+
+5. Execution remains restrained.
    `ExecutionLane` and `ExecutionMaturity` do not create sandboxes, run
    commands, patch files, mutate linked repos, commit, push, or promote durable
    state. That is the correct status for this slice.
 
 ## Highest-Value Wiring Gaps
 
-1. Wire `EvidenceRequestBuilder` into `LocalProblemBenchmark` and
-   `OperationFormatter` for `no_local_basis`, visual, deploy, and runtime gaps.
-   Expected behavior: low-evidence outputs name the smallest evidence packet
-   instead of relying on scattered handcrafted next-step text.
+1. Wire `EvidenceRequestBuilder` into benchmark `no_local_basis` reporting.
+   Expected behavior: low-evidence benchmark cases name the smallest evidence
+   packet, not only the missing fields.
 
 2. Wire `VisualEvidenceProtocol` into `ProofBoundaryClassifier` or
    `EvidenceDecisionGate` for rendered/UI claims.
    Expected behavior: visual claims without artifact plus checklist remain
    explicitly unverified in audit/operator answers.
 
-3. Wire `JudgmentPacketBuilder` into review and operator decision surfaces.
+3. Wire `JudgmentPacketBuilder` into review subcommands beyond operator digest.
    Expected behavior: sync, promote, risky command, deploy, and sandbox/apply
    questions produce a decision packet, not an implied action.
 
-4. Add a `compare adversary` CLI or benchmark report section for
-   `BenchmarkAdversary`.
-   Expected behavior: benchmark-gaming checks become visible proof, not only
-   unit-test coverage.
-
-5. Decide whether `HoldoutFreshnessGate` should become required for fresh
-   holdout fixture files.
-   Expected behavior: new holdout collections cannot silently score as fresh
-   without freshness metadata and local evidence.
-
-6. Keep `ExecutionLane` unwired to execution until a separate approval protocol
+4. Keep `ExecutionLane` unwired to execution until a separate approval protocol
    is designed and reviewed.
    Expected behavior: STAX can report maturity/readiness, but still cannot
    mutate linked repos or apply patches without a future explicit governance
@@ -96,9 +90,8 @@ The honest distinction:
 
 ## Bottom Line
 
-The 4-15 gates now exist and many are tested. The strongest live wiring is in
-benchmark/superiority and codex-audit/model-comparison proof discipline.
-
-The next honest line is not more gates. It is connecting the utility-only gates
-to one user-facing path at a time, with negative tests proving each failed gate
-changes the answer or blocks the claim.
+The 4-15 gates now exist, many are tested, and the first wiring closure pass
+connected the highest-risk utility-only surfaces to live operator or benchmark
+paths. This still does not make execution autonomous or prove global
+superiority; it makes the next GPT audit harder to dismiss as "files exist, but
+nothing controls behavior."

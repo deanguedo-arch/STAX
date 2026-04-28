@@ -1,8 +1,11 @@
 import type { OperationExecutionResult, OperationPlan } from "./OperationSchemas.js";
+import { EvidenceRequestBuilder } from "../evidence/EvidenceRequestBuilder.js";
+import { VisualEvidenceProtocol } from "../evidence/VisualEvidenceProtocol.js";
 import { buildOperationReceipt, renderOperationReceipt, type OperationReceipt } from "./OperationReceipt.js";
 import { OperationReceiptValidator } from "./OperationReceiptValidator.js";
 import { ProblemMovementGate } from "./ProblemMovementGate.js";
 import type { ProblemMovementResult } from "./ProblemMovementSchemas.js";
+import { JudgmentPacketBuilder } from "../review/JudgmentPacket.js";
 
 export class OperationFormatter {
   format(plan: OperationPlan, result: OperationExecutionResult): string {
@@ -114,7 +117,8 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
     const human = matchResultLine(result.result, /human_review:\s*(\d+)/i);
     const blocked = matchResultLine(result.result, /hard_block:\s*(\d+)/i);
     const batch = matchResultLine(result.result, /batch_review:\s*(\d+)/i);
-    return `STAX read the current persisted review queue only. Human-review items: ${human ?? "unknown"}; hard-blocked items: ${blocked ?? "unknown"}; batch-review items: ${batch ?? "unknown"}. No review item was refreshed, applied, approved, rejected, archived, or promoted.`;
+    const packet = judgmentPacketFor(plan, result);
+    return `STAX read the current persisted review queue only. Human-review items: ${human ?? "unknown"}; hard-blocked items: ${blocked ?? "unknown"}; batch-review items: ${batch ?? "unknown"}. JudgmentPacket: requiresHumanApproval=${packet.requiresHumanApproval}; recommendedOption=${packet.recommendedOption}. No review item was refreshed, applied, approved, rejected, archived, or promoted.`;
   }
   if (plan.intent === "audit_last_proof") {
     return "STAX audited the current thread's last chat-linked run. That proves only what the selected run/trace can support; it does not prove broader repo correctness without command or eval evidence.";
@@ -156,7 +160,8 @@ function directAnswer(plan: OperationPlan, result: OperationExecutionResult): st
     ].join(" ");
   }
   if (renderedPreviewNeed) {
-    return "Biggest verified problem: rendered-preview uncertainty for the named workspace surface. Source files and scripts are useful context, but tests/scripts were not run so pass/fail is unknown, and they do not prove text fit, border symmetry, or SMART goals checkmark containment without rendered preview evidence.";
+    const visual = visualEvidenceFor(plan);
+    return `Biggest verified problem: rendered-preview uncertainty for the named workspace surface. VisualEvidenceProtocol: ${visual.status}. Source files and scripts are useful context, but tests/scripts were not run so pass/fail is unknown, and they do not prove ${visual.unverifiedClaims.join(", ")} without rendered preview evidence.`;
   }
   if (isOperatingStateQuestion(plan)) {
     return operatingStateAnswer(result, foundTestsOrScripts);
@@ -194,7 +199,7 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
   }
   if (isOperatingStateQuestion(plan)) {
     if (renderedPreviewNeed) {
-      return "Capture the rendered Sports Wellness preview evidence for SMART goals checkmark containment and text fit; paste back a screenshot or visual finding.";
+      return visualNextStep(plan);
     }
     const syncBoundary = syncBoundaryStep(result);
     if (syncBoundary) return syncBoundary;
@@ -236,7 +241,7 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return `Run \`${failedCommand.command}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and the first failing error block.`;
   }
   if (renderedPreviewNeed) {
-    return "Capture the rendered Sports Wellness preview evidence for SMART goals checkmark containment and text fit; paste back a screenshot or visual finding.";
+    return visualNextStep(plan);
   }
   if (hasTestsOrScripts(result)) {
     const debtCommand = verificationDebtCommand(result);
@@ -246,7 +251,8 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
     return `Run \`${testCommand(result, plan.originalInput)}\` in ${repoPath(result) ?? "the target repo"} and paste back the full output, exit code if available, and failing test names if any.`;
   }
   if (plan.intent === "judgment_digest") {
-    return "Run `npm run rax -- review inbox` to refresh persisted review metadata; paste back the output if you want STAX to interpret it.";
+    const packet = judgmentPacketFor(plan, result);
+    return `Run \`npm run rax -- review inbox\` to refresh persisted review metadata; paste back the output if you want STAX to interpret it. JudgmentPacket recommends ${packet.recommendedOption}.`;
   }
   if (plan.intent === "audit_last_proof") {
     return "Run the exact verification command named in the audit's Required Next Proof section and paste back the command output.";
@@ -254,7 +260,7 @@ function oneNextStep(plan: OperationPlan, result: OperationExecutionResult): str
   if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
     return "Use the audit's Required Next Proof as the next task, then paste back the resulting command output or Codex final report.";
   }
-  return "Paste the missing local evidence or command output named below so STAX can move this from partial to verified.";
+  return evidenceRequestFor(plan, result).pasteBackInstructions;
 }
 
 function whyThisStep(plan: OperationPlan, result: OperationExecutionResult): string {
@@ -266,7 +272,8 @@ function whyThisStep(plan: OperationPlan, result: OperationExecutionResult): str
   const inspectedDependencyBlocker = dependencyBlocker && dependencyInspectionComplete(plan, result);
   const renderedPreviewNeed = renderedPreviewProofNeed(plan);
   if (renderedPreviewNeed) {
-    return "The user's problem is visual containment in the rendered workspace, so screenshot or rendered-preview evidence is the proof boundary before any fix can be called done.";
+    const visual = visualEvidenceFor(plan);
+    return `The user's problem is visual containment in the rendered workspace, so screenshot or rendered-preview evidence is the proof boundary before any fix can be called done. VisualEvidenceProtocol requires: ${visual.requiredNextEvidence.join("; ")}`;
   }
   if (failedCommand) {
     if (inspectedDependencyBlocker) {
@@ -290,6 +297,72 @@ function whyThisStep(plan: OperationPlan, result: OperationExecutionResult): str
     return "Run/trace evidence narrows what happened, but a verification command is still needed before claiming the underlying behavior works.";
   }
   return "The operator has partial local evidence; the next step should reduce the most important uncertainty instead of adding more paperwork.";
+}
+
+function evidenceRequestFor(plan: OperationPlan, result: OperationExecutionResult) {
+  return new EvidenceRequestBuilder().build({
+    task: plan.originalInput,
+    repo: plan.workspace,
+    reason: "missing_evidence",
+    availableEvidence: [
+      result.result,
+      ...result.evidenceChecked,
+      ...result.risks,
+      ...result.nextAllowedActions
+    ].join("\n")
+  });
+}
+
+function visualEvidenceFor(plan: OperationPlan) {
+  return new VisualEvidenceProtocol().evaluate({
+    target: visualTarget(plan),
+    artifactType: "missing",
+    requiredChecks: visualChecks(plan.originalInput),
+    sourceEvidenceOnly: true
+  });
+}
+
+function visualNextStep(plan: OperationPlan): string {
+  const visual = visualEvidenceFor(plan);
+  const checks = visual.unverifiedClaims.length ? visual.unverifiedClaims.join(" and ") : "the listed visual checks";
+  if (/sports\s*wellness|sportswellness/i.test(plan.originalInput)) {
+    return `Capture the rendered Sports Wellness preview evidence for ${checks}; paste back a screenshot or visual finding.`;
+  }
+  return `${visual.requiredNextEvidence[0] ?? "Capture a rendered screenshot or manual visual finding."} Paste back the artifact plus the target checklist.`;
+}
+
+function visualTarget(plan: OperationPlan): string {
+  if (/sports\s*wellness|sportswellness/i.test(plan.originalInput)) return "Sports Wellness rendered preview";
+  return `${plan.workspace || "workspace"} rendered UI surface`;
+}
+
+function visualChecks(input: string): string[] {
+  const checks: string[] = [];
+  if (/\btext fit|fit|box|overflow\b/i.test(input)) checks.push("text fit");
+  if (/\bsymmetrical borders?|border symmetry|border\b/i.test(input)) checks.push("border symmetry");
+  if (/\bsmart goals?|checkmark|check mark|containment\b/i.test(input)) checks.push("SMART goals checkmark containment");
+  return checks.length ? checks : ["target visual claim"];
+}
+
+function judgmentPacketFor(plan: OperationPlan, result: OperationExecutionResult) {
+  const hasPersistedCounts = /\b(human_review|hard_block|batch_review):\s*\d+/i.test(result.result);
+  return new JudgmentPacketBuilder().build({
+    decisionNeeded: "Decide whether to refresh persisted review metadata before acting on review items.",
+    options: [
+      "refresh review inbox",
+      "defer action until fresh evidence",
+      "read current digest only"
+    ],
+    recommendedOption: hasPersistedCounts ? "refresh review inbox" : "defer action until fresh evidence",
+    evidenceAvailable: [
+      ...result.evidenceChecked,
+      hasPersistedCounts ? "persisted review counts" : undefined
+    ].filter((item): item is string => Boolean(item)),
+    evidenceMissing: hasPersistedCounts ? ["fresh review inbox output"] : ["persisted review counts", "fresh review inbox output"],
+    riskIfApproved: "Refreshing review metadata can change queue state and should remain an explicit human-directed operation.",
+    riskIfRejected: "The digest may be stale, so decisions could be delayed or based on older review state.",
+    irreversible: false
+  });
 }
 
 function proofStatus(receipt: OperationReceipt): string {
