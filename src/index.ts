@@ -31,3 +31,4 @@ export { AutonomyWindowController } from "./verification/AutonomyWindow.js";
 export { CheckpointGate } from "./verification/CheckpointGate.js";
 export { VerificationEconomy } from "./verification/VerificationEconomy.js";
 export { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
+export { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";

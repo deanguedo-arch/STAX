@@ -32,6 +32,7 @@ export const CommandEvidenceSchema = z.object({
   summary: z.string().min(1),
   createdAt: z.string().datetime(),
   hash: z.string().min(1),
+  cwd: z.string().optional(),
   workspace: z.string().optional(),
   linkedRepoPath: z.string().optional()
 });
@@ -49,6 +50,7 @@ export type CommandEvidenceInput = {
   stdout?: string;
   stderr?: string;
   summary: string;
+  cwd?: string;
   workspace?: string;
   linkedRepoPath?: string;
 };
@@ -81,6 +83,7 @@ export class CommandEvidenceStore {
       exitCode: input.exitCode,
       stdout: stdout.text,
       stderr: stderr.text,
+      cwd: input.cwd,
       workspace: input.workspace,
       source: input.source ?? "local_stax_command_output"
     });
@@ -102,6 +105,7 @@ export class CommandEvidenceStore {
       summary: summary.text,
       createdAt,
       hash,
+      cwd: input.cwd,
       workspace: input.workspace,
       linkedRepoPath: input.linkedRepoPath
     });
