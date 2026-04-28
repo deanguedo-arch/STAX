@@ -95,4 +95,46 @@ describe("RuntimeEvidenceGate", () => {
 
     expect(result.status).toBe("failed");
   });
+
+  it("uses structured command evidence for scoped verification", () => {
+    const result = gate.evaluate({
+      claim: "Typecheck passed",
+      evidence: "structured evidence",
+      commandEvidence: [{
+        command: "npm run typecheck",
+        exitCode: 0,
+        success: true,
+        source: "local_stax_command_output",
+        status: "passed"
+      }]
+    });
+
+    expect(result.status).toBe("scoped_verified");
+    expect(result.verifiedScope.join(" ")).toContain("npm run typecheck");
+  });
+
+  it("lets structured command failure override pass claims", () => {
+    const result = gate.evaluate({
+      claim: "Tests passed",
+      evidence: "all good",
+      commandEvidence: [{
+        command: "npm test",
+        exitCode: 1,
+        success: false,
+        source: "local_stax_command_output",
+        status: "failed"
+      }]
+    });
+
+    expect(result.status).toBe("failed");
+  });
+
+  it("keeps Codex-reported command output below local stored proof", () => {
+    const result = gate.evaluate({
+      claim: "Tests passed",
+      evidence: "Codex reported command output: npm test passed"
+    });
+
+    expect(["partial", "unknown"]).toContain(result.status);
+  });
 });

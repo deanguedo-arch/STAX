@@ -12,6 +12,10 @@ export class RuntimeEvidenceGate {
     const evidence = parsed.evidence;
     const claim = parsed.claim;
     const repo = parsed.repo;
+    const structured = parsed.commandEvidence ?? [];
+    if (structured.length) {
+      return RuntimeEvidenceResultSchema.parse(evaluateStructuredCommandEvidence(claim, evidence, repo, structured));
+    }
     const failed = hasFailureEvidence(evidence);
     const strength = detectStrength(evidence);
     const reasons: string[] = [];
@@ -110,6 +114,9 @@ function detectStrength(evidence: string): RuntimeEvidenceStrength {
   if (/(\$\s*)?(npm|pnpm|yarn|npx|python|pytest|vitest)\s+[^\n]+[\s\S]*\b(passed|failed|error|exit code|tests?)\b/i.test(evidence)) {
     return "pasted_command_output";
   }
+  if (/\b(Codex reported command output|Codex says .* command .* passed|Codex says .* tests? passed)\b/i.test(evidence)) {
+    return "codex_reported_command_output";
+  }
   if (/\b(package\.json|scripts?:|repo-script:|npm run [a-z0-9:_-]+)\b/i.test(evidence)) {
     return "script_discovered";
   }
@@ -120,6 +127,61 @@ function detectStrength(evidence: string): RuntimeEvidenceStrength {
     return "source_inspection";
   }
   return "none";
+}
+
+function evaluateStructuredCommandEvidence(
+  claim: string,
+  evidence: string,
+  repo: string | undefined,
+  commandEvidence: NonNullable<RuntimeEvidenceInput["commandEvidence"]>
+): RuntimeEvidenceResult {
+  const failed = commandEvidence.find((item) => item.exitCode !== 0 || item.success === false || item.status === "failed");
+  const strength = structuredStrength(commandEvidence);
+  if (failed) {
+    return {
+      status: "failed",
+      strength,
+      verifiedScope: [`Command failure is verified for ${failed.command}.`],
+      unverifiedScope: ["Successful runtime/build/test behavior"],
+      requiredNextCommand: failed.command,
+      reasons: ["Structured command evidence with nonzero exit status overrides vague pass claims."]
+    };
+  }
+  if (isLinkedRepoClaimWithOnlyStaxEval(claim, evidence, repo) && commandEvidence.every((item) => !item.linkedRepoPath)) {
+    return {
+      status: "unknown",
+      strength,
+      verifiedScope: ["Structured STAX command evidence only"],
+      unverifiedScope: ["Linked repo runtime/build/test result"],
+      requiredNextCommand: nextCommandFor(claim, evidence),
+      reasons: ["Structured STAX command evidence cannot verify linked-repo behavior without linked repo command scope."]
+    };
+  }
+  if (commandEvidence.every((item) => item.source === "human_pasted_command_output")) {
+    return {
+      status: "partial",
+      strength: "pasted_command_output",
+      verifiedScope: commandEvidence.map((item) => `Human-pasted output for ${item.command}`),
+      unverifiedScope: ["Stored/replayable command evidence"],
+      requiredNextCommand: nextCommandFor(claim, evidence),
+      reasons: ["Human-pasted structured command evidence is partial until stored or replayed."]
+    };
+  }
+  return {
+    status: "scoped_verified",
+    strength,
+    verifiedScope: commandEvidence.map((item) => `Command ${item.command} exited 0`),
+    unverifiedScope: ["Claims outside the command evidence scope"],
+    requiredNextCommand: nextCommandFor(claim, evidence),
+    reasons: ["Structured command evidence supports a scoped runtime claim."]
+  };
+}
+
+function structuredStrength(commandEvidence: NonNullable<RuntimeEvidenceInput["commandEvidence"]>): RuntimeEvidenceStrength {
+  if (commandEvidence.some((item) => item.source === "local_stax_command_output")) return "local_stax_command_evidence";
+  if (commandEvidence.some((item) => item.source === "codex_reported_command_output")) return "codex_reported_command_output";
+  if (commandEvidence.some((item) => item.source === "human_pasted_command_output")) return "pasted_command_output";
+  return "stored_command_evidence";
 }
 
 function hasFailureEvidence(evidence: string): boolean {
@@ -155,6 +217,7 @@ function isExternalRepoName(repo: string | undefined): boolean {
 function scopeForDiscovery(strength: RuntimeEvidenceStrength): string {
   if (strength === "script_discovered") return "Package script exists";
   if (strength === "test_file_discovered") return "Test file exists";
+  if (strength === "codex_reported_command_output") return "Codex-reported command output";
   return "Source files were inspected";
 }
 

@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { FirstPassIntegrityGate } from "./FirstPassIntegrityGate.js";
+import { HoldoutFreshnessGate } from "./HoldoutFreshnessGate.js";
 import {
   ProblemBenchmarkCaseSchema,
   ProblemBenchmarkCollectionSchema,
@@ -25,7 +26,7 @@ const SUPERIORITY_MIN_CAPTURE_DAYS = 2;
 export class LocalProblemBenchmark {
   constructor(private rootDir = process.cwd()) {}
 
-  scoreCase(input: ProblemBenchmarkCase): ProblemBenchmarkResult {
+  scoreCase(input: ProblemBenchmarkCase, options: { priorCases?: ProblemBenchmarkCase[]; requireHoldoutFreshness?: boolean } = {}): ProblemBenchmarkResult {
     const problem = ProblemBenchmarkCaseSchema.parse(input);
     const missingLocalEvidence = localEvidenceGaps(problem.localEvidence);
     const staxScore = scoreAnswer(problem.task, problem.localEvidence, problem.staxAnswer);
@@ -46,6 +47,12 @@ export class LocalProblemBenchmark {
       currentWinner: winner,
       requestedClaimLevel: problem.requestedClaimLevel
     });
+    const freshness = (options.requireHoldoutFreshness || problem.requireHoldoutFreshness)
+      ? new HoldoutFreshnessGate().evaluate({
+        candidate: freshnessCase(problem),
+        existingCases: (options.priorCases ?? []).map(freshnessCase)
+      })
+      : undefined;
     const result = ProblemBenchmarkResultSchema.parse({
       caseId: problem.id,
       repo: problem.repo,
@@ -62,6 +69,13 @@ export class LocalProblemBenchmark {
       reasons,
       missingLocalEvidence,
       externalBaselineGaps,
+      holdoutFreshness: freshness
+        ? {
+          isFresh: freshness.isFresh,
+          freshnessReasons: freshness.freshnessReasons,
+          blockingReasons: freshness.blockingReasons
+        }
+        : undefined,
       correctionCandidate: winner === "external_better" ? correctionCandidate(problem, staxScore, externalScore) : undefined,
       suggestedEval: `Add or keep a benchmark fixture for ${problem.repo}/${problem.id} requiring ${winner === "external_better" ? "STAX to beat the external answer" : "STAX not to regress below tie"}.`,
       suggestedPromptPatch: winner === "external_better"
@@ -81,11 +95,24 @@ export class LocalProblemBenchmark {
       externalAnswerSource: item.externalAnswerSource ?? parsed.externalAnswerSource,
       externalCapturedAt: item.externalCapturedAt ?? parsed.externalCapturedAt,
       externalPrompt: item.externalPrompt ?? parsed.externalPrompt,
+      sourceType: item.sourceType ?? parsed.sourceType,
+      sourceId: item.sourceId ?? parsed.sourceId,
+      captureContext: item.captureContext ?? parsed.captureContext,
+      promptHash: item.promptHash ?? parsed.promptHash,
+      humanConfirmedNotDrifted: item.humanConfirmedNotDrifted ?? parsed.humanConfirmedNotDrifted,
+      requireHoldoutFreshness: item.requireHoldoutFreshness ?? parsed.requireHoldoutFreshness,
       lockedFixturePath: item.lockedFixturePath ?? parsed.lockedFixturePath ?? parsed.lockedStaxFixture,
       postCorrection: item.postCorrection ?? parsed.postCorrection ?? isPostCorrectionSource(item.staxAnswerSource ?? parsed.staxAnswerSource),
       correctionCandidatePath: item.correctionCandidatePath ?? parsed.correctionCandidatePath
     }));
-    return summarize(cases.map((item) => this.scoreCase(item)));
+    const results: ProblemBenchmarkResult[] = [];
+    for (const item of cases) {
+      results.push(this.scoreCase(item, {
+        priorCases: cases.slice(0, results.length),
+        requireHoldoutFreshness: parsed.requireHoldoutFreshness
+      }));
+    }
+    return summarize(results);
   }
 
   async scoreFile(filePath: string): Promise<ProblemBenchmarkSummary> {
@@ -116,6 +143,12 @@ export class LocalProblemBenchmark {
           externalAnswerSource: item.externalAnswerSource ?? maybeCollection.data.externalAnswerSource,
           externalCapturedAt: item.externalCapturedAt ?? maybeCollection.data.externalCapturedAt,
           externalPrompt: item.externalPrompt ?? maybeCollection.data.externalPrompt,
+          sourceType: item.sourceType ?? maybeCollection.data.sourceType,
+          sourceId: item.sourceId ?? maybeCollection.data.sourceId,
+          captureContext: item.captureContext ?? maybeCollection.data.captureContext,
+          promptHash: item.promptHash ?? maybeCollection.data.promptHash,
+          humanConfirmedNotDrifted: item.humanConfirmedNotDrifted ?? maybeCollection.data.humanConfirmedNotDrifted,
+          requireHoldoutFreshness: item.requireHoldoutFreshness ?? maybeCollection.data.requireHoldoutFreshness,
           lockedFixturePath: item.lockedFixturePath ?? maybeCollection.data.lockedFixturePath ?? maybeCollection.data.lockedStaxFixture,
           postCorrection: item.postCorrection ?? maybeCollection.data.postCorrection ?? isPostCorrectionSource(item.staxAnswerSource ?? maybeCollection.data.staxAnswerSource),
           correctionCandidatePath: item.correctionCandidatePath ?? maybeCollection.data.correctionCandidatePath
@@ -142,6 +175,7 @@ export class LocalProblemBenchmark {
       `SuperiorityStatus: ${summary.superiorityStatus}`,
       `ContinueLoopRequired: ${summary.continueLoopRequired}`,
       `ProofIntegrityGaps: ${summary.proofIntegrityGaps.length}`,
+      `HoldoutFreshnessGaps: ${summary.holdoutFreshnessGaps.length}`,
       "",
       "## Results",
       ...summary.results.map((result) => [
@@ -150,6 +184,7 @@ export class LocalProblemBenchmark {
         `  - External: ${result.externalScore.total}`,
         `  - Reasons: ${result.reasons.join("; ")}`,
         result.externalBaselineGaps.length ? `  - ExternalBaselineGaps: ${result.externalBaselineGaps.join("; ")}` : undefined,
+        result.holdoutFreshness?.blockingReasons.length ? `  - HoldoutFreshnessGaps: ${result.holdoutFreshness.blockingReasons.join("; ")}` : undefined,
         result.correctionCandidate ? `  - CorrectionCandidate: ${result.correctionCandidate}` : undefined
       ].filter(Boolean).join("\n")),
       "",
@@ -167,9 +202,18 @@ export class LocalProblemBenchmark {
       "## Proof Integrity",
       summary.proofIntegrityGaps.length
         ? summary.proofIntegrityGaps.map((gap) => `- ${gap}`).join("\n")
-        : "- No first-pass integrity gaps detected for this benchmark summary."
+        : "- No first-pass integrity gaps detected for this benchmark summary.",
+      "",
+      "## Holdout Freshness",
+      summary.holdoutFreshnessGaps.length
+        ? summary.holdoutFreshnessGaps.map((gap) => `- ${gap}`).join("\n")
+        : "- No required holdout freshness gaps detected for this benchmark summary."
     ].join("\n");
   }
+}
+
+export function scoreBenchmarkAnswer(task: string, localEvidence: string, answer: string): ProblemBenchmarkDimensionScore {
+  return scoreAnswer(task, localEvidence, answer);
 }
 
 function scoreAnswer(task: string, localEvidence: string, answer: string): ProblemBenchmarkDimensionScore {
@@ -191,7 +235,8 @@ function scoreAnswer(task: string, localEvidence: string, answer: string): Probl
     codexReadiness: 0.06,
     riskControl: 0.08
   };
-  const total = Math.round(100 * Object.entries(scores).reduce((sum, [key, value]) => sum + value * weights[key as keyof typeof weights], 0));
+  const rawTotal = 100 * Object.entries(scores).reduce((sum, [key, value]) => sum + value * weights[key as keyof typeof weights], 0);
+  const total = Math.max(0, Math.min(100, Math.round(rawTotal - antiGamingPenalty(task, localEvidence, answer))));
   return ProblemBenchmarkDimensionScoreSchema.parse({ ...scores, total });
 }
 
@@ -268,6 +313,8 @@ function externalBaselineGapsFor(problem: ProblemBenchmarkCase, externalScore: P
   if (!problem.externalAnswerSource?.trim()) gaps.push("External answer source is missing.");
   if (!problem.externalCapturedAt?.trim()) gaps.push("External answer capture date/time is missing.");
   if (!problem.externalPrompt?.trim()) gaps.push("External prompt is missing.");
+  if (problem.humanConfirmedNotDrifted === false) gaps.push("External baseline is marked drifted by human review.");
+  if (similarity(problem.staxAnswer, problem.externalAnswer) >= 0.86) gaps.push("External answer appears copied from the STAX answer.");
   if (isGeneric(problem.externalAnswer) || externalScore.actualAnswer < 0.45) {
     gaps.push("External answer is too generic or drifted to be a valid comparison baseline.");
   }
@@ -291,9 +338,11 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
   const expectedMismatches = results.filter((item) => item.expectedWinner && !item.matchedExpectedWinner).length;
   const stopConditionMet = results.length > 0 && externalBetter === 0 && ties === 0 && noLocalBasis === 0 && noExternalBaseline === 0 && expectedMismatches === 0;
   const proofIntegrityGaps = proofIntegrityGapsFor(results);
+  const holdoutFreshnessGaps = holdoutFreshnessGapsFor(results);
   const superiorityGaps = [
     ...superiorityGapsFor(results, stopConditionMet),
-    ...proofIntegrityGaps
+    ...proofIntegrityGaps,
+    ...holdoutFreshnessGaps
   ];
   const superiorityStatus = !stopConditionMet
     ? "not_proven"
@@ -317,10 +366,17 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
     superiorityStatus,
     superiorityGaps,
     proofIntegrityGaps,
+    holdoutFreshnessGaps,
     continueLoopRequired: superiorityStatus !== "superiority_candidate",
     stopConditionMet,
     results
   });
+}
+
+function holdoutFreshnessGapsFor(results: ProblemBenchmarkResult[]): string[] {
+  const blocked = results.filter((item) => item.holdoutFreshness && !item.holdoutFreshness.isFresh);
+  if (!blocked.length) return [];
+  return [`Holdout freshness gate blocked ${blocked.length} case(s): ${blocked.map((item) => item.caseId).slice(0, 5).join(", ")}${blocked.length > 5 ? ", ..." : ""}.`];
 }
 
 function proofIntegrityGapsFor(results: ProblemBenchmarkResult[]): string[] {
@@ -377,6 +433,69 @@ function taskFamily(caseId: string): string {
     .replace(/^(brightspace|canvas|admissions|app|course|stax|repo)[_-]/i, "")
     .replace(/^[a-z0-9]+_(biggest|proof|fake|codex|next)/i, "$1")
     .replace(/_[0-9]+$/i, "");
+}
+
+function freshnessCase(problem: ProblemBenchmarkCase) {
+  return {
+    id: problem.id,
+    repo: problem.repo,
+    task: problem.task,
+    taskFamily: coerceFreshnessFamily(problem.taskFamily),
+    proofBoundary: problem.proofBoundary,
+    externalSource: problem.externalSource ?? problem.externalAnswerSource,
+    externalAnswerSource: problem.externalAnswerSource,
+    externalCapturedAt: problem.externalCapturedAt,
+    captureDate: problem.externalCapturedAt?.slice(0, 10),
+    localEvidence: problem.localEvidence,
+    sourceContext: problem.sourceContext
+  };
+}
+
+function coerceFreshnessFamily(value: string | undefined) {
+  const allowed = [
+    "command_contract",
+    "proof_boundary",
+    "visual_evidence",
+    "runtime_evidence",
+    "content_precedence",
+    "deployment_boundary",
+    "baseline_drift",
+    "strategy",
+    "human_judgment",
+    "execution_maturity"
+  ] as const;
+  return allowed.find((item) => item === value);
+}
+
+function similarity(left: string, right: string): number {
+  const a = new Set(importantTerms(left));
+  const b = new Set(importantTerms(right));
+  if (!a.size || !b.size) return 0;
+  const intersection = [...a].filter((item) => b.has(item)).length;
+  return intersection / new Set([...a, ...b]).size;
+}
+
+function antiGamingPenalty(task: string, localEvidence: string, answer: string): number {
+  let penalty = 0;
+  const commandCount = uniqueCommandCount(answer);
+  if (commandCount > 3) penalty += Math.min(24, (commandCount - 3) * 8);
+  const pathCount = countMatches(answer, /\b(?:src|scripts|docs|projects|tests|evals|runs|evidence)\/[A-Za-z0-9_.\/-]+|\bpackage\.json\b|\bREADME\.md\b|\btsconfig\.json\b/g);
+  if (pathCount > 3) penalty += Math.min(20, (pathCount - 3) * 5);
+  const evidenceTerms = importantTerms(localEvidence).filter((term) => term.length > 3).slice(0, 18);
+  const evidenceMatches = evidenceTerms.filter((term) => includesLoose(answer, term)).length;
+  const taskMatches = importantTerms(task).filter((term) => includesLoose(answer, term)).length;
+  if (/\b(no mutation|paste back|proof honest|evidence required|governance|fake-complete)\b/i.test(answer) && taskMatches < 2 && evidenceMatches < 2) {
+    penalty += 12;
+  }
+  const sloganCount = countMatches(answer, /\b(no mutation|paste back|proof honest|evidence required|governance|fake-complete|approval boundary)\b/gi);
+  if (sloganCount > 3) penalty += Math.min(14, (sloganCount - 3) * 4);
+  if (/\b(all tests pass|tests pass|build passed|fixed|complete|deployed)\b/i.test(answer) &&
+    !/\b(do not claim|cannot claim|not claim|unknown|until|without)\b/i.test(answer) &&
+    !/\b(unverified|no proof|does not prove|not prove|reject the)\b/i.test(answer) &&
+    !/\b(exit code 0|command-evidence|stored command evidence|stdoutPath|screenshot|trace:)\b/i.test(answer)) {
+    penalty += 14;
+  }
+  return penalty;
 }
 
 function winnerReasons(
@@ -436,6 +555,11 @@ function isGeneric(answer: string): boolean {
 
 function countMatches(text: string, pattern: RegExp): number {
   return [...text.matchAll(pattern)].length;
+}
+
+function uniqueCommandCount(text: string): number {
+  return new Set([...text.matchAll(/\b(?:npm run [a-z0-9:_-]+|npm test|npx tsx --test|pytest|vitest)\b/gi)]
+    .map((match) => match[0].toLowerCase())).size;
 }
 
 function clamp(value: number): number {

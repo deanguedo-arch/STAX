@@ -29,7 +29,9 @@ export const GeneralSuperiorityMetricsSchema = z.object({
   ties: z.number().int().nonnegative(),
   noLocalBasis: z.number().int().nonnegative(),
   noExternalBaseline: z.number().int().nonnegative(),
-  expectedMismatches: z.number().int().nonnegative()
+  expectedMismatches: z.number().int().nonnegative(),
+  baselineDateStatus: z.enum(["one_day_slice", "multi_day_eligible"]).optional(),
+  externalSourceDiversityStatus: z.enum(["single_source_slice", "source_diverse_eligible"]).optional()
 });
 
 export const GeneralSuperiorityReportSchema = z.object({

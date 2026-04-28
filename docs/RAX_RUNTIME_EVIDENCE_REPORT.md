@@ -28,6 +28,7 @@ None of those prove a linked repo build/test passed.
 - `script_discovered`
 - `test_file_discovered`
 - `pasted_command_output`
+- `codex_reported_command_output`
 - `stored_command_evidence`
 - `local_stax_command_evidence`
 
@@ -61,6 +62,14 @@ distinguishes zero failed counts from actual failures, and treats nonzero
 stored command exit codes as failed evidence. `EvidenceDecisionGate` now also
 uses runtime evidence and proof-boundary classification when rendering scope
 and required next proof.
+
+## 4-15 Hardening
+
+The gate now also accepts structured command evidence with command, exit code,
+source, status, workspace, linked repo path, and summary metadata. Structured
+nonzero exits override pass claims. Human-pasted and Codex-reported command
+output remain below stored/local scoped proof. STAX eval output still cannot
+verify linked-repo test/build claims without linked-repo command scope.
 
 ## What This Does Not Build
 

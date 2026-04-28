@@ -1,5 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { BaselineDateGate } from "../compare/BaselineDateGate.js";
+import { ExternalSourceDiversityGate, promptHash } from "../compare/ExternalSourceDiversityGate.js";
 import { FirstPassIntegrityGate } from "../compare/FirstPassIntegrityGate.js";
 import { LocalProblemBenchmark } from "../compare/LocalProblemBenchmark.js";
 import {
@@ -54,6 +56,8 @@ export class GeneralSuperiorityGate {
       `ReposOrDomains: ${report.metrics.reposOrDomains}/${report.thresholds.minReposOrDomains}`,
       `ExternalSources: ${report.metrics.externalSources}/${report.thresholds.minExternalSources}`,
       `CaptureDates: ${report.metrics.captureDates}/${report.thresholds.minCaptureDates}`,
+      `BaselineDateStatus: ${report.metrics.baselineDateStatus ?? "unknown"}`,
+      `ExternalSourceDiversityStatus: ${report.metrics.externalSourceDiversityStatus ?? "unknown"}`,
       `ExternalBetter: ${report.metrics.externalBetter}`,
       `Ties: ${report.metrics.ties}`,
       `NoLocalBasis: ${report.metrics.noLocalBasis}`,
@@ -81,8 +85,6 @@ export class GeneralSuperiorityGate {
     const workLanes = new Set(loaded.cases.map((item) => item.workLane ?? inferWorkLane(item)).filter(Boolean));
     const taskFamilies = new Set(loaded.cases.map((item) => item.taskFamily ?? inferTaskFamily(item)).filter(Boolean));
     const repos = new Set(summary.results.map((item) => item.repo));
-    const externalSources = new Set(summary.results.map((item) => item.externalAnswerSource).filter(Boolean));
-    const captureDates = new Set(summary.results.map((item) => item.externalCapturedAt?.slice(0, 10)).filter(Boolean));
     const firstPassIntegrity = summary.results.map((result) => {
       const problem = casesById.get(result.caseId);
       return {
@@ -103,6 +105,33 @@ export class GeneralSuperiorityGate {
         })
       };
     });
+    const baselineDate = new BaselineDateGate().evaluate({
+      records: summary.results.map((result) => {
+        const problem = casesById.get(result.caseId);
+        return {
+          caseId: result.caseId,
+          externalCapturedAt: result.externalCapturedAt,
+          externalAnswerSource: result.externalAnswerSource,
+          captureContext: problem?.captureContext ?? result.externalAnswerSource,
+          promptHash: problem?.promptHash ?? promptHash(result.externalPrompt),
+          externalAnswerHash: problem?.externalAnswerHash
+        };
+      }),
+      minUniqueDates: this.thresholds.minCaptureDates
+    });
+    const sourceDiversity = new ExternalSourceDiversityGate().evaluate({
+      sources: summary.results.map((result) => {
+        const problem = casesById.get(result.caseId);
+        return {
+          caseId: result.caseId,
+          sourceType: problem?.sourceType,
+          sourceId: problem?.sourceId ?? problem?.externalSource ?? result.externalAnswerSource,
+          captureContext: problem?.captureContext ?? result.externalAnswerSource,
+          promptHash: problem?.promptHash ?? promptHash(result.externalPrompt)
+        };
+      }),
+      minUniqueSources: this.thresholds.minExternalSources
+    });
     const blindComparisons = firstPassIntegrity.filter((item) => item.claimedBlind && item.integrity.firstPassEligible).length;
     const nonWinningCases = summary.results.filter((item) => item.winner !== "stax_better");
     const metrics = {
@@ -111,17 +140,21 @@ export class GeneralSuperiorityGate {
       workLanes: workLanes.size,
       taskFamilies: taskFamilies.size,
       reposOrDomains: repos.size,
-      externalSources: externalSources.size,
-      captureDates: captureDates.size,
+      externalSources: sourceDiversity.uniqueSourceCount,
+      captureDates: baselineDate.uniqueDateCount,
       externalBetter: summary.externalBetter,
       ties: summary.ties,
       noLocalBasis: summary.noLocalBasis,
       noExternalBaseline: summary.noExternalBaseline,
-      expectedMismatches: summary.expectedMismatches
+      expectedMismatches: summary.expectedMismatches,
+      baselineDateStatus: baselineDate.status,
+      externalSourceDiversityStatus: sourceDiversity.status
     };
     const gaps = [
       ...gateGaps(metrics, this.thresholds),
-      ...firstPassIntegrityGaps(firstPassIntegrity)
+      ...firstPassIntegrityGaps(firstPassIntegrity),
+      ...baselineDate.blockingReasons.filter((item) => !/^Need external baselines captured/.test(item)),
+      ...sourceDiversity.blockingReasons.filter((item) => !/^Need at least \d+ distinct external sources/.test(item))
     ];
     const status = gaps.length === 0 ? "superiority_candidate" : summary.stopConditionMet ? "campaign_slice" : "not_proven";
     return GeneralSuperiorityReportSchema.parse({
@@ -136,8 +169,8 @@ export class GeneralSuperiorityGate {
       nonWinningCases,
       workLanesCovered: Array.from(workLanes).sort(),
       taskFamiliesCovered: Array.from(taskFamilies).sort(),
-      externalSourcesCovered: Array.from(externalSources).sort(),
-      captureDatesCovered: Array.from(captureDates).sort()
+      externalSourcesCovered: sourceDiversity.sources.filter((item) => item.countsAsNewSource).map((item) => item.canonicalSourceKey).sort(),
+      captureDatesCovered: baselineDate.captureDates
     });
   }
 
@@ -170,6 +203,12 @@ export class GeneralSuperiorityGate {
       externalAnswerSource: item.externalAnswerSource ?? collection.externalAnswerSource,
       externalCapturedAt: item.externalCapturedAt ?? collection.externalCapturedAt,
       externalPrompt: item.externalPrompt ?? collection.externalPrompt,
+      sourceType: item.sourceType ?? collection.sourceType,
+      sourceId: item.sourceId ?? collection.sourceId,
+      captureContext: item.captureContext ?? collection.captureContext,
+      promptHash: item.promptHash ?? collection.promptHash,
+      humanConfirmedNotDrifted: item.humanConfirmedNotDrifted ?? collection.humanConfirmedNotDrifted,
+      requireHoldoutFreshness: item.requireHoldoutFreshness ?? collection.requireHoldoutFreshness,
       lockedFixturePath: item.lockedFixturePath ?? collection.lockedFixturePath ?? collection.lockedStaxFixture,
       postCorrection: item.postCorrection ?? collection.postCorrection,
       correctionCandidatePath: item.correctionCandidatePath ?? collection.correctionCandidatePath
