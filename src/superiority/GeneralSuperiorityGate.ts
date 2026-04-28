@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { FirstPassIntegrityGate } from "../compare/FirstPassIntegrityGate.js";
 import { LocalProblemBenchmark } from "../compare/LocalProblemBenchmark.js";
 import {
   ProblemBenchmarkCaseSchema,
@@ -82,7 +83,27 @@ export class GeneralSuperiorityGate {
     const repos = new Set(summary.results.map((item) => item.repo));
     const externalSources = new Set(summary.results.map((item) => item.externalAnswerSource).filter(Boolean));
     const captureDates = new Set(summary.results.map((item) => item.externalCapturedAt?.slice(0, 10)).filter(Boolean));
-    const blindComparisons = summary.results.filter((result) => isBlindCase(casesById.get(result.caseId), result.externalCapturedAt)).length;
+    const firstPassIntegrity = summary.results.map((result) => {
+      const problem = casesById.get(result.caseId);
+      return {
+        result,
+        claimedBlind: isBlindCase(problem, result.externalCapturedAt),
+        integrity: new FirstPassIntegrityGate().evaluate({
+          fixtureId: result.caseId,
+          firstPassLocked: problem?.firstPassLocked ?? isBlindCase(problem, result.externalCapturedAt),
+          firstPassScoreRecorded: problem?.firstPassScoreRecorded ?? true,
+          postCorrection: problem?.postCorrection ?? false,
+          staxAnswerEditedAfterExternal: problem?.staxAnswerEditedAfterExternal ?? false,
+          attemptedLockedFixtureOverwrite: problem?.attemptedLockedFixtureOverwrite ?? false,
+          lockedFixturePath: problem?.lockedFixturePath,
+          correctionCandidatePath: problem?.correctionCandidatePath,
+          firstPassWinner: problem?.firstPassWinner ?? result.winner,
+          currentWinner: result.winner,
+          requestedClaimLevel: "blind_first_pass"
+        })
+      };
+    });
+    const blindComparisons = firstPassIntegrity.filter((item) => item.claimedBlind && item.integrity.firstPassEligible).length;
     const nonWinningCases = summary.results.filter((item) => item.winner !== "stax_better");
     const metrics = {
       comparisons: summary.total,
@@ -98,7 +119,10 @@ export class GeneralSuperiorityGate {
       noExternalBaseline: summary.noExternalBaseline,
       expectedMismatches: summary.expectedMismatches
     };
-    const gaps = gateGaps(metrics, this.thresholds);
+    const gaps = [
+      ...gateGaps(metrics, this.thresholds),
+      ...firstPassIntegrityGaps(firstPassIntegrity)
+    ];
     const status = gaps.length === 0 ? "superiority_candidate" : summary.stopConditionMet ? "campaign_slice" : "not_proven";
     return GeneralSuperiorityReportSchema.parse({
       target: "general_superiority",
@@ -145,7 +169,10 @@ export class GeneralSuperiorityGate {
       staxCapturedAt: item.staxCapturedAt ?? collection.staxCapturedAt,
       externalAnswerSource: item.externalAnswerSource ?? collection.externalAnswerSource,
       externalCapturedAt: item.externalCapturedAt ?? collection.externalCapturedAt,
-      externalPrompt: item.externalPrompt ?? collection.externalPrompt
+      externalPrompt: item.externalPrompt ?? collection.externalPrompt,
+      lockedFixturePath: item.lockedFixturePath ?? collection.lockedFixturePath ?? collection.lockedStaxFixture,
+      postCorrection: item.postCorrection ?? collection.postCorrection,
+      correctionCandidatePath: item.correctionCandidatePath ?? collection.correctionCandidatePath
     }));
   }
 }
@@ -172,11 +199,24 @@ function nextActionsFor(gaps: string[], nonWinningCases: GeneralSuperiorityRepor
   const actions = new Set<string>();
   if (nonWinningCases.length) actions.add("Convert every external_better or tie case into correction and eval candidates before rerunning.");
   if (gaps.some((item) => item.includes("blind comparisons"))) actions.add("Generate fresh blind tasks across non-repo work lanes, lock STAX answers first, then capture external answers separately.");
+  if (gaps.some((item) => item.includes("first-pass integrity"))) actions.add("Add locked first-pass fixture metadata and preserve first-pass winner history before using blind comparison counts.");
   if (gaps.some((item) => item.includes("work lanes"))) actions.add("Add tasks for strategy, creative ideation, teaching, research synthesis, writing/editing, planning, tool/document work, memory, and messy judgment.");
   if (gaps.some((item) => item.includes("external sources") || item.includes("dates"))) actions.add("Capture external baselines from at least two contexts across at least three dates.");
   if (gaps.some((item) => item.includes("local/source evidence"))) actions.add("Add source evidence or mark the case out of scope before scoring.");
   if (gaps.some((item) => item.includes("external baseline"))) actions.add("Recapture drifted or missing external answers with the baseline prompt.");
   return Array.from(actions);
+}
+
+function firstPassIntegrityGaps(
+  items: Array<{
+    result: ProblemBenchmarkSummary["results"][number];
+    claimedBlind: boolean;
+    integrity: ReturnType<FirstPassIntegrityGate["evaluate"]>;
+  }>
+): string[] {
+  return items
+    .filter((item) => item.claimedBlind && !item.integrity.firstPassEligible)
+    .map((item) => `Blind comparison first-pass integrity gap for ${item.result.caseId}: ${item.integrity.reasons.join("; ") || "not first-pass eligible"}.`);
 }
 
 function isBlindCase(problem: ProblemBenchmarkCase | undefined, externalCapturedAt: string | undefined): boolean {

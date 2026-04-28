@@ -57,6 +57,9 @@ function firstPassEligibilityGaps(input: FirstPassIntegrityInput): string[] {
   if (!input.lockedFixturePath) {
     gaps.push("Blind first-pass claim requires a lockedFixturePath.");
   }
+  if (!input.firstPassWinner) {
+    gaps.push("Blind first-pass claim requires a recorded firstPassWinner.");
+  }
   if (input.postCorrection) {
     gaps.push("Corrected evidence must stay labelled post_correction_pass.");
   }

@@ -11,6 +11,7 @@ export class RuntimeEvidenceGate {
     const parsed = RuntimeEvidenceInputSchema.parse(input);
     const evidence = parsed.evidence;
     const claim = parsed.claim;
+    const repo = parsed.repo;
     const failed = hasFailureEvidence(evidence);
     const strength = detectStrength(evidence);
     const reasons: string[] = [];
@@ -27,7 +28,7 @@ export class RuntimeEvidenceGate {
       });
     }
 
-    if (isLinkedRepoClaimWithOnlyStaxEval(claim, evidence)) {
+    if (isLinkedRepoClaimWithOnlyStaxEval(claim, evidence, repo)) {
       reasons.push("STAX eval output cannot verify linked-repo test/build pass claims.");
       return RuntimeEvidenceResultSchema.parse({
         status: "unknown",
@@ -122,13 +123,33 @@ function detectStrength(evidence: string): RuntimeEvidenceStrength {
 }
 
 function hasFailureEvidence(evidence: string): boolean {
-  return /\b(failed|failure|error:|exit code\s*[1-9]|npm ERR!|AssertionError|TypeError|ReferenceError)\b/i.test(evidence);
+  const failurePatterns = [
+    /\bnpm ERR!\b/i,
+    /\b(?:AssertionError|TypeError|ReferenceError)\b/i,
+    /\berror:\s*[^\n]+/i,
+    /\bexit\s*code\s*[:=]?\s*[1-9]\d*\b/i,
+    /\bexitCode["']?\s*[:=]\s*[1-9]\d*\b/i,
+    /\bsuccess["']?\s*[:=]\s*false\b/i,
+    /\bcriticalFailures["']?\s*[:=]\s*[1-9]\d*\b/i,
+    /\bfailed["']?\s*[:=]\s*[1-9]\d*\b/i,
+    /\b[1-9]\d*\s+failed\b/i,
+    /\bfailed\s+[1-9]\d*\s+(?:tests?|cases?|checks?)\b/i,
+    /\b(?:command|run|build|test|eval)\s+failed\b/i,
+    /\btests?\s+failed\b/i
+  ];
+  return failurePatterns.some((pattern) => pattern.test(evidence));
 }
 
-function isLinkedRepoClaimWithOnlyStaxEval(claim: string, evidence: string): boolean {
-  const linkedRepoClaim = /\b(canvas-helper|brightspacequizexporter|course-factory|ADMISSION-APP|studentbudgetwars|linked repo|external repo)\b/i.test(claim);
+function isLinkedRepoClaimWithOnlyStaxEval(claim: string, evidence: string, repo?: string): boolean {
+  const linkedRepoClaim = isExternalRepoName(repo) ||
+    /\b(canvas-helper|brightspacequizexporter|course-factory|ADMISSION-APP|studentbudgetwars|linked repo|external repo)\b/i.test(claim);
   const staxEvalEvidence = /\b(npm run rax -- eval|eval --regression|eval --redteam|STAX eval)\b/i.test(evidence);
   return linkedRepoClaim && staxEvalEvidence && !/\b(canvas-helper|brightspacequizexporter|course-factory|ADMISSION-APP|studentbudgetwars).*\b(npm run|pytest|vitest|build|test)\b/i.test(evidence);
+}
+
+function isExternalRepoName(repo: string | undefined): boolean {
+  if (!repo?.trim()) return false;
+  return !/^stax$/i.test(repo.trim());
 }
 
 function scopeForDiscovery(strength: RuntimeEvidenceStrength): string {

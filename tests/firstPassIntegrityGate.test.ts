@@ -52,6 +52,21 @@ describe("FirstPassIntegrityGate", () => {
     expect(result.reasons).toContain("Locked first-pass fixture cannot be overwritten during scoring.");
   });
 
+  it("does not allow blind_first_pass when first-pass winner is missing", () => {
+    const result = new FirstPassIntegrityGate().evaluate({
+      fixtureId: "winner-missing",
+      firstPassLocked: true,
+      firstPassScoreRecorded: true,
+      lockedFixturePath: "fixtures/problem_benchmark/locked/winner-missing.json",
+      currentWinner: "stax_better",
+      requestedClaimLevel: "blind_first_pass"
+    });
+
+    expect(result.allowed).toBe(false);
+    expect(result.firstPassEligible).toBe(false);
+    expect(result.reasons).toContain("Blind first-pass claim requires a recorded firstPassWinner.");
+  });
+
   it("keeps post-correction evidence labelled post_correction_pass", () => {
     const result = new FirstPassIntegrityGate().evaluate({
       fixtureId: "post-correction",

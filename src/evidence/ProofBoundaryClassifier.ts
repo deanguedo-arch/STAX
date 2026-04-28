@@ -93,7 +93,7 @@ const RULES: Record<EvidenceFamily, BoundaryRule> = {
 export class ProofBoundaryClassifier {
   classify(input: ProofBoundaryInput): ProofBoundaryResult {
     const parsed = ProofBoundaryInputSchema.parse(input);
-    const evidenceFamily = detectFamily(`${parsed.claim}\n${parsed.evidence}`);
+    const evidenceFamily = detectFamily(parsed.evidence.trim() || parsed.claim);
     const rule = RULES[evidenceFamily];
     return ProofBoundaryResultSchema.parse({
       claim: parsed.claim,

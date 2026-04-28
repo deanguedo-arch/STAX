@@ -48,6 +48,20 @@ Failed command output overrides vague pass claims.
 - STAX regression eval output for a `canvas-helper` claim: linked repo test pass remains `unknown`.
 - failed command output: `failed`.
 
+## Fresh Agent Review Patch
+
+The 2026-04-28 red/blue/green review found three runtime-evidence gaps:
+
+- `repo` metadata was ignored for linked-repo scope.
+- success summaries such as `failed=0` could be treated as failures.
+- failed stored evidence with an `exitCode: 1` marker could be missed.
+
+`RuntimeEvidenceGate` now uses `repo` metadata for linked-repo boundaries,
+distinguishes zero failed counts from actual failures, and treats nonzero
+stored command exit codes as failed evidence. `EvidenceDecisionGate` now also
+uses runtime evidence and proof-boundary classification when rendering scope
+and required next proof.
+
 ## What This Does Not Build
 
 - No command runner.
@@ -63,11 +77,11 @@ Commands run:
 npm run typecheck
 passed
 
-npm test -- tests/firstPassIntegrityGate.test.ts tests/proofBoundaryClassifier.test.ts tests/runtimeEvidenceGate.test.ts
-3 files / 17 tests passed
+npm test -- tests/firstPassIntegrityGate.test.ts tests/proofBoundaryClassifier.test.ts tests/runtimeEvidenceGate.test.ts tests/generalSuperiorityGate.test.ts tests/evidenceDecisionGate.test.ts
+5 files / 32 tests passed
 
 npm test
-55 files / 265 tests passed
+55 files / 272 tests passed
 
 npm run rax -- eval
 16/16 passed

@@ -40,7 +40,19 @@ Blind first-pass eligibility requires:
 - Locked first-pass STAX win: allowed as `blind_first_pass`.
 - Corrected fixture after tie/loss: forced to `post_correction_pass`.
 - Locked fixture overwrite attempt: blocked.
+- Missing recorded first-pass winner: blocked from `blind_first_pass`.
 - Corrected-only evidence requesting `superiority_candidate`: blocked.
+
+## Fresh Agent Review Patch
+
+The 2026-04-28 red/blue/green review found that an omitted `firstPassWinner`
+could still be labelled `blind_first_pass`. The gate now requires a recorded
+first-pass winner before blind first-pass eligibility can pass.
+
+`GeneralSuperiorityGate` also now counts blind comparisons through
+`FirstPassIntegrityGate`, using locked fixture metadata such as
+`lockedStaxFixture`. Blind claims without locked first-pass fixture evidence do
+not contribute to broader superiority metrics.
 
 ## What This Does Not Build
 
@@ -57,11 +69,11 @@ Commands run:
 npm run typecheck
 passed
 
-npm test -- tests/firstPassIntegrityGate.test.ts tests/proofBoundaryClassifier.test.ts tests/runtimeEvidenceGate.test.ts
-3 files / 17 tests passed
+npm test -- tests/firstPassIntegrityGate.test.ts tests/proofBoundaryClassifier.test.ts tests/runtimeEvidenceGate.test.ts tests/generalSuperiorityGate.test.ts tests/evidenceDecisionGate.test.ts
+5 files / 32 tests passed
 
 npm test
-55 files / 265 tests passed
+55 files / 272 tests passed
 
 npm run rax -- eval
 16/16 passed

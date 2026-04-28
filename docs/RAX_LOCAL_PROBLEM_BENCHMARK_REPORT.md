@@ -431,18 +431,25 @@ The benchmark stop rule was also tightened: ties now block
 `StopConditionMet`. A holdout slice has not passed until every valid case is
 `stax_better`.
 
+The 2026-04-28 proof-integrity review tightened the directory summary again:
+post-correction evidence now remains a benchmark slice and cannot support
+`SuperiorityStatus: superiority_candidate`. `rax compare benchmark` reports
+`ProofIntegrityGaps` when corrected evidence is present, while
+`rax superiority status` remains the broader campaign gate.
+
 ## Validation
 
 ```txt
 npm run typecheck: passed
-npm test: 52 files / 246 tests passed
+npm test: 55 files / 272 tests passed
 npm run rax -- eval: 16/16 passed
-npm run rax -- eval --regression: 46/46 passed
+npm run rax -- eval --regression: 47/47 passed
 npm run rax -- eval --redteam: 9/9 passed
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-28T00-20-28-951Z-rb3ie5
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-28T16-05-06-000Z-paublj
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_15_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/real_repo_50_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
 npm run rax -- compare benchmark --file fixtures/problem_benchmark/fresh_holdout_25_tasks.json: StopConditionMet true; SuperiorityStatus slice_only; ContinueLoopRequired true
+npm run rax -- compare benchmark: StopConditionMet true; SuperiorityStatus slice_only; ProofIntegrityGaps 1
 npm run rax -- superiority status --fixtures fixtures/problem_benchmark: Status campaign_slice; ExternalBetter 0; Ties 0; broader coverage/date gaps remain
 ```
 

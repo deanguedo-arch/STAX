@@ -50,6 +50,10 @@ The default gate requires:
 Any tie is a failure to prove superiority. It may be a good learning signal,
 but it is not a win.
 
+Blind comparisons are counted through `FirstPassIntegrityGate`. A case must
+preserve locked first-pass fixture metadata, a recorded first-pass winner, and
+no post-correction label before it contributes to the blind-comparison metric.
+
 ## External ChatGPT STAX Role
 
 Use the open ChatGPT STAX thread as an external baseline and critic. Do not ask
@@ -82,6 +86,8 @@ The benchmark is blind: STAX must answer before this external answer is captured
 1. Create fresh tasks across broad work lanes.
 2. Capture or generate STAX answers first.
 3. Lock those answers with `staxCapturedAt`.
+   Preserve the locked fixture path in `lockedStaxFixture` or per-case
+   `lockedFixturePath`.
 4. Capture external answers afterward.
 5. Run `npm run rax -- superiority status`.
 6. Convert every loss or tie into correction/eval/prompt candidates.

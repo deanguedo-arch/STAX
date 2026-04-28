@@ -208,3 +208,20 @@ Implement only:
 3. RuntimeEvidenceGate.
 
 Everything else is either downstream of those gates or a future execution/autonomy risk.
+
+## Fresh Red/Blue/Green Review Outcome
+
+The fresh 2026-04-28 independent review did **not** keep commit `19c6831` as-is.
+Consensus was `modify`:
+
+- first-pass integrity needed a negative control for missing `firstPassWinner`
+- proof-boundary detection had to classify supplied evidence rather than claim text
+- runtime evidence had to use `repo` metadata, distinguish `failed=0`, and catch nonzero stored exit codes
+- at least one user-facing proof path had to consume the first-pass gate
+- the regression eval needed a concrete property check, not only headings and forbidden strings
+
+The follow-up patch wires first-pass integrity into `GeneralSuperiorityGate`
+blind comparison counts, feeds proof/runtime evidence into `EvidenceDecisionGate`,
+and adds negative tests for the consensus-confirmed gaps. This advances slice
+proof and narrows broader superiority proof; it does not make a global
+superiority claim.

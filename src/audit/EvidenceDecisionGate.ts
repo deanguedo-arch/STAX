@@ -1,4 +1,6 @@
 import { scoreEvidenceText } from "./EvidenceSufficiencyScorer.js";
+import { ProofBoundaryClassifier } from "../evidence/ProofBoundaryClassifier.js";
+import { RuntimeEvidenceGate } from "../evidence/RuntimeEvidenceGate.js";
 
 export type EvidenceClass =
   | "local_command"
@@ -30,8 +32,12 @@ export function decideEvidence(text: string): EvidenceDecision {
   const evidenceClasses = classifyEvidence(text);
   const sufficiency = scoreEvidenceText(text);
   const conflict = hasConflictingEvidence(text);
+  const runtime = new RuntimeEvidenceGate().evaluate({ claim: text, evidence: text });
+  const boundary = new ProofBoundaryClassifier().classify({ claim: text, evidence: text });
   const decision: EvidenceDecisionLabel = conflict
     ? "blocked_for_evidence"
+    : runtime.status === "failed"
+      ? "blocked_for_evidence"
     : sufficiency.canClaimVerifiedAudit
       ? "verified"
       : evidenceClasses.some((item) => item.startsWith("local_") || item === "ci")
@@ -42,11 +48,17 @@ export function decideEvidence(text: string): EvidenceDecision {
     decision,
     confidence,
     evidenceClasses,
-    scopeBoundary: scopeBoundary(text, decision),
+    scopeBoundary: `${scopeBoundary(text, decision)} ${proofBoundaryText(boundary)}`,
     assumptions: assumptions(text, evidenceClasses, conflict),
-    requiredNextProof: requiredNextProof(decision, sufficiency.missing, conflict),
+    requiredNextProof: Array.from(new Set([
+      ...requiredNextProof(decision, sufficiency.missing, conflict),
+      ...boundary.requiredNextProof,
+      ...(runtime.requiredNextCommand ? [`Run ${runtime.requiredNextCommand} and capture the output.`] : [])
+    ])),
     reasons: [
       ...sufficiency.reasons,
+      ...runtime.reasons,
+      `Proof boundary family: ${boundary.evidenceFamily}.`,
       ...(conflict ? ["Conflicting pass/fail evidence was detected."] : [])
     ]
   };
@@ -108,7 +120,7 @@ function isPastedClaim(text: string): boolean {
 function hasConflictingEvidence(text: string): boolean {
   const lower = text.toLowerCase();
   const passSignal = /\b(pass(ed)?|exit code 0|0 failed|passrate:\s*1|\d+\s+tests?\s+passed)\b/i.test(lower);
-  const failSignal = /\b(fail(ed|ure)?|exit code [1-9]|criticalfailures:\s*[1-9]|failed run|tests? failed)\b/i.test(lower);
+  const failSignal = /\b(exit code [1-9]|criticalfailures:\s*[1-9]|failed run|tests? failed|[1-9]\d*\s+failed|failed\s+[1-9]\d*)\b/i.test(lower);
   return passSignal && failSignal;
 }
 
@@ -142,4 +154,12 @@ function requiredNextProof(decision: EvidenceDecisionLabel, missing: string[], c
     ...missing.filter((item) => !/none identified/i.test(item)),
     "Provide local command/eval/trace evidence tied to the claim before using verified language."
   ]));
+}
+
+function proofBoundaryText(boundary: ReturnType<ProofBoundaryClassifier["classify"]>): string {
+  if (boundary.evidenceFamily === "unknown") return "No specific proof family was detected.";
+  return [
+    `Proof family ${boundary.evidenceFamily} verifies: ${boundary.verifiedScope.join(", ") || "nothing broad"}.`,
+    `Unverified: ${boundary.unverifiedScope.join(", ")}.`
+  ].join(" ");
 }

@@ -15,6 +15,17 @@ describe("ProofBoundaryClassifier", () => {
     expect(result.unverifiedScope).toContain("PDF parsing");
   });
 
+  it("classifies supplied evidence rather than letting claim text steer the family", () => {
+    const result = classifier.classify({
+      claim: "DOCX parser works",
+      evidence: "PDF parser focused tests passed for .pdf fixtures."
+    });
+
+    expect(result.evidenceFamily).toBe("pdf");
+    expect(result.verifiedScope).toContain("PDF parsing path only");
+    expect(result.unverifiedScope).toContain("DOCX parsing");
+  });
+
   it("does not let OCR proof verify structured recovery", () => {
     const result = classifier.classify({
       claim: "Structured recovery works",

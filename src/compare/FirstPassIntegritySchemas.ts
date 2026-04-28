@@ -1,12 +1,7 @@
 import { z } from "zod";
-import { ProblemBenchmarkWinnerSchema } from "./ProblemBenchmarkSchemas.js";
+import { BenchmarkClaimLevelSchema, ProblemBenchmarkWinnerSchema } from "./ProblemBenchmarkSchemas.js";
 
-export const BenchmarkClaimLevelSchema = z.enum([
-  "blind_first_pass",
-  "post_correction_pass",
-  "trained_slice_pass",
-  "superiority_candidate"
-]);
+export { BenchmarkClaimLevelSchema } from "./ProblemBenchmarkSchemas.js";
 
 export const FirstPassIntegrityInputSchema = z.object({
   fixtureId: z.string().min(1),

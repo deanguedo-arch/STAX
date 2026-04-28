@@ -131,7 +131,8 @@ describe("LocalProblemBenchmark", () => {
     expect(summary.externalBetter).toBe(0);
     expect(summary.ties).toBe(0);
     expect(summary.stopConditionMet).toBe(true);
-    expect(summary.superiorityStatus).toBe("superiority_candidate");
-    expect(summary.superiorityGaps).toEqual([]);
+    expect(summary.superiorityStatus).toBe("slice_only");
+    expect(summary.proofIntegrityGaps.join(" ")).toContain("Post-correction evidence cannot support a superiority candidate");
+    expect(summary.superiorityGaps).toEqual(summary.proofIntegrityGaps);
   });
 });

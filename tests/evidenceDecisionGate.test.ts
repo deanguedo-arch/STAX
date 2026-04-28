@@ -62,6 +62,17 @@ describe("EvidenceDecisionGate", () => {
     expect(decision.requiredNextProof.join(" ")).toContain("Resolve the conflicting");
   });
 
+  it("does not treat zero failed counts as conflicting evidence", () => {
+    const decision = decideEvidence([
+      "## Local Evidence",
+      "- Path: evals/eval_results/2026-04-27T04-00-00-000Z.json",
+      "- npm run rax -- eval --regression passed; 47/47 passed; failed=0; criticalFailures: 0",
+      "- ClaimSupported: regression eval passed for STAX."
+    ].join("\n"));
+
+    expect(decision.decision).not.toBe("blocked_for_evidence");
+  });
+
   it("is a pure classifier and writes nothing", async () => {
     const rootDir = await tempRoot();
     decideEvidence("Codex says tests pass.");

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { FirstPassIntegrityGate } from "./FirstPassIntegrityGate.js";
 import {
   ProblemBenchmarkCaseSchema,
   ProblemBenchmarkCollectionSchema,
@@ -32,6 +33,19 @@ export class LocalProblemBenchmark {
     const externalBaselineGaps = externalBaselineGapsFor(problem, externalScore);
     const winner = decideWinner(staxScore.total, externalScore.total, missingLocalEvidence, externalBaselineGaps);
     const reasons = winnerReasons(problem, winner, staxScore, externalScore, missingLocalEvidence, externalBaselineGaps);
+    const proofIntegrity = new FirstPassIntegrityGate().evaluate({
+      fixtureId: problem.id,
+      firstPassLocked: problem.firstPassLocked ?? problem.blind === true,
+      firstPassScoreRecorded: problem.firstPassScoreRecorded ?? true,
+      postCorrection: problem.postCorrection ?? isPostCorrectionSource(problem.staxAnswerSource),
+      staxAnswerEditedAfterExternal: problem.staxAnswerEditedAfterExternal ?? false,
+      attemptedLockedFixtureOverwrite: problem.attemptedLockedFixtureOverwrite ?? false,
+      lockedFixturePath: problem.lockedFixturePath,
+      correctionCandidatePath: problem.correctionCandidatePath,
+      firstPassWinner: problem.firstPassWinner ?? winner,
+      currentWinner: winner,
+      requestedClaimLevel: problem.requestedClaimLevel
+    });
     const result = ProblemBenchmarkResultSchema.parse({
       caseId: problem.id,
       repo: problem.repo,
@@ -52,7 +66,8 @@ export class LocalProblemBenchmark {
       suggestedEval: `Add or keep a benchmark fixture for ${problem.repo}/${problem.id} requiring ${winner === "external_better" ? "STAX to beat the external answer" : "STAX not to regress below tie"}.`,
       suggestedPromptPatch: winner === "external_better"
         ? `Patch STAX so the answer to "${problem.task}" names the local evidence, exact next proof command, and approval boundary that the external answer handled better.`
-        : "No prompt patch required for this fixture unless future runs regress."
+        : "No prompt patch required for this fixture unless future runs regress.",
+      proofIntegrity
     });
     return result;
   }
@@ -65,7 +80,10 @@ export class LocalProblemBenchmark {
       staxCapturedAt: item.staxCapturedAt ?? parsed.staxCapturedAt,
       externalAnswerSource: item.externalAnswerSource ?? parsed.externalAnswerSource,
       externalCapturedAt: item.externalCapturedAt ?? parsed.externalCapturedAt,
-      externalPrompt: item.externalPrompt ?? parsed.externalPrompt
+      externalPrompt: item.externalPrompt ?? parsed.externalPrompt,
+      lockedFixturePath: item.lockedFixturePath ?? parsed.lockedFixturePath ?? parsed.lockedStaxFixture,
+      postCorrection: item.postCorrection ?? parsed.postCorrection ?? isPostCorrectionSource(item.staxAnswerSource ?? parsed.staxAnswerSource),
+      correctionCandidatePath: item.correctionCandidatePath ?? parsed.correctionCandidatePath
     }));
     return summarize(cases.map((item) => this.scoreCase(item)));
   }
@@ -97,7 +115,10 @@ export class LocalProblemBenchmark {
           staxCapturedAt: item.staxCapturedAt ?? maybeCollection.data.staxCapturedAt,
           externalAnswerSource: item.externalAnswerSource ?? maybeCollection.data.externalAnswerSource,
           externalCapturedAt: item.externalCapturedAt ?? maybeCollection.data.externalCapturedAt,
-          externalPrompt: item.externalPrompt ?? maybeCollection.data.externalPrompt
+          externalPrompt: item.externalPrompt ?? maybeCollection.data.externalPrompt,
+          lockedFixturePath: item.lockedFixturePath ?? maybeCollection.data.lockedFixturePath ?? maybeCollection.data.lockedStaxFixture,
+          postCorrection: item.postCorrection ?? maybeCollection.data.postCorrection ?? isPostCorrectionSource(item.staxAnswerSource ?? maybeCollection.data.staxAnswerSource),
+          correctionCandidatePath: item.correctionCandidatePath ?? maybeCollection.data.correctionCandidatePath
         })));
         continue;
       }
@@ -120,6 +141,7 @@ export class LocalProblemBenchmark {
       `StopConditionMet: ${summary.stopConditionMet}`,
       `SuperiorityStatus: ${summary.superiorityStatus}`,
       `ContinueLoopRequired: ${summary.continueLoopRequired}`,
+      `ProofIntegrityGaps: ${summary.proofIntegrityGaps.length}`,
       "",
       "## Results",
       ...summary.results.map((result) => [
@@ -140,7 +162,12 @@ export class LocalProblemBenchmark {
       summary.superiorityStatus === "superiority_candidate"
         ? "This is a superiority candidate, not a global proof. Continue challenging it with fresh repos, dates, and external baselines."
         : "Do not stop for superiority. Continue the loop until the gaps below are closed.",
-      ...summary.superiorityGaps.map((gap) => `- ${gap}`)
+      ...summary.superiorityGaps.map((gap) => `- ${gap}`),
+      "",
+      "## Proof Integrity",
+      summary.proofIntegrityGaps.length
+        ? summary.proofIntegrityGaps.map((gap) => `- ${gap}`).join("\n")
+        : "- No first-pass integrity gaps detected for this benchmark summary."
     ].join("\n");
   }
 }
@@ -263,7 +290,11 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
   const noExternalBaseline = results.filter((item) => item.winner === "no_external_baseline").length;
   const expectedMismatches = results.filter((item) => item.expectedWinner && !item.matchedExpectedWinner).length;
   const stopConditionMet = results.length > 0 && externalBetter === 0 && ties === 0 && noLocalBasis === 0 && noExternalBaseline === 0 && expectedMismatches === 0;
-  const superiorityGaps = superiorityGapsFor(results, stopConditionMet);
+  const proofIntegrityGaps = proofIntegrityGapsFor(results);
+  const superiorityGaps = [
+    ...superiorityGapsFor(results, stopConditionMet),
+    ...proofIntegrityGaps
+  ];
   const superiorityStatus = !stopConditionMet
     ? "not_proven"
     : superiorityGaps.length
@@ -285,10 +316,28 @@ function summarize(results: ProblemBenchmarkResult[]): ProblemBenchmarkSummary {
     confidence,
     superiorityStatus,
     superiorityGaps,
+    proofIntegrityGaps,
     continueLoopRequired: superiorityStatus !== "superiority_candidate",
     stopConditionMet,
     results
   });
+}
+
+function proofIntegrityGapsFor(results: ProblemBenchmarkResult[]): string[] {
+  const gaps: string[] = [];
+  const blocked = results.filter((item) => !item.proofIntegrity.allowed);
+  if (blocked.length) {
+    gaps.push(`Proof integrity gate blocked ${blocked.length} case(s): ${blocked.map((item) => item.caseId).slice(0, 5).join(", ")}${blocked.length > 5 ? ", ..." : ""}.`);
+  }
+  const postCorrection = results.filter((item) => item.proofIntegrity.claimLevel === "post_correction_pass");
+  if (postCorrection.length) {
+    gaps.push(`Post-correction evidence cannot support a superiority candidate; ${postCorrection.length} case(s) must remain labelled post_correction_pass.`);
+  }
+  return gaps;
+}
+
+function isPostCorrectionSource(source: string | undefined): boolean {
+  return /\b(corrected|post[-_ ]?correction|post[-_ ]?repair)\b/i.test(source ?? "");
 }
 
 function superiorityGapsFor(results: ProblemBenchmarkResult[], slicePassed: boolean): string[] {

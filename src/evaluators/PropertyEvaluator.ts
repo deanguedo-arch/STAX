@@ -109,6 +109,28 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
         failReasons.push("expected property failed: pasted_human_not_local_command");
       }
     }
+    if (property === "proof_boundary_distinctions") {
+      const requiredBoundaryPairs = [
+        { left: /\bdocx\b/i, right: /\bpdf\b/i, label: "DOCX/PDF" },
+        { left: /\bocr\b/i, right: /\bstructured recovery\b/i, label: "OCR/structured recovery" },
+        { left: /\bcourse[- ]shell\b/i, right: /\brendered preview\b/i, label: "course-shell/rendered preview" },
+        { left: /\bcf:convert\b/i, right: /\bcf:validate\b/i, label: "cf:convert/cf:validate" },
+        { left: /\bno test script\b/i, right: /\bnpm test\b/i, label: "no test script/npm test" }
+      ];
+      const missingPairs = requiredBoundaryPairs.filter(({ left, right }) => {
+        const leftMatch = left.exec(input.output);
+        const rightMatch = right.exec(input.output);
+        const leftIndex = leftMatch?.index ?? -1;
+        const rightIndex = rightMatch?.index ?? -1;
+        if (leftIndex === -1 || rightIndex === -1) return true;
+        const start = Math.max(0, Math.min(leftIndex, rightIndex) - 120);
+        const end = Math.min(lower.length, Math.max(leftIndex, rightIndex) + 180);
+        return !/\b(not|cannot|does not|unverified|separate|distinct|boundary)\b/i.test(lower.slice(start, end));
+      });
+      if (missingPairs.length > 0) {
+        failReasons.push(`expected property failed: proof_boundary_distinctions missing ${missingPairs.map((pair) => pair.label).join(", ")}`);
+      }
+    }
   }
 
   if (input.minSignalUnits !== undefined) {

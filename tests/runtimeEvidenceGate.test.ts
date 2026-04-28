@@ -56,6 +56,17 @@ describe("RuntimeEvidenceGate", () => {
     expect(result.unverifiedScope).toContain("Linked repo runtime/build/test result");
   });
 
+  it("uses repo metadata to keep linked repo claims unknown under STAX-only eval evidence", () => {
+    const result = gate.evaluate({
+      repo: "canvas-helper",
+      claim: "Tests pass",
+      evidence: "npm run rax -- eval --regression passed for STAX"
+    });
+
+    expect(result.status).toBe("unknown");
+    expect(result.unverifiedScope).toContain("Linked repo runtime/build/test result");
+  });
+
   it("lets failed command evidence override vague pass claims", () => {
     const result = gate.evaluate({
       claim: "Tests passed",
@@ -64,5 +75,24 @@ describe("RuntimeEvidenceGate", () => {
 
     expect(result.status).toBe("failed");
     expect(result.verifiedScope).toContain("Command failure is verified for the supplied output.");
+  });
+
+  it("does not treat zero failed counts as failed evidence", () => {
+    const result = gate.evaluate({
+      claim: "Regression eval passed",
+      evidence: "stored command evidence: command-evidence/eval-regression.json; 47/47 passed; failed=0; criticalFailures=0"
+    });
+
+    expect(result.status).toBe("scoped_verified");
+    expect(result.strength).toBe("stored_command_evidence");
+  });
+
+  it("treats failed stored command exit codes as failed evidence", () => {
+    const result = gate.evaluate({
+      claim: "Regression eval passed",
+      evidence: "stored command evidence: evidence/commands/eval.json stdoutPath=out.log exitCode: 1"
+    });
+
+    expect(result.status).toBe("failed");
   });
 });

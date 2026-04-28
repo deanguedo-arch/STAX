@@ -8,6 +8,13 @@ export const ProblemBenchmarkWinnerSchema = z.enum([
   "no_external_baseline"
 ]);
 
+export const BenchmarkClaimLevelSchema = z.enum([
+  "blind_first_pass",
+  "post_correction_pass",
+  "trained_slice_pass",
+  "superiority_candidate"
+]);
+
 export const ProblemBenchmarkDimensionScoreSchema = z.object({
   actualAnswer: z.number().min(0).max(1),
   localSpecificity: z.number().min(0).max(1),
@@ -36,7 +43,16 @@ export const ProblemBenchmarkCaseSchema = z.object({
   externalCapturedAt: z.string().optional(),
   externalPrompt: z.string().optional(),
   expectedWinner: ProblemBenchmarkWinnerSchema.optional(),
-  requiredQualities: z.array(z.string()).default([])
+  requiredQualities: z.array(z.string()).default([]),
+  firstPassLocked: z.boolean().optional(),
+  firstPassScoreRecorded: z.boolean().optional(),
+  postCorrection: z.boolean().optional(),
+  staxAnswerEditedAfterExternal: z.boolean().optional(),
+  attemptedLockedFixtureOverwrite: z.boolean().optional(),
+  lockedFixturePath: z.string().min(1).optional(),
+  correctionCandidatePath: z.string().min(1).optional(),
+  firstPassWinner: ProblemBenchmarkWinnerSchema.optional(),
+  requestedClaimLevel: BenchmarkClaimLevelSchema.optional()
 });
 
 export const ProblemBenchmarkCollectionSchema = z.object({
@@ -48,6 +64,10 @@ export const ProblemBenchmarkCollectionSchema = z.object({
   externalAnswerSource: z.string().optional(),
   externalCapturedAt: z.string().optional(),
   externalPrompt: z.string().optional(),
+  lockedFixturePath: z.string().min(1).optional(),
+  lockedStaxFixture: z.string().min(1).optional(),
+  postCorrection: z.boolean().optional(),
+  correctionCandidatePath: z.string().min(1).optional(),
   cases: z.array(ProblemBenchmarkCaseSchema).min(1)
 });
 
@@ -69,7 +89,17 @@ export const ProblemBenchmarkResultSchema = z.object({
   externalBaselineGaps: z.array(z.string()),
   correctionCandidate: z.string().optional(),
   suggestedEval: z.string(),
-  suggestedPromptPatch: z.string()
+  suggestedPromptPatch: z.string(),
+  proofIntegrity: z.object({
+    allowed: z.boolean(),
+    claimLevel: BenchmarkClaimLevelSchema,
+    firstPassEligible: z.boolean(),
+    superiorityEligible: z.boolean(),
+    reasons: z.array(z.string()),
+    requiredLabel: BenchmarkClaimLevelSchema,
+    lockedFixturePath: z.string().optional(),
+    correctionCandidatePath: z.string().optional()
+  })
 });
 
 export const ProblemBenchmarkSummarySchema = z.object({
@@ -83,12 +113,14 @@ export const ProblemBenchmarkSummarySchema = z.object({
   confidence: z.enum(["not_proven", "promising", "benchmark_slice_proven"]),
   superiorityStatus: z.enum(["not_proven", "slice_only", "superiority_candidate"]),
   superiorityGaps: z.array(z.string()),
+  proofIntegrityGaps: z.array(z.string()),
   continueLoopRequired: z.boolean(),
   stopConditionMet: z.boolean(),
   results: z.array(ProblemBenchmarkResultSchema)
 });
 
 export type ProblemBenchmarkWinner = z.infer<typeof ProblemBenchmarkWinnerSchema>;
+export type BenchmarkClaimLevel = z.infer<typeof BenchmarkClaimLevelSchema>;
 export type ProblemBenchmarkCase = z.infer<typeof ProblemBenchmarkCaseSchema>;
 export type ProblemBenchmarkCollection = z.infer<typeof ProblemBenchmarkCollectionSchema>;
 export type ProblemBenchmarkDimensionScore = z.infer<typeof ProblemBenchmarkDimensionScoreSchema>;

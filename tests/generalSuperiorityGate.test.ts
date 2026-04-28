@@ -34,6 +34,7 @@ describe("GeneralSuperiorityGate", () => {
   it("requires broad blind coverage before a general superiority candidate", () => {
     const collection: ProblemBenchmarkCollection = {
       id: "synthetic-general-superiority-pass",
+      lockedStaxFixture: "fixtures/problem_benchmark/locked/synthetic-general-superiority-pass.json",
       cases: Array.from({ length: 250 }, (_, index) => {
         const lane = workLanes[index % workLanes.length] ?? "local_repo";
         const family = `family_${index % 12}`;
@@ -72,5 +73,43 @@ describe("GeneralSuperiorityGate", () => {
     expect(report.metrics.externalSources).toBe(2);
     expect(report.metrics.captureDates).toBe(3);
     expect(report.gaps).toEqual([]);
+  });
+
+  it("does not count blind comparisons without locked first-pass fixture evidence", () => {
+    const collection: ProblemBenchmarkCollection = {
+      id: "synthetic-missing-lock",
+      cases: [
+        {
+          id: "missing_lock_001",
+          repo: "STAX",
+          workLane: "strategy",
+          taskFamily: "lock_contract",
+          blind: true,
+          task: "Answer with proof honesty.",
+          localEvidence: "workspace STAX; package.json; repo-script:proof; src/compare/FirstPassIntegrityGate.ts",
+          staxAnswer: "The answer names the proof boundary, keeps claims partial, and asks for `npm run proof` output. No source mutation, approval, promotion, memory approval, or training export is justified from this evidence.",
+          externalAnswer: "Name the proof boundary and ask for proof output.",
+          externalAnswerSource: "chatgpt-stax",
+          externalCapturedAt: "2026-04-28T12:00:00.000Z",
+          externalPrompt: "Answer the proof honesty task.",
+          expectedWinner: "stax_better",
+          requiredQualities: ["proof honesty"]
+        }
+      ]
+    };
+
+    const report = new GeneralSuperiorityGate(process.cwd(), {
+      minComparisons: 1,
+      minBlindComparisons: 1,
+      minWorkLanes: 1,
+      minTaskFamilies: 1,
+      minReposOrDomains: 1,
+      minExternalSources: 1,
+      minCaptureDates: 1
+    }).evaluateCollection(collection);
+
+    expect(report.metrics.blindComparisons).toBe(0);
+    expect(report.gaps.join(" ")).toContain("Blind comparison first-pass integrity gap");
+    expect(report.gaps.join(" ")).toContain("lockedFixturePath");
   });
 });
