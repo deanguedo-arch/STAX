@@ -125,11 +125,11 @@ describe("StrategicBenchmark", () => {
     expect(summary.gaps).toEqual([]);
   });
 
-  it("treats the captured two-date strategic holdout as a broad reasoning candidate", async () => {
+  it("treats the captured strategic holdouts as a broad reasoning candidate", async () => {
     const summary = await new StrategicBenchmark(process.cwd()).scoreDirectory("fixtures/strategy_benchmark");
 
-    expect(summary.total).toBe(49);
-    expect(summary.staxBetter).toBe(49);
+    expect(summary.total).toBe(99);
+    expect(summary.staxBetter).toBe(99);
     expect(summary.externalBetter).toBe(0);
     expect(summary.ties).toBe(0);
     expect(summary.noExternalBaseline).toBe(0);
@@ -138,6 +138,20 @@ describe("StrategicBenchmark", () => {
     expect(summary.captureDates).toBe(2);
     expect(summary.status).toBe("broad_reasoning_candidate");
     expect(summary.gaps).toEqual([]);
+  });
+
+  it("keeps the post-repair blind holdout from collapsing into one strategy template", async () => {
+    const summary = await new StrategicBenchmark(process.cwd()).scoreFile("fixtures/strategy_benchmark/strategic_deliberation_v3_blind_postrepair_2026-04-28.json");
+
+    expect(summary.total).toBe(25);
+    expect(summary.staxBetter).toBe(25);
+    expect(summary.externalBetter).toBe(0);
+    expect(summary.ties).toBe(0);
+    expect(summary.noExternalBaseline).toBe(0);
+    expect(summary.templateCollapseCases).toBe(0);
+    expect(summary.workLanes).toBe(5);
+    expect(summary.status).toBe("not_proven");
+    expect(summary.gaps).toEqual(["Need external captures on at least 2 dates; current 1."]);
   });
 
   it("rejects repeated STAX strategy templates across a broad benchmark", () => {

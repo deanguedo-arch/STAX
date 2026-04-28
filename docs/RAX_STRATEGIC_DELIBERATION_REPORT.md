@@ -69,8 +69,8 @@ and refuses broad reasoning superiority from one small slice.
 
 ```txt
 Status: broad_reasoning_candidate
-Total: 49
-STAXBetter: 49
+Total: 99
+STAXBetter: 99
 ExternalBetter: 0
 Ties: 0
 NoExternalBaseline: 0
@@ -85,7 +85,21 @@ strategy cases across five work lanes, replaces the seeded controls with fresh
 ChatGPT STAX browser captures from 2026-04-27, and shows STAX beating the
 captured external answers without template collapse. A second-date external
 capture was added on 2026-04-28 for the same 24 holdout cases, so the strategy
-benchmark now reaches `broad_reasoning_candidate`.
+benchmark reached `broad_reasoning_candidate`.
+
+A second fresh blind pass was then added on 2026-04-28:
+
+- `strategic_deliberation_v2_blind_2026-04-28.json`
+- `strategic_deliberation_v3_blind_postrepair_2026-04-28.json`
+
+The v2 blind pass initially exposed a real failure: STAX beat the external
+baseline 25/25, but 13 cases collapsed into repeated strategy templates. The
+repair was not to weaken the benchmark. The repair was to make broad fallback
+option generation adaptive to the actual strategic question, then rerun against
+the frozen external baselines.
+
+The v3 post-repair blind pass used new wording after that repair. It scored
+25/25 STAX-better, with `TemplateCollapseCases: 0` on the single fresh fixture.
 
 ## External Critic Loop
 
@@ -131,8 +145,8 @@ With both capture dates present, the directory benchmark is now:
 
 ```txt
 Status: broad_reasoning_candidate
-Total: 49
-STAXBetter: 49
+Total: 99
+STAXBetter: 99
 ExternalBetter: 0
 Ties: 0
 NoExternalBaseline: 0
@@ -145,16 +159,17 @@ CaptureDates: 2
 
 ```txt
 npm run typecheck: passed
-npm test: passed; 52 files / 247 tests
+npm test: passed; 52 files / 248 tests
 npm run rax -- eval: passed; 16/16
 npm run rax -- eval --regression: passed; 46/46
 npm run rax -- eval --redteam: passed; 9/9
-npm test -- tests/strategicBenchmark.test.ts: passed; 6/6
+npm test -- tests/strategicBenchmark.test.ts: passed; 7/7
 npm run rax -- eval --regression --mode strategic_deliberation: passed; 3/3
-npm run rax -- strategy benchmark --fixtures fixtures/strategy_benchmark: passed; Status broad_reasoning_candidate; STAXBetter 49; NoExternalBaseline 0; TemplateCollapseCases 0; CaptureDates 2
+npm run rax -- strategy benchmark --fixtures fixtures/strategy_benchmark: passed; Status broad_reasoning_candidate; STAXBetter 99; NoExternalBaseline 0; TemplateCollapseCases 0; CaptureDates 2
+npm run rax -- strategy benchmark --file fixtures/strategy_benchmark/strategic_deliberation_v3_blind_postrepair_2026-04-28.json: passed; STAXBetter 25; TemplateCollapseCases 0
 npm run rax -- strategy prompt: passed
-npm run rax -- run --mode strategic_deliberation "How should STAX become better than ChatGPT at broad reasoning?": passed
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-28T12-36-41-368Z-woy8nd
+npm run rax -- run --mode strategic_deliberation "How should STAX become better than ChatGPT at broad reasoning?": passed; run-2026-04-28T12-56-00-993Z-r8vcda
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-28T12-56-01-027Z-ssqpfh
 ```
 
 ## Limitations
@@ -164,5 +179,8 @@ npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu
 - The current provider is mock by default, so strategy output is draft-only.
 - The expanded v1 benchmark now uses fresh captured external baselines from two
   dates and passes the drift gate.
+- The v2/v3 blind pass proves the template-collapse repair on fresh wording,
+  but it is still benchmark evidence rather than a guarantee of universal
+  strategic superiority.
 - External ChatGPT STAX drifted during broad baseline capture. That is now a
   measured baseline-quality failure, not a hidden pass.

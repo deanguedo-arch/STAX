@@ -1,0 +1,163 @@
+You are the external baseline for a STAX post-repair fresh blind broad strategic reasoning benchmark.
+
+Important rules:
+- Answer each task using ONLY the supplied task and context.
+- Do not discuss STAX repo internals unless the task asks for STAX as a product.
+- Do not drift into local repo audit, command evidence, or prior benchmark summaries.
+- Give one strategic decision, one tradeoff, and one kill criterion.
+- Keep each answer 2 sentences maximum, but make it substantive enough to score.
+- Return strict JSON only: an array of objects with id and externalAnswer.
+
+Tasks:
+[
+  {
+    "id": "strategy_blind_v3_01",
+    "workLane": "creative_planning",
+    "task": "How should STAX design an unexpectedly useful classroom simulation without copying existing course tools?",
+    "context": "the answer should be creative but must still identify a learner, outcome, and evidence of value"
+  },
+  {
+    "id": "strategy_blind_v3_02",
+    "workLane": "creative_planning",
+    "task": "How should STAX judge whether a surprising idea has product taste or is just spectacle?",
+    "context": "the decision needs novelty, taste, and usefulness without treating surprise as proof"
+  },
+  {
+    "id": "strategy_blind_v3_03",
+    "workLane": "creative_planning",
+    "task": "How should STAX create three genuinely different product bets for the same user pain?",
+    "context": "different options should vary by mechanism, audience, and failure mode"
+  },
+  {
+    "id": "strategy_blind_v3_04",
+    "workLane": "creative_planning",
+    "task": "How should STAX handle a safe incremental improvement versus a risky imaginative leap?",
+    "context": "creative prioritization must weigh near-term value against upside and reversibility"
+  },
+  {
+    "id": "strategy_blind_v3_05",
+    "workLane": "creative_planning",
+    "task": "How should STAX keep creative recommendations human-feeling while still testable?",
+    "context": "creative strategy should preserve taste and emotional fit while still naming proof"
+  },
+  {
+    "id": "strategy_blind_v3_06",
+    "workLane": "ambiguous_judgment",
+    "task": "How should STAX choose a direction when the user goal is clear but evidence is thin?",
+    "context": "uncertain decisions need a useful bet without pretending there is complete proof"
+  },
+  {
+    "id": "strategy_blind_v3_07",
+    "workLane": "ambiguous_judgment",
+    "task": "How should STAX handle a decision where waiting adds confidence but delays momentum?",
+    "context": "the decision is incomplete and needs a stop rule for more evidence"
+  },
+  {
+    "id": "strategy_blind_v3_08",
+    "workLane": "ambiguous_judgment",
+    "task": "How should STAX use a persuasive outside critique without treating it as final truth?",
+    "context": "unverified critique can improve reasoning but should not become authority automatically"
+  },
+  {
+    "id": "strategy_blind_v3_09",
+    "workLane": "ambiguous_judgment",
+    "task": "How should STAX decide when another red-blue-green-team round is no longer worth it?",
+    "context": "looping can become proof theater if the next pass will not change the decision"
+  },
+  {
+    "id": "strategy_blind_v3_10",
+    "workLane": "ambiguous_judgment",
+    "task": "How should STAX advise a small bet when the downside is unclear?",
+    "context": "weak current evidence requires reversibility, downside bounds, and a proof step"
+  },
+  {
+    "id": "strategy_blind_v3_11",
+    "workLane": "cross_domain",
+    "task": "How should STAX combine business strategy, student learning, and software delivery in one decision?",
+    "context": "cross-domain synthesis should keep business, teaching, and engineering proof separate before selecting one direction"
+  },
+  {
+    "id": "strategy_blind_v3_12",
+    "workLane": "cross_domain",
+    "task": "How should STAX translate a game-design insight into a course-building decision?",
+    "context": "cross-domain transfer should preserve what is unique about games and courses"
+  },
+  {
+    "id": "strategy_blind_v3_13",
+    "workLane": "cross_domain",
+    "task": "How should STAX compare qualitative learner feedback with automated test proof?",
+    "context": "student experience evidence and command evidence should not be treated as the same thing"
+  },
+  {
+    "id": "strategy_blind_v3_14",
+    "workLane": "cross_domain",
+    "task": "How should STAX avoid using software-style gates to judge a creative lesson idea too harshly?",
+    "context": "creative teaching work may need adapted proof instead of code-style gates"
+  },
+  {
+    "id": "strategy_blind_v3_15",
+    "workLane": "cross_domain",
+    "task": "How should STAX transfer a workflow lesson from Canvas Helper into non-code planning?",
+    "context": "non-code strategy can borrow discipline from code work only if the evidence type changes"
+  },
+  {
+    "id": "strategy_blind_v3_16",
+    "workLane": "teaching_strategy",
+    "task": "How should STAX give Dean the hard truth without making the answer exhausting?",
+    "context": "guidance should be direct, teachable, and honest about risk"
+  },
+  {
+    "id": "strategy_blind_v3_17",
+    "workLane": "teaching_strategy",
+    "task": "How should STAX summarize a strategic fight into one useful instruction?",
+    "context": "the answer should explain enough to act without turning into a giant report"
+  },
+  {
+    "id": "strategy_blind_v3_18",
+    "workLane": "teaching_strategy",
+    "task": "How should STAX push back when Dean wants a bigger claim than the evidence supports?",
+    "context": "teaching strategy must disagree clearly without being patronizing"
+  },
+  {
+    "id": "strategy_blind_v3_19",
+    "workLane": "teaching_strategy",
+    "task": "How should STAX explain what is known, what is guessed, and what to try next?",
+    "context": "uncertainty should be presented in a way that still allows motion"
+  },
+  {
+    "id": "strategy_blind_v3_20",
+    "workLane": "teaching_strategy",
+    "task": "How should STAX make a strategy answer short enough to use but deep enough to trust?",
+    "context": "the answer should fit in one screen without hiding tradeoffs or kill criteria"
+  },
+  {
+    "id": "strategy_blind_v3_21",
+    "workLane": "product_strategy",
+    "task": "Should STAX invest in better strategic memory or stronger model routing first?",
+    "context": "product strategy must compare continuity against model capability"
+  },
+  {
+    "id": "strategy_blind_v3_22",
+    "workLane": "product_strategy",
+    "task": "How should STAX claim a broad advantage without overselling?",
+    "context": "a product promise should be measurable and avoid generic superiority claims"
+  },
+  {
+    "id": "strategy_blind_v3_23",
+    "workLane": "product_strategy",
+    "task": "What would prove STAX is making better decisions rather than prettier reports?",
+    "context": "the proof should separate decision quality from formatting and governance ceremony"
+  },
+  {
+    "id": "strategy_blind_v3_24",
+    "workLane": "product_strategy",
+    "task": "Should STAX improve the daily chat experience or internal benchmark machinery first?",
+    "context": "product strategy must choose between user-visible usefulness and backend measurement"
+  },
+  {
+    "id": "strategy_blind_v3_25",
+    "workLane": "product_strategy",
+    "task": "How should STAX decide when a win rate is enough to ship a new product claim?",
+    "context": "benchmark wins should change messaging only when they survive fresh holdouts and avoid overfitting"
+  }
+]
