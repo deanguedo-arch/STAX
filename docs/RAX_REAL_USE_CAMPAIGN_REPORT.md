@@ -67,6 +67,75 @@ Session 1 should not count yet. It counts only after:
   manifest/test/parser area;
 - no benchmark fixture is edited to make STAX look better.
 
+Bounded Codex prompt for Session 1:
+
+```txt
+In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, repair only the dependency/install integrity blocker for the missing Rollup native optional package on darwin arm64.
+
+Scope:
+- This is an install/dependency integrity repair only.
+- Do not edit parser/source logic.
+- Do not edit reviewed fixtures.
+- Do not edit gold/benchmark data.
+- Do not run ingest:seed-gold.
+- Do not broaden scope.
+
+Allowed tracked file changes:
+- package-lock.json only if lockfile repair is required.
+- package.json only if absolutely necessary and explicitly justified.
+- tmp/.gitkeep only to preserve or explicitly resolve its current deletion.
+
+Forbidden tracked file changes:
+- src/**
+- scripts/**
+- reviewed fixtures
+- benchmark/gold data
+- parser logic
+- ingest promotion logic
+- tests, unless the test failure is unrelated and explicitly approved later
+
+Before repair:
+1. Run `npm ls @rollup/rollup-darwin-arm64 rollup vite`.
+2. Report the output and whether the native optional package is missing from install state, lockfile state, or both.
+
+Repair:
+- Use the smallest dependency/install repair needed.
+- Do not change app behavior.
+- Do not change ingest logic.
+- Do not change tests.
+
+After repair, run:
+1. `npm run build`
+2. `npm run ingest:ci`
+
+Report:
+- exact files changed
+- exact commands run
+- command outputs
+- whether `tmp/.gitkeep` was preserved or intentionally resolved
+- first remaining failure if either gate still fails
+- if no tracked files changed, say that clearly
+```
+
+Accept the run only if:
+
+- no source, parser, script, fixture, benchmark/gold, or test files changed;
+- `package-lock.json` and any `package.json` changes are explainable and
+  limited to dependency/install integrity;
+- `tmp/.gitkeep` is preserved or explicitly resolved;
+- `npm run build` output is supplied;
+- `npm run ingest:ci` output is supplied;
+- the first remaining failure is reported if a gate still fails.
+
+Reject the run if:
+
+- Codex changes parser logic, app source, ingest scripts, tests, fixtures, or
+  benchmark/gold data without a separate explicit approval;
+- Codex runs `ingest:seed-gold`;
+- Codex claims success without command output;
+- Codex ignores `tmp/.gitkeep`;
+- Codex fixes ingest behavior before proving dependency repair.
+
 Rejected for Session 1:
 
 - More STAX proof-gate machinery.
