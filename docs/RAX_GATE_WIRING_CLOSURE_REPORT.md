@@ -23,11 +23,25 @@ Acceptance for this pass:
 | `JudgmentPacketBuilder` | `OperationFormatter` `judgment_digest` branch | Review/judgment output now emits a packet recommendation and `requiresHumanApproval=true`; it still does not act. | `chatOperatorReceipt.test.ts` judgment packet test |
 | `BenchmarkAdversary` | `rax compare adversary --file fixture.json` | Garbage, command-stuffed, fake-evidence, and slogan-stuffed answers are scored against clean answers and can fail the CLI gate. | `benchmarkAdversary.test.ts`; CLI smoke command |
 | `HoldoutFreshnessGate` | `fresh_holdout_25_tasks.json` via `compare benchmark --file` | Fresh holdout scoring now requires local freshness checks and reports freshness gaps if a case repeats repo/family/boundary. | `localProblemBenchmark.test.ts` fresh holdout + duplicate negative |
+| `EvidenceRequestBuilder` | `LocalProblemBenchmark` `no_local_basis` results | Benchmark cases without local basis now carry a typed evidence request and print it in benchmark summaries. | `localProblemBenchmark.test.ts` no-local-basis test |
+| `VisualEvidenceProtocol` | `EvidenceDecisionGate` | Audit/model-comparison evidence decisions now keep visual/layout claims unverified without a screenshot or visual finding. | `evidenceDecisionGate.test.ts` visual/layout test |
+| `JudgmentPacketBuilder` | `ReviewQueue.formatInbox` | Review inbox, digest, staged, blocked, and all views now include compact human-approval judgment packet lines. | `reviewRouter.test.ts` inbox packet test |
 
 The first adversary smoke run found a real scoring gap: fake local evidence could
 raise a few fixture scores by one point. The scorer now applies an explicit
 penalty for fake local evidence, unsupported deployment verification, and
 "screenshot looks perfect" claims.
+
+## Second Closure Pass
+
+After the external review, this pass deepened the wiring without adding new
+execution power:
+
+- benchmark `no_local_basis` rows now include the smallest evidence request;
+- audit evidence decisions invoke visual proof protocol for rendered/layout
+  claims;
+- review inbox-style commands expose judgment packets without applying any
+  action.
 
 ## Intentional Non-Closures
 

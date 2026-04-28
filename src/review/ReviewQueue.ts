@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { JudgmentPacketBuilder } from "./JudgmentPacket.js";
 import type { ReviewDisposition, ReviewRecord, ReviewRiskLevel } from "./ReviewSchemas.js";
 import { ReviewRecordSchema } from "./ReviewSchemas.js";
 
@@ -60,6 +61,7 @@ export class ReviewQueue {
         `  Source: ${record.sourceType}:${record.sourceId}`,
         record.workspace ? `  Workspace: ${record.workspace}` : undefined,
         `  ReasonCodes: ${record.reasonCodes.join(", ") || "none"}`,
+        formatJudgmentPacketLine(record),
         `  Next: ${record.allowedActions[0] ?? "Inspect source artifact."}`
       ].filter(Boolean).join("\n"))
     ].join("\n");
@@ -84,4 +86,30 @@ export class ReviewQueue {
       throw error;
     }
   }
+}
+
+function formatJudgmentPacketLine(record: ReviewRecord): string {
+  const packet = judgmentPacketFor(record);
+  return `  JudgmentPacket: requiresHumanApproval=${packet.requiresHumanApproval}; recommendedOption=${packet.recommendedOption}`;
+}
+
+function judgmentPacketFor(record: ReviewRecord) {
+  const options = Array.from(new Set([
+    ...record.allowedActions,
+    "defer action until reviewed"
+  ])).filter(Boolean);
+  return new JudgmentPacketBuilder().build({
+    decisionNeeded: `Decide next review action for ${record.reviewId}.`,
+    options: options.length ? options : ["Inspect source artifact.", "defer action until reviewed"],
+    recommendedOption: record.disposition === "hard_block" ? "defer action until reviewed" : options[0] ?? "defer action until reviewed",
+    evidenceAvailable: [
+      record.sourcePath,
+      ...record.evidencePaths,
+      ...record.reasonCodes.map((code) => `reason:${code}`)
+    ].filter((item): item is string => Boolean(item)),
+    evidenceMissing: record.evidencePaths.length ? [] : ["fresh source artifact or command evidence"],
+    riskIfApproved: "Approval can promote, archive, reject, or escalate review state only through explicit review commands with reasons.",
+    riskIfRejected: "The candidate remains unresolved and may delay learning, evaluation, or cleanup.",
+    irreversible: false
+  });
 }

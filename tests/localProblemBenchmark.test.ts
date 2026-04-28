@@ -57,6 +57,9 @@ describe("LocalProblemBenchmark", () => {
 
     expect(result.winner).toBe("no_local_basis");
     expect(result.missingLocalEvidence).not.toHaveLength(0);
+    expect(result.evidenceRequest?.reason).toBe("no_local_basis");
+    expect(result.evidenceRequest?.canProceedWithoutEvidence).toBe(false);
+    expect(result.evidenceRequest?.pasteBackInstructions).toContain("Paste");
   });
 
   it("refuses to declare a winner without a captured external baseline", () => {

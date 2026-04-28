@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { EvidenceRequestBuilder } from "../evidence/EvidenceRequestBuilder.js";
 import { FirstPassIntegrityGate } from "./FirstPassIntegrityGate.js";
 import { HoldoutFreshnessGate } from "./HoldoutFreshnessGate.js";
 import {
@@ -29,6 +30,14 @@ export class LocalProblemBenchmark {
   scoreCase(input: ProblemBenchmarkCase, options: { priorCases?: ProblemBenchmarkCase[]; requireHoldoutFreshness?: boolean } = {}): ProblemBenchmarkResult {
     const problem = ProblemBenchmarkCaseSchema.parse(input);
     const missingLocalEvidence = localEvidenceGaps(problem.localEvidence);
+    const evidenceRequest = missingLocalEvidence.length
+      ? new EvidenceRequestBuilder().build({
+        task: problem.task,
+        repo: problem.repo,
+        reason: "no_local_basis",
+        availableEvidence: problem.localEvidence
+      })
+      : undefined;
     const staxScore = scoreAnswer(problem.task, problem.localEvidence, problem.staxAnswer);
     const externalScore = scoreAnswer(problem.task, problem.localEvidence, problem.externalAnswer);
     const externalBaselineGaps = externalBaselineGapsFor(problem, externalScore);
@@ -69,6 +78,7 @@ export class LocalProblemBenchmark {
       externalPrompt: problem.externalPrompt,
       reasons,
       missingLocalEvidence,
+      evidenceRequest,
       externalBaselineGaps,
       holdoutFreshness: freshness
         ? {
@@ -184,6 +194,7 @@ export class LocalProblemBenchmark {
         `  - STAX: ${result.staxScore.total}`,
         `  - External: ${result.externalScore.total}`,
         `  - Reasons: ${result.reasons.join("; ")}`,
+        result.evidenceRequest ? `  - EvidenceRequest: ${result.evidenceRequest.pasteBackInstructions}` : undefined,
         result.externalBaselineGaps.length ? `  - ExternalBaselineGaps: ${result.externalBaselineGaps.join("; ")}` : undefined,
         result.holdoutFreshness?.blockingReasons.length ? `  - HoldoutFreshnessGaps: ${result.holdoutFreshness.blockingReasons.join("; ")}` : undefined,
         result.correctionCandidate ? `  - CorrectionCandidate: ${result.correctionCandidate}` : undefined

@@ -35,6 +35,18 @@ describe("EvidenceDecisionGate", () => {
     expect(decision.evidenceClasses).not.toContain("local_command");
   });
 
+  it("keeps visual/layout claims unverified without a visual artifact and checklist", () => {
+    const decision = decideEvidence([
+      "## Local Evidence",
+      "- File inspected: projects/sportswellness/workspace/styles.css",
+      "- ClaimSupported: Sports Wellness text fit and SMART goals checkmark containment are fixed."
+    ].join("\n"));
+
+    expect(decision.decision).toBe("partial");
+    expect(decision.reasons.join(" ")).toContain("VisualEvidenceProtocol status: missing");
+    expect(decision.requiredNextProof.join(" ")).toContain("Capture a screenshot or manual visual finding");
+  });
+
   it("allows verified only with local command, trace or eval, and claim-linked evidence", () => {
     const decision = decideEvidence([
       "## Local Evidence",

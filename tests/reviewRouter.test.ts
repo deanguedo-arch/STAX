@@ -160,6 +160,19 @@ describe("Review Router", () => {
     expect(all.some((record) => record.disposition === "auto_candidate")).toBe(true);
   });
 
+  it("formats review inbox items with human judgment packets", async () => {
+    const rootDir = await tempRoot();
+    const router = new ReviewRouter(rootDir);
+    const queue = new ReviewQueue(rootDir);
+    await router.route(reviewSource({ sourceId: "human", targetArtifactType: "memory" }), { apply: true });
+
+    const output = queue.formatInbox(await queue.list());
+
+    expect(output).toContain("JudgmentPacket: requiresHumanApproval=true");
+    expect(output).toContain("recommendedOption=");
+    expect(output).toContain("Next:");
+  });
+
   it("keeps chat review commands read-only", async () => {
     const rootDir = await tempRoot();
     const sourceFile = path.join(rootDir, "learning", "lab", "candidates", "eval", "chat-review.json");

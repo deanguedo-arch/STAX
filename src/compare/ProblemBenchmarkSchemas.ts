@@ -101,6 +101,14 @@ export const ProblemBenchmarkResultSchema = z.object({
   externalPrompt: z.string().optional(),
   reasons: z.array(z.string()),
   missingLocalEvidence: z.array(z.string()),
+  evidenceRequest: z.object({
+    reason: z.string(),
+    requestKind: z.string(),
+    minimumEvidenceNeeded: z.array(z.string()),
+    pasteBackInstructions: z.string(),
+    exampleCommand: z.string(),
+    canProceedWithoutEvidence: z.boolean()
+  }).optional(),
   externalBaselineGaps: z.array(z.string()),
   holdoutFreshness: z.object({
     isFresh: z.boolean(),

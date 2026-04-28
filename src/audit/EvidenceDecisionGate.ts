@@ -1,6 +1,7 @@
 import { scoreEvidenceText } from "./EvidenceSufficiencyScorer.js";
 import { ProofBoundaryClassifier } from "../evidence/ProofBoundaryClassifier.js";
 import { RuntimeEvidenceGate } from "../evidence/RuntimeEvidenceGate.js";
+import { VisualEvidenceProtocol } from "../evidence/VisualEvidenceProtocol.js";
 
 export type EvidenceClass =
   | "local_command"
@@ -34,15 +35,16 @@ export function decideEvidence(text: string): EvidenceDecision {
   const conflict = hasConflictingEvidence(text);
   const runtime = new RuntimeEvidenceGate().evaluate({ claim: text, evidence: text });
   const boundary = new ProofBoundaryClassifier().classify({ claim: text, evidence: text });
+  const visual = visualEvidenceDecision(text, boundary.evidenceFamily);
   const decision: EvidenceDecisionLabel = conflict
     ? "blocked_for_evidence"
     : runtime.status === "failed"
       ? "blocked_for_evidence"
-    : sufficiency.canClaimVerifiedAudit
-      ? "verified"
-      : evidenceClasses.some((item) => item.startsWith("local_") || item === "ci")
-        ? "partial"
-        : "reasoned_opinion";
+      : sufficiency.canClaimVerifiedAudit
+        ? "verified"
+        : evidenceClasses.some((item) => item.startsWith("local_") || item === "ci")
+          ? "partial"
+          : "reasoned_opinion";
   const confidence = decision === "verified" ? "high" : decision === "partial" ? "medium" : "low";
   return {
     decision,
@@ -53,12 +55,14 @@ export function decideEvidence(text: string): EvidenceDecision {
     requiredNextProof: Array.from(new Set([
       ...requiredNextProof(decision, sufficiency.missing, conflict),
       ...boundary.requiredNextProof,
+      ...(visual ? visual.requiredNextEvidence : []),
       ...(runtime.requiredNextCommand ? [`Run ${runtime.requiredNextCommand} and capture the output.`] : [])
     ])),
     reasons: [
       ...sufficiency.reasons,
       ...runtime.reasons,
       `Proof boundary family: ${boundary.evidenceFamily}.`,
+      ...(visual ? [`VisualEvidenceProtocol status: ${visual.status}.`, ...visual.reasons] : []),
       ...(conflict ? ["Conflicting pass/fail evidence was detected."] : [])
     ]
   };
@@ -90,7 +94,7 @@ function classifyEvidence(text: string): EvidenceClass[] {
     (hasLocalMarker(text) && /\b(Latest Eval Result|passRate:\s*1|criticalFailures:\s*0)\b/i.test(text))) {
     classes.add("local_eval");
   }
-  if (/\b(src|tests|evals|docs|modes|learning)\/[A-Za-z0-9_.\/-]+/i.test(text)) {
+  if (/\b(src|tests|evals|docs|modes|learning|projects)\/[A-Za-z0-9_.\/-]+/i.test(text)) {
     classes.add("local_file");
   }
   if (/\b(GitHub Actions|CI|build log|check run|workflow run|Dependabot)\b/i.test(text)) {
@@ -162,4 +166,40 @@ function proofBoundaryText(boundary: ReturnType<ProofBoundaryClassifier["classif
     `Proof family ${boundary.evidenceFamily} verifies: ${boundary.verifiedScope.join(", ") || "nothing broad"}.`,
     `Unverified: ${boundary.unverifiedScope.join(", ")}.`
   ].join(" ");
+}
+
+function visualEvidenceDecision(text: string, family: ReturnType<ProofBoundaryClassifier["classify"]>["evidenceFamily"]) {
+  if (family !== "rendered_preview" && !/\b(visual|screenshot|rendered|layout|text fit|checkmark|css)\b/i.test(text)) {
+    return undefined;
+  }
+  const hasArtifact = /\b(screenshot|playwright_screenshot|manual visual finding|artifactPath|artifactHash)\b/i.test(text) &&
+    /\b(route|viewport|path:|artifact)\b/i.test(text);
+  return new VisualEvidenceProtocol().evaluate({
+    target: visualTarget(text),
+    artifactType: hasArtifact ? "screenshot" : "missing",
+    artifactPath: hasArtifact ? "supplied-artifact" : undefined,
+    route: hasArtifact ? "supplied-route" : undefined,
+    viewport: hasArtifact ? "supplied-viewport" : undefined,
+    requiredChecks: visualChecks(text),
+    observedChecks: observedVisualChecks(text),
+    sourceEvidenceOnly: !hasArtifact
+  });
+}
+
+function visualTarget(text: string): string {
+  if (/\bsports\s*wellness|sportswellness/i.test(text)) return "Sports Wellness rendered preview";
+  return "rendered UI claim";
+}
+
+function visualChecks(text: string): string[] {
+  const checks: string[] = [];
+  if (/\btext fit|fit|overflow\b/i.test(text)) checks.push("text fit");
+  if (/\bborder|symmetry|symmetrical\b/i.test(text)) checks.push("border symmetry");
+  if (/\bcheckmark|check mark|smart goals?\b/i.test(text)) checks.push("checkmark containment");
+  return checks.length ? checks : ["visual correctness claim"];
+}
+
+function observedVisualChecks(text: string): string[] {
+  if (!/\b(observed|checked|verified|manual visual finding|screenshot)\b/i.test(text)) return [];
+  return visualChecks(text);
 }
