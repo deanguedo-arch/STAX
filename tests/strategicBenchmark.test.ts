@@ -125,6 +125,21 @@ describe("StrategicBenchmark", () => {
     expect(summary.gaps).toEqual([]);
   });
 
+  it("treats the captured two-date strategic holdout as a broad reasoning candidate", async () => {
+    const summary = await new StrategicBenchmark(process.cwd()).scoreDirectory("fixtures/strategy_benchmark");
+
+    expect(summary.total).toBe(49);
+    expect(summary.staxBetter).toBe(49);
+    expect(summary.externalBetter).toBe(0);
+    expect(summary.ties).toBe(0);
+    expect(summary.noExternalBaseline).toBe(0);
+    expect(summary.templateCollapseCases).toBe(0);
+    expect(summary.workLanes).toBe(5);
+    expect(summary.captureDates).toBe(2);
+    expect(summary.status).toBe("broad_reasoning_candidate");
+    expect(summary.gaps).toEqual([]);
+  });
+
   it("rejects repeated STAX strategy templates across a broad benchmark", () => {
     const lanes = ["product_strategy", "creative_planning", "ambiguous_judgment", "cross_domain", "teaching_strategy"];
     const collection: StrategicBenchmarkCollection = {

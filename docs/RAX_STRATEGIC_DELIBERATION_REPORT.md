@@ -1,6 +1,6 @@
 # RAX Strategic Deliberation Report
 
-Date: 2026-04-27
+Date: 2026-04-27; updated 2026-04-28
 
 ## Why This Exists
 
@@ -68,24 +68,24 @@ and refuses broad reasoning superiority from one small slice.
 ## Current Strategic Benchmark Status
 
 ```txt
-Status: not_proven
-Total: 25
-STAXBetter: 25
+Status: broad_reasoning_candidate
+Total: 49
+STAXBetter: 49
 ExternalBetter: 0
 Ties: 0
 NoExternalBaseline: 0
 TemplateCollapseCases: 0
 WorkLanes: 5
-CaptureDates: 1
+CaptureDates: 2
 ```
 
-This is a strong non-final result, not final broad superiority. The first
-single-case slice proved the mechanism. The v1 holdout fixture expands the
-benchmark to 25 strategy cases across five work lanes, replaces the seeded
-controls with fresh ChatGPT STAX browser captures from 2026-04-27, and shows
-STAX beating the captured external answers without template collapse. The gate
-still refuses final broad-reasoning proof because a second capture date is
-required.
+This closes the older two-date strategic holdout gate. The first single-case
+slice proved the mechanism. The v1 holdout fixture expands the benchmark to 25
+strategy cases across five work lanes, replaces the seeded controls with fresh
+ChatGPT STAX browser captures from 2026-04-27, and shows STAX beating the
+captured external answers without template collapse. A second-date external
+capture was added on 2026-04-28 for the same 24 holdout cases, so the strategy
+benchmark now reaches `broad_reasoning_candidate`.
 
 ## External Critic Loop
 
@@ -121,32 +121,48 @@ was regenerated through the actual strategic generator so different lanes select
 different control surfaces, and the benchmark reports `TemplateCollapseCases: 0`.
 
 Fresh external baselines were then captured one task at a time from the open
-ChatGPT STAX browser thread. The benchmark still reports `STAXBetter: 25` and
-`NoExternalBaseline: 0`, but the honest status is `not_proven` because all fresh
-captures happened on one date.
+ChatGPT STAX browser thread. The first capture date reported `STAXBetter: 25`
+and `NoExternalBaseline: 0`, but the honest status stayed `not_proven` because
+all fresh captures happened on one date.
+
+On 2026-04-28, the same 24 holdout cases were recaptured from the browser as
+`fixtures/strategy_benchmark/strategic_deliberation_v1_holdout_date2.json`.
+With both capture dates present, the directory benchmark is now:
+
+```txt
+Status: broad_reasoning_candidate
+Total: 49
+STAXBetter: 49
+ExternalBetter: 0
+Ties: 0
+NoExternalBaseline: 0
+TemplateCollapseCases: 0
+WorkLanes: 5
+CaptureDates: 2
+```
 
 ## Validation
 
 ```txt
 npm run typecheck: passed
-npm test: passed; 52 files / 246 tests
+npm test: passed; 52 files / 247 tests
 npm run rax -- eval: passed; 16/16
 npm run rax -- eval --regression: passed; 46/46
 npm run rax -- eval --redteam: passed; 9/9
-npm test -- tests/strategicBenchmark.test.ts: passed; 4/4
+npm test -- tests/strategicBenchmark.test.ts: passed; 6/6
 npm run rax -- eval --regression --mode strategic_deliberation: passed; 3/3
-npm run rax -- strategy benchmark: passed; Status not_proven; STAXBetter 25; NoExternalBaseline 0; TemplateCollapseCases 0; CaptureDates 1
+npm run rax -- strategy benchmark --fixtures fixtures/strategy_benchmark: passed; Status broad_reasoning_candidate; STAXBetter 49; NoExternalBaseline 0; TemplateCollapseCases 0; CaptureDates 2
 npm run rax -- strategy prompt: passed
 npm run rax -- run --mode strategic_deliberation "How should STAX become better than ChatGPT at broad reasoning?": passed
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.": passed; run-2026-04-28T12-36-41-368Z-woy8nd
 ```
 
 ## Limitations
 
-- This does not prove STAX is broadly better than ChatGPT yet.
+- This proves the current strategic benchmark candidate slice, not permanent
+  broad superiority.
 - The current provider is mock by default, so strategy output is draft-only.
-- The expanded v1 benchmark now uses fresh captured external baselines from one
-  date. Final superiority still requires a second-date capture that passes the
-  drift gate.
+- The expanded v1 benchmark now uses fresh captured external baselines from two
+  dates and passes the drift gate.
 - External ChatGPT STAX drifted during broad baseline capture. That is now a
   measured baseline-quality failure, not a hidden pass.

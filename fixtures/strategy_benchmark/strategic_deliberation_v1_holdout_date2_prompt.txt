@@ -1,0 +1,31 @@
+Fresh external baseline capture date 2 for STAX strategic benchmark.
+Answer ONLY the supplied strategy tasks.
+Do not mention repo status, GitHub, dogfood, command evidence, local repo operator, or old reports unless the task itself asks for that.
+For each row, return exactly: <id> | <2 sentences max with one decision, one tradeoff, and one kill criterion>.
+Return strict JSON array only. Each object must be {"id":"...","externalAnswer":"..."}.
+
+Rows:
+1. strategy_holdout_01 | workLane creative_planning | task Should STAX prioritize a creative ideation layer or a stricter decision gate next? | context creative planning quality, novelty, and product taste are still weaker than proof discipline
+2. strategy_holdout_02 | workLane ambiguous_judgment | task How should STAX decide when evidence is incomplete but Dean still needs a direction? | context ambiguous judgment requires choosing under uncertainty without pretending certainty
+3. strategy_holdout_03 | workLane cross_domain | task How should STAX combine repo proof, product strategy, teaching workflows, and creative planning without collapsing into one rubric? | context cross-domain synthesis needs multiple lenses and a falsifiable decision
+4. strategy_holdout_04 | workLane teaching_strategy | task What should STAX build to become better at turning complex plans into teachable user guidance? | context teaching strategy needs simple explanations, not just validators
+5. strategy_holdout_05 | workLane product_strategy | task Should STAX build a Strategy Decision Ledger before autonomous Codex loops? | context product strategy must weigh durable decision memory against execution automation
+6. strategy_holdout_06 | workLane creative_planning | task How should STAX avoid becoming template-strategy while still enforcing structure? | context creative planning can be killed by excessive headings unless novelty is measured
+7. strategy_holdout_07 | workLane ambiguous_judgment | task When ChatGPT gives a compelling but unverified strategic plan, what should STAX do? | context ambiguous judgment must separate useful reasoning from unsupported confidence
+8. strategy_holdout_08 | workLane cross_domain | task How should STAX reason across Canvas Helper, Brightspace tools, and STAX without overfitting to one repo? | context cross-domain strategy must test whether patterns transfer across different project types
+9. strategy_holdout_09 | workLane teaching_strategy | task How should STAX explain a strategic recommendation so Dean can act without reading a giant report? | context teaching strategy should reduce burden while preserving proof boundaries
+10. strategy_holdout_10 | workLane product_strategy | task Should STAX chase general ChatGPT superiority or define narrower strategic superiority lanes first? | context product strategy must define what winning means before optimizing for it
+11. strategy_holdout_11 | workLane creative_planning | task What is the best way for STAX to generate novel product directions without hallucinating value? | context creative planning needs idea diversity plus evidence discipline
+12. strategy_holdout_12 | workLane ambiguous_judgment | task How should STAX make a decision when two options are both reversible but one is more informative? | context ambiguous judgment needs information gain as a decision criterion
+13. strategy_holdout_13 | workLane cross_domain | task How should STAX compare a software repo task with a course-design task without flattening both into commands? | context cross-domain reasoning needs domain-specific success criteria
+14. strategy_holdout_14 | workLane teaching_strategy | task Should STAX answer strategy questions with a short decision first or a full deliberation first? | context teaching strategy must balance fast usability against transparent reasoning
+15. strategy_holdout_15 | workLane product_strategy | task What should prove that Strategic Deliberation is better than ordinary ChatGPT strategy advice? | context product strategy requires a measurable superiority claim and external baselines
+16. strategy_holdout_16 | workLane creative_planning | task How should STAX decide whether an original idea is useful or merely novel? | context creative planning must score usefulness separately from novelty
+17. strategy_holdout_17 | workLane ambiguous_judgment | task When the external critic refuses to concede, how should STAX continue without gaming the benchmark? | context ambiguous judgment needs stop rules that avoid both premature victory and endless loops
+18. strategy_holdout_18 | workLane cross_domain | task How should STAX borrow behavior from ChatGPT without copying hidden prompts or private instructions? | context cross-domain learning must mine observable behaviors cleanly
+19. strategy_holdout_19 | workLane teaching_strategy | task How should STAX teach Dean what changed after a complex reasoning patch? | context teaching strategy needs impact-oriented summaries rather than implementation dumps
+20. strategy_holdout_20 | workLane product_strategy | task Should STAX invest next in strategic benchmarks or provider/model quality? | context product strategy must separate reasoning generator quality from evaluation quality
+21. strategy_holdout_21 | workLane creative_planning | task How should STAX produce multiple genuinely different options instead of variants of the same idea? | context creative planning needs option diversity gates
+22. strategy_holdout_22 | workLane ambiguous_judgment | task How should STAX handle a high-upside feature with weak current evidence? | context ambiguous judgment requires reversible experiments and kill criteria
+23. strategy_holdout_23 | workLane cross_domain | task How should STAX evaluate strategy for non-code projects using the same discipline as repo projects? | context cross-domain reasoning needs evidence types beyond commands and tests
+24. strategy_holdout_24 | workLane teaching_strategy | task How should STAX turn a strategic decision into the one next thing Dean should do? | context teaching strategy should produce one actionable next move with proof status
