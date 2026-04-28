@@ -22,11 +22,13 @@ describe("GeneralSuperiorityGate", () => {
     const report = await new GeneralSuperiorityGate(process.cwd()).evaluateDirectory("fixtures/problem_benchmark");
 
     expect(report.status).toBe("campaign_slice");
-    expect(report.metrics.comparisons).toBe(90);
+    expect(report.metrics.comparisons).toBe(250);
     expect(report.metrics.ties).toBe(0);
-    expect(report.metrics.blindComparisons).toBe(0);
-    expect(report.gaps.join(" ")).toContain("Need at least 250");
-    expect(report.gaps.join(" ")).toContain("Need at least 12 broad work lanes");
+    expect(report.metrics.blindComparisons).toBe(160);
+    expect(report.metrics.workLanes).toBeGreaterThanOrEqual(12);
+    expect(report.metrics.captureDates).toBe(2);
+    expect(report.gaps.join(" ")).toContain("Need at least 250 locked-before-external blind comparisons");
+    expect(report.gaps.join(" ")).toContain("Need external baselines captured on at least 3 dates");
   });
 
   it("requires broad blind coverage before a general superiority candidate", () => {

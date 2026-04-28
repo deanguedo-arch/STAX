@@ -126,11 +126,12 @@ describe("LocalProblemBenchmark", () => {
   it("preserves collection-level baseline metadata when scoring a benchmark directory", async () => {
     const summary = await new LocalProblemBenchmark(process.cwd()).scoreDirectory("fixtures/problem_benchmark");
 
-    expect(summary.total).toBe(90);
+    expect(summary.total).toBe(250);
     expect(summary.noExternalBaseline).toBe(0);
     expect(summary.externalBetter).toBe(0);
     expect(summary.ties).toBe(0);
     expect(summary.stopConditionMet).toBe(true);
-    expect(summary.superiorityStatus).toBe("slice_only");
+    expect(summary.superiorityStatus).toBe("superiority_candidate");
+    expect(summary.superiorityGaps).toEqual([]);
   });
 });
