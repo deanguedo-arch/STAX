@@ -7,6 +7,7 @@ import {
   SandboxManifestSchema,
   type SandboxGuardInput,
   type SandboxGuardResult,
+  type SandboxManifestFile,
   type SandboxManifest
 } from "./SandboxGuardSchemas.js";
 
@@ -52,6 +53,7 @@ export class SandboxGuard {
 
     await fs.mkdir(sandboxPath, { recursive: true });
     const copied = await copyDirectory(sourceRepoPath, sandboxPath);
+    const fileManifest = await buildFileManifest(sandboxPath);
     const manifest = SandboxManifestSchema.parse({
       sandboxId: `sandbox-${new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 17)}-${crypto.randomBytes(3).toString("hex")}`,
       workspace: parsed.workspace,
@@ -61,7 +63,8 @@ export class SandboxGuard {
       createdAt: new Date().toISOString(),
       copiedFiles: copied.copiedFiles,
       skippedEntries: copied.skippedEntries,
-      guardVersion: "v0C"
+      fileManifest,
+      guardVersion: "v0D"
     });
     await fs.writeFile(manifestPath(sandboxPath), JSON.stringify(manifest, null, 2), "utf8");
     return guardResult({
@@ -72,6 +75,7 @@ export class SandboxGuard {
       manifestPath: manifestPath(sandboxPath),
       copiedFiles: copied.copiedFiles,
       skippedEntries: copied.skippedEntries,
+      integrityFileCount: fileManifest.length,
       summary: "Sandbox copy created and manifest recorded."
     });
   }
@@ -98,6 +102,10 @@ export class SandboxGuard {
     if (path.resolve(manifest.sourceRepoPath) !== sourceRepoPath) blockingReasons.push("Sandbox manifest sourceRepoPath does not match the linked repo.");
     if (path.resolve(manifest.sandboxPath) !== sandboxPath) blockingReasons.push("Sandbox manifest sandboxPath does not match the requested path.");
     if (manifest.packetId && parsed.packetId && manifest.packetId !== parsed.packetId) blockingReasons.push("Sandbox manifest packetId does not match the requested packet.");
+    const integrityFailures = await verifyFileManifest(sandboxPath, manifest).catch((error) => [
+      `Sandbox integrity verification failed unexpectedly: ${error instanceof Error ? error.message : String(error)}`
+    ]);
+    blockingReasons.push(...integrityFailures);
     if (blockingReasons.length) {
       return guardResult({
         status: "blocked",
@@ -106,6 +114,7 @@ export class SandboxGuard {
         manifestPath: manifestPath(sandboxPath),
         copiedFiles: manifest.copiedFiles,
         skippedEntries: manifest.skippedEntries,
+        integrityFileCount: manifest.fileManifest?.length ?? 0,
         blockingReasons,
         summary: "Sandbox verification failed."
       });
@@ -118,7 +127,8 @@ export class SandboxGuard {
       manifestPath: manifestPath(sandboxPath),
       copiedFiles: manifest.copiedFiles,
       skippedEntries: manifest.skippedEntries,
-      summary: "Sandbox manifest verified; command window may use this sandbox path."
+      integrityFileCount: manifest.fileManifest?.length ?? 0,
+      summary: "Sandbox manifest and file integrity verified; command window may use this sandbox path."
     });
   }
 
@@ -170,6 +180,7 @@ function guardResult(input: Partial<SandboxGuardResult> & { status: SandboxGuard
     allowedForCommandWindow: false,
     copiedFiles: 0,
     skippedEntries: [],
+    integrityFileCount: 0,
     blockingReasons: [],
     ...input,
     sandboxPath: path.resolve(input.sandboxPath)
@@ -204,6 +215,119 @@ async function copyDirectory(source: string, target: string): Promise<{ copiedFi
   }
   await walk(source, target);
   return { copiedFiles, skippedEntries };
+}
+
+async function buildFileManifest(sandboxPath: string): Promise<SandboxManifestFile[]> {
+  const files: SandboxManifestFile[] = [];
+  async function walk(currentPath: string, relative = ""): Promise<void> {
+    const entries = await fs.readdir(currentPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const nextRelative = relative ? `${relative}/${entry.name}` : entry.name;
+      if (nextRelative === MANIFEST_FILE) continue;
+      const absolutePath = path.join(currentPath, entry.name);
+      if (entry.isDirectory()) {
+        await walk(absolutePath, nextRelative);
+        continue;
+      }
+      if (!entry.isFile()) continue;
+      const buffer = await fs.readFile(absolutePath);
+      files.push({
+        relativePath: nextRelative,
+        sha256: crypto.createHash("sha256").update(buffer).digest("hex"),
+        sizeBytes: buffer.byteLength
+      });
+    }
+  }
+  await walk(sandboxPath);
+  return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+}
+
+async function verifyFileManifest(sandboxPath: string, manifest: SandboxManifest): Promise<string[]> {
+  if (manifest.guardVersion !== "v0D" || !manifest.fileManifest) {
+    return ["Sandbox manifest lacks v0D file integrity hashes; recreate the sandbox before command execution."];
+  }
+  const failures: string[] = [];
+  const expected = new Map(manifest.fileManifest.map((item) => [item.relativePath, item]));
+  const seen = new Set<string>();
+
+  for (const file of manifest.fileManifest) {
+    if (!isSafeManifestRelativePath(file.relativePath)) {
+      failures.push(`Sandbox manifest contains an unsafe relative file path: ${file.relativePath}.`);
+      continue;
+    }
+    const absolutePath = path.join(sandboxPath, file.relativePath);
+    const stat = await fs.lstat(absolutePath).catch(() => undefined);
+    if (!stat) {
+      failures.push(`Sandbox copied file is missing: ${file.relativePath}.`);
+      continue;
+    }
+    if (stat.isSymbolicLink()) {
+      failures.push(`Sandbox copied file became a symlink: ${file.relativePath}.`);
+      continue;
+    }
+    if (!stat.isFile()) {
+      failures.push(`Sandbox copied file is no longer a file: ${file.relativePath}.`);
+      continue;
+    }
+    const buffer = await fs.readFile(absolutePath);
+    const sha256 = crypto.createHash("sha256").update(buffer).digest("hex");
+    if (sha256 !== file.sha256 || buffer.byteLength !== file.sizeBytes) {
+      failures.push(`Sandbox copied file changed after creation: ${file.relativePath}.`);
+    }
+    seen.add(file.relativePath);
+  }
+
+  await scanCurrentSandbox(sandboxPath, async (relativePath, stat) => {
+    if (relativePath === MANIFEST_FILE) return;
+    if (stat.isSymbolicLink()) {
+      failures.push(`Sandbox contains a symlink after creation: ${relativePath}.`);
+      return;
+    }
+    if (expected.has(relativePath)) return;
+    if (isAllowedGeneratedPath(relativePath)) return;
+    if (stat.isFile()) failures.push(`Sandbox contains an unexpected file not present in the integrity manifest: ${relativePath}.`);
+  });
+
+  const missingSeen = manifest.fileManifest.filter((item) => !seen.has(item.relativePath));
+  if (missingSeen.length && failures.length === 0) {
+    failures.push("Sandbox integrity verification did not observe every manifest file.");
+  }
+  return failures;
+}
+
+async function scanCurrentSandbox(
+  sandboxPath: string,
+  onEntry: (relativePath: string, stat: Awaited<ReturnType<typeof fs.lstat>>) => Promise<void>
+): Promise<void> {
+  async function walk(currentPath: string, relative = ""): Promise<void> {
+    const entries = await fs.readdir(currentPath, { withFileTypes: true });
+    for (const entry of entries) {
+      const nextRelative = relative ? `${relative}/${entry.name}` : entry.name;
+      const absolutePath = path.join(currentPath, entry.name);
+      const stat = await fs.lstat(absolutePath);
+      await onEntry(nextRelative, stat);
+      if (stat.isDirectory()) {
+        await walk(absolutePath, nextRelative);
+      }
+    }
+  }
+  await walk(sandboxPath);
+}
+
+function isAllowedGeneratedPath(relativePath: string): boolean {
+  const normalized = relativePath.replace(/\\/g, "/");
+  return /^(dist|build|coverage|runs|evidence|\.vite|\.turbo)(\/|$)/.test(normalized)
+    || /\.tsbuildinfo$/i.test(normalized);
+}
+
+function isSafeManifestRelativePath(relativePath: string): boolean {
+  const normalized = relativePath.replace(/\\/g, "/");
+  return !path.isAbsolute(relativePath)
+    && normalized !== "."
+    && normalized !== ".."
+    && !normalized.startsWith("../")
+    && !normalized.includes("/../")
+    && !normalized.endsWith("/..");
 }
 
 function shouldSkip(relativePath: string, entry: { name: string; isSymbolicLink(): boolean; isDirectory(): boolean }): boolean {

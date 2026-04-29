@@ -15,7 +15,7 @@ npm run rax -- auto-advance command-window brightspace-rollup --approve --execut
 
 The first command is a dry-run that previews the approved command window and does not execute anything. The second form requires both approval and an explicit sandbox path before command execution can occur.
 
-As of Auto-Advance v0C, CLI execution also requires a valid `.stax-sandbox.json` manifest from the sandbox copy guard before the command window can run.
+As of Auto-Advance v0C, CLI execution also requires a valid `.stax-sandbox.json` manifest from the sandbox copy guard before the command window can run. As of v0D, that manifest must include file integrity hashes and pass copied-file verification.
 
 ## What v0B Allows
 
@@ -45,6 +45,7 @@ linked repo path
 no approval = no command run
 missing sandbox path = no execution
 sandbox path equal to linked repo path = blocked
+invalid sandbox integrity manifest = blocked
 non-allowlisted command = blocked
 hard-blocked command = blocked
 npm run ingest:ci before npm run build passes = blocked
@@ -57,7 +58,7 @@ failed command = stop and report first remaining failure
 no package mutation
 no source edits
 no fixture/gold/benchmark edits
-no sandbox creation
+no sandbox creation inside the command window
 no sandbox patching
 no real repo apply
 no promotion
@@ -78,6 +79,7 @@ Coverage includes:
 - build + ingest:ci success completes the command window
 - linked repo path execution is refused
 - dry-run evaluates the window without executing
+- CLI execution blocks when sandbox integrity no longer verifies
 ```
 
 ## Validation Results

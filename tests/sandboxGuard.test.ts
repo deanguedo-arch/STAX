@@ -67,7 +67,18 @@ describe("SandboxGuard", () => {
 
     expect(result.status).toBe("created");
     expect(result.allowedForCommandWindow).toBe(true);
+    expect(result.integrityFileCount).toBeGreaterThan(0);
     expect(await fs.readFile(path.join(sandboxPath, "package.json"), "utf8")).toContain("build");
+    const manifest = JSON.parse(await fs.readFile(path.join(sandboxPath, ".stax-sandbox.json"), "utf8")) as {
+      guardVersion: string;
+      fileManifest: Array<{ relativePath: string; sha256: string; sizeBytes: number }>;
+    };
+    expect(manifest.guardVersion).toBe("v0D");
+    expect(manifest.fileManifest).toEqual(expect.arrayContaining([
+      expect.objectContaining({ relativePath: "package.json", sha256: expect.stringMatching(/^[a-f0-9]{64}$/), sizeBytes: expect.any(Number) }),
+      expect.objectContaining({ relativePath: "package-lock.json", sha256: expect.stringMatching(/^[a-f0-9]{64}$/), sizeBytes: expect.any(Number) }),
+      expect.objectContaining({ relativePath: "src/index.ts", sha256: expect.stringMatching(/^[a-f0-9]{64}$/), sizeBytes: expect.any(Number) })
+    ]));
     await expect(fs.stat(path.join(sandboxPath, "node_modules"))).rejects.toThrow();
     await expect(fs.stat(path.join(sandboxPath, ".git"))).rejects.toThrow();
     await expect(fs.stat(path.join(sandboxPath, ".env"))).rejects.toThrow();
@@ -96,6 +107,114 @@ describe("SandboxGuard", () => {
 
     expect(verified.status).toBe("verified");
     expect(verified.allowedForCommandWindow).toBe(true);
+  });
+
+  it("blocks verification when a copied sandbox file changes", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new SandboxGuard().create({
+      packetId: "repair_rollup_install_integrity",
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    await fs.writeFile(path.join(sandboxPath, "package.json"), JSON.stringify({ scripts: { build: "changed" } }), "utf8");
+
+    const result = await new SandboxGuard().verify({
+      packetId: "repair_rollup_install_integrity",
+      sourceRepoPath,
+      sandboxPath
+    });
+
+    expect(result.status).toBe("blocked");
+    expect(result.blockingReasons.join("\n")).toContain("Sandbox copied file changed after creation: package.json");
+  });
+
+  it("blocks verification when the sandbox contains unexpected source-like files", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new SandboxGuard().create({
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    await fs.writeFile(path.join(sandboxPath, "unexpected.ts"), "export const surprise = true;\n", "utf8");
+
+    const result = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+
+    expect(result.status).toBe("blocked");
+    expect(result.blockingReasons.join("\n")).toContain("unexpected file");
+    expect(result.blockingReasons.join("\n")).toContain("unexpected.ts");
+  });
+
+  it("allows generated output paths but still blocks symlinks after creation", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new SandboxGuard().create({
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    await fs.mkdir(path.join(sandboxPath, "dist"), { recursive: true });
+    await fs.writeFile(path.join(sandboxPath, "dist", "bundle.js"), "generated\n", "utf8");
+
+    const generatedOk = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+    expect(generatedOk.status).toBe("verified");
+
+    await fs.symlink(path.join(sourceRepoPath, "package.json"), path.join(sandboxPath, "dist", "escape-link"));
+    const symlinkBlocked = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+    expect(symlinkBlocked.status).toBe("blocked");
+    expect(symlinkBlocked.blockingReasons.join("\n")).toContain("Sandbox contains a symlink after creation: dist/escape-link");
+  });
+
+  it("blocks old manifests without v0D integrity hashes", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new SandboxGuard().create({
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    const manifestPath = path.join(sandboxPath, ".stax-sandbox.json");
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8")) as Record<string, unknown>;
+    delete manifest.fileManifest;
+    manifest.guardVersion = "v0C";
+    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+
+    const result = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+
+    expect(result.status).toBe("blocked");
+    expect(result.blockingReasons.join("\n")).toContain("lacks v0D file integrity hashes");
+  });
+
+  it("blocks manifest file paths that point outside the sandbox", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new SandboxGuard().create({
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    const manifestPath = path.join(sandboxPath, ".stax-sandbox.json");
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8")) as {
+      fileManifest: Array<{ relativePath: string; sha256: string; sizeBytes: number }>;
+    };
+    manifest.fileManifest.push({
+      relativePath: "../linked-brightspace/package.json",
+      sha256: "0".repeat(64),
+      sizeBytes: 1
+    });
+    await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+
+    const result = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+
+    expect(result.status).toBe("blocked");
+    expect(result.blockingReasons.join("\n")).toContain("unsafe relative file path");
   });
 
   it("blocks sandbox paths that equal or live inside the linked repo", async () => {
@@ -187,6 +306,37 @@ describe("SandboxGuard", () => {
 
     expect(created.status).toBe("created");
     expect(verified.status).toBe("verified");
+  }, 30000);
+
+  it("blocks CLI command-window execution when sandbox integrity no longer verifies", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new WorkspaceStore(rootDir).create({ workspace: "brightspacequizexporter", repoPath: sourceRepoPath, use: true });
+    await new SandboxGuard().create({
+      workspace: "brightspacequizexporter",
+      packetId: "repair_rollup_install_integrity",
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    await fs.writeFile(path.join(sandboxPath, "package-lock.json"), "{\"changed\":true}\n", "utf8");
+    const invocation = cliInvocation([
+      "auto-advance",
+      "command-window",
+      "brightspace-rollup",
+      "--workspace",
+      "brightspacequizexporter",
+      "--approve",
+      "--execute",
+      "--sandbox-path",
+      sandboxPath,
+      "--command",
+      "npm run build",
+      "--completed-ls"
+    ]);
+
+    await expect(execFileAsync(invocation.command, invocation.commandArgs, { cwd: rootDir })).rejects.toMatchObject({ code: 1 });
   }, 30000);
 
   it("blocks CLI command-window execution without sandbox proof", async () => {

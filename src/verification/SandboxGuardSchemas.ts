@@ -10,6 +10,12 @@ export const SandboxGuardInputSchema = z.object({
   humanApprovedSandbox: z.boolean().default(false)
 });
 
+export const SandboxManifestFileSchema = z.object({
+  relativePath: z.string().min(1),
+  sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  sizeBytes: z.number().int().nonnegative()
+});
+
 export const SandboxManifestSchema = z.object({
   sandboxId: z.string().min(1),
   workspace: z.string().min(1).optional(),
@@ -19,7 +25,8 @@ export const SandboxManifestSchema = z.object({
   createdAt: z.string().datetime(),
   copiedFiles: z.number().int().nonnegative(),
   skippedEntries: z.array(z.string()),
-  guardVersion: z.literal("v0C")
+  fileManifest: z.array(SandboxManifestFileSchema).optional(),
+  guardVersion: z.enum(["v0C", "v0D"])
 });
 
 export const SandboxGuardResultSchema = z.object({
@@ -30,10 +37,12 @@ export const SandboxGuardResultSchema = z.object({
   manifestPath: z.string().optional(),
   copiedFiles: z.number().int().nonnegative().default(0),
   skippedEntries: z.array(z.string()).default([]),
+  integrityFileCount: z.number().int().nonnegative().default(0),
   blockingReasons: z.array(z.string()),
   summary: z.string()
 });
 
 export type SandboxGuardInput = z.input<typeof SandboxGuardInputSchema>;
+export type SandboxManifestFile = z.infer<typeof SandboxManifestFileSchema>;
 export type SandboxManifest = z.infer<typeof SandboxManifestSchema>;
 export type SandboxGuardResult = z.infer<typeof SandboxGuardResultSchema>;
