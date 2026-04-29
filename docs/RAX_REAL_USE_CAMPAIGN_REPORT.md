@@ -21,6 +21,21 @@ as usage proof.
 - Fixture edits during counted sessions: not_allowed
 - Current proof level: real_use_not_proven
 
+## External Comparison Starter
+
+Before expanding this campaign into a larger benchmark, run the five-case manual
+STAX vs ChatGPT comparison:
+
+```txt
+docs/RAX_STAX_VS_CHATGPT_MANUAL_BENCHMARK.md
+fixtures/manual_benchmark/stax_vs_chatgpt_seed_5_cases.json
+```
+
+This starter does not prove superiority. It checks whether STAX can beat raw
+ChatGPT on five real project-control tasks with zero STAX critical misses. If
+STAX loses a case, the loss becomes an eval or concrete patch target before the
+campaign expands.
+
 ## Session 1 Candidate
 
 Repo: `brightspacequizexporter`
