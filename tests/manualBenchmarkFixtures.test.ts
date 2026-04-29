@@ -6,6 +6,7 @@ type ManualBenchmarkCase = {
   caseId: string;
   category: string;
   repo: string;
+  repoPathCondition?: "explicit" | "withheld" | "misleading";
   task: string;
   repoEvidence: string;
   commandEvidence: string;
@@ -38,6 +39,10 @@ const fixturePath = path.join(
 const seed20FixturePath = path.join(
   process.cwd(),
   "fixtures/manual_benchmark/stax_vs_chatgpt_seed_20_cases.json"
+);
+const round2FixturePath = path.join(
+  process.cwd(),
+  "fixtures/manual_benchmark/stax_vs_raw_chatgpt_round2_repo_targeting_cases.json"
 );
 
 describe("manual STAX vs ChatGPT benchmark fixture", () => {
@@ -108,6 +113,64 @@ describe("manual STAX vs ChatGPT benchmark fixture", () => {
       expect(testCase.repoEvidence.trim().length).toBeGreaterThan(10);
       expect(testCase.commandEvidence.trim().length).toBeGreaterThan(5);
       expect(testCase.expectedBestTraits.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("keeps Round 2 focused on repo-targeting pressure, not hidden hardcoded repo knowledge", () => {
+    const fixture = JSON.parse(fs.readFileSync(round2FixturePath, "utf8")) as ManualBenchmarkFixture & {
+      benchmarkId: string;
+      targetThreshold: { cases: number; strongResultIf: string[] };
+      baselineBoundary: string;
+      round2Design: {
+        explicitRepoPathCases: number;
+        withheldRepoPathCases: number;
+        misleadingRepoTrapCases: number;
+      };
+    };
+
+    expect(fixture.benchmarkId).toBe("stax_vs_raw_chatgpt_round2_repo_targeting");
+    expect(fixture.status).toBe("manual_collection_required");
+    expect(fixture.cases).toHaveLength(20);
+    expect(fixture.targetThreshold.cases).toBe(20);
+    expect(fixture.baselineBoundary).toContain("not broad STAX superiority proof");
+    expect(fixture.criticalMisses).toContain("uses the wrong repo path or follows a misleading repo target");
+
+    const repoPathConditions = fixture.cases.reduce<Record<string, number>>((counts, testCase) => {
+      const condition = testCase.repoPathCondition ?? "missing";
+      counts[condition] = (counts[condition] ?? 0) + 1;
+      return counts;
+    }, {});
+
+    expect(repoPathConditions.explicit).toBe(fixture.round2Design.explicitRepoPathCases);
+    expect(repoPathConditions.withheld).toBe(fixture.round2Design.withheldRepoPathCases);
+    expect(repoPathConditions.misleading).toBe(fixture.round2Design.misleadingRepoTrapCases);
+    expect(repoPathConditions.missing).toBeUndefined();
+
+    const repos = new Set(fixture.cases.map((testCase) => testCase.repo));
+    expect(repos).toEqual(new Set(["STAX", "brightspacequizexporter", "ADMISSION-APP", "canvas-helper"]));
+
+    const categories = new Set(fixture.cases.map((testCase) => testCase.category));
+    expect(categories).toEqual(new Set(["codex_report_audit", "repo_audit", "prompt_generation", "project_judgment"]));
+
+    for (const testCase of fixture.cases) {
+      expect(testCase.task.trim().length).toBeGreaterThan(20);
+      expect(testCase.repoEvidence.trim().length).toBeGreaterThan(10);
+      expect(testCase.commandEvidence.trim().length).toBeGreaterThan(5);
+      expect(testCase.expectedBestTraits.length).toBeGreaterThanOrEqual(3);
+
+      if (testCase.repoPathCondition === "explicit") {
+        expect(testCase.repoEvidence).toContain("Target repo path:");
+      }
+
+      if (testCase.repoPathCondition === "withheld") {
+        expect(`${testCase.task}\n${testCase.repoEvidence}`).toContain("withheld");
+      }
+
+      if (testCase.repoPathCondition === "misleading") {
+        expect(`${testCase.task}\n${testCase.repoEvidence}\n${testCase.codexReport}`).toMatch(
+          /Misleading|misleading|wrong repo|different repo|STAX|ADMISSION-APP|canvas-helper/
+        );
+      }
     }
   });
 });
