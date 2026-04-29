@@ -406,8 +406,9 @@ function isAllowedGeneratedPath(relativePath: string): boolean {
 
 async function symlinkStaysInsideSandbox(sandboxPath: string, relativePath: string): Promise<boolean> {
   try {
+    const sandboxRoot = await fs.realpath(sandboxPath);
     const resolved = await fs.realpath(path.join(sandboxPath, relativePath));
-    const relative = path.relative(path.resolve(sandboxPath), resolved);
+    const relative = path.relative(sandboxRoot, resolved);
     return !relative.startsWith("..") && !path.isAbsolute(relative);
   } catch {
     return false;

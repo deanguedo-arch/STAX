@@ -19,6 +19,7 @@ SandboxDependencyBootstrap added
 SandboxDependencyBootstrapSchemas added
 auto-advance bootstrap CLI added
 SandboxGuard now tolerates generated node_modules/build artifacts without treating them as source mutation
+SandboxGuard now allows generated node_modules symlinks only when their realpath stays inside the sandbox
 SandboxGuard still blocks symlink escape from generated paths
 ```
 
@@ -114,7 +115,7 @@ npm run typecheck
 npm test -- --run tests/sandboxDependencyBootstrap.test.ts
   passed as part of focused governed-intelligence test run
 npm test
-  passed, 78 files / 420 tests
+  passed, 78 files / 421 tests after safe generated node_modules symlink coverage
 npm run rax -- eval
   passed, 16/16
 npm run rax -- eval --regression
@@ -127,4 +128,12 @@ npm run rax -- auto-advance bootstrap brightspace-rollup --workspace brightspace
   passed; dry-run planned npm ci and npm ls without executing commands
 npm run rax -- auto-advance run-packet brightspace-rollup --workspace brightspacequizexporter --sandbox-path /tmp/stax-bootstrap-smoke-pMIL0C/brightspace-sandbox --approve-sandbox --bootstrap --approve-bootstrap --dry-run
   passed; verified sandbox, planned bootstrap, stopped at human decision boundary, mutatedLinkedRepo=false
+npm run rax -- auto-advance bootstrap brightspace-rollup --workspace brightspacequizexporter --sandbox-path /tmp/stax-brightspace-fix-AdYNc0/brightspace-sandbox --approve --execute
+  passed; npm ci and npm ls @rollup/rollup-darwin-arm64 rollup vite both passed in verified sandbox
+npm run rax -- auto-advance run-packet brightspace-rollup --workspace brightspacequizexporter --sandbox-path /tmp/stax-brightspace-fix-AdYNc0/brightspace-sandbox --approve-sandbox --approve-window --max-loops 100
+  passed; sandbox_verified, npm ls/build/ingest:ci all passed, mutatedLinkedRepo=false, no sandbox diff to apply
+npm run typecheck
+  passed after safe symlink fix
+npm run rax -- eval && npm run rax -- eval --regression && npm run rax -- eval --redteam
+  passed, 16/16, 47/47, 10/10
 ```

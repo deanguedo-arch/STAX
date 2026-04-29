@@ -35,6 +35,7 @@ npm run build must pass before npm run ingest:ci
 failed command stops the packet and reports first remaining failure
 human apply packet is required before real repo apply
 sandbox dependency bootstrap is sandbox-only and command allowlisted
+generated node_modules symlinks are allowed only when their realpath stays inside the sandbox
 ```
 
 ## Brightspace Packet
@@ -148,7 +149,7 @@ npm test -- --run tests/humanApplyPacket.test.ts tests/patchProofChain.test.ts t
 npm test -- --run tests/humanApplyPacket.test.ts tests/patchProofChain.test.ts tests/sandboxLoopRunner.test.ts tests/sandboxPatchWindow.test.ts tests/sandboxCommandWindow.test.ts tests/sandboxGuard.test.ts
   passed, 6 files / 50 tests
 npm test
-  passed, 78 files / 420 tests after governed-intelligence and dependency bootstrap additions
+  passed, 78 files / 421 tests after governed-intelligence, dependency bootstrap, and safe generated symlink coverage
 npm run rax -- eval
   passed, 16/16
 npm run rax -- eval --regression
@@ -169,6 +170,10 @@ npm run rax -- auto-advance bootstrap brightspace-rollup --workspace brightspace
   passed, dry-run planned npm ci and npm ls in verified disposable sandbox; no bootstrap commands executed
 npm run rax -- auto-advance run-packet brightspace-rollup --workspace brightspacequizexporter --sandbox-path /tmp/stax-bootstrap-smoke-pMIL0C/brightspace-sandbox --approve-sandbox --bootstrap --approve-bootstrap --dry-run
   passed, integrated bootstrap dry-run verified sandbox and stopped at human decision boundary with mutatedLinkedRepo=false
+npm run rax -- auto-advance bootstrap brightspace-rollup --workspace brightspacequizexporter --sandbox-path /tmp/stax-brightspace-fix-AdYNc0/brightspace-sandbox --approve --execute
+  passed, npm ci and npm ls @rollup/rollup-darwin-arm64 rollup vite both passed in sandbox
+npm run rax -- auto-advance run-packet brightspace-rollup --workspace brightspacequizexporter --sandbox-path /tmp/stax-brightspace-fix-AdYNc0/brightspace-sandbox --approve-sandbox --approve-window --max-loops 100
+  passed, sandbox_verified; npm ls/build/ingest:ci passed; mutatedLinkedRepo=false; no sandbox diff to apply
 ```
 
 ## Final Boundary

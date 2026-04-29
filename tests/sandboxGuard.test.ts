@@ -170,6 +170,29 @@ describe("SandboxGuard", () => {
     expect(symlinkBlocked.blockingReasons.join("\n")).toContain("Sandbox contains a symlink after creation: dist/escape-link");
   });
 
+  it("allows generated node_modules symlinks only when they resolve inside the sandbox", async () => {
+    const rootDir = await tempRoot();
+    const sourceRepoPath = await fixtureRepo(rootDir);
+    const sandboxPath = path.join(rootDir, "sandbox");
+    await new SandboxGuard().create({
+      sourceRepoPath,
+      sandboxPath,
+      humanApprovedSandbox: true
+    });
+    await fs.mkdir(path.join(sandboxPath, "node_modules", ".bin"), { recursive: true });
+    await fs.mkdir(path.join(sandboxPath, "node_modules", "tool", "bin"), { recursive: true });
+    await fs.writeFile(path.join(sandboxPath, "node_modules", "tool", "bin", "tool.js"), "console.log('ok');\n", "utf8");
+    await fs.symlink("../tool/bin/tool.js", path.join(sandboxPath, "node_modules", ".bin", "tool"));
+
+    const generatedOk = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+    expect(generatedOk.status).toBe("verified");
+
+    await fs.symlink(path.join(sourceRepoPath, "package.json"), path.join(sandboxPath, "node_modules", ".bin", "escape"));
+    const escapeBlocked = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
+    expect(escapeBlocked.status).toBe("blocked");
+    expect(escapeBlocked.blockingReasons.join("\n")).toContain("Sandbox contains a symlink after creation: node_modules/.bin/escape");
+  });
+
   it("blocks old manifests without v0D integrity hashes", async () => {
     const rootDir = await tempRoot();
     const sourceRepoPath = await fixtureRepo(rootDir);
