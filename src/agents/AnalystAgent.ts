@@ -698,6 +698,7 @@ type ProjectControlSignals = {
   seedGoldMisuse: boolean;
   scriptExistsAsProof: boolean;
   pipelinePublishClaim: boolean;
+  sheetsValidationCommandKnown: boolean;
   canvasHelper: boolean;
 };
 
@@ -761,6 +762,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     seedGoldMisuse: /\b(?:ran|run|succeeded|updated|changed|used)\b[\s\S]{0,80}\b(?:ingest:seed-gold|seed-gold|gold files|gold\/|fixture\/gold)\b/i.test(reportAndCommand),
     scriptExistsAsProof: /script exists|scripts exist|package\.json has|existence of the .*script|because package\.json has/i.test(combined),
     pipelinePublishClaim: /ready to publish|canonical CSV exists|validate-canonical|QA gates|pipeline output|publish readiness/i.test(combined),
+    sheetsValidationCommandKnown: /validate-sync-surface\.ps1/i.test(combined),
     canvasHelper: /canvas-helper|Sports Wellness|sportswellness/i.test(combined)
   };
 
@@ -981,7 +983,10 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "In mobile/ios-wrapper, run npm run preflight and report the exact output before treating the wrapper as TestFlight-ready.";
   }
   if (input.sheetsPublishClaim) {
-    return "Run tools/validate-sync-surface.ps1 first and report target Sheet/config status before any SYNC_ALL or publish command.";
+    if (input.sheetsValidationCommandKnown) {
+      return "Run tools/validate-sync-surface.ps1 first and report target Sheet/config status before any SYNC_ALL or publish command.";
+    }
+    return "Inspect the repo docs/scripts to identify a read-only Sheets sync preflight or validation path, then report target Sheet/config status before any SYNC_ALL or publish command.";
   }
   if (input.pipelinePublishClaim) {
     return "Run tools/validate-canonical.ps1 first and report row-count drift, duplicate/suspicious rows, unknown-field spikes, and the first failure before publishing.";
@@ -1002,7 +1007,7 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Run npm run build:pages in ADMISSION-APP and report the exact output and first failure before calling the Pages build verified.";
   }
   if (input.scriptExistsAsProof) {
-    return "Run the exact configured build command and report its output before treating script existence as proof.";
+    return "Inspect package.json, run the exact configured build command such as npm run build only if that script exists, and report output before treating script existence as proof.";
   }
   if (input.rollupPresent) {
     return "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, run npm run ingest:ci and report whether its build step passed, whether ingest:promotion-check was reached, and the first failure or passing output.";
@@ -1065,11 +1070,15 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.sheetsPublishClaim) {
+    const validationStep = input.sheetsValidationCommandKnown
+      ? "Run tools/validate-sync-surface.ps1 if that command is confirmed by repo evidence."
+      : "Inspect docs/scripts first to identify the repo's read-only sync preflight or validation command; if none exists, report that blocker instead of inventing one.";
     return [
       "```txt",
       "Do not run SYNC_ALL, SYNC_PROGRAMS, or any publish command yet.",
-      "First validate the sync surface: target Sheet identity, config presence, credential boundary, and local validation requirements.",
-      "Report exact validation output and any missing target/config evidence without printing secrets.",
+      validationStep,
+      "Validate the sync surface: target Sheet identity, config presence, credential boundary, and local validation requirements.",
+      "Report exact validation output or the exact missing-validation blocker without printing secrets.",
       "```"
     ].join("\n");
   }
@@ -1131,6 +1140,19 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "Run exactly npm run build:pages.",
       "Report the command output, exit status, files changed if any, and first remaining failure if it fails.",
       "Do not publish or sync to Sheets.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.scriptExistsAsProof) {
+    return [
+      "```txt",
+      "Do not claim build/test success from package.json script existence.",
+      "Inspect package.json and list the relevant scripts.",
+      "Run the exact configured build command, such as npm run build only if that script exists.",
+      "Run the test script only if package.json defines one; otherwise state that no test script was found.",
+      "Report exact commands, exit codes, relevant output, and first remaining failure if any.",
+      "Do not edit files.",
       "```"
     ].join("\n");
   }

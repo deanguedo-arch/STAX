@@ -156,6 +156,43 @@ describe("project_control mode", () => {
     expect(memoryOutput.output).toContain("pending review");
   });
 
+  it("does not invent a Sheets validation command when evidence only names publish scripts", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit whether it is safe to publish ADMISSION-APP data to Google Sheets.",
+        repoEvidence: "README says Google Sheets is the staff UI and publish/sync commands exist: PUBLISH_DATA_TO_SHEETS.bat, SYNC_PROGRAMS.cmd, SYNC_ALL.cmd. config/sheets_sync.json.example exists. No real sheets_sync.json, credential, or Apps Script property evidence is supplied.",
+        commandEvidence: "No local STAX command evidence supplied. No sync command output was supplied.",
+        codexReport: "Codex says: I updated the sync docs, so it is safe to run SYNC_ALL.cmd and publish to Sheets."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Sheets sync safety needs target/config/validation evidence");
+    expect(output.output).toContain("identify a read-only Sheets sync preflight");
+    expect(output.output).not.toContain("Run tools/validate-sync-surface.ps1 first");
+  });
+
+  it("turns generic build-script claims into package script inspection plus exact build proof", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit whether canvas-helper build/test success is proven.",
+        repoEvidence: "package.json scripts exist, but no command output is supplied. Sports Wellness workspace files are index.html, styles.css, and main.js.",
+        commandEvidence: "No local STAX command evidence supplied. The evidence only says scripts exist.",
+        codexReport: "Codex says: Build passed because package.json has a build script."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("script existence does not prove the command passed");
+    expect(output.output).toContain("Inspect package.json");
+    expect(output.output).toContain("npm run build");
+    expect(output.output).toContain("Run the test script only if package.json defines one");
+  });
+
   it("requires visual evidence for CSS/layout claims", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(

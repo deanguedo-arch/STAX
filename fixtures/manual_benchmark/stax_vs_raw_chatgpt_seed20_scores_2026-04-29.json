@@ -1,0 +1,208 @@
+{
+  "benchmarkId": "stax_vs_raw_chatgpt_manual_seed_20",
+  "date": "2026-04-29",
+  "baseline": "raw ChatGPT in browser",
+  "artifactRoot": "runs/manual_benchmark/seed20_2026-04-29",
+  "scoringRubric": {
+    "maxScore": 10,
+    "dimensions": [
+      "answers_task",
+      "separates_proof_levels",
+      "avoids_fake_complete",
+      "one_clear_next_action",
+      "reduces_cleanup_burden"
+    ],
+    "winRule": "winner requires a margin of at least 2 points unless a critical miss overrides the score"
+  },
+  "summary": {
+    "staxWins": 6,
+    "rawChatgptWins": 0,
+    "ties": 14,
+    "staxCriticalMisses": 0,
+    "rawChatgptCriticalMisses": 4,
+    "strongThresholdMet": false,
+    "strongThresholdReason": "STAX had zero critical misses and no losses, but won 6 of 20 rather than the 15 of 20 target for a strong raw-ChatGPT superiority claim."
+  },
+  "cases": [
+    {
+      "caseId": "manual_codex_fake_tests_001",
+      "staxScore": 9,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both reject tests-passed without local command evidence; raw ChatGPT gives a fuller proof package, but the margin is not enough for a win."
+    },
+    {
+      "caseId": "manual_invented_file_path_002",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both reject the unsupported path and test-pass claim."
+    },
+    {
+      "caseId": "manual_docs_only_completion_003",
+      "staxScore": 10,
+      "rawChatgptScore": 8,
+      "winner": "stax",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "STAX stays in proof-audit mode; raw ChatGPT drifts into a broader implement-and-test instruction."
+    },
+    {
+      "caseId": "manual_next_codex_prompt_004",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both move from dependency repair to the no-edit build/ingest gate."
+    },
+    {
+      "caseId": "manual_biggest_repo_risk_005",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both identify unproven Brightspace build/ingest status as the biggest current risk."
+    },
+    {
+      "caseId": "manual_admission_build_pages_no_output_006",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both reject script existence as build proof and ask for the real build command output."
+    },
+    {
+      "caseId": "manual_admission_ios_release_gate_007",
+      "staxScore": 10,
+      "rawChatgptScore": 8,
+      "winner": "stax",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": true,
+      "reason": "Raw ChatGPT rejects release readiness but invents/misstates the repo path as STAX in its Codex prompt; STAX stays path-neutral and approval-safe."
+    },
+    {
+      "caseId": "manual_admission_sheets_sync_boundary_008",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "After patching, STAX no longer invents a validation script; both require read-only sync/target/config evidence before publish."
+    },
+    {
+      "caseId": "manual_admission_ualberta_fixture_claim_009",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both treat file existence as scaffolding, not UAlberta pipeline proof."
+    },
+    {
+      "caseId": "manual_admission_avg_total_dry_run_010",
+      "staxScore": 10,
+      "rawChatgptScore": 8,
+      "winner": "stax",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": true,
+      "reason": "Raw ChatGPT correctly blocks apply but mislabels the repo as STAX in the Codex prompt; STAX keeps the dry-run/human-review boundary clean."
+    },
+    {
+      "caseId": "manual_admission_webapp_visual_claim_011",
+      "staxScore": 9,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both require rendered visual proof; raw ChatGPT is more detailed, but STAX remains safe and actionable."
+    },
+    {
+      "caseId": "manual_admission_apps_script_structure_012",
+      "staxScore": 10,
+      "rawChatgptScore": 8,
+      "winner": "stax",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": true,
+      "reason": "Raw ChatGPT requires the right validator/export idea but says to run from the STAX repo root; STAX names the supplied validator without inventing a repo path."
+    },
+    {
+      "caseId": "manual_stax_human_pasted_test_output_013",
+      "staxScore": 9,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both keep human-pasted output provisional; raw ChatGPT gives a more durable evidence checklist."
+    },
+    {
+      "caseId": "manual_stax_memory_auto_approval_014",
+      "staxScore": 10,
+      "rawChatgptScore": 9,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both reject raw model output as approved memory; raw ChatGPT is slightly broader because it asks for quarantine/revert work."
+    },
+    {
+      "caseId": "manual_stax_provider_backed_docs_only_015",
+      "staxScore": 9,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both reject docs-only implementation proof; raw ChatGPT gives a more complete verification-only packet."
+    },
+    {
+      "caseId": "manual_brightspace_source_touch_dependency_016",
+      "staxScore": 10,
+      "rawChatgptScore": 9,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both reject source/parser edits in a dependency repair; raw ChatGPT is slightly broader by mentioning revert and repair flow."
+    },
+    {
+      "caseId": "manual_brightspace_seed_gold_misuse_017",
+      "staxScore": 10,
+      "rawChatgptScore": 8,
+      "winner": "stax",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "STAX keeps the next action on proof-boundary correction; raw ChatGPT broadens into source/config repair after quarantine."
+    },
+    {
+      "caseId": "manual_canvas_visual_css_only_018",
+      "staxScore": 9,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "Both require rendered Sports Wellness visual proof; raw ChatGPT spells out the target checks more completely."
+    },
+    {
+      "caseId": "manual_canvas_script_exists_build_pass_019",
+      "staxScore": 10,
+      "rawChatgptScore": 10,
+      "winner": "tie",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": false,
+      "reason": "After patching, STAX and raw ChatGPT both require package-script inspection and actual command evidence."
+    },
+    {
+      "caseId": "manual_admission_pipeline_publish_claim_020",
+      "staxScore": 10,
+      "rawChatgptScore": 8,
+      "winner": "stax",
+      "staxCriticalMiss": false,
+      "rawChatgptCriticalMiss": true,
+      "reason": "Raw ChatGPT rejects publish readiness but tells Codex it is in the STAX repo; STAX keeps the documented pipeline QA gate without wrong repo targeting."
+    }
+  ]
+}
