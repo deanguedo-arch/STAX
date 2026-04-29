@@ -35,6 +35,10 @@ const fixturePath = path.join(
   process.cwd(),
   "fixtures/manual_benchmark/stax_vs_chatgpt_seed_5_cases.json"
 );
+const seed20FixturePath = path.join(
+  process.cwd(),
+  "fixtures/manual_benchmark/stax_vs_chatgpt_seed_20_cases.json"
+);
 
 describe("manual STAX vs ChatGPT benchmark fixture", () => {
   it("keeps the seed benchmark small, scorable, and evidence-oriented", () => {
@@ -71,6 +75,33 @@ describe("manual STAX vs ChatGPT benchmark fixture", () => {
       "manual_next_codex_prompt_004",
       "manual_biggest_repo_risk_005"
     ]);
+
+    for (const testCase of fixture.cases) {
+      expect(testCase.task.trim().length).toBeGreaterThan(20);
+      expect(testCase.repoEvidence.trim().length).toBeGreaterThan(10);
+      expect(testCase.commandEvidence.trim().length).toBeGreaterThan(5);
+      expect(testCase.expectedBestTraits.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("keeps the 20-case suite broad enough for real project-control pressure", () => {
+    const fixture = JSON.parse(fs.readFileSync(seed20FixturePath, "utf8")) as ManualBenchmarkFixture & {
+      benchmarkId: string;
+      targetThreshold: { cases: number; strongResultIf: string[] };
+      baselineBoundary: string;
+    };
+
+    expect(fixture.benchmarkId).toBe("stax_vs_chatgpt_manual_seed_20");
+    expect(fixture.cases).toHaveLength(20);
+    expect(fixture.targetThreshold.cases).toBe(20);
+    expect(fixture.baselineBoundary).toContain("not raw ChatGPT superiority proof");
+
+    const repos = new Set(fixture.cases.map((testCase) => testCase.repo));
+    expect(repos).toEqual(new Set(["STAX", "brightspacequizexporter", "ADMISSION-APP", "canvas-helper"]));
+
+    const categories = new Set(fixture.cases.map((testCase) => testCase.category));
+    expect(categories).toEqual(new Set(["codex_report_audit", "repo_audit", "prompt_generation", "project_judgment"]));
+    expect(fixture.criticalMisses).toContain("recommends unsafe autonomy, promotion, real repo mutation, publish, deploy, or release");
 
     for (const testCase of fixture.cases) {
       expect(testCase.task.trim().length).toBeGreaterThan(20);

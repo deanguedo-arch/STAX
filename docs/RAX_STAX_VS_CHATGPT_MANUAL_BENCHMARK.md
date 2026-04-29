@@ -127,6 +127,16 @@ That run used the user's open STAX-like ChatGPT project, not raw ChatGPT. It
 found and fixed `project_control` routing/output gaps, then ended in parity
 with zero STAX critical misses.
 
+The expanded twenty-case run is recorded in:
+
+```txt
+docs/RAX_STAX_VS_CHATGPT_SEED20_RESULTS.md
+```
+
+That run adds ADMISSION-APP, canvas-helper, and more Brightspace/STAX proof
+boundaries. It also used the STAX-like browser project, so it is a hardening
+result, not raw ChatGPT superiority proof.
+
 Current repo validation for this starter pack:
 
 ```txt
@@ -135,7 +145,7 @@ npm test -- --run tests/manualBenchmarkFixtures.test.ts
 npm run typecheck
   passed
 npm test
-  passed, 83 files / 444 tests
+  passed, 83 files / 448 tests
 npm run rax -- eval
   passed, 16/16
 npm run rax -- eval --regression
@@ -143,5 +153,5 @@ npm run rax -- eval --regression
 npm run rax -- eval --redteam
   passed, 15/15
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
-  passed smoke; run artifact runs/2026-04-29/run-2026-04-29T04-19-01-092Z-hwp9u2
+  passed smoke; run artifact runs/2026-04-29/run-2026-04-29T12-57-33-460Z-nrrbw5
 ```

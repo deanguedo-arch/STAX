@@ -675,6 +675,32 @@ type ProjectControlPacket = {
   codexReport: string;
 };
 
+type ProjectControlSignals = {
+  brightspace: boolean;
+  rollupPresent: boolean;
+  buildNotRun: boolean;
+  ingestNotRun: boolean;
+  docsOnly: boolean;
+  inventedPathRisk: boolean;
+  codexClaimsTestsPassed: boolean;
+  codexClaimsComplete: boolean;
+  admissionApp: boolean;
+  buildPagesClaim: boolean;
+  iosReleaseClaim: boolean;
+  sheetsPublishClaim: boolean;
+  ualbertaPipelineClaim: boolean;
+  avgTotalApplyClaim: boolean;
+  visualProofClaim: boolean;
+  appsScriptStructureClaim: boolean;
+  humanPastedWeakProof: boolean;
+  memoryAutoApprovalClaim: boolean;
+  dependencyScopeViolation: boolean;
+  seedGoldMisuse: boolean;
+  scriptExistsAsProof: boolean;
+  pipelinePublishClaim: boolean;
+  canvasHelper: boolean;
+};
+
 function parseProjectControlPacket(input: string): ProjectControlPacket {
   return {
     task: extractLabeledBlock(input, "Task", ["Repo Evidence", "Command Evidence", "Codex Report", "Return"]) || input.trim(),
@@ -698,18 +724,45 @@ function extractLabeledBlock(input: string, label: string, followingLabels: stri
 function renderProjectControl(packet: ProjectControlPacket): string {
   const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
   const lower = combined.toLowerCase();
-  const reportLower = packet.codexReport.toLowerCase();
   const brightspace = /brightspace|brightspacequizexporter/i.test(combined);
   const rollupPresent = /@rollup\/rollup-darwin-arm64@?4\.59\.0/i.test(combined) && /\bnpm ls\b/i.test(combined);
-  const buildNotRun = /npm run build (?:and )?npm run ingest:ci have not been run|build .*not been run|npm run build.*not been run/i.test(combined);
-  const ingestNotRun = /ingest:ci .*not been run|npm run ingest:ci.*not been run/i.test(combined);
+  const buildIngestUnproven = lower.includes("build/ingest gate") && lower.includes("unproven");
+  const buildNotRun = buildIngestUnproven || /npm run build (?:and )?npm run ingest:ci have not been run|build .*not been run|npm run build.*not been run|build and ingest .*not proven/i.test(combined);
+  const ingestNotRun = buildIngestUnproven || /ingest:ci .*not been run|npm run ingest:ci.*not been run|ingest gate .*unproven|ingest .*not proven/i.test(combined);
   const docsOnly = /diff summary .*only shows docs\/|only docs\/|docs-only/i.test(combined);
   const codexClaimsTestsPassed = /\b(all tests passed|tests passed|npm test passed|test suite passed)\b/i.test(packet.codexReport);
-  const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished)\b/i.test(packet.codexReport);
+  const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished|ready|verified)\b/i.test(packet.codexReport);
   const evidenceText = packet.commandEvidence + "\n" + packet.repoEvidence;
   const negatesCommandEvidence = /\b(no local .*command evidence|no local command output|command evidence:\s*none|none supplied|not supplied)\b/i.test(evidenceText);
   const hasCommandOutput = !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
   const inventedPathRisk = /src\/not-real|not-real-provider-router/i.test(combined);
+  const reportAndCommand = [packet.codexReport, packet.commandEvidence].join("\n");
+  const taskAndReport = [packet.task, packet.codexReport].join("\n");
+  const signals: ProjectControlSignals = {
+    brightspace,
+    rollupPresent,
+    buildNotRun,
+    ingestNotRun,
+    docsOnly,
+    inventedPathRisk,
+    codexClaimsTestsPassed,
+    codexClaimsComplete,
+    admissionApp: /ADMISSION-APP|admissions checker|admissions pipeline/i.test(combined),
+    buildPagesClaim: /build:pages|Pages build|tools\/build-pages\.js/i.test(combined),
+    iosReleaseClaim: /TestFlight|App Store|iOS wrapper|IOS_RELEASE_GATE|mobile\/ios-wrapper|release readiness|submit to TestFlight/i.test(combined),
+    sheetsPublishClaim: /SYNC_ALL|SYNC_PROGRAMS|publish to Sheets|Google Sheets|sheets_sync|target Sheet/i.test(combined),
+    ualbertaPipelineClaim: /UAlberta|ualberta|check_ualberta_url_map_fixtures|ualberta_program_seed|canonical_url_map/i.test(combined),
+    avgTotalApplyClaim: /Avg_Total|apply-avg-total-candidates|avg_total_candidates|DryRun/i.test(combined),
+    visualProofClaim: /visual|layout|looks good|CSS|screenshot|rendered preview|WebAppStyles|card text fit|checkmark containment/i.test(taskAndReport),
+    appsScriptStructureClaim: /Apps Script deploy|validate-apps-script-structure|export-appsscript-bundles|WebApp\.html|Code\.gs|EligibilityEngine\.gs/i.test(combined),
+    humanPastedWeakProof: /human-pasted|Human-pasted|human pasted/i.test(combined),
+    memoryAutoApprovalClaim: /approved project memory|saved .*memory|auto-save|raw model output|approval metadata|poison scan/i.test(combined),
+    dependencyScopeViolation: /src\/parser\.ts|parser logic|source\/parser|forbidden tracked changes/i.test(reportAndCommand),
+    seedGoldMisuse: /\b(?:ran|run|succeeded|updated|changed|used)\b[\s\S]{0,80}\b(?:ingest:seed-gold|seed-gold|gold files|gold\/|fixture\/gold)\b/i.test(reportAndCommand),
+    scriptExistsAsProof: /script exists|scripts exist|package\.json has|existence of the .*script|because package\.json has/i.test(combined),
+    pipelinePublishClaim: /ready to publish|canonical CSV exists|validate-canonical|QA gates|pipeline output|publish readiness/i.test(combined),
+    canvasHelper: /canvas-helper|Sports Wellness|sportswellness/i.test(combined)
+  };
 
   const verified: string[] = [];
   const weak: string[] = [];
@@ -728,9 +781,27 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (/git status: ## main\.\.\.origin\/main, no modified files/i.test(combined)) {
     verified.push("Supplied git status says the Brightspace worktree is clean on main...origin/main.");
   }
+  if (signals.buildPagesClaim) {
+    verified.push("The supplied evidence identifies the ADMISSION-APP build:pages script, but script existence is not command success.");
+  }
+  if (signals.iosReleaseClaim) {
+    verified.push("The supplied evidence identifies an iOS release gate/checklist, but unchecked checklist items are not release proof.");
+  }
+  if (signals.appsScriptStructureClaim) {
+    verified.push("The supplied evidence identifies Apps Script structure/validation surfaces, but no structure validation output is supplied.");
+  }
+  if (signals.ualbertaPipelineClaim) {
+    verified.push("The supplied evidence identifies UAlberta pipeline files or fixture commands, but not a passing fixture run.");
+  }
+  if (signals.sheetsPublishClaim) {
+    verified.push("The supplied evidence identifies Sheets publish/sync surfaces, but not a verified target or safe publish run.");
+  }
 
   if (packet.codexReport.trim() && !/^none supplied\.?$/i.test(packet.codexReport.trim())) {
     weak.push(`Codex reported: ${packet.codexReport.replace(/\s+/g, " ").trim()}`);
+  }
+  if (signals.humanPastedWeakProof) {
+    weak.push("Human-pasted command output is provisional unless backed by local STAX command evidence.");
   }
   if (/paste|supplied repo evidence does not list/i.test(packet.repoEvidence) && inventedPathRisk) {
     weak.push("The report names a file path, but the supplied repo evidence does not prove that path exists.");
@@ -748,6 +819,56 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     unverified.push("The implementation/completion claim is unverified because docs-only evidence cannot prove runtime behavior.");
     risks.push("Docs-only completion risk: the report may describe behavior that was not implemented.");
   }
+  if (signals.buildPagesClaim && !hasCommandOutput) {
+    unverified.push("ADMISSION-APP build/pages success is unverified because npm run build:pages output was not supplied.");
+    risks.push("Script-existence risk: package.json can name a command without proving it ran or passed.");
+  }
+  if (signals.iosReleaseClaim && !hasCommandOutput) {
+    unverified.push("iOS release readiness is unverified until wrapper build, auth/access, workflow, device, accessibility, and ops gates have evidence.");
+    risks.push("Release-boundary risk: submitting to TestFlight/App Store from unchecked checklist items can hide blocker defects.");
+  }
+  if (signals.sheetsPublishClaim && !hasCommandOutput) {
+    unverified.push("Sheets publish safety is unverified because target, credentials/config, validation, and sync output were not supplied.");
+    risks.push("Publish-boundary risk: syncing admissions data without target/validation proof can overwrite the wrong sheet or publish bad data.");
+  }
+  if (signals.ualbertaPipelineClaim && !hasCommandOutput) {
+    unverified.push("UAlberta pipeline support is unverified because file existence does not prove fixture checks or pipeline QA passed.");
+    risks.push("Pipeline-proof risk: seed/config files can exist while extraction, URL mapping, or QA still fails.");
+  }
+  if (signals.avgTotalApplyClaim) {
+    unverified.push("Avg_Total application is unverified until candidate diff and local dry-run/apply evidence are supplied.");
+    risks.push("Canonical-data mutation risk: applying average rules without a reviewed diff can corrupt admissions outputs.");
+  }
+  if (signals.visualProofClaim) {
+    unverified.push("Visual/layout correctness is unverified because no screenshot, rendered preview, or visual checklist finding was supplied.");
+    risks.push("Visual-proof risk: source or CSS changes alone cannot prove rendered layout, text fit, or containment.");
+  }
+  if (signals.appsScriptStructureClaim && !hasCommandOutput) {
+    unverified.push("Apps Script deploy readiness is unverified because structure validation and bundle/export evidence were not supplied.");
+    risks.push("Deploy-boundary risk: editing a web file does not prove the Apps Script bundle is structurally safe to deploy.");
+  }
+  if (signals.memoryAutoApprovalClaim) {
+    unverified.push("Approved memory is unverified because no approval metadata, source run, approval reason, or poison scan was supplied.");
+    risks.push("Memory-poisoning risk: raw model output must not become approved memory automatically.");
+  }
+  if (signals.dependencyScopeViolation) {
+    unverified.push("The dependency/install repair scope is violated or unproven because a source/parser path is mentioned in a dependency repair.");
+    risks.push("Scope-creep risk: dependency repair can become hidden parser/source mutation.");
+  }
+  if (signals.seedGoldMisuse) {
+    unverified.push("The ingest fix is not acceptable proof because ingest:seed-gold or gold mutation is a forbidden repair path for this packet.");
+    risks.push("Proof-boundary risk: reseeding gold can hide regressions instead of proving ingest behavior.");
+  }
+  if (signals.scriptExistsAsProof && !hasCommandOutput) {
+    unverified.push("A script existing in package.json does not prove the command passed.");
+  }
+  if (signals.pipelinePublishClaim && !hasCommandOutput) {
+    unverified.push("Pipeline publish readiness is unverified because canonical file existence is not validation/QA proof.");
+    risks.push("Publish-readiness risk: existing CSV output can still contain duplicates, row-count drift, unknown-field spikes, or invalid requirements.");
+  }
+  if (rollupPresent && !buildNotRun && !ingestNotRun) {
+    unverified.push("Build and ingest success remain unverified; npm ls only proves dependency presence.");
+  }
   if (brightspace && buildNotRun) {
     unverified.push("Brightspace build status is unverified because npm run build has not been run in the supplied evidence.");
   }
@@ -757,35 +878,19 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (!unverified.length && !hasCommandOutput) {
     unverified.push("Runtime behavior remains unverified until local command evidence is supplied.");
   }
-  if (brightspace && (buildNotRun || ingestNotRun)) {
+  if (rollupPresent || (brightspace && (buildNotRun || ingestNotRun))) {
     risks.push("The current risk is no longer the Rollup package itself; it is unproven build/ingest gate status.");
   }
   if (!risks.length) {
     risks.push("The main risk is upgrading weak or missing evidence into a hard completion claim.");
   }
 
-  const nextAction = projectControlNextAction({
-    brightspace,
-    rollupPresent,
-    buildNotRun,
-    ingestNotRun,
-    docsOnly,
-    inventedPathRisk,
-    codexClaimsTestsPassed
-  });
-  const prompt = projectControlPrompt({
-    brightspace,
-    rollupPresent,
-    buildNotRun,
-    ingestNotRun,
-    docsOnly,
-    inventedPathRisk,
-    codexClaimsTestsPassed
-  });
+  const nextAction = projectControlNextAction(signals);
+  const prompt = projectControlPrompt(signals);
 
   return [
     "## Verdict",
-    `- ${projectControlVerdict({ brightspace, rollupPresent, buildNotRun, ingestNotRun, docsOnly, inventedPathRisk, codexClaimsTestsPassed, codexClaimsComplete })}`,
+    `- ${projectControlVerdict(signals)}`,
     "",
     "## Verified",
     ...bulletize(verified, "No hard completion/runtime claim is verified from the supplied evidence."),
@@ -807,17 +912,41 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   ].join("\n");
 }
 
-function projectControlVerdict(input: {
-  brightspace: boolean;
-  rollupPresent: boolean;
-  buildNotRun: boolean;
-  ingestNotRun: boolean;
-  docsOnly: boolean;
-  inventedPathRisk: boolean;
-  codexClaimsTestsPassed: boolean;
-  codexClaimsComplete: boolean;
-}): string {
-  if (input.brightspace && input.rollupPresent && (input.buildNotRun || input.ingestNotRun)) {
+function projectControlVerdict(input: ProjectControlSignals): string {
+  if (input.seedGoldMisuse) {
+    return "Reject as proof; ingest:seed-gold or gold mutation is outside the allowed proof boundary.";
+  }
+  if (input.dependencyScopeViolation) {
+    return "Reject or require correction; the dependency repair appears to touch forbidden source/parser scope.";
+  }
+  if (input.visualProofClaim) {
+    return "Not visually proven; source/CSS changes need rendered visual evidence and a checklist.";
+  }
+  if (input.iosReleaseClaim) {
+    return "Not release-ready as proven; checklist existence or unchecked gates do not prove TestFlight/App Store readiness.";
+  }
+  if (input.sheetsPublishClaim) {
+    return "Do not publish yet; Sheets sync safety needs target/config/validation evidence.";
+  }
+  if (input.pipelinePublishClaim) {
+    return "Do not publish yet; canonical output existence is not pipeline QA proof.";
+  }
+  if (input.memoryAutoApprovalClaim) {
+    return "Unsafe as stated; raw model output cannot become approved memory without explicit approval metadata.";
+  }
+  if (input.appsScriptStructureClaim) {
+    return "Deploy readiness is unproven until Apps Script structure validation is run and reported.";
+  }
+  if (input.ualbertaPipelineClaim) {
+    return "UAlberta support is not proven by file existence; fixture or pipeline QA evidence is required.";
+  }
+  if (input.avgTotalApplyClaim) {
+    return "Do not apply canonical data changes yet; Avg_Total candidates need reviewed dry-run/diff evidence.";
+  }
+  if (input.buildPagesClaim || input.scriptExistsAsProof) {
+    return "Not verified; package script existence does not prove the command passed.";
+  }
+  if (input.rollupPresent) {
     return "Dependency presence is partially proven; build and ingest success are not proven yet.";
   }
   if (input.docsOnly && input.codexClaimsComplete) {
@@ -832,16 +961,50 @@ function projectControlVerdict(input: {
   return "Needs evidence before approval.";
 }
 
-function projectControlNextAction(input: {
-  brightspace: boolean;
-  rollupPresent: boolean;
-  buildNotRun: boolean;
-  ingestNotRun: boolean;
-  docsOnly: boolean;
-  inventedPathRisk: boolean;
-  codexClaimsTestsPassed: boolean;
-}): string {
-  if (input.brightspace && input.rollupPresent && (input.buildNotRun || input.ingestNotRun)) {
+function projectControlNextAction(input: ProjectControlSignals): string {
+  if (input.seedGoldMisuse) {
+    return "Quarantine or revert the seed-gold/gold changes, then require a clean npm run ingest:ci result with no fixture, gold, parser, source, or ingest-promotion changes.";
+  }
+  if (input.dependencyScopeViolation) {
+    return "Ask Codex to return a corrected dependency-only repair report limited to package-lock.json, justified package.json, and tmp/.gitkeep, plus npm ls and npm run ingest:ci output.";
+  }
+  if (input.visualProofClaim) {
+    if (input.canvasHelper) {
+      return "Provide a rendered Sports Wellness screenshot or visual finding that checks text fit, border symmetry, and checkmark containment.";
+    }
+    if (input.admissionApp) {
+      return "Capture rendered web app evidence and complete docs/WEBAPP_QA_CHECKLIST.md before calling the layout fixed.";
+    }
+    return "Provide a rendered screenshot or manual visual checklist result for the claimed UI fix before calling the layout fixed.";
+  }
+  if (input.iosReleaseClaim) {
+    return "In mobile/ios-wrapper, run npm run preflight and report the exact output before treating the wrapper as TestFlight-ready.";
+  }
+  if (input.sheetsPublishClaim) {
+    return "Run tools/validate-sync-surface.ps1 first and report target Sheet/config status before any SYNC_ALL or publish command.";
+  }
+  if (input.pipelinePublishClaim) {
+    return "Run tools/validate-canonical.ps1 first and report row-count drift, duplicate/suspicious rows, unknown-field spikes, and the first failure before publishing.";
+  }
+  if (input.memoryAutoApprovalClaim) {
+    return "Move the memory item to pending review and require approvedBy, approvalReason, source run, expiration/justification, and poison-scan evidence before retrieval.";
+  }
+  if (input.appsScriptStructureClaim) {
+    return "Run tools/validate-apps-script-structure.ps1 and report the exact output before treating the Apps Script bundle as deploy-ready.";
+  }
+  if (input.ualbertaPipelineClaim) {
+    return "Run python pipeline/check_ualberta_url_map_fixtures.py and report the exact output before claiming UAlberta pipeline support is proven.";
+  }
+  if (input.avgTotalApplyClaim) {
+    return "Run .\\tools\\apply-avg-total-candidates.ps1 -CandidatesPath .\\pipeline_artifacts\\extract\\avg_total_candidates.csv -DryRun and report the candidate diff before any apply.";
+  }
+  if (input.buildPagesClaim) {
+    return "Run npm run build:pages in ADMISSION-APP and report the exact output and first failure before calling the Pages build verified.";
+  }
+  if (input.scriptExistsAsProof) {
+    return "Run the exact configured build command and report its output before treating script existence as proof.";
+  }
+  if (input.rollupPresent) {
     return "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, run npm run ingest:ci and report whether its build step passed, whether ingest:promotion-check was reached, and the first failure or passing output.";
   }
   if (input.docsOnly) {
@@ -856,16 +1019,123 @@ function projectControlNextAction(input: {
   return "Collect the smallest local evidence packet: relevant diff, exact command output, and first remaining failure if any.";
 }
 
-function projectControlPrompt(input: {
-  brightspace: boolean;
-  rollupPresent: boolean;
-  buildNotRun: boolean;
-  ingestNotRun: boolean;
-  docsOnly: boolean;
-  inventedPathRisk: boolean;
-  codexClaimsTestsPassed: boolean;
-}): string {
-  if (input.brightspace && input.rollupPresent && (input.buildNotRun || input.ingestNotRun)) {
+function projectControlPrompt(input: ProjectControlSignals): string {
+  if (input.seedGoldMisuse) {
+    return [
+      "```txt",
+      "Audit the prior ingest fix as invalid proof if it used ingest:seed-gold or changed gold/fixture data.",
+      "Do not edit parser/source/fixture/gold/benchmark data.",
+      "Run exactly npm run ingest:ci from the existing state and report whether build and ingest:promotion-check pass.",
+      "If it fails, report the first remaining failure. If gold files changed, say they require separate human approval and are not proof.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.dependencyScopeViolation) {
+    return [
+      "```txt",
+      "Redo the Rollup dependency/install repair report with the dependency-only scope restored.",
+      "Allowed tracked changes: package-lock.json; package.json only if explicitly justified; tmp/.gitkeep only to preserve/resolve it.",
+      "Forbidden changes: src/**, scripts/**, fixtures/**, gold/**, parser logic, ingest promotion logic, and tests.",
+      "Report exact changed files, npm ls output, npm run ingest:ci output, and first remaining failure if any.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.visualProofClaim) {
+    return [
+      "```txt",
+      "Do not claim the UI/layout fix is visually verified from source or CSS alone.",
+      "Provide a rendered screenshot or manual visual finding for the target UI.",
+      "Checklist: text fits, borders/spacing are symmetrical, controls/icons are contained, and no overlapping content is visible.",
+      "Report what is verified, what remains unverified, and the next exact fix if the screenshot still fails.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.iosReleaseClaim) {
+    return [
+      "```txt",
+      "Do not claim iOS/TestFlight readiness from checklist existence.",
+      "In mobile/ios-wrapper, run the wrapper build gate and report exact output for npm install, npm run preflight, npm run sync:ios, and Xcode verification status.",
+      "Also report which auth/access, workflow, device, accessibility, and ops gates remain unverified.",
+      "Do not submit, deploy, or change release state.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.sheetsPublishClaim) {
+    return [
+      "```txt",
+      "Do not run SYNC_ALL, SYNC_PROGRAMS, or any publish command yet.",
+      "First validate the sync surface: target Sheet identity, config presence, credential boundary, and local validation requirements.",
+      "Report exact validation output and any missing target/config evidence without printing secrets.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.pipelinePublishClaim) {
+    return [
+      "```txt",
+      "Do not publish admissions pipeline output from file existence alone.",
+      "Run the canonical/pipeline QA gate and report row-count drift, duplicates, suspicious program names, unknown-field spikes, invalid requirement values, and first failure.",
+      "Only recommend publish after validation evidence is attached.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.memoryAutoApprovalClaim) {
+    return [
+      "```txt",
+      "Do not save raw model output as approved memory.",
+      "Create a pending memory review packet only: source run, proposed memory text, approval reason, approving actor, expiration or never-expire justification, and poison-scan result.",
+      "Do not make it retrievable until explicit approval is recorded.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.appsScriptStructureClaim) {
+    return [
+      "```txt",
+      "Do not claim the Apps Script bundle is deploy-ready from source edits alone.",
+      "Run tools/validate-apps-script-structure.ps1 and report exact output.",
+      "If exporting a bundle, report export command output and changed files. Do not deploy.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.ualbertaPipelineClaim) {
+    return [
+      "```txt",
+      "Do not claim UAlberta support is complete from seed/config file existence.",
+      "Run python pipeline/check_ualberta_url_map_fixtures.py and report exact output.",
+      "If it passes, still mark full pipeline support unverified until pipeline QA and publish gates have local evidence.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.avgTotalApplyClaim) {
+    return [
+      "```txt",
+      "Do not apply Avg_Total candidates to canonical data yet.",
+      "Run .\\tools\\apply-avg-total-candidates.ps1 -CandidatesPath .\\pipeline_artifacts\\extract\\avg_total_candidates.csv -DryRun.",
+      "Report the candidate diff, row count affected, command output, and first failure. Ask for human approval before any non-dry-run apply.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.buildPagesClaim) {
+    return [
+      "```txt",
+      "In /Users/deanguedo/Documents/GitHub/ADMISSION-APP, verify the Pages build instead of inferring from package.json.",
+      "Run exactly npm run build:pages.",
+      "Report the command output, exit status, files changed if any, and first remaining failure if it fails.",
+      "Do not publish or sync to Sheets.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.rollupPresent) {
     return [
       "```txt",
       "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, prove the current build/ingest gate without broadening scope.",
