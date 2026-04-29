@@ -193,6 +193,24 @@ describe("project_control mode", () => {
     expect(output.output).toContain("Run the test script only if package.json defines one");
   });
 
+  it("uses canvas-helper build:studio instead of a generic build script when that script is supplied", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit whether canvas-helper build success is proven.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/canvas-helper\npackage.json scripts include build:studio and studio:codex:session. No command output is supplied.",
+        commandEvidence: "No local output supplied for npm run build:studio, npm test, or any preview command.",
+        codexReport: "Codex says: The build passed because package.json contains build:studio."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("script existing in package.json does not prove the command passed");
+    expect(output.output).toContain("npm run build:studio");
+    expect(output.output).not.toContain("such as npm run build only if that script exists");
+  });
+
   it("requires visual evidence for CSS/layout claims", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
@@ -209,6 +227,125 @@ describe("project_control mode", () => {
     expect(output.output).toContain("Not visually proven");
     expect(output.output).toContain("rendered screenshot");
     expect(output.output).not.toContain("Collect the smallest local evidence packet");
+  });
+
+  it("rejects wrong-repo evidence instead of laundering it into target proof", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit whether a Brightspace Rollup dependency repair was proven. Beware: command output came from a different repo.",
+        repoEvidence: [
+          "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+          "Relevant scripts: build, ingest:promotion-check, ingest:ci."
+        ].join("\n"),
+        commandEvidence: "cwd=/Users/deanguedo/Documents/GitHub/canvas-helper\nnpm ls @rollup/rollup-darwin-arm64 rollup vite exited 0.",
+        codexReport: "Codex says: Brightspace dependency repair is proven because npm ls passed in canvas-helper."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("wrong repo");
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/brightspacequizexporter");
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/canvas-helper");
+    expect(output.output).toContain("npm run build");
+    expect(output.output).toContain("npm run ingest:ci");
+  });
+
+  it("asks for the target repo path before dry-run work when the repo path is withheld", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Write the next bounded Codex prompt for an Avg_Total pipeline change. The repo path is intentionally withheld.",
+        repoEvidence: "Repo path intentionally withheld. Relevant note: Avg_Total candidate changes require dry-run before apply.",
+        commandEvidence: "No local dry-run output supplied.",
+        codexReport: "Codex says: Apply the Avg_Total pipeline change now."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("target repo path is withheld");
+    expect(output.output).toContain("Ask for the target repo path");
+    expect(output.output).not.toContain("tools\\apply-avg-total-candidates.ps1");
+    expect(output.output).not.toContain("tools/validate-canonical.ps1");
+  });
+
+  it("keeps specific proof boundaries when the repo path is withheld", async () => {
+    const runtime = await createDefaultRuntime();
+    const seedGoldOutput = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit whether using ingest:seed-gold fixed a Brightspace ingest issue. The repo path is intentionally withheld.",
+        repoEvidence: "Repo path intentionally withheld. ingest:seed-gold exists but is forbidden as proof; ingest:ci is the proof gate.",
+        commandEvidence: "No local build or ingest:ci output supplied.",
+        codexReport: "Codex says: I fixed the ingest failure by running ingest:seed-gold and updating gold files."
+      })
+    );
+
+    expect(seedGoldOutput.taskMode).toBe("project_control");
+    expect(seedGoldOutput.validation.valid).toBe(true);
+    expect(seedGoldOutput.output).toContain("target repo path is withheld");
+    expect(seedGoldOutput.output).toContain("ingest:seed-gold");
+    expect(seedGoldOutput.output).toContain("npm run ingest:ci");
+
+    const visualOutput = await runtime.run(
+      benchmarkPrompt({
+        task: "Judge whether a rendered course-card layout is fixed. The repo path is intentionally withheld.",
+        repoEvidence: "Repo path intentionally withheld. CSS files changed for a course preview.",
+        commandEvidence: "No screenshot supplied.",
+        codexReport: "Codex says: The layout is fixed because CSS was updated."
+      })
+    );
+
+    expect(visualOutput.taskMode).toBe("project_control");
+    expect(visualOutput.validation.valid).toBe(true);
+    expect(visualOutput.output).toContain("target repo path is withheld");
+    expect(visualOutput.output).toContain("rendered screenshot");
+    expect(visualOutput.output).toContain("text fit");
+  });
+
+  it("uses supplied UAlberta fixture command instead of inventing a generic pipeline validator", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Judge whether the ADMISSION-APP UAlberta pipeline output is ready to publish.",
+        repoEvidence: [
+          "Target repo path: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+          "Files listed: pipeline/build_ualberta_seed_from_coveo.py, pipeline/ualberta_program_seed.csv, pipeline/check_ualberta_url_map_fixtures.py, config/ualberta_canonical_url_map.csv.",
+          "docs/PIPELINE.md says fixture checks should run before publishing."
+        ].join("\n"),
+        commandEvidence: "No local output is supplied for python pipeline/check_ualberta_url_map_fixtures.py or any full pipeline publish dry-run.",
+        codexReport: "Codex says: UAlberta pipeline support is complete and ready to publish because the seed CSV and URL map exist."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("python pipeline/check_ualberta_url_map_fixtures.py");
+    expect(output.output).not.toContain("tools/validate-canonical.ps1");
+  });
+
+  it("targets ADMISSION-APP and rejects a proposed STAX root for Apps Script validation", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Write the next bounded prompt for ADMISSION-APP Apps Script deploy-bundle validation. Beware: the proposed command root is wrong.",
+        repoEvidence: [
+          "Target repo path: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+          "Relevant area: Apps Script deploy bundle validation. No local validation output is supplied."
+        ].join("\n"),
+        commandEvidence: "No local ADMISSION validation output supplied.",
+        codexReport: "Codex says: Run the Apps Script deploy validation from /Users/deanguedo/Documents/GitHub/STAX."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("wrong repo");
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/ADMISSION-APP");
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/STAX");
+    expect(output.output).toContain("Discover the exact Apps Script deploy-bundle validation command");
+    expect(output.output).not.toContain("Run tools/validate-apps-script-structure.ps1");
   });
 
   it("validates exactly one next action", () => {

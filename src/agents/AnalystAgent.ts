@@ -676,6 +676,9 @@ type ProjectControlPacket = {
 };
 
 type ProjectControlSignals = {
+  targetRepoPath?: string;
+  repoPathWithheld: boolean;
+  wrongRepoEvidencePaths: string[];
   brightspace: boolean;
   rollupPresent: boolean;
   buildNotRun: boolean;
@@ -699,6 +702,8 @@ type ProjectControlSignals = {
   scriptExistsAsProof: boolean;
   pipelinePublishClaim: boolean;
   sheetsValidationCommandKnown: boolean;
+  canvasBuildStudioClaim: boolean;
+  ualbertaFixtureCommandKnown: boolean;
   canvasHelper: boolean;
 };
 
@@ -709,6 +714,25 @@ function parseProjectControlPacket(input: string): ProjectControlPacket {
     commandEvidence: extractLabeledBlock(input, "Command Evidence", ["Codex Report", "Return"]),
     codexReport: extractLabeledBlock(input, "Codex Report", ["Return"])
   };
+}
+
+function extractTargetRepoPath(repoEvidence: string): string | undefined {
+  const explicit = repoEvidence.match(/\bTarget repo path:\s*(\/Users\/deanguedo\/Documents\/GitHub\/[^\s]+)/i)?.[1];
+  if (explicit) return explicit.trim().replace(/[.,;)]$/, "");
+  const repo = repoEvidence.match(/\bRepo:\s*(\/Users\/deanguedo\/Documents\/GitHub\/[^\s]+)/i)?.[1];
+  if (repo) return repo.trim().replace(/[.,;)]$/, "");
+  return undefined;
+}
+
+function extractRepoPaths(text: string): string[] {
+  return Array.from(text.matchAll(/\/Users\/deanguedo\/Documents\/GitHub\/[A-Za-z0-9_.-]+/g))
+    .map((match) => match[0].replace(/[.,;)]$/, ""))
+    .filter(Boolean);
+}
+
+function extractWrongRepoEvidencePaths(packet: ProjectControlPacket, targetRepoPath: string): string[] {
+  const evidencePaths = extractRepoPaths([packet.commandEvidence, packet.codexReport].join("\n"));
+  return Array.from(new Set(evidencePaths.filter((repoPath) => repoPath !== targetRepoPath)));
 }
 
 function extractLabeledBlock(input: string, label: string, followingLabels: string[]): string {
@@ -725,6 +749,10 @@ function extractLabeledBlock(input: string, label: string, followingLabels: stri
 function renderProjectControl(packet: ProjectControlPacket): string {
   const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
   const lower = combined.toLowerCase();
+  const targetRepoPath = extractTargetRepoPath(packet.repoEvidence);
+  const repoPathWithheld = !targetRepoPath && /\b(repo path|repo root|target repo)\b[\s\S]{0,60}\b(withheld|not supplied|missing|intentionally withheld)\b/i.test(combined);
+  const wrongRepoEvidencePaths = targetRepoPath ? extractWrongRepoEvidencePaths(packet, targetRepoPath) : [];
+  const hasWrongRepoEvidence = wrongRepoEvidencePaths.length > 0;
   const brightspace = /brightspace|brightspacequizexporter/i.test(combined);
   const rollupPresent = /@rollup\/rollup-darwin-arm64@?4\.59\.0/i.test(combined) && /\bnpm ls\b/i.test(combined);
   const buildIngestUnproven = lower.includes("build/ingest gate") && lower.includes("unproven");
@@ -735,11 +763,14 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished|ready|verified)\b/i.test(packet.codexReport);
   const evidenceText = packet.commandEvidence + "\n" + packet.repoEvidence;
   const negatesCommandEvidence = /\b(no local .*command evidence|no local command output|command evidence:\s*none|none supplied|not supplied)\b/i.test(evidenceText);
-  const hasCommandOutput = !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
+  const hasCommandOutput = !hasWrongRepoEvidence && !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
   const inventedPathRisk = /src\/not-real|not-real-provider-router/i.test(combined);
   const reportAndCommand = [packet.codexReport, packet.commandEvidence].join("\n");
   const taskAndReport = [packet.task, packet.codexReport].join("\n");
   const signals: ProjectControlSignals = {
+    targetRepoPath,
+    repoPathWithheld,
+    wrongRepoEvidencePaths,
     brightspace,
     rollupPresent,
     buildNotRun,
@@ -759,10 +790,12 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     humanPastedWeakProof: /human-pasted|Human-pasted|human pasted/i.test(combined),
     memoryAutoApprovalClaim: /approved project memory|saved .*memory|auto-save|raw model output|approval metadata|poison scan/i.test(combined),
     dependencyScopeViolation: /src\/parser\.ts|parser logic|source\/parser|forbidden tracked changes/i.test(reportAndCommand),
-    seedGoldMisuse: /\b(?:ran|run|succeeded|updated|changed|used)\b[\s\S]{0,80}\b(?:ingest:seed-gold|seed-gold|gold files|gold\/|fixture\/gold)\b/i.test(reportAndCommand),
-    scriptExistsAsProof: /script exists|scripts exist|package\.json has|existence of the .*script|because package\.json has/i.test(combined),
+    seedGoldMisuse: /\b(?:ran|run|running|succeeded|updated|changed|used|fixed)\b[\s\S]{0,100}\b(?:ingest:seed-gold|seed-gold|gold files|gold\/|fixture\/gold)\b/i.test(reportAndCommand),
+    scriptExistsAsProof: /script exists|scripts exist|package\.json (?:has|contains)|existence of the .*script|because package\.json (?:has|contains)/i.test(combined),
     pipelinePublishClaim: /ready to publish|canonical CSV exists|validate-canonical|QA gates|pipeline output|publish readiness/i.test(combined),
     sheetsValidationCommandKnown: /validate-sync-surface\.ps1/i.test(combined),
+    canvasBuildStudioClaim: /build:studio|studio build/i.test(combined),
+    ualbertaFixtureCommandKnown: /pipeline\/check_ualberta_url_map_fixtures\.py/i.test(combined),
     canvasHelper: /canvas-helper|Sports Wellness|sportswellness/i.test(combined)
   };
 
@@ -771,6 +804,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const unverified: string[] = [];
   const risks: string[] = [];
 
+  if (targetRepoPath) {
+    verified.push(`Target repo path is ${targetRepoPath}.`);
+  }
   if (/no local .*command evidence|no local command output/i.test(combined)) {
     verified.push("The supplied evidence includes no local command output for the claimed pass/completion state.");
   }
@@ -802,6 +838,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (packet.codexReport.trim() && !/^none supplied\.?$/i.test(packet.codexReport.trim())) {
     weak.push(`Codex reported: ${packet.codexReport.replace(/\s+/g, " ").trim()}`);
   }
+  for (const wrongPath of wrongRepoEvidencePaths) {
+    weak.push(`Evidence from ${wrongPath} is wrong-repo evidence for target ${targetRepoPath}.`);
+  }
   if (signals.humanPastedWeakProof) {
     weak.push("Human-pasted command output is provisional unless backed by local STAX command evidence.");
   }
@@ -809,6 +848,14 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     weak.push("The report names a file path, but the supplied repo evidence does not prove that path exists.");
   }
 
+  if (repoPathWithheld) {
+    unverified.push("The target repo path is withheld, so command execution or file-path claims cannot be safely targeted yet.");
+    risks.push("Wrong-repo risk: choosing a command before the repo root is known can validate or mutate the wrong project.");
+  }
+  if (hasWrongRepoEvidence) {
+    unverified.push("The supplied command/report evidence is from a different repo and cannot verify the target repo claim.");
+    risks.push("Wrong-repo proof risk: accepting cross-repo command output can create false project readiness.");
+  }
   if (codexClaimsTestsPassed && !hasCommandOutput) {
     unverified.push("The tests-passed claim is unverified because no local command evidence was supplied.");
     risks.push("Fake-complete risk: a confident test claim could be accepted without proof.");
@@ -915,6 +962,27 @@ function renderProjectControl(packet: ProjectControlPacket): string {
 }
 
 function projectControlVerdict(input: ProjectControlSignals): string {
+  if (input.wrongRepoEvidencePaths.length) {
+    return "Not proven; supplied command/report evidence points at the wrong repo for this task.";
+  }
+  if (input.repoPathWithheld) {
+    if (input.seedGoldMisuse) {
+      return "Not proven; target repo path is withheld and ingest:seed-gold/gold mutation is forbidden proof.";
+    }
+    if (input.iosReleaseClaim) {
+      return "Not release-ready as proven; target repo path is withheld and checklist gates remain unverified.";
+    }
+    if (input.visualProofClaim) {
+      return "Not visually proven; target repo path is withheld and rendered evidence is missing.";
+    }
+    if (input.docsOnly && input.codexClaimsComplete) {
+      return "Not complete as proven; target repo path is withheld and docs-only evidence cannot prove runtime behavior.";
+    }
+    if (input.avgTotalApplyClaim) {
+      return "Do not apply canonical data changes; target repo path is withheld and only a dry-run is acceptable next.";
+    }
+    return "Not safe to execute yet; the target repo path is withheld.";
+  }
   if (input.seedGoldMisuse) {
     return "Reject as proof; ingest:seed-gold or gold mutation is outside the allowed proof boundary.";
   }
@@ -964,11 +1032,47 @@ function projectControlVerdict(input: ProjectControlSignals): string {
 }
 
 function projectControlNextAction(input: ProjectControlSignals): string {
+  if (input.repoPathWithheld) {
+    if (input.seedGoldMisuse) {
+      return "Ask for the target repo path, then run only the approved Brightspace proof gate npm run build followed by npm run ingest:ci; do not run ingest:seed-gold or update gold files.";
+    }
+    if (input.iosReleaseClaim) {
+      return "Ask for the target repo path, then verify the iOS wrapper gate from mobile/ios-wrapper with npm run preflight, npm run sync:ios, and Xcode build evidence before any TestFlight/App Store decision.";
+    }
+    if (input.visualProofClaim) {
+      return "Ask for the target repo path and rendered preview route, then capture screenshot evidence with a text-fit, symmetry, containment, and overlap checklist before calling the layout fixed.";
+    }
+    if (input.docsOnly && input.codexClaimsComplete) {
+      return "Ask for the target repo path, then inspect whether runtime source/test files changed before running the minimal verification command; do not accept docs-only completion.";
+    }
+    if (input.avgTotalApplyClaim) {
+      return "Ask for the target repo path, then identify and run only the Avg_Total dry-run/read-only validation before any apply, publish, sync, or canonical data mutation.";
+    }
+    return "Ask for the target repo path, then run only a read-only/dry-run proof command from that repo root before any apply, publish, sync, deploy, or release step.";
+  }
+  if (input.wrongRepoEvidencePaths.length) {
+    if (input.brightspace && input.targetRepoPath) {
+      return `In ${input.targetRepoPath}, rerun npm ls @rollup/rollup-darwin-arm64 rollup vite, then npm run build and npm run ingest:ci; ignore evidence from ${input.wrongRepoEvidencePaths.join(", ")}.`;
+    }
+    if (input.memoryAutoApprovalClaim && input.targetRepoPath) {
+      return `In ${input.targetRepoPath}, inspect the STAX memory-governance diff and run the smallest relevant STAX tests/evals; ignore command evidence from ${input.wrongRepoEvidencePaths.join(", ")}.`;
+    }
+    if (input.appsScriptStructureClaim && input.targetRepoPath) {
+      return `In ${input.targetRepoPath}, discover the exact Apps Script deploy-bundle validation command from package/docs, run only that local validation, and ignore the proposed root ${input.wrongRepoEvidencePaths.join(", ")}.`;
+    }
+    if (input.pipelinePublishClaim && input.targetRepoPath) {
+      return `In ${input.targetRepoPath}, run the required pipeline fixture/dry-run proof from that repo root before any publish decision; ignore evidence from ${input.wrongRepoEvidencePaths.join(", ")}.`;
+    }
+    if (input.visualProofClaim && input.targetRepoPath) {
+      return `Use ${input.targetRepoPath} as the target repo, then collect rendered visual evidence for the claimed UI fix; ignore the wrong-repo report from ${input.wrongRepoEvidencePaths.join(", ")}.`;
+    }
+    return `Rerun the proof from ${input.targetRepoPath ?? "the target repo root"} and ignore cross-repo evidence from ${input.wrongRepoEvidencePaths.join(", ")}.`;
+  }
   if (input.seedGoldMisuse) {
     return "Quarantine or revert the seed-gold/gold changes, then require a clean npm run ingest:ci result with no fixture, gold, parser, source, or ingest-promotion changes.";
   }
   if (input.dependencyScopeViolation) {
-    return "Ask Codex to return a corrected dependency-only repair report limited to package-lock.json, justified package.json, and tmp/.gitkeep, plus npm ls and npm run ingest:ci output.";
+    return "Revert or isolate the forbidden source/parser change, then require a dependency-only repair report limited to package-lock.json, justified package.json, and tmp/.gitkeep plus npm ls and npm run ingest:ci output.";
   }
   if (input.visualProofClaim) {
     if (input.canvasHelper) {
@@ -989,13 +1093,17 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Inspect the repo docs/scripts to identify a read-only Sheets sync preflight or validation path, then report target Sheet/config status before any SYNC_ALL or publish command.";
   }
   if (input.pipelinePublishClaim) {
+    if (input.ualbertaPipelineClaim && input.ualbertaFixtureCommandKnown) {
+      return "Run python pipeline/check_ualberta_url_map_fixtures.py first, then identify only a non-publishing pipeline dry-run/validation command from docs/PIPELINE.md before any publish decision.";
+    }
     return "Run tools/validate-canonical.ps1 first and report row-count drift, duplicate/suspicious rows, unknown-field spikes, and the first failure before publishing.";
   }
   if (input.memoryAutoApprovalClaim) {
     return "Move the memory item to pending review and require approvedBy, approvalReason, source run, expiration/justification, and poison-scan evidence before retrieval.";
   }
   if (input.appsScriptStructureClaim) {
-    return "Run tools/validate-apps-script-structure.ps1 and report the exact output before treating the Apps Script bundle as deploy-ready.";
+    const scope = input.targetRepoPath ? `in ${input.targetRepoPath}` : "from the confirmed target repo root";
+    return `Discover the exact Apps Script structure/deploy-bundle validation command ${scope}, then run only that local read-only validation and report exact output before treating the bundle as deploy-ready.`;
   }
   if (input.ualbertaPipelineClaim) {
     return "Run python pipeline/check_ualberta_url_map_fixtures.py and report the exact output before claiming UAlberta pipeline support is proven.";
@@ -1007,6 +1115,9 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Run npm run build:pages in ADMISSION-APP and report the exact output and first failure before calling the Pages build verified.";
   }
   if (input.scriptExistsAsProof) {
+    if (input.canvasBuildStudioClaim) {
+      return "Run npm run build:studio in canvas-helper and report exact output, exit code, and first failure before treating build:studio script existence as build proof.";
+    }
     return "Inspect package.json, run the exact configured build command such as npm run build only if that script exists, and report output before treating script existence as proof.";
   }
   if (input.rollupPresent) {
@@ -1019,12 +1130,127 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Ask Codex to prove the claimed file exists with a file listing or diff before accepting any test-pass or implementation claim.";
   }
   if (input.codexClaimsTestsPassed) {
+    if (input.targetRepoPath?.endsWith("/STAX")) {
+      return "In /Users/deanguedo/Documents/GitHub/STAX, rerun npm test and report exact command output, exit code, and first failure before treating the rollout as proven.";
+    }
     return "Ask Codex to return the exact command output for npm test or rerun the relevant local test command before treating the report as proven.";
   }
   return "Collect the smallest local evidence packet: relevant diff, exact command output, and first remaining failure if any.";
 }
 
 function projectControlPrompt(input: ProjectControlSignals): string {
+  if (input.repoPathWithheld) {
+    if (input.seedGoldMisuse) {
+      return [
+        "```txt",
+        "Do not run ingest:seed-gold and do not update gold/fixture files.",
+        "First ask for the exact target repo path.",
+        "Once the repo path is supplied, run only the approved proof path from that repo root: npm run build, then npm run ingest:ci.",
+        "Report cwd, exact commands, exit codes, output, git diff summary, and first remaining failure.",
+        "```"
+      ].join("\n");
+    }
+    if (input.iosReleaseClaim) {
+      return [
+        "```txt",
+        "Do not submit to TestFlight/App Store and do not change release state.",
+        "First ask for the exact target repo path.",
+        "Once the repo path is supplied, verify the wrapper gate from mobile/ios-wrapper: npm run preflight, npm run sync:ios, and Xcode build verification.",
+        "Report cwd, exact commands, exit codes, which checklist items are proven, and which release gates remain unverified.",
+        "```"
+      ].join("\n");
+    }
+    if (input.visualProofClaim) {
+      return [
+        "```txt",
+        "Do not claim visual/layout correctness from CSS or source changes alone.",
+        "First ask for the exact target repo path and preview route/project slug.",
+        "Once supplied, capture rendered screenshot evidence and check: text fit, border symmetry, icon/control containment, and overlap.",
+        "Report screenshot path or visual finding, viewport, checklist result, and first visible failure if any.",
+        "```"
+      ].join("\n");
+    }
+    if (input.docsOnly && input.codexClaimsComplete) {
+      return [
+        "```txt",
+        "Do not accept docs-only evidence as runtime implementation.",
+        "First ask for the exact target repo path.",
+        "Once supplied, inspect whether runtime source/test files changed; if none changed, stop and report not implemented.",
+        "If implementation exists, run the minimal local verification command and report command output plus first failure.",
+        "```"
+      ].join("\n");
+    }
+    if (input.avgTotalApplyClaim) {
+      return [
+        "```txt",
+        "Do not apply Avg_Total changes, publish, sync, or mutate canonical data yet.",
+        "First ask for the exact target repo path.",
+        "Once supplied, identify the repo's Avg_Total dry-run/read-only validation path and run only that.",
+        "Report cwd, files inspected, exact dry-run command, exit code, whether files changed, candidate diff summary, and first failure.",
+        "```"
+      ].join("\n");
+    }
+    return [
+      "```txt",
+      "Do not execute, apply, publish, sync, deploy, or release yet.",
+      "First ask for the exact target repo path and the relevant command surface.",
+      "Once the repo path is supplied, run only a read-only/dry-run proof command from that repo root and report cwd, command, exit code, and first failure.",
+      "Do not invent a file path or command from missing repo evidence.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.wrongRepoEvidencePaths.length) {
+    const wrongPaths = input.wrongRepoEvidencePaths.join(", ");
+    const target = input.targetRepoPath ?? "the target repo root";
+    if (input.brightspace) {
+      return [
+        "```txt",
+        `Work only in ${target}.`,
+        `Do not use evidence from ${wrongPaths}.`,
+        "Run:",
+        "pwd",
+        "npm ls @rollup/rollup-darwin-arm64 rollup vite",
+        "npm run build",
+        "npm run ingest:ci",
+        "Report exact output, exit codes, first remaining failure, and changed files if any.",
+        "Do not edit parser, source, fixture, gold, benchmark, or ingest-promotion files.",
+        "```"
+      ].join("\n");
+    }
+    if (input.memoryAutoApprovalClaim) {
+      return [
+        "```txt",
+        `Work only in ${target}.`,
+        `Do not cite tests or command output from ${wrongPaths} as proof.`,
+        "Audit whether approved-memory governance was actually patched.",
+        "Show the relevant memory-governance diff, approval metadata behavior, and smallest local STAX test/eval output.",
+        "Report files changed, commands run, exit codes, whether explicit approval is enforced, and remaining unverified risks.",
+        "```"
+      ].join("\n");
+    }
+    if (input.appsScriptStructureClaim) {
+      return [
+        "```txt",
+        `Work only in ${target}.`,
+        `Do not run validation from ${wrongPaths}.`,
+        "Discover the exact Apps Script deploy-bundle validation command from package.json/docs before running it.",
+        "Run only the local read-only validation command from the target repo root.",
+        "Report cwd, exact command, exit code, stdout/stderr summary, and whether validation passed.",
+        "Do not deploy, publish, sync, or mutate release state.",
+        "```"
+      ].join("\n");
+    }
+    return [
+      "```txt",
+      `Work only in ${target}.`,
+      `Reject proof from ${wrongPaths} for this task.`,
+      "Rerun the smallest relevant proof command from the target repo root.",
+      "Report cwd, exact command, exit code, output, changed files if any, and first remaining failure.",
+      "```"
+    ].join("\n");
+  }
+
   if (input.seedGoldMisuse) {
     return [
       "```txt",
@@ -1084,6 +1310,16 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.pipelinePublishClaim) {
+    if (input.ualbertaPipelineClaim && input.ualbertaFixtureCommandKnown) {
+      return [
+        "```txt",
+        "In /Users/deanguedo/Documents/GitHub/ADMISSION-APP, do not publish or sync admissions pipeline output yet.",
+        "Run exactly python pipeline/check_ualberta_url_map_fixtures.py and report exact output.",
+        "Then inspect docs/PIPELINE.md for the safest non-publishing pipeline dry-run/validation command; run only dry-run/validation, not live publish.",
+        "Report commands, exit codes, fixture status, dry-run/validation status, first failure, and publish recommendation.",
+        "```"
+      ].join("\n");
+    }
     return [
       "```txt",
       "Do not publish admissions pipeline output from file existence alone.",
@@ -1104,10 +1340,13 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.appsScriptStructureClaim) {
+    const targetLine = input.targetRepoPath ? `Work only in ${input.targetRepoPath}.` : "Use the confirmed target repo root.";
     return [
       "```txt",
+      targetLine,
       "Do not claim the Apps Script bundle is deploy-ready from source edits alone.",
-      "Run tools/validate-apps-script-structure.ps1 and report exact output.",
+      "Discover the exact Apps Script structure/deploy-bundle validation command from package.json/docs before running it.",
+      "Run only the local read-only validation command and report exact output.",
       "If exporting a bundle, report export command output and changed files. Do not deploy.",
       "```"
     ].join("\n");
@@ -1145,6 +1384,17 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.scriptExistsAsProof) {
+    if (input.canvasBuildStudioClaim) {
+      return [
+        "```txt",
+        "In /Users/deanguedo/Documents/GitHub/canvas-helper, verify build success only.",
+        "Do not modify files.",
+        "Run exactly npm run build:studio.",
+        "Report exact command output, exit code, and first failure if it fails.",
+        "Do not claim tests or previews passed unless separately run with local output.",
+        "```"
+      ].join("\n");
+    }
     return [
       "```txt",
       "Do not claim build/test success from package.json script existence.",
@@ -1207,6 +1457,16 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.codexClaimsTestsPassed) {
+    if (input.targetRepoPath?.endsWith("/STAX")) {
+      return [
+        "```txt",
+        "In /Users/deanguedo/Documents/GitHub/STAX, verify the rollout with local command evidence.",
+        "Run exactly npm test.",
+        "Report exact command output, exit code, and first remaining failure if it fails.",
+        "Do not treat human-pasted or Codex-reported output as hard proof.",
+        "```"
+      ].join("\n");
+    }
     return [
       "```txt",
       "Return the exact command output that proves the tests passed.",
