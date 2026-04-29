@@ -18,6 +18,7 @@ import { ProblemBenchmarkCaseSchema, ProblemBenchmarkCollectionSchema, type Prob
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
+import { SystemDoctor } from "./doctor/SystemDoctor.js";
 import { DisagreementCapture } from "./learning/DisagreementCapture.js";
 import { LearningEventSchema, LearningQueueTypeSchema } from "./learning/LearningEvent.js";
 import { LearningMetricsStore } from "./learning/LearningMetrics.js";
@@ -99,6 +100,7 @@ const knownCommands = new Set([
   "auto-advance",
   "mine",
   "review",
+  "doctor",
   "help"
 ]);
 
@@ -246,6 +248,14 @@ async function evalCommand(args: ParsedArgs): Promise<void> {
   if (result.failed > 0 || result.criticalFailures > 0 || result.passRate < DEFAULT_CONFIG.evals.minimumPassRate) {
     process.exitCode = 1;
   }
+}
+
+async function doctorCommand(args: ParsedArgs): Promise<void> {
+  const doctor = new SystemDoctor(process.cwd());
+  const report = await doctor.inspect({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
+  logInfo(args.flags.print === "json" ? JSON.stringify(report, null, 2) : doctor.format(report));
 }
 
 async function replayCommand(args: ParsedArgs): Promise<void> {
@@ -1583,6 +1593,7 @@ function help(): void {
     '  rax run "input"',
     "  rax run --file input.txt",
     "  rax batch folder/",
+    "  rax doctor [--workspace <name>] [--print json]",
     "  rax eval [--mode stax_fitness] [--redteam] [--regression]",
     "  rax replay <run-id>",
     '  rax memory search "query" | list | approve <id> | reject <id>',
@@ -1627,6 +1638,8 @@ async function main(): Promise<void> {
     await runCommand(args);
   } else if (args.command === "batch") {
     await batchCommand(args);
+  } else if (args.command === "doctor") {
+    await doctorCommand(args);
   } else if (args.command === "eval") {
     await evalCommand(args);
   } else if (args.command === "replay") {
