@@ -29,6 +29,11 @@ export class LearningClassifier {
       queues.add("codex_prompt_candidate");
     }
 
+    if (failures.has("eval_gap")) {
+      queues.add("eval_candidate");
+      queues.add("codex_prompt_candidate");
+    }
+
     if (failures.has("eval_failure")) {
       queues.add("eval_candidate");
       queues.add("policy_patch_candidate");

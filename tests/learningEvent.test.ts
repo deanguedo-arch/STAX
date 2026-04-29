@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { GenericOutputDetector } from "../src/learning/GenericOutputDetector.js";
 import { LearningEventSchema, LearningFailureTypeSchema, LearningQueueTypeSchema } from "../src/learning/LearningEvent.js";
 import { LearningProposalGenerator } from "../src/learning/LearningProposalGenerator.js";
+import { LearningClassifier } from "../src/learning/LearningClassifier.js";
 
 describe("learning event schemas and detectors", () => {
   it("validates learning events and rejects unknown enums", () => {
@@ -135,5 +136,56 @@ describe("learning event schemas and detectors", () => {
 
     expect(proposal?.unsafeInstructionsFlagged.length).toBeGreaterThan(0);
     await expect(fs.stat(path.join(rootDir, "policies"))).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("routes eval gap failures into learning queues", () => {
+    const event = {
+      eventId: "learn-eval-gap",
+      runId: "run-eval-gap",
+      createdAt: new Date().toISOString(),
+      input: { raw: "Audit this repo", normalized: "Audit this repo", summary: "audit" },
+      output: {
+        raw: "No evidence was checked.",
+        summary: "evidence missing",
+        mode: "codex_audit",
+        schemaValid: true,
+        criticPassed: true,
+        repairAttempted: false,
+        finalStatus: "success"
+      },
+      routing: {
+        detectedMode: "codex_audit",
+        modeConfidence: 1,
+        selectedAgent: "analyst",
+        policiesApplied: [],
+        providerRoles: {}
+      },
+      commands: { requested: [], allowed: [], denied: [] },
+      qualitySignals: {
+        genericOutputScore: 0,
+        specificityScore: 0.82,
+        actionabilityScore: 0.82,
+        evidenceScore: 0.2,
+        missingSections: [],
+        forbiddenPatterns: [],
+        unsupportedClaims: []
+      },
+      failureClassification: {
+        hasFailure: true,
+        failureTypes: ["eval_gap"],
+        severity: "minor",
+        explanation: "Evidence was not linked."
+      },
+      proposedQueues: [],
+      approvalState: "pending_review",
+      links: { tracePath: "trace.json", finalPath: "final.md" }
+    };
+
+    const classifier = new LearningClassifier();
+    const queues = classifier.classify(event as any);
+
+    expect(queues).toContain("eval_candidate");
+    expect(queues).toContain("codex_prompt_candidate");
+    expect(queues).not.toContain("trace_only");
   });
 });

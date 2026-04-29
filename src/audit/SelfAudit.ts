@@ -35,6 +35,9 @@ export class SelfAudit {
       if (score.testability < 0.7) failureTypes.push("missing_tests");
       if (score.riskAwareness < 0.7) failureTypes.push("policy_gap");
     }
+    if (required && this.missingEvidenceMode(input.output)) {
+      failureTypes.push("eval_gap");
+    }
 
     return {
       required,
@@ -44,5 +47,19 @@ export class SelfAudit {
       issues: passed ? [] : score.reasons,
       repairSuggested: required && !passed
     };
+  }
+
+  private missingEvidenceMode(output: string): boolean {
+    const lower = output.toLowerCase();
+    const missingEvidenceSignals = [
+      /evidence checked\s*-\s*none/,
+      /evidence was not tied to a specific audited claim/,
+      /no local evidence was checked/,
+      /no local command output/i,
+      /typecheck\/test command output was not supplied/,
+      /command pass\/fail evidence was not supplied/
+    ];
+
+    return missingEvidenceSignals.some((pattern) => pattern.test(lower));
   }
 }
