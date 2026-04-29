@@ -30,6 +30,16 @@ const MODE_TERMS: Record<RaxMode, string[]> = {
   code_review: ["code", "repo", "pull request", "bug", "refactor", "typescript", "python", "test failure"],
   teaching: ["explain", "teach", "understand", "how does", "why"],
   general_chat: [],
+  project_control: [
+    "project-control task",
+    "repo evidence:",
+    "command evidence:",
+    "codex report:",
+    "one next action",
+    "weak / provisional",
+    "verified claims",
+    "unverified claims"
+  ],
   project_brain: [
     "project brain",
     "project state",
@@ -169,6 +179,23 @@ export class ModeDetector {
       };
     }
 
+    const projectControlTerms = [
+      "project-control task",
+      "repo evidence:",
+      "command evidence:",
+      "codex report:",
+      "one next action"
+    ];
+    const projectControlMatches = projectControlTerms.filter((term) => text.includes(term));
+    if (projectControlMatches.length >= 3) {
+      return {
+        mode: "project_control",
+        confidence: 0.95,
+        matchedTerms: projectControlMatches,
+        fallbackUsed: false
+      };
+    }
+
     const priority: Record<RaxMode, number> = {
       policy_drift: 13,
       codex_audit: 12,
@@ -183,6 +210,7 @@ export class ModeDetector {
       intake: 3,
       teaching: 2,
       general_chat: 1,
+      project_control: 14,
       learning_unit: 14,
       model_comparison: 12,
       strategic_deliberation: 15

@@ -31,6 +31,7 @@ export class PolicySelector {
     }
     if (
       input.mode === "project_brain" ||
+      input.mode === "project_control" ||
       input.mode === "codex_audit" ||
       input.mode === "test_gap_audit" ||
       input.mode === "policy_drift" ||

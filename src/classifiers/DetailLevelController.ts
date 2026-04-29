@@ -8,6 +8,7 @@ export class DetailLevelController {
     if (
       mode === "planning" ||
       mode === "code_review" ||
+      mode === "project_control" ||
       mode === "project_brain" ||
       mode === "codex_audit" ||
       mode === "prompt_factory" ||

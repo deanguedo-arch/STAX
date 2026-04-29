@@ -13,6 +13,7 @@ import {
 describe("zod schemas", () => {
   it("accepts valid schema examples", () => {
     expect(RaxModeSchema.parse("stax_fitness")).toBe("stax_fitness");
+    expect(RaxModeSchema.parse("project_control")).toBe("project_control");
     expect(RaxModeSchema.parse("model_comparison")).toBe("model_comparison");
     expect(RaxModeSchema.parse("strategic_deliberation")).toBe("strategic_deliberation");
     expect(

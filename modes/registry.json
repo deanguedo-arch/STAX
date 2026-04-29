@@ -73,6 +73,15 @@
       "maturity": "draft"
     },
     {
+      "mode": "project_control",
+      "schema": "ProjectControlOutput",
+      "validator": "ProjectControlValidator",
+      "evalFolders": ["evals/regression"],
+      "goldens": [],
+      "policies": ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy", "tool_policy", "memory_policy"],
+      "maturity": "usable"
+    },
+    {
       "mode": "project_brain",
       "schema": "ProjectBrainOutput",
       "validator": "ProjectBrainValidator",

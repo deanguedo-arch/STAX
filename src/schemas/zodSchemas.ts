@@ -19,6 +19,7 @@ export const RaxModeSchema = z.enum([
   "code_review",
   "teaching",
   "general_chat",
+  "project_control",
   "project_brain",
   "codex_audit",
   "prompt_factory",

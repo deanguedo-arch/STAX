@@ -102,14 +102,14 @@
       "caseId": "manual_next_codex_prompt_004",
       "category": "prompt_generation",
       "repo": "brightspacequizexporter",
-      "task": "Write the next bounded Codex prompt for the Rollup optional native package blocker.",
-      "repoEvidence": "darwin arm64; npm ls shows @rollup/rollup-darwin-arm64 missing; package-lock expects @rollup/rollup-darwin-arm64@4.59.0; tmp/.gitkeep is deleted.",
-      "commandEvidence": "Paste the exact npm ls output if available.",
+      "task": "Write the next bounded Codex prompt now that the Rollup optional native package appears present and the build/ingest gate is still unproven.",
+      "repoEvidence": "darwin arm64; npm ls shows @rollup/rollup-darwin-arm64@4.59.0 installed under rollup@4.59.0; package scripts define ingest:ci as npm run build && npm run ingest:promotion-check; ingest:seed-gold exists but must not be used as a fix.",
+      "commandEvidence": "Paste the exact npm ls output if available. If npm run ingest:ci has not been run, say so.",
       "codexReport": "",
       "expectedBestTraits": [
-        "locks scope to dependency/install integrity",
-        "forbids parser, source, fixture, gold, and ingest-seed changes",
-        "requires npm run build and npm run ingest:ci output"
+        "does not keep repairing the Rollup package when npm ls shows it present",
+        "moves to the canonical npm run ingest:ci proof gate",
+        "forbids parser, source, fixture, gold, and ingest-seed changes"
       ]
     },
     {

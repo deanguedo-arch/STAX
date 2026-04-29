@@ -50,6 +50,21 @@ describe("ModeDetector", () => {
     expect(result.mode).toBe("model_comparison");
   });
 
+  it("detects neutral project-control benchmark prompts", () => {
+    const result = new ModeDetector().detect([
+      "You are being tested on a project-control task.",
+      "Task: Audit this Codex report.",
+      "Repo Evidence: no local evidence supplied.",
+      "Command Evidence: none.",
+      "Codex Report: Codex says tests passed.",
+      "Return:",
+      "1. Verdict",
+      "6. One Next Action"
+    ].join("\n"));
+
+    expect(result.mode).toBe("project_control");
+  });
+
   it("detects strategic deliberation mode for broad reasoning", () => {
     const result = new ModeDetector().detect("What is the best next direction for STAX broad reasoning?");
 

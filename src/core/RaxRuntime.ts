@@ -783,6 +783,7 @@ function isRepoFacingMode(mode: RaxMode): boolean {
   return [
     "planning",
     "code_review",
+    "project_control",
     "codex_audit",
     "project_brain",
     "test_gap_audit",

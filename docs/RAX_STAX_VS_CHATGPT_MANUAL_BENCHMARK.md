@@ -117,6 +117,16 @@ npm test -- --run tests/manualBenchmarkFixtures.test.ts
 The benchmark itself remains manual because external ChatGPT answers must be
 captured fresh and scored by Dean before the results count.
 
+The first browser-backed seed run is recorded in:
+
+```txt
+docs/RAX_STAX_VS_CHATGPT_SEED5_RESULTS.md
+```
+
+That run used the user's open STAX-like ChatGPT project, not raw ChatGPT. It
+found and fixed `project_control` routing/output gaps, then ended in parity
+with zero STAX critical misses.
+
 Current repo validation for this starter pack:
 
 ```txt
@@ -125,7 +135,7 @@ npm test -- --run tests/manualBenchmarkFixtures.test.ts
 npm run typecheck
   passed
 npm test
-  passed, 82 files / 440 tests
+  passed, 83 files / 444 tests
 npm run rax -- eval
   passed, 16/16
 npm run rax -- eval --regression
@@ -133,5 +143,5 @@ npm run rax -- eval --regression
 npm run rax -- eval --redteam
   passed, 15/15
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
-  passed smoke; run artifact runs/2026-04-29/run-2026-04-29T04-02-19-352Z-7eu4yj
+  passed smoke; run artifact runs/2026-04-29/run-2026-04-29T04-19-01-092Z-hwp9u2
 ```

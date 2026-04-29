@@ -11,6 +11,7 @@ export type RaxMode =
   | "code_review"
   | "teaching"
   | "general_chat"
+  | "project_control"
   | "project_brain"
   | "codex_audit"
   | "prompt_factory"

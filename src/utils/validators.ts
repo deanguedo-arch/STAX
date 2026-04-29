@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { Mode } from "../schemas/Config.js";
 import { CODEX_AUDIT_REQUIRED_HEADINGS } from "../schemas/CodexAuditOutput.js";
 import { POLICY_DRIFT_REQUIRED_HEADINGS } from "../schemas/PolicyDriftOutput.js";
+import { PROJECT_CONTROL_REQUIRED_HEADINGS } from "../schemas/ProjectControlOutput.js";
 import { PROJECT_BRAIN_REQUIRED_HEADINGS } from "../schemas/ProjectBrainOutput.js";
 import { PROMPT_FACTORY_REQUIRED_HEADINGS } from "../schemas/PromptFactoryOutput.js";
 import { TEST_GAP_AUDIT_REQUIRED_HEADINGS } from "../schemas/TestGapAuditOutput.js";
@@ -13,6 +14,7 @@ import { LearningUnitValidator } from "../validators/LearningUnitValidator.js";
 import { ModelComparisonValidator } from "../validators/ModelComparisonValidator.js";
 import { PlanningValidator } from "../validators/PlanningValidator.js";
 import { PolicyDriftValidator } from "../validators/PolicyDriftValidator.js";
+import { ProjectControlValidator } from "../validators/ProjectControlValidator.js";
 import { ProjectBrainValidator } from "../validators/ProjectBrainValidator.js";
 import { PromptFactoryValidator } from "../validators/PromptFactoryValidator.js";
 import { StrategicDeliberationValidator } from "../validators/StrategicDeliberationValidator.js";
@@ -53,6 +55,7 @@ const requiredHeadings: Record<Mode, string[]> = {
   code_review: ["## Findings", "## Tests", "## Residual Risk"],
   teaching: ["## Explanation", "## Example", "## Unknowns"],
   general_chat: ["## Response"],
+  project_control: [...PROJECT_CONTROL_REQUIRED_HEADINGS],
   project_brain: [...PROJECT_BRAIN_REQUIRED_HEADINGS],
   codex_audit: [...CODEX_AUDIT_REQUIRED_HEADINGS],
   prompt_factory: [...PROMPT_FACTORY_REQUIRED_HEADINGS],
@@ -128,6 +131,7 @@ export function validateModeOutput(mode: Mode, output: string): ValidationResult
 
 function validateGovernanceMode(mode: Mode, output: string): ValidationResult {
   if (mode === "project_brain") return new ProjectBrainValidator().validate(output);
+  if (mode === "project_control") return new ProjectControlValidator().validate(output);
   if (mode === "planning") return new PlanningValidator().validate(output);
   if (mode === "learning_unit") return new LearningUnitValidator().validate(output);
   if (mode === "codex_audit") return new CodexAuditValidator().validate(output);

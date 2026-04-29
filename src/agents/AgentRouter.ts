@@ -67,6 +67,7 @@ export class AgentRouter {
 
     if (
       detected.mode === "project_brain" ||
+      detected.mode === "project_control" ||
       detected.mode === "codex_audit" ||
       detected.mode === "test_gap_audit" ||
       detected.mode === "policy_drift" ||

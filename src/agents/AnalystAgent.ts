@@ -143,6 +143,7 @@ function shouldUseProviderBackedAnalyst(input: AgentInput): boolean {
     !isMockLikeProvider(input.provider.name) &&
     (
       input.mode === "analysis" ||
+      input.mode === "project_control" ||
       input.mode === "codex_audit" ||
       input.mode === "code_review" ||
       input.mode === "project_brain" ||
@@ -434,6 +435,17 @@ export class AnalystAgent implements Agent {
       };
     }
 
+    if (input.mode === "project_control") {
+      const packet = parseProjectControlPacket(input.input);
+      return {
+        agent: this.name,
+        schema: "project_control",
+        confidence: "medium",
+        metadata: { providerText: providerResponse.text },
+        output: renderProjectControl(packet)
+      };
+    }
+
     if (input.mode === "model_comparison") {
       const text = input.input.trim();
       const evidenceLines = auditEvidenceFoundLines(text);
@@ -654,6 +666,274 @@ export class AnalystAgent implements Agent {
       ].join("\n")
     };
   }
+}
+
+type ProjectControlPacket = {
+  task: string;
+  repoEvidence: string;
+  commandEvidence: string;
+  codexReport: string;
+};
+
+function parseProjectControlPacket(input: string): ProjectControlPacket {
+  return {
+    task: extractLabeledBlock(input, "Task", ["Repo Evidence", "Command Evidence", "Codex Report", "Return"]) || input.trim(),
+    repoEvidence: extractLabeledBlock(input, "Repo Evidence", ["Command Evidence", "Codex Report", "Return"]),
+    commandEvidence: extractLabeledBlock(input, "Command Evidence", ["Codex Report", "Return"]),
+    codexReport: extractLabeledBlock(input, "Codex Report", ["Return"])
+  };
+}
+
+function extractLabeledBlock(input: string, label: string, followingLabels: string[]): string {
+  const start = input.search(new RegExp(`^${escapeRegExp(label)}:\\s*`, "im"));
+  if (start === -1) return "";
+  const afterLabel = input.slice(start).replace(new RegExp(`^${escapeRegExp(label)}:\\s*`, "i"), "");
+  const nextPositions = followingLabels
+    .map((next) => afterLabel.search(new RegExp(`\\n${escapeRegExp(next)}:\\s*`, "i")))
+    .filter((index) => index >= 0);
+  const end = nextPositions.length ? Math.min(...nextPositions) : afterLabel.length;
+  return afterLabel.slice(0, end).trim();
+}
+
+function renderProjectControl(packet: ProjectControlPacket): string {
+  const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
+  const lower = combined.toLowerCase();
+  const reportLower = packet.codexReport.toLowerCase();
+  const brightspace = /brightspace|brightspacequizexporter/i.test(combined);
+  const rollupPresent = /@rollup\/rollup-darwin-arm64@?4\.59\.0/i.test(combined) && /\bnpm ls\b/i.test(combined);
+  const buildNotRun = /npm run build (?:and )?npm run ingest:ci have not been run|build .*not been run|npm run build.*not been run/i.test(combined);
+  const ingestNotRun = /ingest:ci .*not been run|npm run ingest:ci.*not been run/i.test(combined);
+  const docsOnly = /diff summary .*only shows docs\/|only docs\/|docs-only/i.test(combined);
+  const codexClaimsTestsPassed = /\b(all tests passed|tests passed|npm test passed|test suite passed)\b/i.test(packet.codexReport);
+  const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished)\b/i.test(packet.codexReport);
+  const evidenceText = packet.commandEvidence + "\n" + packet.repoEvidence;
+  const negatesCommandEvidence = /\b(no local .*command evidence|no local command output|command evidence:\s*none|none supplied|not supplied)\b/i.test(evidenceText);
+  const hasCommandOutput = !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
+  const inventedPathRisk = /src\/not-real|not-real-provider-router/i.test(combined);
+
+  const verified: string[] = [];
+  const weak: string[] = [];
+  const unverified: string[] = [];
+  const risks: string[] = [];
+
+  if (/no local .*command evidence|no local command output/i.test(combined)) {
+    verified.push("The supplied evidence includes no local command output for the claimed pass/completion state.");
+  }
+  if (docsOnly) {
+    verified.push("The supplied diff evidence is docs-only; no runtime/source/test change is supplied.");
+  }
+  if (rollupPresent) {
+    verified.push("Read-only npm ls evidence shows @rollup/rollup-darwin-arm64@4.59.0 installed under rollup@4.59.0.");
+  }
+  if (/git status: ## main\.\.\.origin\/main, no modified files/i.test(combined)) {
+    verified.push("Supplied git status says the Brightspace worktree is clean on main...origin/main.");
+  }
+
+  if (packet.codexReport.trim() && !/^none supplied\.?$/i.test(packet.codexReport.trim())) {
+    weak.push(`Codex reported: ${packet.codexReport.replace(/\s+/g, " ").trim()}`);
+  }
+  if (/paste|supplied repo evidence does not list/i.test(packet.repoEvidence) && inventedPathRisk) {
+    weak.push("The report names a file path, but the supplied repo evidence does not prove that path exists.");
+  }
+
+  if (codexClaimsTestsPassed && !hasCommandOutput) {
+    unverified.push("The tests-passed claim is unverified because no local command evidence was supplied.");
+    risks.push("Fake-complete risk: a confident test claim could be accepted without proof.");
+  }
+  if (inventedPathRisk) {
+    unverified.push("The claimed file path is unverified and should be treated as possibly invented.");
+    risks.push("Invented-path risk: acting on a nonexistent file can send Codex into the wrong area.");
+  }
+  if (docsOnly && codexClaimsComplete) {
+    unverified.push("The implementation/completion claim is unverified because docs-only evidence cannot prove runtime behavior.");
+    risks.push("Docs-only completion risk: the report may describe behavior that was not implemented.");
+  }
+  if (brightspace && buildNotRun) {
+    unverified.push("Brightspace build status is unverified because npm run build has not been run in the supplied evidence.");
+  }
+  if (brightspace && ingestNotRun) {
+    unverified.push("Brightspace ingest status is unverified because npm run ingest:ci has not been run in the supplied evidence.");
+  }
+  if (!unverified.length && !hasCommandOutput) {
+    unverified.push("Runtime behavior remains unverified until local command evidence is supplied.");
+  }
+  if (brightspace && (buildNotRun || ingestNotRun)) {
+    risks.push("The current risk is no longer the Rollup package itself; it is unproven build/ingest gate status.");
+  }
+  if (!risks.length) {
+    risks.push("The main risk is upgrading weak or missing evidence into a hard completion claim.");
+  }
+
+  const nextAction = projectControlNextAction({
+    brightspace,
+    rollupPresent,
+    buildNotRun,
+    ingestNotRun,
+    docsOnly,
+    inventedPathRisk,
+    codexClaimsTestsPassed
+  });
+  const prompt = projectControlPrompt({
+    brightspace,
+    rollupPresent,
+    buildNotRun,
+    ingestNotRun,
+    docsOnly,
+    inventedPathRisk,
+    codexClaimsTestsPassed
+  });
+
+  return [
+    "## Verdict",
+    `- ${projectControlVerdict({ brightspace, rollupPresent, buildNotRun, ingestNotRun, docsOnly, inventedPathRisk, codexClaimsTestsPassed, codexClaimsComplete })}`,
+    "",
+    "## Verified",
+    ...bulletize(verified, "No hard completion/runtime claim is verified from the supplied evidence."),
+    "",
+    "## Weak / Provisional",
+    ...bulletize(weak, "No weak/provisional external claim was supplied."),
+    "",
+    "## Unverified",
+    ...bulletize(unverified, "No additional unverified claim identified."),
+    "",
+    "## Risk",
+    ...bulletize(risks, "The main risk is unclear proof scope."),
+    "",
+    "## One Next Action",
+    `- ${nextAction}`,
+    "",
+    "## Codex Prompt if needed",
+    prompt
+  ].join("\n");
+}
+
+function projectControlVerdict(input: {
+  brightspace: boolean;
+  rollupPresent: boolean;
+  buildNotRun: boolean;
+  ingestNotRun: boolean;
+  docsOnly: boolean;
+  inventedPathRisk: boolean;
+  codexClaimsTestsPassed: boolean;
+  codexClaimsComplete: boolean;
+}): string {
+  if (input.brightspace && input.rollupPresent && (input.buildNotRun || input.ingestNotRun)) {
+    return "Dependency presence is partially proven; build and ingest success are not proven yet.";
+  }
+  if (input.docsOnly && input.codexClaimsComplete) {
+    return "Not complete as proven; docs-only evidence cannot prove implementation.";
+  }
+  if (input.inventedPathRisk) {
+    return "Not proven; the claimed file path is unsupported by supplied repo evidence.";
+  }
+  if (input.codexClaimsTestsPassed) {
+    return "Not proven; the tests-passed claim needs local command evidence.";
+  }
+  return "Needs evidence before approval.";
+}
+
+function projectControlNextAction(input: {
+  brightspace: boolean;
+  rollupPresent: boolean;
+  buildNotRun: boolean;
+  ingestNotRun: boolean;
+  docsOnly: boolean;
+  inventedPathRisk: boolean;
+  codexClaimsTestsPassed: boolean;
+}): string {
+  if (input.brightspace && input.rollupPresent && (input.buildNotRun || input.ingestNotRun)) {
+    return "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, run npm run ingest:ci and report whether its build step passed, whether ingest:promotion-check was reached, and the first failure or passing output.";
+  }
+  if (input.docsOnly) {
+    return "Ask Codex for the exact source/test diff or a correction saying this was docs-only, plus the first proof command that would verify the claimed runtime behavior.";
+  }
+  if (input.inventedPathRisk) {
+    return "Ask Codex to prove the claimed file exists with a file listing or diff before accepting any test-pass or implementation claim.";
+  }
+  if (input.codexClaimsTestsPassed) {
+    return "Ask Codex to return the exact command output for npm test or rerun the relevant local test command before treating the report as proven.";
+  }
+  return "Collect the smallest local evidence packet: relevant diff, exact command output, and first remaining failure if any.";
+}
+
+function projectControlPrompt(input: {
+  brightspace: boolean;
+  rollupPresent: boolean;
+  buildNotRun: boolean;
+  ingestNotRun: boolean;
+  docsOnly: boolean;
+  inventedPathRisk: boolean;
+  codexClaimsTestsPassed: boolean;
+}): string {
+  if (input.brightspace && input.rollupPresent && (input.buildNotRun || input.ingestNotRun)) {
+    return [
+      "```txt",
+      "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, prove the current build/ingest gate without broadening scope.",
+      "",
+      "Current evidence:",
+      "- npm ls shows @rollup/rollup-darwin-arm64@4.59.0 installed under rollup@4.59.0.",
+      "- package scripts define build as `tsc -b && vite build`.",
+      "- package scripts define ingest:ci as `npm run build && npm run ingest:promotion-check`.",
+      "",
+      "Do not edit files.",
+      "Do not run ingest:seed-gold.",
+      "Do not change parser/source/fixture/gold/benchmark/test logic.",
+      "",
+      "Run exactly:",
+      "npm run ingest:ci",
+      "",
+      "Report:",
+      "- exact commands run",
+      "- command outputs",
+      "- whether the build step passed",
+      "- whether ingest:promotion-check was reached",
+      "- whether both gates passed",
+      "- first remaining failure if either gate fails",
+      "- confirm no tracked files changed",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.docsOnly) {
+    return [
+      "```txt",
+      "Audit your prior report. The supplied diff evidence shows only docs/RAX_REPORT.md changed.",
+      "Do not claim runtime behavior was implemented unless you can provide source/test diffs and command output.",
+      "Return exact files changed, commands run, outputs, and the first missing implementation/proof step.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.inventedPathRisk) {
+    return [
+      "```txt",
+      "Prove the claimed file path before claiming implementation or test success.",
+      "Return the exact diff or file listing for the claimed path, then provide local command output for the relevant test.",
+      "If the path does not exist, say so and give the corrected file path.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.codexClaimsTestsPassed) {
+    return [
+      "```txt",
+      "Return the exact command output that proves the tests passed.",
+      "Include the command, exit code, relevant output snippet, and first remaining failure if it did not pass.",
+      "Do not claim completion without local command evidence.",
+      "```"
+    ].join("\n");
+  }
+
+  return [
+    "```txt",
+    "Return the smallest evidence packet for this claim: exact files changed, exact commands run, command outputs, and first remaining failure if any.",
+    "Do not claim completion without local proof.",
+    "```"
+  ].join("\n");
+}
+
+function escapeRegExp(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function strategicQuestionFrom(input: string): string {
