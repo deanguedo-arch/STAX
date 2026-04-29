@@ -75,6 +75,10 @@ const round3FixturePath = path.join(
   process.cwd(),
   "fixtures/manual_benchmark/stax_vs_raw_chatgpt_round3_stateful_cases.json"
 );
+const round3ScoresPath = path.join(
+  process.cwd(),
+  "fixtures/manual_benchmark/stax_vs_raw_chatgpt_round3_stateful_scores_2026-04-29.json"
+);
 
 describe("manual STAX vs ChatGPT benchmark fixture", () => {
   it("keeps the seed benchmark small, scorable, and evidence-oriented", () => {
@@ -275,6 +279,39 @@ describe("manual STAX vs ChatGPT benchmark fixture", () => {
       expect(testCase.repoEvidence.trim().length).toBeGreaterThan(10);
       expect(testCase.commandEvidence.trim().length).toBeGreaterThan(5);
       expect(testCase.expectedBestTraits.length).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("keeps the Round 3 score artifact aligned with the fixture and non-superiority boundary", () => {
+    const fixture = JSON.parse(fs.readFileSync(round3FixturePath, "utf8")) as ManualBenchmarkFixture;
+    const scores = JSON.parse(fs.readFileSync(round3ScoresPath, "utf8")) as ManualBenchmarkScoreFixture;
+
+    expect(scores.benchmarkId).toBe("stax_vs_raw_chatgpt_round3_stateful");
+    expect(scores.cases).toHaveLength(fixture.cases.length);
+    expect(scores.summary.staxWins).toBe(0);
+    expect(scores.summary.rawChatgptWins).toBe(0);
+    expect(scores.summary.ties).toBe(10);
+    expect(scores.summary.staxCriticalMisses).toBe(0);
+    expect(scores.summary.rawChatgptCriticalMisses).toBe(0);
+    expect(scores.summary.strongThresholdMet).toBe(false);
+
+    const fixtureIds = new Set(fixture.cases.map((testCase) => testCase.caseId));
+    const winners = scores.cases.reduce<Record<string, number>>((counts, testCase) => {
+      counts[testCase.winner] = (counts[testCase.winner] ?? 0) + 1;
+      return counts;
+    }, {});
+
+    expect(winners.stax ?? 0).toBe(scores.summary.staxWins);
+    expect(winners.raw_chatgpt ?? 0).toBe(scores.summary.rawChatgptWins);
+    expect(winners.tie).toBe(scores.summary.ties);
+
+    for (const testCase of scores.cases) {
+      expect(fixtureIds.has(testCase.caseId)).toBe(true);
+      expect(testCase.staxScore).toBeGreaterThanOrEqual(0);
+      expect(testCase.staxScore).toBeLessThanOrEqual(10);
+      expect(testCase.rawChatgptScore).toBeGreaterThanOrEqual(0);
+      expect(testCase.rawChatgptScore).toBeLessThanOrEqual(10);
+      expect(testCase.reason.trim().length).toBeGreaterThan(20);
     }
   });
 });
