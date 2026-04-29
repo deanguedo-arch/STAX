@@ -61,7 +61,7 @@ no package mutation
 no source edits
 no fixture/gold/benchmark edits
 no sandbox creation inside the command window
-no sandbox patching
+no sandbox patching inside the command window; sandbox patching is handled separately by the v0E patch window
 no real repo apply
 no promotion
 no 100-loop runner

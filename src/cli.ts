@@ -65,6 +65,7 @@ import { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";
 import { SandboxGuard } from "./verification/SandboxGuard.js";
 import { SandboxPatchWindow } from "./verification/SandboxPatchWindow.js";
 import { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
+import { SandboxLoopRunner } from "./loop/SandboxLoopRunner.js";
 
 type ParsedArgs = {
   command: string;
@@ -985,7 +986,96 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
     if (result.status === "blocked" || result.status === "stopped") process.exitCode = 1;
     return;
   }
-  throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window brightspace-rollup ...");
+  if (action === "run-packet") {
+    const packetName = args.positional[1] ?? "brightspace-rollup";
+    if (!["brightspace-rollup", "repair_rollup_install_integrity"].includes(packetName)) {
+      throw new Error("Usage: rax auto-advance run-packet brightspace-rollup --sandbox-path <path> [--approve-sandbox --approve-window] [--file <allowed-file> --content text|--content-file path]");
+    }
+    const workspace = await new WorkspaceContext().resolve({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+    });
+    if (!workspace.linkedRepoPath) throw new Error("Linked repo path is required before run-packet.");
+    const packet = new WorkPacketPlanner().brightspaceRollupInstallIntegrityPacket({
+      workspace: workspace.workspace,
+      repoPath: workspace.linkedRepoPath
+    });
+    const sandboxPath = typeof args.flags["sandbox-path"] === "string" ? args.flags["sandbox-path"] : undefined;
+    if (!sandboxPath) throw new Error("Usage: rax auto-advance run-packet brightspace-rollup --sandbox-path <path> [--approve-sandbox --approve-window]");
+    const approveSandbox = Boolean(args.flags["approve-sandbox"] || args.flags["approved-sandbox"] || args.flags.approve);
+    const approveWindow = Boolean(args.flags["approve-window"] || args.flags["approved-window"] || args.flags.approve);
+    const approvePatch = Boolean(args.flags["approve-patch"] || args.flags["approved-patch"] || approveWindow);
+    const dryRun = Boolean(args.flags["dry-run"]) || !approveWindow;
+    const guard = new SandboxGuard();
+    let sandbox = await guard.verify({
+      workspace: workspace.workspace,
+      packetId: packet.packetId,
+      sourceRepoPath: workspace.linkedRepoPath,
+      sandboxPath
+    });
+    if (!sandbox.allowedForCommandWindow && approveSandbox) {
+      const exists = await fs.stat(sandboxPath).then((stat) => stat.isDirectory()).catch(() => false);
+      sandbox = exists
+        ? sandbox
+        : await guard.create({
+            workspace: workspace.workspace,
+            packetId: packet.packetId,
+            sourceRepoPath: workspace.linkedRepoPath,
+            sandboxPath,
+            humanApprovedSandbox: true
+          });
+      if (!sandbox.allowedForCommandWindow && sandbox.status !== "created") {
+        sandbox = await guard.verify({
+          workspace: workspace.workspace,
+          packetId: packet.packetId,
+          sourceRepoPath: workspace.linkedRepoPath,
+          sandboxPath
+        });
+      }
+    }
+
+    const filePath = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    const contentFile = typeof args.flags["content-file"] === "string" ? args.flags["content-file"] : undefined;
+    const content = typeof args.flags.content === "string"
+      ? args.flags.content
+      : contentFile
+        ? await fs.readFile(contentFile, "utf8")
+        : undefined;
+    const operations = filePath && content !== undefined
+      ? [{
+          filePath,
+          content,
+          justification: typeof args.flags.justification === "string" ? args.flags.justification : undefined
+        }]
+      : [];
+    const maxLoops = typeof args.flags["max-loops"] === "string" ? Number(args.flags["max-loops"]) : 100;
+    const execute = !dryRun && sandbox.allowedForCommandWindow;
+    const result = await new SandboxLoopRunner().run({
+      packet,
+      mode: dryRun ? "dry_run" : operations.length ? "sandbox_patch" : "sandbox_commands",
+      workspace: workspace.workspace,
+      sandboxPath,
+      linkedRepoPath: workspace.linkedRepoPath,
+      humanApprovedPatch: approvePatch,
+      humanApprovedCommandWindow: approveWindow,
+      execute,
+      operations,
+      commands: typeof args.flags.command === "string" ? [args.flags.command] : undefined,
+      budget: { maxLoops: Number.isFinite(maxLoops) && maxLoops > 0 ? maxLoops : 100 }
+    });
+    const stdout = JSON.stringify({ sandbox, loop: result }, null, 2);
+    logInfo(stdout);
+    const evidenceArgs = typeof args.flags.content === "string"
+      ? { ...args, flags: { ...args.flags, content: "[patch content omitted; see patch evidence diff]" } }
+      : args;
+    await recordCommandEvent("auto-advance run-packet", evidenceArgs, result.status !== "blocked", stdout, [
+      sandbox.manifestPath,
+      result.chainResult?.patchDiffPath,
+      ...(result.chainResult?.evidenceIds ?? [])
+    ].filter((item): item is string => Boolean(item)), undefined, workspace);
+    if (result.status === "blocked") process.exitCode = 1;
+    return;
+  }
+  throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window|run-packet brightspace-rollup ...");
 }
 
 function strategicExternalPrompt(): string {
@@ -1522,6 +1612,7 @@ function help(): void {
     "  rax auto-advance sandbox brightspace-rollup --sandbox-path <path> [--approve --create|--verify]",
     "  rax auto-advance patch-window brightspace-rollup --sandbox-path <path> --file <allowed-file> [--content text|--content-file path] --approve",
     "  rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]",
+    "  rax auto-advance run-packet brightspace-rollup --sandbox-path <path> [--approve-sandbox --approve-window] [--file <allowed-file> --content text|--content-file path]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));

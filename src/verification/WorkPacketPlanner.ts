@@ -64,16 +64,19 @@ export class WorkPacketPlanner {
         "npm run ingest:ci"
       ],
       allowedFileGlobs: ["package-lock.json", "package.json", "tmp/.gitkeep"],
-      forbiddenFileGlobs: ["src/**", "scripts/**", "fixtures/**", "gold/**", "benchmarks/**"],
-      hardBlockedCommands: ["npm run ingest:seed-gold", "npm install --force"],
+      forbiddenFileGlobs: ["src/**", "scripts/**", "fixtures/**", "gold/**", "benchmarks/**", "reviewed-fixtures/**", "reviewed_fixtures/**"],
+      hardBlockedCommands: ["npm run ingest:seed-gold", "npm install --force", "git push", "git reset --hard"],
       hardStops: [
         "src/**",
         "scripts/**",
         "fixtures/**",
         "gold/**",
         "benchmarks/**",
+        "reviewed fixtures",
         "ingest:seed-gold",
         "npm install --force",
+        "git push",
+        "git reset --hard",
         "package-lock deletion without approval"
       ],
       checkpointCommands: [
@@ -101,8 +104,8 @@ export class WorkPacketPlanner {
           "npm run ingest:ci"
         ],
         allowedFileGlobs: ["package-lock.json", "package.json", "tmp/.gitkeep"],
-        forbiddenFileGlobs: ["src/**", "scripts/**", "fixtures/**", "gold/**", "benchmarks/**"],
-        hardBlockedCommands: ["npm run ingest:seed-gold", "npm install --force"],
+        forbiddenFileGlobs: ["src/**", "scripts/**", "fixtures/**", "gold/**", "benchmarks/**", "reviewed-fixtures/**", "reviewed_fixtures/**"],
+        hardBlockedCommands: ["npm run ingest:seed-gold", "npm install --force", "git push", "git reset --hard"],
         checkpointRequiredAfter: ["file_change", "failed_command", "max_micro_steps", "goal_verified"]
       }
     } satisfies WorkPacket);
