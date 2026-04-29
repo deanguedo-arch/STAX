@@ -63,13 +63,19 @@ describe("governed intelligence runtime", () => {
       if (prompt.includes("Repair this STAX output")) return validPlan("src/core/RaxRuntime.ts", "repair fallback path");
       return validPlan("src/core/RaxRuntime.ts", "critic-adversary path");
     });
-    const critic = new ScriptedProvider(() => [
-      "## Critic Review",
-      "- Pass/Fail: Fail",
-      "- Issues Found: unsupported completion claim",
-      "- Required Fixes: remove fake-complete language",
-      "- Confidence: high"
-    ].join("\n"));
+    const critic = new ScriptedProvider(() => JSON.stringify({
+      pass: false,
+      severity: "major",
+      reasoningQuality: "adequate",
+      evidenceQuality: "weak",
+      unsupportedClaims: ["completion claim lacks command evidence"],
+      inventedSpecifics: [],
+      fakeCompleteRisk: ["provider output sounds complete without proof"],
+      missingNextAction: [],
+      policyViolations: [],
+      requiredFixes: ["remove fake-complete language"],
+      confidence: "high"
+    }));
     const runtime = await createDefaultRuntime({
       rootDir,
       provider: generator,
@@ -80,6 +86,43 @@ describe("governed intelligence runtime", () => {
 
     expect(output.output).toContain("## Critic Failure");
     expect(output.output).toContain("Model critic failure");
+  });
+
+  it("uses non-mock provider text as codex_audit output instead of the scripted analyst template", async () => {
+    const rootDir = await tempRoot();
+    const provider = new ScriptedProvider((request) => {
+      const prompt = request.messages.at(-1)?.content ?? "";
+      if (prompt.includes("Audit this agent output")) return criticPass();
+      return validCodexAudit("provider-backed codex audit marker");
+    });
+    const runtime = await createDefaultRuntime({ rootDir, provider });
+
+    const output = await runtime.run("Audit this Codex report.", [], { mode: "codex_audit" });
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("provider-backed codex audit marker");
+    expect(output.output).not.toContain("No Codex claim supplied.");
+  });
+
+  it("uses non-mock provider text for project_brain and code_review analyst modes", async () => {
+    const rootDir = await tempRoot();
+    const provider = new ScriptedProvider((request) => {
+      const prompt = request.messages.at(-1)?.content ?? "";
+      if (prompt.includes("Audit this agent output")) return criticPass();
+      if (prompt.includes("Review this code")) return validCodeReview("provider-backed code review marker");
+      return validProjectBrain("provider-backed project brain marker");
+    });
+    const runtime = await createDefaultRuntime({ rootDir, provider });
+
+    const projectBrain = await runtime.run("Summarize project state.", [], { mode: "project_brain" });
+    const codeReview = await runtime.run("Review this code diff.", [], { mode: "code_review" });
+
+    expect(projectBrain.validation.valid).toBe(true);
+    expect(projectBrain.output).toContain("provider-backed project brain marker");
+    expect(projectBrain.output).not.toContain("Behavior System v0.1 proof report");
+    expect(codeReview.validation.valid).toBe(true);
+    expect(codeReview.output).toContain("provider-backed code review marker");
+    expect(codeReview.output).not.toContain("No concrete code context was supplied.");
   });
 });
 
@@ -138,5 +181,92 @@ function validPlan(filePath: string, marker: string): string {
     "",
     "## Codex Prompt",
     `Implement ${marker} with local validation, critic review, and evidence grounding.`
+  ].join("\n");
+}
+
+function validCodexAudit(marker: string): string {
+  return [
+    "## Audit Type",
+    "- Reasoned Opinion",
+    "## Evidence Checked",
+    "- Supplied report text only.",
+    "## Claims Verified",
+    "- None from local command evidence.",
+    "## Claims Not Verified",
+    "- Runtime pass/fail claims remain unverified.",
+    "## Risks",
+    `- ${marker}.`,
+    "## Required Next Proof",
+    "- Run npm test and capture local STAX command evidence.",
+    "## Recommendation",
+    "- Treat as reasoned opinion until command evidence exists.",
+    "## Evidence Decision",
+    "- Decision: reasoned_opinion",
+    "## Codex Claim",
+    "- Provider-backed audit should become final output.",
+    "## Evidence Found",
+    "- None found.",
+    "## Missing Evidence",
+    "- Local command output missing.",
+    "## Files Modified",
+    "- Unknown",
+    "## Tests Added",
+    "- Unknown",
+    "## Commands Run",
+    "- None supplied.",
+    "## Violations",
+    "- None identified from supplied input.",
+    "## Fake-Complete Flags",
+    "- Runtime claims are not verified.",
+    "## Required Fix Prompt",
+    "Return exact files, commands, outputs, and remaining failures.",
+    "## Approval Recommendation",
+    "- Reject until local evidence exists."
+  ].join("\n");
+}
+
+function validProjectBrain(marker: string): string {
+  return [
+    "## Project State",
+    `- ${marker}.`,
+    "## Current Objective",
+    "- Make repo-facing analyst modes genuinely provider-backed while preserving governance.",
+    "## Proven Working",
+    "- ev_101: Provider-backed planning is covered by governed intelligence tests.",
+    "## Unproven Claims",
+    "- Analyst mode quality is not globally proven.",
+    "## Recent Changes",
+    "- Provider-backed analyst seam under test.",
+    "## Known Failures",
+    "- None supplied.",
+    "## Risk Register",
+    "- Provider output can hallucinate without validation and grounding.",
+    "## Missing Tests",
+    "- Live provider quality still needs adversarial evals.",
+    "## Fake-Complete Risks",
+    "- Do not claim broad superiority from one passing mode.",
+    "## Next 3 Actions",
+    "1. Run npm run typecheck.",
+    "2. Run npm test.",
+    "3. Run npm run rax -- eval.",
+    "## Codex Prompt",
+    "Patch provider-backed analyst behavior with focused tests and no authority expansion.",
+    "## Evidence Required",
+    "- npm run typecheck output.",
+    "- npm test output.",
+    "- npm run rax -- eval output."
+  ].join("\n");
+}
+
+function validCodeReview(marker: string): string {
+  return [
+    "## Findings",
+    `- ${marker}.`,
+    "",
+    "## Tests",
+    "- Not run in this review.",
+    "",
+    "## Residual Risk",
+    "- Repository diff evidence was not supplied."
   ].join("\n");
 }

@@ -54,7 +54,20 @@ describe("EvidenceGroundingGate", () => {
       commandEvidence: [commandEvidence("codex_reported_command_output")]
     });
 
+    expect(result.unsupportedClaims.some((claim) => claim.kind === "test_pass")).toBe(true);
+    expect(result.pass).toBe(false);
+    expect(result.requiredFixes.join(" ")).toContain("unsupported");
+  });
+
+  it("allows Codex-reported command output only when phrased as provisional evidence", () => {
+    const result = new EvidenceGroundingGate().evaluate({
+      output: "Codex reported npm test passed; treat this as provisional until local STAX command evidence exists.",
+      repoEvidence,
+      commandEvidence: [commandEvidence("codex_reported_command_output")]
+    });
+
     expect(result.weakClaims.some((claim) => claim.kind === "test_pass")).toBe(true);
+    expect(result.unsupportedClaims).toEqual([]);
     expect(result.pass).toBe(true);
   });
 

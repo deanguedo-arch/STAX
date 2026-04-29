@@ -76,7 +76,18 @@ export class EvidenceGroundingGate {
     const strong = evidence.find((item) => item.source === "local_stax_command_output" && item.success && (!family || item.commandFamily === family));
     if (strong) return { kind, text, status: "supported", support: strong.commandEvidenceId };
     const weak = evidence.find((item) => item.success && (!family || item.commandFamily === family));
-    if (weak) return { kind, text, status: "weak", support: weak.commandEvidenceId, reason: `${weak.source} is not strong local proof.` };
+    if (weak && isProvisionalRuntimeClaim(text, weak.source)) {
+      return { kind, text, status: "weak", support: weak.commandEvidenceId, reason: `${weak.source} is provisional evidence.` };
+    }
+    if (weak) {
+      return {
+        kind,
+        text,
+        status: "unsupported",
+        support: weak.commandEvidenceId,
+        reason: `Hard runtime/completion claim requires local STAX command evidence; ${weak.source} is provisional only.`
+      };
+    }
     return { kind, text, status: "unsupported", reason: "Runtime/completion claim requires local STAX command evidence." };
   }
 }
@@ -111,4 +122,13 @@ function commandFamilyFromText(text: string): CommandEvidence["commandFamily"] |
   if (/\btests?\b/i.test(text)) return "test";
   const command = matches(text, COMMAND_PATTERN)[0];
   return command ? commandFamilyFor(command) : undefined;
+}
+
+function isProvisionalRuntimeClaim(text: string, source: CommandEvidence["source"]): boolean {
+  if (source === "local_stax_command_output") return true;
+  const sourcePattern =
+    source === "codex_reported_command_output"
+      ? /\b(?:codex|assistant)\s+(?:reported|said|claimed)|\bcodex-reported\b|\breported by codex\b/i
+      : /\b(?:human|user|dean)\s+(?:reported|said|pasted|claimed)|\bhuman-pasted\b|\breported by (?:a )?human\b/i;
+  return sourcePattern.test(text) || /\b(?:provisional|weak evidence|unverified report)\b/i.test(text);
 }

@@ -1,5 +1,6 @@
 import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
+import { parseModelCriticReview, renderModelCriticReview } from "../schemas/ModelCriticReview.js";
 
 export class CriticAgent implements Agent {
   name = "critic";
@@ -17,12 +18,13 @@ export class CriticAgent implements Agent {
     });
 
     if (!isMockLikeProvider(input.provider.name)) {
+      const structuredReview = parseModelCriticReview(providerResponse.text);
       return {
         agent: this.name,
         schema: "critic",
         confidence: "medium",
-        metadata: { providerText: providerResponse.text, providerBacked: true },
-        output: providerResponse.text.trim()
+        metadata: { providerText: providerResponse.text, providerBacked: true, structuredReview },
+        output: structuredReview ? renderModelCriticReview(structuredReview) : providerResponse.text.trim()
       };
     }
 

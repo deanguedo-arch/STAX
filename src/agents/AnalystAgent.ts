@@ -134,6 +134,17 @@ function sectionBetween(text: string, startHeading: string, endHeading: string):
   return (end === -1 ? afterStart : afterStart.slice(0, end)).replace(/```txt|```/g, "").trim();
 }
 
+function isMockLikeProvider(name: string): boolean {
+  return name === "mock" || name.startsWith("mock-");
+}
+
+function shouldUseProviderBackedAnalyst(input: AgentInput): boolean {
+  return (
+    !isMockLikeProvider(input.provider.name) &&
+    (input.mode === "codex_audit" || input.mode === "code_review" || input.mode === "project_brain")
+  );
+}
+
 export class AnalystAgent implements Agent {
   name = "analyst";
   mode = "analysis" as const;
@@ -148,6 +159,16 @@ export class AnalystAgent implements Agent {
       maxTokens: input.config.model.maxOutputTokens,
       timeoutMs: input.config.model.timeoutMs
     });
+
+    if (shouldUseProviderBackedAnalyst(input)) {
+      return {
+        agent: this.name,
+        schema: input.mode,
+        confidence: "medium",
+        metadata: { providerText: providerResponse.text, providerBacked: true },
+        output: providerResponse.text.trim()
+      };
+    }
 
     if (input.mode === "audit") {
       return {

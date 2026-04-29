@@ -10,9 +10,12 @@ The goal is not to make STAX an unconstrained autonomous agent. The goal is to m
 
 ```txt
 Provider-backed planning for non-mock providers
+Provider-backed analyst output for non-mock codex_audit, project_brain, and code_review
 Provider-backed critic output for non-mock critic providers
+Structured ModelCriticReview schema path for non-mock critic JSON
 Provider-backed repair path with fail-closed validation
 EvidenceGroundingGate added
+EvidenceGroundingGate hardened so weak command evidence cannot support hard runtime claims
 Memory simple-add path now defaults to pending approval
 PolicyCompiler now loads mode contracts from configured rootDir
 Repo evidence is injected into repo-facing runtime context when linkedRepoPath is supplied
@@ -55,11 +58,47 @@ not_applicable
 
 Local STAX command evidence is strong proof. Human-pasted and Codex-reported command evidence remain weak/provisional.
 
+Hard runtime claims such as `npm test passed`, `build verified`, or `done` now require local STAX command evidence. Codex-reported or human-pasted evidence can remain in the output only when the claim is explicitly phrased as provisional, for example `Codex reported npm test passed; treat this as provisional`.
+
 ## Provider-Backed Planning
 
 For `provider.name === "mock"`, planning output stays deterministic for tests and replay.
 
 For non-mock providers, planning output now comes from the provider response and must pass the existing `PlanningValidator`, local critic, evidence grounding when repo evidence is present, and formatter/schema validation.
+
+## Provider-Backed Analyst Modes
+
+For `provider.name === "mock"`, analyst-mode output stays deterministic for tests, replay, and eval stability.
+
+For non-mock providers, these analyst modes now use provider response text as the final primary output instead of burying it in metadata:
+
+```txt
+codex_audit
+project_brain
+code_review
+```
+
+The output still passes mode validators, local critic review, model critic review, repair where allowed, and evidence grounding when repo evidence is present. Invalid provider output is not silently replaced with the old scripted analyst template.
+
+## Structured Model Critic
+
+Non-mock critic providers may now return structured JSON matching `ModelCriticReviewSchema`:
+
+```txt
+pass
+severity
+reasoningQuality
+evidenceQuality
+unsupportedClaims
+inventedSpecifics
+fakeCompleteRisk
+missingNextAction
+policyViolations
+requiredFixes
+confidence
+```
+
+STAX renders that review into the critic output with a parseable structured section. Local `CriticGate` remains authoritative; the model critic can add failures but cannot remove local failures.
 
 ## Repair
 
@@ -82,6 +121,7 @@ The legacy/simple `MemoryStore.add("project" | "session", text)` path now create
 ```txt
 tests/governedIntelligence.test.ts
 tests/evidenceGroundingGate.test.ts
+tests/modelCriticReview.test.ts
 tests/memory.test.ts
 tests/policyEngine.test.ts
 tests/criticGateHardening.test.ts
@@ -92,11 +132,13 @@ Focused proof:
 
 ```txt
 non-mock provider planning text reaches final output
+non-mock provider codex_audit text reaches final output
+non-mock provider project_brain and code_review text reach final output
 malformed provider planning repairs through provider-backed repair
-model critic can add failures without overruling local critic
+structured model critic can add failures without overruling local critic
 file claims require repo evidence
-passed-test claims require command evidence
-Codex-reported evidence stays weak
+passed-test claims require local STAX command evidence
+Codex-reported evidence stays weak and cannot support a hard pass claim
 simple memory writes stay pending
 mode contracts load from configured rootDir
 ```
@@ -117,10 +159,10 @@ does not prove global superiority
 ```txt
 npm run typecheck
   passed
-npm test -- --run tests/governedIntelligence.test.ts tests/evidenceGroundingGate.test.ts tests/sandboxDependencyBootstrap.test.ts tests/memory.test.ts tests/policyEngine.test.ts tests/criticGateHardening.test.ts
-  passed, 6 files / 23 tests
+npm test -- --run tests/evidenceGroundingGate.test.ts tests/governedIntelligence.test.ts tests/modelCriticReview.test.ts
+  passed, 3 files / 12 tests
 npm test
-  passed, 78 files / 420 tests
+  passed, 79 files / 426 tests
 npm run rax -- eval
   passed, 16/16
 npm run rax -- eval --regression

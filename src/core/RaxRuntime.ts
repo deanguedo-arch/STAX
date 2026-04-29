@@ -14,6 +14,7 @@ import { EvidenceGroundingGate } from "../evidence/EvidenceGroundingGate.js";
 import { ProviderRouter } from "../routing/ProviderRouter.js";
 import { DEFAULT_CONFIG, type DeepPartial, type RaxConfig } from "../schemas/Config.js";
 import type { DetailLevel, RaxMode } from "../schemas/Config.js";
+import { modelCriticIssuesFromReview, parseModelCriticReview } from "../schemas/ModelCriticReview.js";
 import type { RaxOutput } from "../schemas/RaxOutput.js";
 import type { ModelCallTrace, RunTrace } from "../schemas/RunLog.js";
 import { BoundaryDecision } from "../safety/BoundaryDecision.js";
@@ -750,6 +751,8 @@ export class RaxRuntime {
 
   private modelCriticIssues(output: string, providerName: string): string[] {
     if (isMockLikeProvider(providerName)) return [];
+    const structured = parseModelCriticReview(output);
+    if (structured) return modelCriticIssuesFromReview(structured);
     const lower = output.toLowerCase();
     const failed = /pass\/fail:\s*fail\b|^fail\b|\bverdict:\s*fail\b|\bnot pass\b/m.test(lower);
     if (!failed) return [];
