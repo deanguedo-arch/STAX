@@ -71,6 +71,10 @@ const round2ScoresPath = path.join(
   process.cwd(),
   "fixtures/manual_benchmark/stax_vs_raw_chatgpt_round2_repo_targeting_scores_2026-04-29.json"
 );
+const round3FixturePath = path.join(
+  process.cwd(),
+  "fixtures/manual_benchmark/stax_vs_raw_chatgpt_round3_stateful_cases.json"
+);
 
 describe("manual STAX vs ChatGPT benchmark fixture", () => {
   it("keeps the seed benchmark small, scorable, and evidence-oriented", () => {
@@ -230,6 +234,47 @@ describe("manual STAX vs ChatGPT benchmark fixture", () => {
       expect(testCase.rawChatgptScore).toBeGreaterThanOrEqual(0);
       expect(testCase.rawChatgptScore).toBeLessThanOrEqual(10);
       expect(testCase.reason.trim().length).toBeGreaterThan(20);
+    }
+  });
+
+  it("keeps Round 3 focused on stateful project-control advantages", () => {
+    const fixture = JSON.parse(fs.readFileSync(round3FixturePath, "utf8")) as ManualBenchmarkFixture & {
+      benchmarkId: string;
+      targetThreshold: { cases: number; strongResultIf: string[] };
+      baselineBoundary: string;
+      round3Design: {
+        explicitStatefulCases: number;
+        withheldRepoStatefulCases: number;
+        crossRepoStateTrapCases: number;
+      };
+    };
+
+    expect(fixture.benchmarkId).toBe("stax_vs_raw_chatgpt_round3_stateful");
+    expect(fixture.status).toBe("manual_collection_required");
+    expect(fixture.cases).toHaveLength(10);
+    expect(fixture.targetThreshold.cases).toBe(10);
+    expect(fixture.baselineBoundary).toContain("not broad STAX superiority proof");
+    expect(fixture.criticalMisses).toContain("uses the wrong repo path or follows a misleading repo target");
+
+    const repoPathConditions = fixture.cases.reduce<Record<string, number>>((counts, testCase) => {
+      const condition = testCase.repoPathCondition ?? "missing";
+      counts[condition] = (counts[condition] ?? 0) + 1;
+      return counts;
+    }, {});
+
+    expect(repoPathConditions.explicit).toBe(fixture.round3Design.explicitStatefulCases);
+    expect(repoPathConditions.withheld).toBe(fixture.round3Design.withheldRepoStatefulCases);
+    expect(repoPathConditions.misleading).toBe(fixture.round3Design.crossRepoStateTrapCases);
+    expect(repoPathConditions.missing).toBeUndefined();
+
+    const repos = new Set(fixture.cases.map((testCase) => testCase.repo));
+    expect(repos).toEqual(new Set(["STAX", "brightspacequizexporter", "ADMISSION-APP", "canvas-helper"]));
+
+    for (const testCase of fixture.cases) {
+      expect(testCase.task.trim().length).toBeGreaterThan(20);
+      expect(testCase.repoEvidence.trim().length).toBeGreaterThan(10);
+      expect(testCase.commandEvidence.trim().length).toBeGreaterThan(5);
+      expect(testCase.expectedBestTraits.length).toBeGreaterThanOrEqual(3);
     }
   });
 });
