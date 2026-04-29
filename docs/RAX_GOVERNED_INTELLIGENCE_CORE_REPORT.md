@@ -10,17 +10,20 @@ The goal is not to make STAX an unconstrained autonomous agent. The goal is to m
 
 ```txt
 Provider-backed planning for non-mock providers
-Provider-backed analyst output for non-mock codex_audit, project_brain, and code_review
+Provider-backed analyst output for non-mock codex_audit, project_brain, code_review, test_gap_audit, policy_drift, model_comparison, and analysis
 Provider-backed critic output for non-mock critic providers
 Structured ModelCriticReview schema path for non-mock critic JSON
 Provider-backed repair path with fail-closed validation
+Dedicated repair-loop tests for deterministic and provider-backed repairs
 EvidenceGroundingGate added
 EvidenceGroundingGate hardened so weak command evidence cannot support hard runtime claims
 Memory simple-add path now defaults to pending approval
+Memory approval now requires audit metadata and poison-scan status
 PolicyCompiler now loads mode contracts from configured rootDir
 Repo evidence is injected into repo-facing runtime context when linkedRepoPath is supplied
 Model critic failures can add failures; local critic remains authority
-Redteam fake-complete eval added
+CapabilityRegistry added as a shared declaration surface for risky execute/write/promote capabilities
+Redteam fake-complete, hallucinated path, weak command evidence, repo-doc injection, and generic-governance evals added
 ```
 
 ## Safety Rules Preserved
@@ -33,6 +36,7 @@ repair cannot convert unverified proof into verified proof
 raw model output does not auto-save to approved memory
 unsupported repo/file/test claims fail or remain unverified
 shell and file-write defaults are unchanged
+capability registry declarations do not enable shell, file-write, git mutation, sandbox patching, or promotion by themselves
 ```
 
 ## Evidence Grounding
@@ -76,6 +80,10 @@ For non-mock providers, these analyst modes now use provider response text as th
 codex_audit
 project_brain
 code_review
+test_gap_audit
+policy_drift
+model_comparison
+analysis
 ```
 
 The output still passes mode validators, local critic review, model critic review, repair where allowed, and evidence grounding when repo evidence is present. Invalid provider output is not silently replaced with the old scripted analyst template.
@@ -112,9 +120,45 @@ revalidate repaired output
 fail closed if repair remains invalid
 ```
 
+Dedicated repair tests now prove:
+
+```txt
+unsupported claims can be removed deterministically
+provider-backed repair receives the no-new-claims proof instructions
+provider-backed repair can produce a valid repaired output
+malformed repair output fails closed
+```
+
 ## Memory Hardening
 
 The legacy/simple `MemoryStore.add("project" | "session", text)` path now creates pending memory by default. Search still retrieves only approved, non-expired memory.
+
+Approved memory now requires:
+
+```txt
+approvedBy
+approvalReason
+expiresAt or neverExpireJustification
+poisonScan status
+```
+
+The approval path records approval metadata and blocks poison-flagged memory unless explicitly allowed by the caller. Raw model output still does not become approved memory automatically.
+
+## Capability Registry
+
+`CapabilityRegistry` declares the control surface for risky powers:
+
+```txt
+shell.execute
+file.write
+git.mutate
+memory.approve
+eval.run
+sandbox.command_window
+sandbox.patch_window
+```
+
+The registry records risk level, allowed contexts, approval requirement, artifact requirement, and rollback-plan requirement. It does not grant authority by itself. Shell and file-write tools still default to disabled, and git mutation remains non-mutating in this pass.
 
 ## Tests
 
@@ -122,10 +166,18 @@ The legacy/simple `MemoryStore.add("project" | "session", text)` path now create
 tests/governedIntelligence.test.ts
 tests/evidenceGroundingGate.test.ts
 tests/modelCriticReview.test.ts
+tests/repairController.test.ts
 tests/memory.test.ts
+tests/memoryApproval.test.ts
 tests/policyEngine.test.ts
 tests/criticGateHardening.test.ts
+tests/capabilityRegistry.test.ts
 evals/redteam/fake_complete_no_command_output.json
+evals/redteam/hallucinated_file_path_no_evidence.json
+evals/redteam/weak_codex_reported_test_pass.json
+evals/redteam/human_pasted_fake_command_output.json
+evals/redteam/repo_doc_prompt_injection.json
+evals/redteam/generic_governance_no_bounded_action.json
 ```
 
 Focused proof:
@@ -134,12 +186,17 @@ Focused proof:
 non-mock provider planning text reaches final output
 non-mock provider codex_audit text reaches final output
 non-mock provider project_brain and code_review text reach final output
+non-mock provider test_gap_audit, policy_drift, model_comparison, and analysis text reaches final output
 malformed provider planning repairs through provider-backed repair
+malformed structured critic JSON falls back to textual failure parsing
 structured model critic can add failures without overruling local critic
 file claims require repo evidence
 passed-test claims require local STAX command evidence
 Codex-reported evidence stays weak and cannot support a hard pass claim
 simple memory writes stay pending
+memory approval requires audit metadata
+poison-flagged memory cannot be approved by default
+capability registry denies risky powers without approval/artifacts/rollback where required
 mode contracts load from configured rootDir
 ```
 
@@ -151,6 +208,7 @@ does not let model critic override local safety
 does not auto-promote memory/evals/training/policies/schemas/modes
 does not run shell commands
 does not mutate linked repos
+does not enable sandbox patching or real repo apply
 does not prove global superiority
 ```
 
@@ -159,22 +217,22 @@ does not prove global superiority
 ```txt
 npm run typecheck
   passed
-npm test -- --run tests/evidenceGroundingGate.test.ts tests/governedIntelligence.test.ts tests/modelCriticReview.test.ts
-  passed, 3 files / 12 tests
+npm test -- --run tests/governedIntelligence.test.ts tests/repairController.test.ts tests/memory.test.ts tests/memoryApproval.test.ts tests/capabilityRegistry.test.ts tests/toolGovernance.test.ts tests/evidenceGroundingGate.test.ts tests/modelCriticReview.test.ts
+  passed, 8 files / 32 tests
 npm test
-  passed, 79 files / 426 tests
+  passed, 81 files / 438 tests
 npm run rax -- eval
   passed, 16/16
 npm run rax -- eval --regression
   passed, 47/47
 npm run rax -- eval --redteam
-  passed, 10/10
+  passed, 15/15
 npm run rax -- doctor
-  passed; mock provider warnings, disabled shell/fileWrite, memory approval, latest eval/run, command evidence, repo evidence, and git state displayed
+  passed; mock-provider warnings, disabled shell/fileWrite, memory approval settings, latest eval/run, command evidence, repo evidence, and git state displayed
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
-  passed smoke
+  passed smoke; run artifact runs/2026-04-29/run-2026-04-29T03-54-36-823Z-2h0vmi
 ```
 
 ## Proof Status
 
-This advances STAX from a deterministic governance shell toward governed intelligence for non-mock planning and criticism. It does not prove broad model superiority or autonomous execution.
+This advances STAX from a deterministic governance shell toward governed intelligence across non-mock planning, analyst, critic, and repair paths. It also tightens weak-proof handling, memory approval governance, and capability declarations. It does not prove broad model superiority or autonomous execution.

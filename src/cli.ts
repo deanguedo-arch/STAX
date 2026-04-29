@@ -301,14 +301,34 @@ async function memoryCommand(args: ParsedArgs): Promise<void> {
     return;
   }
   if (action === "approve") {
-    logInfo(JSON.stringify(await store.approve(args.positional[1] ?? ""), null, 2));
+    const reason = typeof args.flags.reason === "string" ? args.flags.reason : "";
+    const approvedBy = typeof args.flags.by === "string" ? args.flags.by : "cli";
+    const sourceRunId = typeof args.flags.run === "string" ? args.flags.run : undefined;
+    const expiresAt = typeof args.flags.expires === "string" ? args.flags.expires : undefined;
+    const neverExpireJustification =
+      typeof args.flags["never-expire-justification"] === "string"
+        ? args.flags["never-expire-justification"]
+        : undefined;
+    if (!reason.trim()) {
+      throw new Error("Usage: rax memory approve <id> --reason \"...\" [--by reviewer] [--run <run-id>] [--expires <iso-date> | --never-expire-justification \"...\"]");
+    }
+    logInfo(JSON.stringify(await store.approve(args.positional[1] ?? "", {
+      approvedBy,
+      approvalReason: reason,
+      sourceRunId,
+      expiresAt,
+      neverExpireJustification
+    }), null, 2));
     return;
   }
   if (action === "reject") {
-    logInfo(JSON.stringify(await store.reject(args.positional[1] ?? ""), null, 2));
+    logInfo(JSON.stringify(await store.reject(args.positional[1] ?? "", {
+      rejectedBy: typeof args.flags.by === "string" ? args.flags.by : "cli",
+      rejectionReason: typeof args.flags.reason === "string" ? args.flags.reason : undefined
+    }), null, 2));
     return;
   }
-  throw new Error('Usage: rax memory search "query" | list | approve <id> | reject <id>');
+  throw new Error('Usage: rax memory search "query" | list | approve <id> --reason "..." | reject <id>');
 }
 
 async function correctCommand(args: ParsedArgs): Promise<void> {

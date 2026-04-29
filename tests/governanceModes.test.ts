@@ -145,6 +145,9 @@ describe("governance modes", () => {
       content: "Provider role separation must stay explicit.",
       confidence: "high",
       approved: true,
+      approvedBy: "test",
+      approvalReason: "Stable governance decision for Project Brain test.",
+      neverExpireJustification: "Test fixture memory.",
       tags: ["provider", "decision"]
     });
     await store.add({

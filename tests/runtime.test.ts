@@ -68,6 +68,9 @@ describe("RaxRuntime", () => {
       content: "Dean training context",
       confidence: "high",
       approved: true,
+      approvedBy: "test",
+      approvalReason: "Stable project context for runtime retrieval test.",
+      neverExpireJustification: "Test fixture memory.",
       tags: ["Dean"]
     });
     const runtime = await createDefaultRuntime({ rootDir: root });

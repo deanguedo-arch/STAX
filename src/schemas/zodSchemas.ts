@@ -264,6 +264,19 @@ export const MemoryItemSchema = z.object({
   expiresAt: z.string().optional(),
   confidence: ConfidenceSchema,
   approved: z.boolean(),
+  approvedAt: z.string().optional(),
+  approvedBy: z.string().optional(),
+  approvalReason: z.string().optional(),
+  approvalSourceRunId: z.string().optional(),
+  neverExpireJustification: z.string().optional(),
+  rejectedAt: z.string().optional(),
+  rejectedBy: z.string().optional(),
+  rejectionReason: z.string().optional(),
+  poisonScan: z.object({
+    status: z.enum(["passed", "flagged"]),
+    flags: z.array(z.string()),
+    scannedAt: z.string()
+  }).optional(),
   tags: z.array(z.string())
 });
 

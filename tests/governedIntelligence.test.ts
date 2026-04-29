@@ -88,6 +88,60 @@ describe("governed intelligence runtime", () => {
     expect(output.output).toContain("Model critic failure");
   });
 
+  it("falls back to textual model critic failure parsing when structured critic JSON is malformed", async () => {
+    const rootDir = await tempRoot();
+    const generator = new ScriptedProvider((request) => {
+      const prompt = request.messages.at(-1)?.content ?? "";
+      if (prompt.includes("Repair this STAX output")) return validPlan("src/core/RaxRuntime.ts", "repair fallback path");
+      return validPlan("src/core/RaxRuntime.ts", "loose critic fallback path");
+    });
+    const critic = new ScriptedProvider(() => [
+      "{ not valid json",
+      "## Critic Review",
+      "- Pass/Fail: Fail",
+      "- Issues Found: unsupported completion claim",
+      "- Required Fixes: remove invented proof",
+      "- Confidence: high"
+    ].join("\n"));
+    const runtime = await createDefaultRuntime({
+      rootDir,
+      provider: generator,
+      roleProviders: { critic }
+    });
+
+    const output = await runtime.run("Plan malformed critic fallback.", [], { mode: "planning" });
+
+    expect(output.output).toContain("## Critic Failure");
+    expect(output.output).toContain("Model critic failure");
+    expect(output.output).toContain("unsupported completion claim");
+  });
+
+  it("does not let a model critic pass override local validation failure", async () => {
+    const rootDir = await tempRoot();
+    const generator = new ScriptedProvider((request) => {
+      const prompt = request.messages.at(-1)?.content ?? "";
+      if (prompt.includes("Repair this STAX output")) return "## Objective\nStill malformed.";
+      return "## Objective\nStill malformed.";
+    });
+    const critic = new ScriptedProvider(() => JSON.stringify({
+      pass: true,
+      severity: "none",
+      reasoningQuality: "adequate",
+      evidenceQuality: "adequate",
+      confidence: "medium"
+    }));
+    const runtime = await createDefaultRuntime({
+      rootDir,
+      provider: generator,
+      roleProviders: { critic }
+    });
+
+    const output = await runtime.run("Plan local critic authority.", [], { mode: "planning" });
+
+    expect(output.output).toContain("## Critic Failure");
+    expect(output.output).toContain("Missing required heading");
+  });
+
   it("uses non-mock provider text as codex_audit output instead of the scripted analyst template", async () => {
     const rootDir = await tempRoot();
     const provider = new ScriptedProvider((request) => {
@@ -123,6 +177,37 @@ describe("governed intelligence runtime", () => {
     expect(codeReview.validation.valid).toBe(true);
     expect(codeReview.output).toContain("provider-backed code review marker");
     expect(codeReview.output).not.toContain("No concrete code context was supplied.");
+  });
+
+  it("uses non-mock provider text for remaining analyst governance modes", async () => {
+    const rootDir = await tempRoot();
+    const provider = new ScriptedProvider((request) => {
+      const prompt = request.messages.at(-1)?.content ?? "";
+      if (prompt.includes("Audit this agent output")) return criticPass();
+      if (prompt.includes("Compare")) return validModelComparison("provider-backed model comparison marker");
+      if (prompt.includes("policy")) return validPolicyDrift("provider-backed policy drift marker");
+      if (prompt.includes("test gap")) return validTestGapAudit("provider-backed test gap marker");
+      return validAnalysis("provider-backed analysis marker");
+    });
+    const runtime = await createDefaultRuntime({ rootDir, provider });
+
+    const testGap = await runtime.run("Run test gap audit for provider-backed analysis.", [], { mode: "test_gap_audit" });
+    const policyDrift = await runtime.run("Audit policy drift for provider-backed analysis.", [], { mode: "policy_drift" });
+    const modelComparison = await runtime.run("Compare STAX Answer and External Answer.", [], { mode: "model_comparison" });
+    const analysis = await runtime.run("Analyze provider-backed analyst mode.", [], { mode: "analysis" });
+
+    expect(testGap.validation.valid).toBe(true);
+    expect(testGap.output).toContain("provider-backed test gap marker");
+    expect(testGap.output).not.toContain("Unknown until tests and eval fixtures are inspected.");
+    expect(policyDrift.validation.valid).toBe(true);
+    expect(policyDrift.output).toContain("provider-backed policy drift marker");
+    expect(policyDrift.output).not.toContain("Evidence rules remain required.");
+    expect(modelComparison.validation.valid).toBe(true);
+    expect(modelComparison.output).toContain("provider-backed model comparison marker");
+    expect(modelComparison.output).not.toContain("Prefer the answer that names exact files");
+    expect(analysis.validation.valid).toBe(true);
+    expect(analysis.output).toContain("provider-backed analysis marker");
+    expect(analysis.output).not.toContain("## Facts Used\n- Analyze provider-backed analyst mode.");
   });
 });
 
@@ -268,5 +353,83 @@ function validCodeReview(marker: string): string {
     "",
     "## Residual Risk",
     "- Repository diff evidence was not supplied."
+  ].join("\n");
+}
+
+function validTestGapAudit(marker: string): string {
+  return [
+    "## Feature",
+    `- ${marker}.`,
+    "## Existing Tests",
+    "- tests/governedIntelligence.test.ts covers provider-backed analyst behavior.",
+    "## Missing Tests",
+    "- Add redteam evals for weak evidence laundering.",
+    "## Negative Cases Needed",
+    "- Provider output missing required headings.",
+    "## Eval Cases Needed",
+    "- Redteam case for fake-complete hard proof.",
+    "## Priority",
+    "- high"
+  ].join("\n");
+}
+
+function validPolicyDrift(marker: string): string {
+  return [
+    "## Policy Change",
+    `- ${marker}.`,
+    "## Drift Checks",
+    "- Provider output remains validator-gated.",
+    "## Violations",
+    "- None identified from supplied input.",
+    "## Required Evals",
+    "- npm run rax -- eval --redteam",
+    "## Approval Recommendation",
+    "- Needs review with policy diff and eval output."
+  ].join("\n");
+}
+
+function validModelComparison(marker: string): string {
+  return [
+    "## Task",
+    `- ${marker}.`,
+    "## STAX Answer Strengths",
+    "- Names local proof boundaries.",
+    "## External Answer Strengths",
+    "- May provide alternate reasoning.",
+    "## Evidence Comparison",
+    "- No local proof artifact was supplied.",
+    "## Evidence Decision",
+    "- Decision: reasoned_opinion",
+    "## Specificity Comparison",
+    "- STAX answer is more specific when it names exact commands.",
+    "## Actionability Comparison",
+    "- Prefer bounded next action.",
+    "## Missing Local Proof",
+    "- Add local STAX command evidence.",
+    "## Safer Answer",
+    "- Use local evidence as the proof surface.",
+    "## Better Answer For This Project",
+    "- The better answer is evidence-linked.",
+    "## Recommended Correction",
+    "- Capture a correction candidate only after approval.",
+    "## Recommended Eval",
+    "- Add a paired comparison eval.",
+    "## Recommended Prompt / Patch",
+    "Implement only the missing locally proven behavior."
+  ].join("\n");
+}
+
+function validAnalysis(marker: string): string {
+  return [
+    "## Facts Used",
+    `- ${marker}.`,
+    "## Pattern Candidates",
+    "- Provider-backed analysis can add reasoning only after validation.",
+    "## Deviations",
+    "- None identified from supplied input.",
+    "## Confidence",
+    "- medium",
+    "## Unknowns",
+    "- Local proof remains required for repo claims."
   ].join("\n");
 }

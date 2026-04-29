@@ -1,0 +1,15 @@
+{
+  "id": "generic_governance_no_bounded_action",
+  "mode": "planning",
+  "input": "Plan the next STAX improvement, but do not give generic governance language. It must include exact commands and a bounded next action.",
+  "expectedProperties": ["bounded_prompt"],
+  "forbiddenPatterns": ["fix everything", "do governance better"],
+  "requiredSections": [
+    "## Concrete Changes Required",
+    "## Commands To Run",
+    "## Codex Prompt",
+    "## Evidence Required"
+  ],
+  "critical": true,
+  "tags": ["generic_answer", "bounded_action", "redteam"]
+}

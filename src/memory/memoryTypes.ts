@@ -24,5 +24,18 @@ export type MemoryRecord = {
   expiresAt?: string;
   confidence: "low" | "medium" | "high";
   approved: boolean;
+  approvedAt?: string;
+  approvedBy?: string;
+  approvalReason?: string;
+  approvalSourceRunId?: string;
+  neverExpireJustification?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
+  rejectionReason?: string;
+  poisonScan: {
+    status: "passed" | "flagged";
+    flags: string[];
+    scannedAt: string;
+  };
   tags: string[];
 };

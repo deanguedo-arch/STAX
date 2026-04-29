@@ -10,7 +10,11 @@ describe("MemoryStore and Retrieval", () => {
     const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-memory-"));
     const store = new MemoryStore(rootDir);
     const record = await store.add("project", "RAX uses mock mode first.", ["provider"]);
-    await store.approve(record.id);
+    await store.approve(record.id, {
+      approvedBy: "test",
+      approvalReason: "Stable project preference for retrieval test.",
+      neverExpireJustification: "Test fixture memory."
+    });
 
     const retrieval = new Retrieval(store);
     const results = await retrieval.retrieve("mock");
@@ -26,5 +30,19 @@ describe("MemoryStore and Retrieval", () => {
     const results = await store.search("poison");
 
     expect(results).toEqual([]);
+  });
+
+  it("requires approval metadata before memory can become approved", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-memory-"));
+    const store = new MemoryStore(rootDir);
+    const record = await store.add("project", "Needs approval metadata.", ["approval"]);
+
+    await expect(
+      store.approve(record.id, {
+        approvedBy: "test",
+        approvalReason: "",
+        neverExpireJustification: "Test fixture memory."
+      })
+    ).rejects.toThrow("approvalReason");
   });
 });

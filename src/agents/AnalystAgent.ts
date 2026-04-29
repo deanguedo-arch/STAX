@@ -141,7 +141,15 @@ function isMockLikeProvider(name: string): boolean {
 function shouldUseProviderBackedAnalyst(input: AgentInput): boolean {
   return (
     !isMockLikeProvider(input.provider.name) &&
-    (input.mode === "codex_audit" || input.mode === "code_review" || input.mode === "project_brain")
+    (
+      input.mode === "analysis" ||
+      input.mode === "codex_audit" ||
+      input.mode === "code_review" ||
+      input.mode === "project_brain" ||
+      input.mode === "test_gap_audit" ||
+      input.mode === "policy_drift" ||
+      input.mode === "model_comparison"
+    )
   );
 }
 
