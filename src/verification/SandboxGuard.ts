@@ -64,6 +64,7 @@ export class SandboxGuard {
       copiedFiles: copied.copiedFiles,
       skippedEntries: copied.skippedEntries,
       fileManifest,
+      patchHistory: [],
       guardVersion: "v0D"
     });
     await fs.writeFile(manifestPath(sandboxPath), JSON.stringify(manifest, null, 2), "utf8");
@@ -99,9 +100,7 @@ export class SandboxGuard {
       });
     }
     const blockingReasons: string[] = [];
-    if (path.resolve(manifest.sourceRepoPath) !== sourceRepoPath) blockingReasons.push("Sandbox manifest sourceRepoPath does not match the linked repo.");
-    if (path.resolve(manifest.sandboxPath) !== sandboxPath) blockingReasons.push("Sandbox manifest sandboxPath does not match the requested path.");
-    if (manifest.packetId && parsed.packetId && manifest.packetId !== parsed.packetId) blockingReasons.push("Sandbox manifest packetId does not match the requested packet.");
+    blockingReasons.push(...manifestMetadataFailures({ manifest, parsed, sourceRepoPath, sandboxPath }));
     const integrityFailures = await verifyFileManifest(sandboxPath, manifest).catch((error) => [
       `Sandbox integrity verification failed unexpectedly: ${error instanceof Error ? error.message : String(error)}`
     ]);
@@ -129,6 +128,76 @@ export class SandboxGuard {
       skippedEntries: manifest.skippedEntries,
       integrityFileCount: manifest.fileManifest?.length ?? 0,
       summary: "Sandbox manifest and file integrity verified; command window may use this sandbox path."
+    });
+  }
+
+  async refreshIntegrityAfterPatch(input: Omit<SandboxGuardInput, "humanApprovedSandbox"> & {
+    patchEvidenceId: string;
+    changedFiles: string[];
+    diffPath?: string;
+  }): Promise<SandboxGuardResult> {
+    const parsed = SandboxGuardInputSchema.parse({ ...input, humanApprovedSandbox: true });
+    const guard = await this.guardPaths(parsed);
+    if (guard) return guard;
+    const sourceRepoPath = path.resolve(parsed.sourceRepoPath!);
+    const sandboxPath = path.resolve(parsed.sandboxPath);
+    let manifest: SandboxManifest;
+    try {
+      manifest = SandboxManifestSchema.parse(JSON.parse(await fs.readFile(manifestPath(sandboxPath), "utf8")));
+    } catch {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        blockingReasons: ["Sandbox manifest is missing or invalid."],
+        summary: "Sandbox integrity refresh failed because .stax-sandbox.json was not valid."
+      });
+    }
+
+    const blockingReasons = manifestMetadataFailures({ manifest, parsed, sourceRepoPath, sandboxPath });
+    if (manifest.guardVersion !== "v0D" || !manifest.fileManifest) {
+      blockingReasons.push("Sandbox manifest lacks v0D file integrity hashes; recreate the sandbox before patching.");
+    }
+    if (blockingReasons.length) {
+      return guardResult({
+        status: "blocked",
+        sandboxPath,
+        sourceRepoPath,
+        manifestPath: manifestPath(sandboxPath),
+        copiedFiles: manifest.copiedFiles,
+        skippedEntries: manifest.skippedEntries,
+        integrityFileCount: manifest.fileManifest?.length ?? 0,
+        blockingReasons,
+        summary: "Sandbox integrity refresh failed."
+      });
+    }
+
+    const fileManifest = await buildFileManifest(sandboxPath);
+    const updated = SandboxManifestSchema.parse({
+      ...manifest,
+      fileManifest,
+      patchHistory: [
+        ...manifest.patchHistory,
+        {
+          patchEvidenceId: input.patchEvidenceId,
+          createdAt: new Date().toISOString(),
+          changedFiles: input.changedFiles,
+          diffPath: input.diffPath
+        }
+      ],
+      guardVersion: "v0D"
+    });
+    await fs.writeFile(manifestPath(sandboxPath), JSON.stringify(updated, null, 2), "utf8");
+    return guardResult({
+      status: "verified",
+      allowedForCommandWindow: true,
+      sandboxPath,
+      sourceRepoPath,
+      manifestPath: manifestPath(sandboxPath),
+      copiedFiles: updated.copiedFiles,
+      skippedEntries: updated.skippedEntries,
+      integrityFileCount: updated.fileManifest?.length ?? 0,
+      summary: "Sandbox integrity manifest refreshed after approved sandbox patch."
     });
   }
 
@@ -173,6 +242,19 @@ export class SandboxGuard {
     }
     return undefined;
   }
+}
+
+function manifestMetadataFailures(input: {
+  manifest: SandboxManifest;
+  parsed: ReturnType<typeof SandboxGuardInputSchema.parse>;
+  sourceRepoPath: string;
+  sandboxPath: string;
+}): string[] {
+  const blockingReasons: string[] = [];
+  if (path.resolve(input.manifest.sourceRepoPath) !== input.sourceRepoPath) blockingReasons.push("Sandbox manifest sourceRepoPath does not match the linked repo.");
+  if (path.resolve(input.manifest.sandboxPath) !== input.sandboxPath) blockingReasons.push("Sandbox manifest sandboxPath does not match the requested path.");
+  if (input.manifest.packetId && input.parsed.packetId && input.manifest.packetId !== input.parsed.packetId) blockingReasons.push("Sandbox manifest packetId does not match the requested packet.");
+  return blockingReasons;
 }
 
 function guardResult(input: Partial<SandboxGuardResult> & { status: SandboxGuardResult["status"]; sandboxPath: string; summary: string }): SandboxGuardResult {

@@ -17,6 +17,8 @@ The first command is a dry-run that previews the approved command window and doe
 
 As of Auto-Advance v0C, CLI execution also requires a valid `.stax-sandbox.json` manifest from the sandbox copy guard before the command window can run. As of v0D, that manifest must include file integrity hashes and pass copied-file verification.
 
+As of v0E, approved sandbox patches refresh that manifest before post-patch proof commands run.
+
 ## What v0B Allows
 
 For the Brightspace Rollup install-integrity packet, the allowed commands are:
@@ -85,17 +87,15 @@ Coverage includes:
 ## Validation Results
 
 ```txt
-npm test -- --run tests/sandboxCommandWindow.test.ts tests/verificationEconomy.test.ts tests/commandEvidence.test.ts
-                                                      passed, 3 files / 28 tests
+npm test -- --run tests/sandboxPatchWindow.test.ts tests/sandboxGuard.test.ts tests/sandboxCommandWindow.test.ts
+                                                      passed, 3 files / 32 tests
 npm run typecheck                                     passed
-npm test                                              passed, 69 files / 360 tests
+npm test                                              passed, 71 files / 382 tests
 npm run rax -- eval                                   passed, 16/16
 npm run rax -- eval --regression                      passed, 47/47
 npm run rax -- eval --redteam                         passed, 9/9
-npm run rax -- auto-advance command-window brightspace-rollup --approve
-                                                      passed dry-run CLI smoke; no commands executed
+npm run rax -- auto-advance patch-window brightspace-rollup --workspace brightspacequizexporter --sandbox-path <tmp>/brightspace-sandbox --file tmp/.gitkeep --content "v0e-patch-window-smoke" --approve
+                                                      passed patch-window CLI smoke; post-patch manifest refreshed
 npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
                                                       passed smoke
-npm run rax -- chat --once "/prompt For brightspacequizexporter, create one bounded Codex patch prompt to repair the dependency install blocker and prove the ingest gate."
-                                                      passed smoke; top-level next step remains the bounded approval window
 ```

@@ -16,6 +16,13 @@ export const SandboxManifestFileSchema = z.object({
   sizeBytes: z.number().int().nonnegative()
 });
 
+export const SandboxPatchManifestRecordSchema = z.object({
+  patchEvidenceId: z.string().min(1),
+  createdAt: z.string().datetime(),
+  changedFiles: z.array(z.string().min(1)),
+  diffPath: z.string().min(1).optional()
+});
+
 export const SandboxManifestSchema = z.object({
   sandboxId: z.string().min(1),
   workspace: z.string().min(1).optional(),
@@ -26,6 +33,7 @@ export const SandboxManifestSchema = z.object({
   copiedFiles: z.number().int().nonnegative(),
   skippedEntries: z.array(z.string()),
   fileManifest: z.array(SandboxManifestFileSchema).optional(),
+  patchHistory: z.array(SandboxPatchManifestRecordSchema).default([]),
   guardVersion: z.enum(["v0C", "v0D"])
 });
 
@@ -44,5 +52,6 @@ export const SandboxGuardResultSchema = z.object({
 
 export type SandboxGuardInput = z.input<typeof SandboxGuardInputSchema>;
 export type SandboxManifestFile = z.infer<typeof SandboxManifestFileSchema>;
+export type SandboxPatchManifestRecord = z.infer<typeof SandboxPatchManifestRecordSchema>;
 export type SandboxManifest = z.infer<typeof SandboxManifestSchema>;
 export type SandboxGuardResult = z.infer<typeof SandboxGuardResultSchema>;

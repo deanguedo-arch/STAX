@@ -63,6 +63,7 @@ import { GeneralSuperiorityGate } from "./superiority/GeneralSuperiorityGate.js"
 import { StrategicBenchmark } from "./strategy/StrategicBenchmark.js";
 import { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";
 import { SandboxGuard } from "./verification/SandboxGuard.js";
+import { SandboxPatchWindow } from "./verification/SandboxPatchWindow.js";
 import { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
 
 type ParsedArgs = {
@@ -886,6 +887,51 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
     if (result.status === "blocked" || result.status === "approval_required") process.exitCode = 1;
     return;
   }
+  if (action === "patch-window") {
+    const packetName = args.positional[1] ?? "brightspace-rollup";
+    if (!["brightspace-rollup", "repair_rollup_install_integrity"].includes(packetName)) {
+      throw new Error("Usage: rax auto-advance patch-window brightspace-rollup --sandbox-path <path> --file <allowed-file> [--content text|--content-file path] --approve");
+    }
+    const workspace = await new WorkspaceContext().resolve({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+    });
+    const packet = new WorkPacketPlanner().brightspaceRollupInstallIntegrityPacket({
+      workspace: workspace.workspace,
+      repoPath: workspace.linkedRepoPath
+    });
+    const sandboxPath = typeof args.flags["sandbox-path"] === "string" ? args.flags["sandbox-path"] : undefined;
+    const filePath = typeof args.flags.file === "string" ? args.flags.file : undefined;
+    const contentFile = typeof args.flags["content-file"] === "string" ? args.flags["content-file"] : undefined;
+    const content = typeof args.flags.content === "string"
+      ? args.flags.content
+      : contentFile
+        ? await fs.readFile(contentFile, "utf8")
+        : undefined;
+    if (!sandboxPath || !filePath || content === undefined) {
+      throw new Error("Usage: rax auto-advance patch-window brightspace-rollup --sandbox-path <path> --file <allowed-file> [--content text|--content-file path] --approve");
+    }
+    if (!workspace.linkedRepoPath) throw new Error("Linked repo path is required before sandbox patching.");
+    const result = await new SandboxPatchWindow().run({
+      packet,
+      operations: [{
+        filePath,
+        content,
+        justification: typeof args.flags.justification === "string" ? args.flags.justification : undefined
+      }],
+      humanApprovedPatch: Boolean(args.flags.approve || args.flags["approved-patch"]),
+      sandboxPath,
+      linkedRepoPath: workspace.linkedRepoPath,
+      workspace: workspace.workspace
+    });
+    const stdout = JSON.stringify(result, null, 2);
+    logInfo(stdout);
+    const evidenceArgs = typeof args.flags.content === "string"
+      ? { ...args, flags: { ...args.flags, content: "[patch content omitted; see patch evidence diff]" } }
+      : args;
+    await recordCommandEvent("auto-advance patch-window", evidenceArgs, result.status === "patched", stdout, [result.diffPath, result.manifestPath].filter((item): item is string => Boolean(item)), undefined, workspace);
+    if (result.status === "blocked" || result.status === "approval_required") process.exitCode = 1;
+    return;
+  }
   if (action === "command-window") {
     const packetName = args.positional[1] ?? "brightspace-rollup";
     if (!["brightspace-rollup", "repair_rollup_install_integrity"].includes(packetName)) {
@@ -939,7 +985,7 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
     if (result.status === "blocked" || result.status === "stopped") process.exitCode = 1;
     return;
   }
-  throw new Error("Usage: rax auto-advance sandbox|command-window brightspace-rollup ...");
+  throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window brightspace-rollup ...");
 }
 
 function strategicExternalPrompt(): string {
@@ -1474,6 +1520,7 @@ function help(): void {
     "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
     "  rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]",
     "  rax auto-advance sandbox brightspace-rollup --sandbox-path <path> [--approve --create|--verify]",
+    "  rax auto-advance patch-window brightspace-rollup --sandbox-path <path> --file <allowed-file> [--content text|--content-file path] --approve",
     "  rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"

@@ -6,6 +6,8 @@ Auto-Advance v0D hardens sandbox trust before STAX gains any patch authority.
 
 The sandbox guard now writes a v0D `.stax-sandbox.json` manifest with SHA-256 integrity records for every copied file. The command window can execute only after the sandbox guard verifies both the manifest metadata and copied-file integrity.
 
+As of Auto-Advance v0E, an approved sandbox patch refreshes the v0D manifest and appends patch history so post-patch proof commands can still verify the sandbox before execution.
+
 ## What v0D Verifies
 
 ```txt
@@ -19,6 +21,7 @@ copied files were not replaced by symlinks
 unexpected source-like files are blocked
 symlinks introduced after creation are blocked
 manifest file paths cannot point outside the sandbox
+approved sandbox patches are recorded in patchHistory
 generated output paths such as dist/ and coverage/ are tolerated
 ```
 
@@ -55,12 +58,10 @@ Coverage includes:
 ## Validation Results
 
 ```txt
-npm test -- --run tests/sandboxGuard.test.ts
-                                                      passed, 1 file / 14 tests
-npm test -- --run tests/sandboxGuard.test.ts tests/sandboxCommandWindow.test.ts
-                                                      passed, 2 files / 24 tests
+npm test -- --run tests/sandboxPatchWindow.test.ts tests/sandboxGuard.test.ts tests/sandboxCommandWindow.test.ts
+                                                      passed, 3 files / 32 tests
 npm run typecheck                                     passed
-npm test                                              passed, 70 files / 374 tests
+npm test                                              passed, 71 files / 382 tests
 npm run rax -- eval                                   passed, 16/16
 npm run rax -- eval --regression                      passed, 47/47
 npm run rax -- eval --redteam                         passed, 9/9
