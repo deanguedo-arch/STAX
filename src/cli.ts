@@ -18,6 +18,7 @@ import { ProblemBenchmarkCaseSchema, ProblemBenchmarkCollectionSchema, type Prob
 import { collectLocalEvidence, formatLocalEvidence } from "./evidence/LocalEvidenceCollector.js";
 import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
+import { ControlAuditCaseRunner } from "./control/ControlAuditCaseRunner.js";
 import { SystemDoctor } from "./doctor/SystemDoctor.js";
 import { DisagreementCapture } from "./learning/DisagreementCapture.js";
 import { LearningEventSchema, LearningQueueTypeSchema } from "./learning/LearningEvent.js";
@@ -77,6 +78,7 @@ type ParsedArgs = {
 
 const knownCommands = new Set([
   "run",
+  "control-audit",
   "batch",
   "eval",
   "replay",
@@ -171,6 +173,52 @@ async function runCommand(args: ParsedArgs): Promise<void> {
   logInfo("");
   logInfo(`Run: ${output.runId}`);
   logInfo(`Run folder: ${path.join("runs", output.createdAt.slice(0, 10), output.runId)}`);
+}
+
+async function controlAuditCommand(args: ParsedArgs): Promise<void> {
+  const caseFile = typeof args.flags.case === "string" ? args.flags.case : undefined;
+  const caseId = typeof args.flags["case-id"] === "string" ? args.flags["case-id"] : undefined;
+  if (!caseFile) {
+    throw new Error("Usage: rax control-audit --case fixtures/control_audits/<case>.json [--case-id <id>] [--print json]");
+  }
+
+  const runtime = await createDefaultRuntime();
+  const workspace = await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
+  const runner = new ControlAuditCaseRunner(runtime);
+  const caseData = await runner.loadFromFile(caseFile, { caseId });
+  const run = await runner.runCase(caseData, {
+    workspace: workspace.workspace,
+    linkedRepoPath: workspace.linkedRepoPath
+  });
+
+  const success = run.result.validation.valid;
+  if (args.flags.print === "json") {
+    const payload = {
+      caseId: run.caseData.caseId,
+      prompt: run.prompt,
+      result: run.result
+    };
+    const stdout = JSON.stringify(payload, null, 2);
+    logInfo(stdout);
+    await recordCommandEvent("control-audit", args, success, stdout, [], run.result.runId, workspace);
+  } else {
+    const stdout = [
+      `Case: ${run.caseData.caseId}`,
+      "",
+      run.result.output,
+      "",
+      `Run: ${run.result.runId}`,
+      `Run folder: ${path.join("runs", run.result.createdAt.slice(0, 10), run.result.runId)}`
+    ].join("\n");
+    logInfo(stdout);
+    await recordCommandEvent("control-audit", args, success, stdout, [], run.result.runId, workspace);
+  }
+
+  if (!success) {
+    process.exitCode = 1;
+  }
 }
 
 async function batchCommand(args: ParsedArgs): Promise<void> {
@@ -1667,6 +1715,7 @@ function help(): void {
     "RAX commands:",
     '  rax run "input"',
     "  rax run --file input.txt",
+    "  rax control-audit --case fixtures/control_audits/wrong_repo_command_evidence.json [--case-id <id>] [--print json]",
     "  rax batch folder/",
     "  rax doctor [--workspace <name>] [--print json]",
     "  rax eval [--mode stax_fitness] [--redteam] [--regression]",
@@ -1712,6 +1761,8 @@ async function main(): Promise<void> {
     await chatCommand({ command: "chat", positional: [], flags: {} });
   } else if (args.command === "run") {
     await runCommand(args);
+  } else if (args.command === "control-audit") {
+    await controlAuditCommand(args);
   } else if (args.command === "batch") {
     await batchCommand(args);
   } else if (args.command === "doctor") {

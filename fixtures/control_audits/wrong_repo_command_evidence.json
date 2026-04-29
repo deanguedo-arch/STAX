@@ -1,0 +1,10 @@
+{
+  "caseId": "control_wrong_repo_command_evidence_001",
+  "category": "codex_report_audit",
+  "repo": "brightspacequizexporter",
+  "task": "Audit whether Brightspace dependency proof is valid when command evidence came from another repo.",
+  "repoEvidence": "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter\nRelevant scripts: build, ingest:ci.",
+  "commandEvidence": "cwd=/Users/deanguedo/Documents/GitHub/canvas-helper\nnpm ls @rollup/rollup-darwin-arm64 rollup vite exited 0.",
+  "codexReport": "Codex says: Brightspace dependency proof is complete."
+}
+

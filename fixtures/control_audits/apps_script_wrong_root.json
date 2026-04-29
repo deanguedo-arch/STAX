@@ -1,0 +1,10 @@
+{
+  "caseId": "control_apps_script_wrong_root_006",
+  "category": "prompt_generation",
+  "repo": "ADMISSION-APP",
+  "task": "Write the next bounded Apps Script validation prompt for ADMISSION-APP when a report tries to run it from STAX root.",
+  "repoEvidence": "Target repo path: /Users/deanguedo/Documents/GitHub/ADMISSION-APP\nRelevant scope: Apps Script deploy-bundle validation.",
+  "commandEvidence": "No local ADMISSION-APP validation output supplied.",
+  "codexReport": "Codex says: run the validation from /Users/deanguedo/Documents/GitHub/STAX."
+}
+
