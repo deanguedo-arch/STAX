@@ -9,6 +9,8 @@ import { PolicyCompiler } from "../policy/PolicyCompiler.js";
 import { PolicyLoader } from "../policy/PolicyLoader.js";
 import { PolicySelector } from "../policy/PolicySelector.js";
 import type { ModelProvider } from "../providers/ModelProvider.js";
+import { CommandEvidenceStore } from "../evidence/CommandEvidenceStore.js";
+import { EvidenceGroundingGate } from "../evidence/EvidenceGroundingGate.js";
 import { ProviderRouter } from "../routing/ProviderRouter.js";
 import { DEFAULT_CONFIG, type DeepPartial, type RaxConfig } from "../schemas/Config.js";
 import type { DetailLevel, RaxMode } from "../schemas/Config.js";
@@ -21,6 +23,8 @@ import { createRunId } from "../utils/ids.js";
 import { validateModeOutput } from "../utils/validators.js";
 import { CriticGate, type CriticReview } from "../validators/CriticGate.js";
 import { RepairController, type RepairResult } from "../validators/RepairController.js";
+import { RepoEvidencePackBuilder } from "../workspace/RepoEvidencePack.js";
+import type { RepoEvidencePack } from "../workspace/RepoEvidenceSchemas.js";
 import { ContextWindow } from "./ContextWindow.js";
 import { loadConfig, mergeConfig } from "./ConfigLoader.js";
 import { InstructionStack } from "./InstructionStack.js";
@@ -192,7 +196,9 @@ export class RaxRuntime {
     const effectiveRoute = options.mode
       ? { ...route, mode: options.mode, agent: this.router.agentForMode(options.mode) }
       : route;
-    const trimmedContext = this.contextWindow.trim(context);
+    const repoEvidencePack = await this.collectRepoEvidencePack(effectiveRoute.mode, options);
+    const contextWithEvidence = repoEvidencePack ? [...context, repoEvidencePack.markdown] : context;
+    const trimmedContext = this.contextWindow.trim(contextWithEvidence);
     const stack = await this.instructionStack.build({
       userInput: input,
       mode: effectiveRoute.mode,
@@ -229,13 +235,28 @@ export class RaxRuntime {
       mode: effectiveRoute.mode,
       output: primary.output
     });
+    const groundingIssues = await this.evidenceGroundingIssues({
+      mode: effectiveRoute.mode,
+      output: primary.output,
+      options,
+      repoEvidencePack
+    });
+    if (groundingIssues.length) {
+      criticReview = mergeCriticIssues(criticReview, groundingIssues);
+    }
     let repairResult: RepairResult | undefined;
     let repairPasses = 0;
     if (!criticReview.pass && criticReview.severity !== "critical") {
-      repairResult = new RepairController(this.config.limits.maxRepairPasses).repair(
-        primary.output,
-        criticReview.issuesFound
-      );
+      repairResult = await new RepairController(this.config.limits.maxRepairPasses).repairWithProvider({
+        output: primary.output,
+        issues: criticReview.issuesFound,
+        mode: effectiveRoute.mode,
+        originalInput: input,
+        provider: this.providerForRole("generator"),
+        config: this.config,
+        system: stack.system,
+        evidence: trimmedContext
+      });
       repairPasses = repairResult.attempted ? repairResult.repairCount : 0;
       if (repairResult.pass) {
         primary = {
@@ -246,6 +267,15 @@ export class RaxRuntime {
           mode: effectiveRoute.mode,
           output: primary.output
         });
+        const postRepairGroundingIssues = await this.evidenceGroundingIssues({
+          mode: effectiveRoute.mode,
+          output: primary.output,
+          options,
+          repoEvidencePack
+        });
+        if (postRepairGroundingIssues.length) {
+          criticReview = mergeCriticIssues(criticReview, postRepairGroundingIssues);
+        }
       }
     }
 
@@ -263,6 +293,11 @@ export class RaxRuntime {
       examples: [],
       detailLevel
     }, agentSequence, modelCalls);
+
+    const modelCriticIssues = this.modelCriticIssues(criticResult.output, this.providerForRole("critic").name);
+    if (modelCriticIssues.length) {
+      criticReview = mergeCriticIssues(criticReview, modelCriticIssues);
+    }
 
     if (!criticReview.pass) {
       const safeIssues = this.safeCriticMessages(criticReview.issuesFound);
@@ -675,6 +710,87 @@ export class RaxRuntime {
 
     return message;
   }
+
+  private async collectRepoEvidencePack(
+    mode: RaxMode,
+    options: RaxRunOptions
+  ): Promise<RepoEvidencePack | undefined> {
+    if (!options.linkedRepoPath || !isRepoFacingMode(mode)) return undefined;
+    try {
+      return await new RepoEvidencePackBuilder().build({
+        repoPath: options.linkedRepoPath,
+        workspace: options.workspace,
+        workspaceResolution: options.workspace ? "named_workspace" : "current_repo"
+      });
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async evidenceGroundingIssues(input: {
+    mode: RaxMode;
+    output: string;
+    options: RaxRunOptions;
+    repoEvidencePack?: RepoEvidencePack;
+  }): Promise<string[]> {
+    if (!input.repoEvidencePack || isMockLikeProvider(this.providerForRole("generator").name) || !isRepoFacingMode(input.mode)) {
+      return [];
+    }
+    const commandEvidence = await new CommandEvidenceStore(this.rootDir).list({
+      workspace: input.options.workspace
+    });
+    const grounding = new EvidenceGroundingGate().evaluate({
+      mode: input.mode,
+      output: input.output,
+      repoEvidence: input.repoEvidencePack,
+      commandEvidence
+    });
+    return grounding.unsupportedClaims.map((claim) => `Evidence grounding unsupported ${claim.kind}: ${claim.text}`);
+  }
+
+  private modelCriticIssues(output: string, providerName: string): string[] {
+    if (isMockLikeProvider(providerName)) return [];
+    const lower = output.toLowerCase();
+    const failed = /pass\/fail:\s*fail\b|^fail\b|\bverdict:\s*fail\b|\bnot pass\b/m.test(lower);
+    if (!failed) return [];
+    const issues = output
+      .split(/\r?\n/)
+      .filter((line) => /\b(issue|unsupported|fake|missing|required fix|invented|weak)\b/i.test(line))
+      .map((line) => line.replace(/^[-*]\s*/, "").trim())
+      .filter(Boolean)
+      .slice(0, 8);
+    return issues.length ? issues.map((issue) => `Model critic failure: ${issue}`) : ["Model critic failure: output did not pass adversarial critic."];
+  }
+}
+
+function mergeCriticIssues(review: CriticReview, issues: string[]): CriticReview {
+  const merged = Array.from(new Set([...review.issuesFound, ...issues]));
+  return {
+    ...review,
+    pass: false,
+    severity: review.severity === "critical" ? "critical" : "major",
+    issuesFound: merged,
+    requiredFixes: Array.from(new Set([...review.requiredFixes, ...issues.map((issue) => `Fix: ${issue}`)])),
+    policyViolations: Array.from(new Set([...review.policyViolations, ...issues])),
+    confidence: "high"
+  };
+}
+
+function isRepoFacingMode(mode: RaxMode): boolean {
+  return [
+    "planning",
+    "code_review",
+    "codex_audit",
+    "project_brain",
+    "test_gap_audit",
+    "policy_drift",
+    "model_comparison",
+    "strategic_deliberation"
+  ].includes(mode);
+}
+
+function isMockLikeProvider(name: string): boolean {
+  return name === "mock" || name.startsWith("mock-");
 }
 
 export async function createDefaultRuntime(

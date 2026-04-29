@@ -10,6 +10,10 @@ export type LoadedPolicy = {
 export class PolicyLoader {
   constructor(private rootDir = process.cwd()) {}
 
+  getRootDir(): string {
+    return this.rootDir;
+  }
+
   async load(policyId: string): Promise<LoadedPolicy> {
     const primary = path.join(this.rootDir, "policies", `${policyId}.md`);
     const fallback = path.join(process.cwd(), "policies", `${policyId}.md`);

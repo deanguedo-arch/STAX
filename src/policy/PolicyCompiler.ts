@@ -18,7 +18,7 @@ export class PolicyCompiler {
       input.userInput
     );
     const loaded = await Promise.all(selected.map((policy) => this.loader.load(policy)));
-    const modeContract = await loadMarkdown(`modes/${input.mode}.mode.md`, process.cwd());
+    const modeContract = await loadMarkdown(`modes/${input.mode}.mode.md`, this.loader.getRootDir());
     const examples = input.retrievedExamples
       .map((example) => `Input: ${example.input}\nIdeal Output:\n${example.idealOutput}`)
       .join("\n\n");

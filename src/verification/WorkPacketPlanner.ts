@@ -52,6 +52,8 @@ export class WorkPacketPlanner {
         { id: "package_json_mutation", description: "package.json mutation", kind: "file_mutation", files: ["package.json"] }
       ],
       allowedAfterApproval: [
+        "npm ci in verified sandbox if node_modules is missing",
+        "npm install --package-lock-only in verified sandbox only if lockfile repair is explicitly needed",
         "npm ls @rollup/rollup-darwin-arm64 rollup vite",
         "repair package-lock/package.json only if needed",
         "preserve/resolve tmp/.gitkeep",

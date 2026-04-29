@@ -308,6 +308,7 @@ async function buildFileManifest(sandboxPath: string): Promise<SandboxManifestFi
       if (nextRelative === MANIFEST_FILE) continue;
       const absolutePath = path.join(currentPath, entry.name);
       if (entry.isDirectory()) {
+        if (isAllowedGeneratedPath(nextRelative)) continue;
         await walk(absolutePath, nextRelative);
         continue;
       }
@@ -362,6 +363,7 @@ async function verifyFileManifest(sandboxPath: string, manifest: SandboxManifest
   await scanCurrentSandbox(sandboxPath, async (relativePath, stat) => {
     if (relativePath === MANIFEST_FILE) return;
     if (stat.isSymbolicLink()) {
+      if (isAllowedGeneratedPath(relativePath) && await symlinkStaysInsideSandbox(sandboxPath, relativePath)) return;
       failures.push(`Sandbox contains a symlink after creation: ${relativePath}.`);
       return;
     }
@@ -398,8 +400,18 @@ async function scanCurrentSandbox(
 
 function isAllowedGeneratedPath(relativePath: string): boolean {
   const normalized = relativePath.replace(/\\/g, "/");
-  return /^(dist|build|coverage|runs|evidence|\.vite|\.turbo)(\/|$)/.test(normalized)
+  return /^(node_modules|dist|build|coverage|runs|evidence|\.vite|\.turbo)(\/|$)/.test(normalized)
     || /\.tsbuildinfo$/i.test(normalized);
+}
+
+async function symlinkStaysInsideSandbox(sandboxPath: string, relativePath: string): Promise<boolean> {
+  try {
+    const resolved = await fs.realpath(path.join(sandboxPath, relativePath));
+    const relative = path.relative(path.resolve(sandboxPath), resolved);
+    return !relative.startsWith("..") && !path.isAbsolute(relative);
+  } catch {
+    return false;
+  }
 }
 
 function isSafeManifestRelativePath(relativePath: string): boolean {

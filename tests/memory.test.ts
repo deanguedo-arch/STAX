@@ -9,11 +9,22 @@ describe("MemoryStore and Retrieval", () => {
   it("stores and retrieves local memory records", async () => {
     const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-memory-"));
     const store = new MemoryStore(rootDir);
-    await store.add("project", "RAX uses mock mode first.", ["provider"]);
+    const record = await store.add("project", "RAX uses mock mode first.", ["provider"]);
+    await store.approve(record.id);
 
     const retrieval = new Retrieval(store);
     const results = await retrieval.retrieve("mock");
 
     expect(results).toEqual(["RAX uses mock mode first."]);
+  });
+
+  it("keeps simple memory writes pending by default", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-memory-"));
+    const store = new MemoryStore(rootDir);
+    await store.add("project", "Raw model output should not be approved.", ["poison"]);
+
+    const results = await store.search("poison");
+
+    expect(results).toEqual([]);
   });
 });

@@ -21,6 +21,16 @@ export class PlannerAgent implements Agent {
       timeoutMs: input.config.model.timeoutMs
     });
 
+    if (!isMockLikeProvider(input.provider.name)) {
+      return {
+        agent: this.name,
+        schema: input.mode,
+        confidence: "medium",
+        metadata: { providerText: providerResponse.text, providerBacked: true },
+        output: providerResponse.text.trim()
+      };
+    }
+
     if (input.mode === "prompt_factory") {
       return {
         agent: this.name,
@@ -134,4 +144,8 @@ export class PlannerAgent implements Agent {
       ].join("\n")
     };
   }
+}
+
+function isMockLikeProvider(name: string): boolean {
+  return name === "mock" || name.startsWith("mock-");
 }

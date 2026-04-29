@@ -16,6 +16,16 @@ export class CriticAgent implements Agent {
       timeoutMs: input.config.model.timeoutMs
     });
 
+    if (!isMockLikeProvider(input.provider.name)) {
+      return {
+        agent: this.name,
+        schema: "critic",
+        confidence: "medium",
+        metadata: { providerText: providerResponse.text, providerBacked: true },
+        output: providerResponse.text.trim()
+      };
+    }
+
     const issues = /probably|clearly shows|proves that/i.test(input.input)
       ? "Potential unsupported interpretation."
       : "None identified.";
@@ -34,4 +44,8 @@ export class CriticAgent implements Agent {
       ].join("\n")
     };
   }
+}
+
+function isMockLikeProvider(name: string): boolean {
+  return name === "mock" || name.startsWith("mock-");
 }

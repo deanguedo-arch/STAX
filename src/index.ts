@@ -32,5 +32,6 @@ export { CheckpointGate } from "./verification/CheckpointGate.js";
 export { VerificationEconomy } from "./verification/VerificationEconomy.js";
 export { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
 export { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";
+export { SandboxDependencyBootstrap } from "./verification/SandboxDependencyBootstrap.js";
 export { SandboxGuard } from "./verification/SandboxGuard.js";
 export { SandboxPatchWindow } from "./verification/SandboxPatchWindow.js";

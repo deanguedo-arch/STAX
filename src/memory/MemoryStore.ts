@@ -31,7 +31,7 @@ export class MemoryStore {
             type: scopeOrInput,
             content: text ?? "",
             tags,
-            approved: true,
+            approved: false,
             confidence: "medium"
           }
         : scopeOrInput;

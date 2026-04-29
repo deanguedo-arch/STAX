@@ -1,3 +1,6 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { PolicyCompiler } from "../src/policy/PolicyCompiler.js";
 import { ConflictResolver } from "../src/policy/ConflictResolver.js";
@@ -54,6 +57,29 @@ describe("policy engine", () => {
     expect(bundle.compiledSystemPrompt).toContain("# RAX Core");
     expect(bundle.outputContract).toContain("planning");
     expect(bundle.forbiddenBehaviors).toContain("invent facts");
+  });
+
+  it("loads mode contracts from the configured root directory instead of process.cwd", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-policy-root-"));
+    await fs.mkdir(path.join(rootDir, "policies"), { recursive: true });
+    await fs.mkdir(path.join(rootDir, "modes"), { recursive: true });
+    for (const policy of ["core_policy", "evidence_policy", "uncertainty_policy", "mode_policy"]) {
+      await fs.writeFile(path.join(rootDir, "policies", `${policy}.md`), `# ${policy}\nVersion: test-root\n`, "utf8");
+    }
+    await fs.writeFile(path.join(rootDir, "modes", "planning.mode.md"), "# Planning Mode\nROOT_DIR_MARKER\n", "utf8");
+    const compiler = new PolicyCompiler(new PolicyLoader(rootDir), new PolicySelector());
+
+    const bundle = await compiler.compile({
+      mode: "planning",
+      risk: lowRisk,
+      boundaryMode: "allow",
+      userInput: "Plan the work.",
+      retrievedMemory: [],
+      retrievedExamples: []
+    });
+
+    expect(bundle.outputContract).toContain("ROOT_DIR_MARKER");
+    expect(bundle.policiesApplied).toContain("core_policy@test-root");
   });
 
   it("preserves higher-priority evidence policy when user asks for assumptions", () => {

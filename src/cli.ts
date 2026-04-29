@@ -63,6 +63,7 @@ import { ReviewDispositionSchema, ReviewRiskLevelSchema } from "./review/ReviewS
 import { GeneralSuperiorityGate } from "./superiority/GeneralSuperiorityGate.js";
 import { StrategicBenchmark } from "./strategy/StrategicBenchmark.js";
 import { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";
+import { SandboxDependencyBootstrap } from "./verification/SandboxDependencyBootstrap.js";
 import { SandboxGuard } from "./verification/SandboxGuard.js";
 import { SandboxPatchWindow } from "./verification/SandboxPatchWindow.js";
 import { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
@@ -996,6 +997,37 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
     if (result.status === "blocked" || result.status === "stopped") process.exitCode = 1;
     return;
   }
+  if (action === "bootstrap") {
+    const packetName = args.positional[1] ?? "brightspace-rollup";
+    if (!["brightspace-rollup", "repair_rollup_install_integrity"].includes(packetName)) {
+      throw new Error("Usage: rax auto-advance bootstrap brightspace-rollup --sandbox-path <path> [--approve --execute] [--repair-lockfile]");
+    }
+    const workspace = await new WorkspaceContext().resolve({
+      workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+    });
+    if (!workspace.linkedRepoPath) throw new Error("Linked repo path is required before sandbox dependency bootstrap.");
+    const packet = new WorkPacketPlanner().brightspaceRollupInstallIntegrityPacket({
+      workspace: workspace.workspace,
+      repoPath: workspace.linkedRepoPath
+    });
+    const sandboxPath = typeof args.flags["sandbox-path"] === "string" ? args.flags["sandbox-path"] : undefined;
+    if (!sandboxPath) throw new Error("Usage: rax auto-advance bootstrap brightspace-rollup --sandbox-path <path> [--approve --execute] [--repair-lockfile]");
+    const result = await new SandboxDependencyBootstrap().run({
+      packet,
+      workspace: workspace.workspace,
+      sandboxPath,
+      linkedRepoPath: workspace.linkedRepoPath,
+      humanApprovedBootstrap: Boolean(args.flags.approve || args.flags["approve-bootstrap"] || args.flags["approved-bootstrap"]),
+      execute: Boolean(args.flags.execute),
+      repairLockfile: Boolean(args.flags["repair-lockfile"]),
+      commands: typeof args.flags.command === "string" ? [args.flags.command] : undefined
+    });
+    const stdout = JSON.stringify(result, null, 2);
+    logInfo(stdout);
+    await recordCommandEvent("auto-advance bootstrap", args, result.status === "bootstrapped" || result.status === "ready", stdout, result.evidenceIds, undefined, workspace);
+    if (result.status === "blocked" || result.status === "stopped" || result.status === "approval_required") process.exitCode = 1;
+    return;
+  }
   if (action === "run-packet") {
     const packetName = args.positional[1] ?? "brightspace-rollup";
     if (!["brightspace-rollup", "repair_rollup_install_integrity"].includes(packetName)) {
@@ -1059,6 +1091,28 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
       : [];
     const maxLoops = typeof args.flags["max-loops"] === "string" ? Number(args.flags["max-loops"]) : 100;
     const execute = !dryRun && sandbox.allowedForCommandWindow;
+    const approveBootstrap = Boolean(args.flags["approve-bootstrap"] || args.flags["approved-bootstrap"] || args.flags.approve);
+    const bootstrapResult = args.flags.bootstrap === true
+      ? await new SandboxDependencyBootstrap().run({
+          packet,
+          workspace: workspace.workspace,
+          sandboxPath,
+          linkedRepoPath: workspace.linkedRepoPath,
+          humanApprovedBootstrap: approveBootstrap,
+          execute: execute && approveBootstrap,
+          repairLockfile: Boolean(args.flags["repair-lockfile"])
+        })
+      : undefined;
+    if (bootstrapResult && !["bootstrapped", "ready"].includes(bootstrapResult.status)) {
+      const stdout = JSON.stringify({ sandbox, bootstrap: bootstrapResult, loop: null }, null, 2);
+      logInfo(stdout);
+      await recordCommandEvent("auto-advance run-packet", args, false, stdout, [
+        sandbox.manifestPath,
+        ...bootstrapResult.evidenceIds
+      ].filter((item): item is string => Boolean(item)), undefined, workspace);
+      process.exitCode = 1;
+      return;
+    }
     const result = await new SandboxLoopRunner().run({
       packet,
       mode: dryRun ? "dry_run" : operations.length ? "sandbox_patch" : "sandbox_commands",
@@ -1072,20 +1126,21 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
       commands: typeof args.flags.command === "string" ? [args.flags.command] : undefined,
       budget: { maxLoops: Number.isFinite(maxLoops) && maxLoops > 0 ? maxLoops : 100 }
     });
-    const stdout = JSON.stringify({ sandbox, loop: result }, null, 2);
+    const stdout = JSON.stringify({ sandbox, bootstrap: bootstrapResult, loop: result }, null, 2);
     logInfo(stdout);
     const evidenceArgs = typeof args.flags.content === "string"
       ? { ...args, flags: { ...args.flags, content: "[patch content omitted; see patch evidence diff]" } }
       : args;
     await recordCommandEvent("auto-advance run-packet", evidenceArgs, result.status !== "blocked", stdout, [
       sandbox.manifestPath,
+      ...(bootstrapResult?.evidenceIds ?? []),
       result.chainResult?.patchDiffPath,
       ...(result.chainResult?.evidenceIds ?? [])
     ].filter((item): item is string => Boolean(item)), undefined, workspace);
     if (result.status === "blocked") process.exitCode = 1;
     return;
   }
-  throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window|run-packet brightspace-rollup ...");
+  throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window|bootstrap|run-packet brightspace-rollup ...");
 }
 
 function strategicExternalPrompt(): string {
@@ -1623,7 +1678,8 @@ function help(): void {
     "  rax auto-advance sandbox brightspace-rollup --sandbox-path <path> [--approve --create|--verify]",
     "  rax auto-advance patch-window brightspace-rollup --sandbox-path <path> --file <allowed-file> [--content text|--content-file path] --approve",
     "  rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]",
-    "  rax auto-advance run-packet brightspace-rollup --sandbox-path <path> [--approve-sandbox --approve-window] [--file <allowed-file> --content text|--content-file path]",
+    "  rax auto-advance bootstrap brightspace-rollup --sandbox-path <path> [--approve --execute] [--repair-lockfile]",
+    "  rax auto-advance run-packet brightspace-rollup --sandbox-path <path> [--approve-sandbox --approve-window] [--bootstrap --approve-bootstrap] [--file <allowed-file> --content text|--content-file path]",
     "  rax mine prompt|round|report|requirements|triage|next",
     "  rax review route|inbox|digest|staged|blocked|all|show|batch|ledger|stats"
   ].join("\n"));
