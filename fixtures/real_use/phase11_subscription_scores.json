@@ -1,0 +1,86 @@
+{
+  "campaignId": "phase10_real_workflow_10_tasks",
+  "scorer": "codex_browser_subscription_assisted",
+  "entries": [
+    {
+      "taskId": "app_admissions_risk_001",
+      "staxScore": 7,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "ChatGPT gave stronger risk model; STAX remained generic but safe."
+    },
+    {
+      "taskId": "app_admissions_proof_gap_002",
+      "staxScore": 6,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "ChatGPT provided clearer command inventory flow; STAX stayed high-level."
+    },
+    {
+      "taskId": "app_admissions_bounded_prompt_003",
+      "staxScore": 5,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "ChatGPT delivered a more bounded prompt with explicit stop condition."
+    },
+    {
+      "taskId": "brightspace_risk_004",
+      "staxScore": 7,
+      "chatgptScore": 2,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": true,
+      "note": "ChatGPT targeted the wrong repo (critical miss)."
+    },
+    {
+      "taskId": "brightspace_fake_complete_005",
+      "staxScore": 7,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Both rejected fake-complete; ChatGPT prompt packet was more actionable."
+    },
+    {
+      "taskId": "brightspace_bounded_prompt_006",
+      "staxScore": 8,
+      "chatgptScore": 8,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Both were strongly scoped and safety-aware."
+    },
+    {
+      "taskId": "canvas_risk_007",
+      "staxScore": 7,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "ChatGPT was more explicit on rendered-proof constraints."
+    },
+    {
+      "taskId": "canvas_visual_proof_008",
+      "staxScore": 6,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "STAX response was generic; ChatGPT tied directly to visual proof gap."
+    },
+    {
+      "taskId": "canvas_fake_complete_009",
+      "staxScore": 9,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Both cleanly audited missing screenshot/command proof."
+    },
+    {
+      "taskId": "canvas_bounded_prompt_010",
+      "staxScore": 6,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "ChatGPT produced a tighter bounded prompt and explicit proof artifact."
+    }
+  ]
+}

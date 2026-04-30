@@ -214,9 +214,14 @@ Next implementation slice should be:
 
 ```txt
 Phase 12:
-- run Phase 11 comparison with an actual non-mock generator provider (openai or ollama)
-- record provider-backed campaign artifacts without status inflation
-- promote only repeated provider-backed wins into stronger regression/redteam cases
+- run browser-assisted capture prep (`npm run campaign:phase11:prepare`)
+- score all 10 cases in fixtures/real_use/phase11_subscription_capture.json using ChatGPT subscription outputs
+- rerun `npm run campaign:phase11` and record scored artifacts
+- promote only repeated STAX wins with zero STAX critical misses into stronger regression/redteam cases
+
+Phase 13 (optional):
+- run `npm run campaign:phase11:provider` only if API or local ollama access becomes available
+- compare provider-backed campaign outputs for specificity and cleanup burden
 ```
 
 ## Execution Status (Current)
@@ -289,6 +294,16 @@ Phase 11:
 - comparison unit tests added (`tests/providerCampaignComparison.test.ts`)
 - campaign script added (`npm run campaign:phase11`)
 - latest run generated comparison artifacts and correctly blocked non-mock promotion due missing provider credentials (`provider_run_blocked`)
+
+Phase 12:
+- subscription baseline comparison module added (`src/campaign/SubscriptionCampaignComparison.ts`)
+- browser-assisted capture prep script added (`scripts/preparePhase11BrowserCapture.ts`)
+- phase11 subscription comparison runner added (`scripts/runPhase11SubscriptionComparison.ts`)
+- subscription comparison unit tests added (`tests/subscriptionCampaignComparison.test.ts`)
+- campaign prep script added (`npm run campaign:phase11:prepare`)
+- campaign script added (`npm run campaign:phase11:subscription`)
+- capture template bootstrapped at `fixtures/real_use/phase11_subscription_capture.json`
+- latest run generated awaiting-scores artifacts without requiring API keys
 ```
 
 Validation evidence (latest pass):
