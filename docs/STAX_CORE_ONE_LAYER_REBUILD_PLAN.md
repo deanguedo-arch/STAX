@@ -213,10 +213,10 @@ upgrade weak evidence to verified truth
 Next implementation slice should be:
 
 ```txt
-Phase 10:
-- run a 10-task real workflow campaign using STAX as project-control layer first
-- track cleanup burden reduction, fake-complete catches, and next-prompt effectiveness
-- convert repeated misses into regression/redteam eval cases
+Phase 12:
+- run Phase 11 comparison with an actual non-mock generator provider (openai or ollama)
+- record provider-backed campaign artifacts without status inflation
+- promote only repeated provider-backed wins into stronger regression/redteam cases
 ```
 
 ## Execution Status (Current)
@@ -275,6 +275,20 @@ Phase 9:
 - CI workflow added (`.github/workflows/staxcore-strict.yml`) to run strict gate and upload release artifacts
 - strict-vs-standard guardrail doc added (`docs/STAXCORE_RELEASE_PROFILES.md`)
 - CLI strict release-gate tests added to prove strict mode fails when eval flags are missing
+
+Phase 10:
+- 10-task real workflow campaign fixture added (`fixtures/real_use/phase10_real_workflow_10_tasks.json`)
+- campaign runner added (`scripts/runPhase10Campaign.ts`) with artifact outputs under `runs/real_use_campaign/`
+- campaign script added (`npm run campaign:phase10`)
+- repeated generic next-action miss converted into regression guard (`evals/regression/project_control_bounded_prompt_not_generic.json`)
+- latest campaign run completed across 3 repos; status remained `real_use_candidate` because generator provider was mock
+
+Phase 11:
+- mock-vs-provider comparison module added (`src/campaign/ProviderCampaignComparison.ts`)
+- phase11 comparison runner added (`scripts/runPhase11ProviderComparison.ts`)
+- comparison unit tests added (`tests/providerCampaignComparison.test.ts`)
+- campaign script added (`npm run campaign:phase11`)
+- latest run generated comparison artifacts and correctly blocked non-mock promotion due missing provider credentials (`provider_run_blocked`)
 ```
 
 Validation evidence (latest pass):

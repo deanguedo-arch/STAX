@@ -1,0 +1,20 @@
+{
+  "id": "project_control_bounded_prompt_not_generic",
+  "mode": "project_control",
+  "input": "Task: Create one bounded Codex prompt for app-admissions based only on current repo evidence. Include files to inspect, one command to run, acceptance criteria, and a stop condition.\n\nRepo Evidence: Target repo path: /Users/deanguedo/Documents/GitHub/ADMISSION-APP\n\nCommand Evidence: No local STAX command output supplied.\n\nCodex Report: None supplied.",
+  "expectedProperties": [],
+  "forbiddenPatterns": [
+    "Collect the smallest local evidence packet: relevant diff, exact command output, and first remaining failure if any."
+  ],
+  "requiredSections": [
+    "## Verdict",
+    "## Verified",
+    "## Weak / Provisional",
+    "## Unverified",
+    "## Risk",
+    "## One Next Action",
+    "## Codex Prompt if needed"
+  ],
+  "critical": false,
+  "tags": ["project_control", "bounded_prompt", "anti_generic"]
+}

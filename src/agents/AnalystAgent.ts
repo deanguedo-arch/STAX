@@ -705,6 +705,9 @@ type ProjectControlSignals = {
   canvasBuildStudioClaim: boolean;
   ualbertaFixtureCommandKnown: boolean;
   canvasHelper: boolean;
+  boundedPromptRequest: boolean;
+  repoRiskRequest: boolean;
+  proofGapRequest: boolean;
 };
 
 function parseProjectControlPacket(input: string): ProjectControlPacket {
@@ -779,7 +782,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     inventedPathRisk,
     codexClaimsTestsPassed,
     codexClaimsComplete,
-    admissionApp: /ADMISSION-APP|admissions checker|admissions pipeline/i.test(combined),
+    admissionApp: /ADMISSION-APP|admissions checker|admissions pipeline|app-admissions|admission-app/i.test(combined),
     buildPagesClaim: /build:pages|Pages build|tools\/build-pages\.js/i.test(combined),
     iosReleaseClaim: /TestFlight|App Store|iOS wrapper|IOS_RELEASE_GATE|mobile\/ios-wrapper|release readiness|submit to TestFlight/i.test(combined),
     sheetsPublishClaim: /SYNC_ALL|SYNC_PROGRAMS|publish to Sheets|Google Sheets|sheets_sync|target Sheet/i.test(combined),
@@ -796,7 +799,10 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     sheetsValidationCommandKnown: /validate-sync-surface\.ps1/i.test(combined),
     canvasBuildStudioClaim: /build:studio|studio build/i.test(combined),
     ualbertaFixtureCommandKnown: /pipeline\/check_ualberta_url_map_fixtures\.py/i.test(combined),
-    canvasHelper: /canvas-helper|Sports Wellness|sportswellness/i.test(combined)
+    canvasHelper: /canvas-helper|Sports Wellness|sportswellness/i.test(combined),
+    boundedPromptRequest: /create one bounded codex prompt|bounded codex prompt/i.test(packet.task),
+    repoRiskRequest: /biggest current operating risk|what is risky in/i.test(packet.task),
+    proofGapRequest: /what tests.*proof is missing|proof gap|what tests or proof commands/i.test(packet.task)
   };
 
   const verified: string[] = [];
@@ -1134,6 +1140,33 @@ function projectControlNextAction(input: ProjectControlSignals): string {
       return "In /Users/deanguedo/Documents/GitHub/STAX, rerun npm test and report exact command output, exit code, and first failure before treating the rollout as proven.";
     }
     return "Ask Codex to return the exact command output for npm test or rerun the relevant local test command before treating the report as proven.";
+  }
+  if (input.boundedPromptRequest && input.brightspace) {
+    return "Create a Brightspace-only Codex packet scoped to dependency/install integrity first: inspect package-lock/package scripts, run npm ls @rollup/rollup-darwin-arm64 rollup vite, then run npm run build and npm run ingest:ci with exact output and first failure.";
+  }
+  if (input.boundedPromptRequest && input.admissionApp) {
+    return "Create an ADMISSION-APP bounded Codex packet that inspects package scripts and runs npm run build:pages with exact output before any completion claim.";
+  }
+  if (input.boundedPromptRequest && input.canvasHelper) {
+    return "Create a canvas-helper bounded Codex packet scoped to Sports Wellness evidence: inspect projects/sportswellness/workspace files, request rendered preview proof, and report the first visible layout failure before claiming fixed.";
+  }
+  if (input.repoRiskRequest && input.brightspace) {
+    return "Confirm Brightspace gate status with npm run build followed by npm run ingest:ci, then report the first remaining failure or passing output.";
+  }
+  if (input.repoRiskRequest && input.admissionApp) {
+    return "Confirm app-admissions operating risk with npm run build:pages and report exact output before any readiness claim.";
+  }
+  if (input.repoRiskRequest && input.canvasHelper) {
+    return "Confirm canvas-helper risk with rendered preview evidence for Sports Wellness (text fit, symmetry, containment) before any “fixed” claim.";
+  }
+  if (input.proofGapRequest && input.brightspace) {
+    return "List the discovered Brightspace test/ingest surfaces and run the next missing proof gate (npm run ingest:ci), then report the first failure.";
+  }
+  if (input.proofGapRequest && input.admissionApp) {
+    return "List known app-admissions scripts and run npm run build:pages as the next proof command, then report the first failure.";
+  }
+  if (input.proofGapRequest && input.canvasHelper) {
+    return "List known canvas-helper proof surfaces and request/render one concrete visual proof artifact for Sports Wellness before closing the task.";
   }
   return "Collect the smallest local evidence packet: relevant diff, exact command output, and first remaining failure if any.";
 }

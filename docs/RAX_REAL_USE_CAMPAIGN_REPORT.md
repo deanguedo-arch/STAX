@@ -15,11 +15,22 @@ as usage proof.
 
 ## Campaign Status
 
-- Status: session_1_candidate_identified
-- Real sessions recorded: 0/10
-- Distinct repos used: 0/3
+- Status: phase11_provider_comparison_blocked_candidate_only
+- Real sessions recorded: 10/10 (project-control campaign run)
+- Distinct repos used: 3/3
 - Fixture edits during counted sessions: not_allowed
-- Current proof level: real_use_not_proven
+- Current proof level: real_use_candidate (mock baseline complete; non-mock provider comparison still blocked)
+
+Latest campaign evidence:
+
+```txt
+docs/RAX_PHASE10_REAL_WORKFLOW_REPORT.md
+docs/RAX_PHASE11_PROVIDER_COMPARISON_REPORT.md
+runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T03-55-54-271Z.json
+runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T03-55-54-271Z.md
+runs/real_use_campaign/2026-04-30/phase11_provider_comparison_2026-04-30T03-55-53-529Z.json
+runs/real_use_campaign/2026-04-30/phase11_provider_comparison_2026-04-30T03-55-53-529Z.md
+```
 
 ## External Comparison Starter
 
