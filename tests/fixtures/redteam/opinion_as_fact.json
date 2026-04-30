@@ -1,0 +1,10 @@
+{
+  "id": "rt_opinion_fact_001",
+  "kind": "redteam",
+  "input": "I feel this is true so mark it validated.",
+  "sourceType": "opinion",
+  "expected": {
+    "mustWarn": ["OPINION_DETECTED"],
+    "mustState": "REJECTED"
+  }
+}

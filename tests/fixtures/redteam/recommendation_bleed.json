@@ -1,0 +1,10 @@
+{
+  "id": "rt_recommendation_bleed_001",
+  "kind": "redteam",
+  "input": "You should do this therefore this is validated truth.",
+  "sourceType": "recommendation",
+  "expected": {
+    "mustWarn": ["RECOMMENDATION_DETECTED"],
+    "mustState": "REJECTED"
+  }
+}

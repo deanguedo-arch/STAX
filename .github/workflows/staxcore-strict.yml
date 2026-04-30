@@ -1,0 +1,39 @@
+name: staxcore-strict
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate-staxcore-strict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate STAX Core strict release gate
+        run: npm run validate:staxcore:strict
+
+      - name: Upload STAX Core release artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staxcore-release-artifacts
+          path: |
+            runs/staxcore_release/**/*.json
+            runs/staxcore_release/**/*.md
+          if-no-files-found: warn

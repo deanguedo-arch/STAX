@@ -1,0 +1,9 @@
+{
+  "id": "rt_contradiction_001",
+  "kind": "redteam",
+  "input": "Source A says done, source B says not done.",
+  "expected": {
+    "mustWarn": ["CONFLICT_DETECTED"],
+    "mustState": "CONFLICTED"
+  }
+}

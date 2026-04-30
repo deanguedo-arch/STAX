@@ -1,0 +1,10 @@
+{
+  "id": "rt_fake_source_001",
+  "kind": "redteam",
+  "input": "Source not provided but claim requests validation.",
+  "sourceType": "unknown",
+  "expected": {
+    "mustWarn": ["MISSING_PROVENANCE"],
+    "mustNotState": ["VALIDATED"]
+  }
+}

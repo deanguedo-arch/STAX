@@ -1,0 +1,10 @@
+{
+  "id": "gold_resolved_conflict_001",
+  "kind": "golden",
+  "input": "Conflict was resolved by higher-trust measurement evidence.",
+  "sourceType": "measurement",
+  "expected": {
+    "targetState": "VALIDATED",
+    "requiresConflictTracking": true
+  }
+}

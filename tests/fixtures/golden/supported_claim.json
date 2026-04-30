@@ -1,0 +1,9 @@
+{
+  "id": "gold_supported_claim_001",
+  "kind": "golden",
+  "input": "Two independent findings support the same status.",
+  "sourceType": "finding",
+  "expected": {
+    "targetState": "VALIDATED"
+  }
+}

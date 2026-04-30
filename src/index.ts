@@ -35,3 +35,4 @@ export { SandboxCommandWindow } from "./verification/SandboxCommandWindow.js";
 export { SandboxDependencyBootstrap } from "./verification/SandboxDependencyBootstrap.js";
 export { SandboxGuard } from "./verification/SandboxGuard.js";
 export { SandboxPatchWindow } from "./verification/SandboxPatchWindow.js";
+export * as StaxCore from "./staxcore/index.js";

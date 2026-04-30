@@ -1,0 +1,10 @@
+{
+  "id": "gold_clean_measurement_001",
+  "kind": "golden",
+  "input": "Measured flow is 120 GPM at 10:00 UTC.",
+  "sourceType": "measurement",
+  "expected": {
+    "targetState": "VALIDATED",
+    "maxConfidenceCapCount": 2
+  }
+}

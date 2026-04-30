@@ -1,8 +1,10 @@
 #!/usr/bin/env node
+import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import { promisify } from "node:util";
 import { ChatSession } from "./chat/ChatSession.js";
 import { createCorrection, promoteCorrection } from "./core/Corrections.js";
 import { loadConfig, mergeConfig } from "./core/ConfigLoader.js";
@@ -69,6 +71,20 @@ import { SandboxGuard } from "./verification/SandboxGuard.js";
 import { SandboxPatchWindow } from "./verification/SandboxPatchWindow.js";
 import { WorkPacketPlanner } from "./verification/WorkPacketPlanner.js";
 import { SandboxLoopRunner } from "./loop/SandboxLoopRunner.js";
+import { canonicalReplayInputs } from "./staxcore/core/replay/canonicalReplayInputs.js";
+import { replayPipeline } from "./staxcore/core/replay/replayPipeline.js";
+import {
+  evaluateReleaseGate,
+  type ReleaseGateEvidence
+} from "./staxcore/core/release/ReleaseGate.js";
+import { scoreDoctrineCompliance } from "./staxcore/core/release/DoctrineCompliance.js";
+import { ReleaseArtifactWriter } from "./staxcore/core/release/ReleaseArtifactWriter.js";
+import { ReleaseArtifactStore } from "./staxcore/core/release/ReleaseArtifactStore.js";
+import {
+  buildPromotionReadinessSummary,
+  summarizeDoctrineTrend
+} from "./staxcore/core/release/DoctrineTrend.js";
+import { renderReleaseMarkdownReport } from "./staxcore/core/release/ReleaseMarkdownReport.js";
 
 type ParsedArgs = {
   command: string;
@@ -103,9 +119,12 @@ const knownCommands = new Set([
   "auto-advance",
   "mine",
   "review",
+  "staxcore",
   "doctor",
   "help"
 ]);
+
+const execFileAsync = promisify(execFile);
 
 function parseArgs(argv: string[]): ParsedArgs {
   const first = argv[0];
@@ -1211,6 +1230,347 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
   throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window|bootstrap|run-packet brightspace-rollup ...");
 }
 
+type StaxCoreCommandCheck = {
+  name:
+    | "typecheck"
+    | "tests"
+    | "eval"
+    | "regressionEval"
+    | "redteamEval"
+    | "doctrineAudit"
+    | "boundaryAudit"
+    | "securityAudit";
+  command: string;
+  passed: boolean;
+  exitCode: number;
+  durationMs: number;
+  stdoutPreview: string;
+  stderrPreview: string;
+};
+
+function previewOutput(text: string, max = 2400): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max)}\n...[truncated]`;
+}
+
+async function runStaxCoreCheck(
+  name: StaxCoreCommandCheck["name"],
+  command: string[],
+  cwd: string
+): Promise<StaxCoreCommandCheck> {
+  const started = Date.now();
+  let passed = false;
+  let exitCode = 0;
+  let stdout = "";
+  let stderr = "";
+
+  try {
+    const result = await execFileAsync(command[0]!, command.slice(1), {
+      cwd,
+      maxBuffer: 16 * 1024 * 1024
+    });
+    stdout = result.stdout;
+    stderr = result.stderr;
+    passed = true;
+  } catch (error) {
+    const cause = error as {
+      code?: number | string;
+      stdout?: string;
+      stderr?: string;
+      message?: string;
+    };
+    stdout = cause.stdout ?? "";
+    stderr = cause.stderr ?? cause.message ?? "";
+    exitCode = typeof cause.code === "number" ? cause.code : 1;
+    passed = false;
+  }
+
+  return {
+    name,
+    command: command.join(" "),
+    passed,
+    exitCode,
+    durationMs: Date.now() - started,
+    stdoutPreview: previewOutput(stdout),
+    stderrPreview: previewOutput(stderr)
+  };
+}
+
+async function countFixtureJsonFiles(folder: string): Promise<number> {
+  try {
+    const entries = await fs.readdir(folder);
+    return entries.filter((entry) => entry.endsWith(".json")).length;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return 0;
+    throw error;
+  }
+}
+
+function parseDryRunEvidence(args: ParsedArgs): ReleaseGateEvidence {
+  return {
+    typecheckPassed: args.flags["typecheck-pass"] === true,
+    testsPassed: args.flags["tests-pass"] === true,
+    evalPassed: args.flags["eval-pass"] === true,
+    regressionEvalPassed: args.flags["eval-regression-pass"] === true,
+    redteamEvalPassed: args.flags["eval-redteam-pass"] === true,
+    doctrineAuditPassed: args.flags["doctrine-pass"] === true,
+    boundaryAuditPassed: args.flags["boundaries-pass"] === true,
+    securityAuditPassed: args.flags["security-pass"] === true,
+    replayPassed: args.flags["replay-pass"] === true,
+    replayDeterministic: args.flags["replay-deterministic"] === true,
+    replayChainValid: args.flags["replay-chain-valid"] === true
+  };
+}
+
+function numericFlag(value: string | boolean | undefined, fallback: number): number {
+  if (typeof value !== "string") return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+async function writeStaxcoreMarkdownPacket(args: {
+  rootDir: string;
+  artifactPath: string;
+  markdown: string;
+}): Promise<string> {
+  const markdownPath = args.artifactPath.replace(/\.json$/i, ".md");
+  const fullPath = path.join(args.rootDir, markdownPath);
+  await fs.mkdir(path.dirname(fullPath), { recursive: true });
+  await fs.writeFile(fullPath, args.markdown, "utf8");
+  return markdownPath;
+}
+
+async function staxcoreCommand(args: ParsedArgs): Promise<void> {
+  const action = args.positional[0] ?? "release-gate";
+  const releaseProfile = args.flags.strict === true ? "strict" : "standard";
+  const workspace = await new WorkspaceContext().resolve({
+    workspace: typeof args.flags.workspace === "string" ? args.flags.workspace : undefined
+  });
+  const artifactStore = new ReleaseArtifactStore(process.cwd());
+  const trendWindow = Math.max(2, numericFlag(args.flags.window, 10));
+  const maxScoreDrop = Math.max(0, numericFlag(args.flags["max-score-drop"], 0));
+
+  if (!["release-gate", "replay", "report"].includes(action)) {
+    throw new Error(
+      "Usage: rax staxcore release-gate|report [--strict] [--dry-run --typecheck-pass --tests-pass --eval-pass --eval-regression-pass --eval-redteam-pass --doctrine-pass --boundaries-pass --security-pass --replay-pass --replay-deterministic --replay-chain-valid] [--window 10] [--max-score-drop 0] | replay"
+    );
+  }
+
+  const replay = replayPipeline(canonicalReplayInputs());
+  if (action === "replay") {
+    const stdout = JSON.stringify(replay, null, 2);
+    logInfo(stdout);
+    await recordCommandEvent(
+      "staxcore replay",
+      args,
+      replay.deterministic && replay.chainValid,
+      stdout,
+      [],
+      undefined,
+      workspace
+    );
+    if (!replay.deterministic || !replay.chainValid) process.exitCode = 1;
+    return;
+  }
+
+  if (action === "report") {
+    const latest = await artifactStore.latest();
+    if (!latest) {
+      throw new Error(
+        "No staxcore release artifacts found. Run `rax staxcore release-gate` first."
+      );
+    }
+    const recent = await artifactStore.listRecent(trendWindow);
+    const trend = summarizeDoctrineTrend(recent, maxScoreDrop);
+    const promotion = buildPromotionReadinessSummary({
+      releaseGate: latest.artifact.releaseGate,
+      doctrineTrend: trend,
+      doctrineCompliance: latest.artifact.doctrineCompliance
+    });
+    const markdown = renderReleaseMarkdownReport({
+      artifact: latest.artifact,
+      artifactPath: latest.path,
+      trend,
+      promotion
+    });
+    const markdownPath = await writeStaxcoreMarkdownPacket({
+      rootDir: process.cwd(),
+      artifactPath: latest.path,
+      markdown
+    });
+
+    const payload = {
+      action,
+      latestArtifactPath: latest.path,
+      markdownPath,
+      trend,
+      promotion
+    };
+    const stdout =
+      args.flags.print === "json"
+        ? JSON.stringify(payload, null, 2)
+        : [
+            "## STAX Core Release Report",
+            `- Latest Artifact: ${latest.path}`,
+            `- Markdown Packet: ${markdownPath}`,
+            `- Promotion Ready: ${promotion.canPromote ? "yes" : "no"}`,
+            `- Summary: ${promotion.summary}`
+          ].join("\n");
+    logInfo(stdout);
+    await recordCommandEvent(
+      "staxcore report",
+      args,
+      promotion.canPromote,
+      stdout,
+      [latest.path, markdownPath],
+      undefined,
+      workspace
+    );
+    if (!promotion.canPromote) process.exitCode = 1;
+    return;
+  }
+
+  const dryRun = args.flags["dry-run"] === true;
+  const checkSpecs:
+    Array<{ name: StaxCoreCommandCheck["name"]; command: string[] }> = [
+      { name: "typecheck", command: ["npm", "run", "typecheck"] },
+      { name: "tests", command: ["npm", "test"] },
+      { name: "doctrineAudit", command: ["npm", "run", "audit:doctrine"] },
+      { name: "boundaryAudit", command: ["npm", "run", "audit:boundaries"] },
+      { name: "securityAudit", command: ["npm", "run", "audit:security"] }
+    ];
+  if (releaseProfile === "strict") {
+    checkSpecs.splice(2, 0,
+      { name: "eval", command: ["npm", "run", "rax", "--", "eval"] },
+      { name: "regressionEval", command: ["npm", "run", "rax", "--", "eval", "--regression"] },
+      { name: "redteamEval", command: ["npm", "run", "rax", "--", "eval", "--redteam"] }
+    );
+  }
+  const commandChecks: StaxCoreCommandCheck[] = dryRun
+    ? []
+    : await Promise.all(
+        checkSpecs.map((check) =>
+          runStaxCoreCheck(check.name, check.command, process.cwd())
+        )
+      );
+
+  const evidence: ReleaseGateEvidence = dryRun
+    ? parseDryRunEvidence(args)
+    : {
+        typecheckPassed: commandChecks.find((check) => check.name === "typecheck")?.passed ?? false,
+        testsPassed: commandChecks.find((check) => check.name === "tests")?.passed ?? false,
+        evalPassed: commandChecks.find((check) => check.name === "eval")?.passed,
+        regressionEvalPassed: commandChecks.find((check) => check.name === "regressionEval")?.passed,
+        redteamEvalPassed: commandChecks.find((check) => check.name === "redteamEval")?.passed,
+        doctrineAuditPassed: commandChecks.find((check) => check.name === "doctrineAudit")?.passed ?? false,
+        boundaryAuditPassed: commandChecks.find((check) => check.name === "boundaryAudit")?.passed ?? false,
+        securityAuditPassed: commandChecks.find((check) => check.name === "securityAudit")?.passed ?? false,
+        replayPassed: false
+      };
+
+  if (!dryRun) {
+    evidence.replayPassed = replay.deterministic && replay.chainValid;
+    evidence.replayDeterministic = replay.deterministic;
+    evidence.replayChainValid = replay.chainValid;
+  }
+
+  const releaseGate = evaluateReleaseGate(evidence, releaseProfile);
+  const redteamFixtureCount = await countFixtureJsonFiles(
+    path.join(process.cwd(), "tests", "fixtures", "redteam")
+  );
+  const goldenFixtureCount = await countFixtureJsonFiles(
+    path.join(process.cwd(), "tests", "fixtures", "golden")
+  );
+  const doctrineCompliance = scoreDoctrineCompliance({
+    releaseGate,
+    evidence,
+    replay,
+    redteamFixtureCount,
+    goldenFixtureCount
+  });
+  const artifact = await new ReleaseArtifactWriter(process.cwd()).write({
+    doctrineVersion: "core-v1",
+    workspace: workspace.workspace,
+    linkedRepoPath: workspace.linkedRepoPath,
+    commandChecks,
+    evidence,
+    replay,
+    releaseGate,
+    doctrineCompliance
+  });
+
+  const recent = await artifactStore.listRecent(trendWindow);
+  const trend = summarizeDoctrineTrend(recent, maxScoreDrop);
+  const promotion = buildPromotionReadinessSummary({
+    releaseGate,
+    doctrineTrend: trend,
+    doctrineCompliance
+  });
+  const markdown = renderReleaseMarkdownReport({
+    artifact: artifact.artifact,
+    artifactPath: artifact.path,
+    trend,
+    promotion
+  });
+  const markdownPath = await writeStaxcoreMarkdownPacket({
+    rootDir: process.cwd(),
+    artifactPath: artifact.path,
+    markdown
+  });
+
+  const payload = {
+    action,
+    dryRun,
+    commandChecks,
+    evidence,
+    replay,
+    releaseGate,
+    doctrineCompliance,
+    trend,
+    promotion,
+    artifactPath: artifact.path,
+    markdownPath
+  };
+
+  const stdout =
+    args.flags.print === "json"
+      ? JSON.stringify(payload, null, 2)
+      : [
+          "## STAX Core Release Gate",
+          `- Status: ${releaseGate.canRelease ? "PASS" : "BLOCKED"}`,
+          `- Release Profile: ${releaseGate.profile}`,
+          `- Doctrine Compliance Score: ${doctrineCompliance.score} (${doctrineCompliance.grade})`,
+          `- Replay Deterministic: ${replay.deterministic ? "yes" : "no"}`,
+          `- Replay Chain Valid: ${replay.chainValid ? "yes" : "no"}`,
+          `- Artifact: ${artifact.path}`,
+          `- Markdown Packet: ${markdownPath}`,
+          `- Promotion Ready: ${promotion.canPromote ? "yes" : "no"}`,
+          "",
+          "### Failed Checks",
+          releaseGate.failedChecks.length
+            ? releaseGate.failedChecks.map((item) => `- ${item}`).join("\n")
+            : "- none",
+          "",
+          "### Promotion Blockers",
+          promotion.blockers.length
+            ? promotion.blockers.map((item) => `- ${item}`).join("\n")
+            : "- none"
+        ].join("\n");
+
+  logInfo(stdout);
+  await recordCommandEvent(
+    "staxcore release-gate",
+    args,
+    releaseGate.canRelease && promotion.canPromote,
+    stdout,
+    [artifact.path, markdownPath],
+    undefined,
+    workspace
+  );
+
+  if (!releaseGate.canRelease || !promotion.canPromote) process.exitCode = 1;
+}
+
 function strategicExternalPrompt(): string {
   return [
     "You are the external baseline for a STAX broad strategic reasoning benchmark.",
@@ -1744,6 +2104,9 @@ function help(): void {
     "  rax compare import-baseline --file external_baseline.json",
     "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
     "  rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]",
+    "  rax staxcore release-gate [--strict] [--dry-run --typecheck-pass --tests-pass --eval-pass --eval-regression-pass --eval-redteam-pass --doctrine-pass --boundaries-pass --security-pass --replay-pass --replay-deterministic --replay-chain-valid] [--window 10 --max-score-drop 0] [--print json]",
+    "  rax staxcore replay [--print json]",
+    "  rax staxcore report [--window 10 --max-score-drop 0] [--print json]",
     "  rax auto-advance sandbox brightspace-rollup --sandbox-path <path> [--approve --create|--verify]",
     "  rax auto-advance patch-window brightspace-rollup --sandbox-path <path> --file <allowed-file> [--content text|--content-file path] --approve",
     "  rax auto-advance command-window brightspace-rollup [--approve] [--execute --sandbox-path <path>] [--command <exact command>]",
@@ -1807,6 +2170,8 @@ async function main(): Promise<void> {
     await superiorityCommand(args);
   } else if (args.command === "strategy") {
     await strategyCommand(args);
+  } else if (args.command === "staxcore") {
+    await staxcoreCommand(args);
   } else if (args.command === "auto-advance") {
     await autoAdvanceCommand(args);
   } else if (args.command === "mine") {

@@ -1,0 +1,10 @@
+{
+  "id": "gold_multi_source_001",
+  "kind": "golden",
+  "input": "Measurement and finding agree on event status.",
+  "sourceType": "measurement",
+  "expected": {
+    "targetState": "VALIDATED",
+    "minSourceCount": 2
+  }
+}

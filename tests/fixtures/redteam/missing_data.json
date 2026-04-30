@@ -1,0 +1,9 @@
+{
+  "id": "rt_missing_data_001",
+  "kind": "redteam",
+  "input": "Claim lacks occurredAt and supporting evidence chain.",
+  "expected": {
+    "mustWarn": ["MISSING_DATA"],
+    "mustFlagUncertainty": true
+  }
+}
