@@ -813,6 +813,36 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (targetRepoPath) {
     verified.push(`Target repo path is ${targetRepoPath}.`);
   }
+  if (!packet.repoEvidence.trim() && !packet.commandEvidence.trim() && !packet.codexReport.trim()) {
+    verified.push("No repo evidence, command evidence, or Codex report was supplied in this task packet.");
+  }
+  if (signals.repoRiskRequest && signals.admissionApp) {
+    verified.push("This is an app-admissions operating-risk question.");
+  }
+  if (signals.repoRiskRequest && signals.brightspace) {
+    verified.push("This is a Brightspace operating-risk question.");
+  }
+  if (signals.repoRiskRequest && signals.canvasHelper) {
+    verified.push("This is a canvas-helper operating-risk question.");
+  }
+  if (signals.proofGapRequest && signals.admissionApp) {
+    verified.push("This is an app-admissions proof-gap audit request.");
+  }
+  if (signals.proofGapRequest && signals.brightspace) {
+    verified.push("This is a Brightspace proof-gap audit request.");
+  }
+  if (signals.proofGapRequest && signals.canvasHelper) {
+    verified.push("This is a canvas-helper proof-gap audit request.");
+  }
+  if (signals.boundedPromptRequest && signals.admissionApp) {
+    verified.push("This task requests a bounded Codex prompt for app-admissions.");
+  }
+  if (signals.boundedPromptRequest && signals.brightspace) {
+    verified.push("This task requests a bounded Codex prompt for brightspacequizexporter.");
+  }
+  if (signals.boundedPromptRequest && signals.canvasHelper) {
+    verified.push("This task requests a bounded Codex prompt for canvas-helper.");
+  }
   if (/no local .*command evidence|no local command output/i.test(combined)) {
     verified.push("The supplied evidence includes no local command output for the claimed pass/completion state.");
   }
@@ -930,11 +960,47 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (brightspace && ingestNotRun) {
     unverified.push("Brightspace ingest status is unverified because npm run ingest:ci has not been run in the supplied evidence.");
   }
+  if (signals.repoRiskRequest && signals.admissionApp && !hasCommandOutput) {
+    unverified.push("The current app-admissions build/publish/sync readiness state is unverified without local command proof.");
+  }
+  if (signals.repoRiskRequest && signals.brightspace && !hasCommandOutput) {
+    unverified.push("The current brightspacequizexporter build/ingest readiness state is unverified without local command proof.");
+  }
+  if (signals.repoRiskRequest && signals.canvasHelper && !hasCommandOutput) {
+    unverified.push("The current canvas-helper rendered UI readiness state is unverified without local proof artifact.");
+  }
+  if (signals.proofGapRequest && signals.admissionApp) {
+    unverified.push("The app-admissions proof-command inventory is unverified until package/scripts evidence is supplied.");
+  }
+  if (signals.proofGapRequest && signals.brightspace) {
+    unverified.push("The Brightspace proof-command inventory is unverified until package/scripts evidence is supplied.");
+  }
+  if (signals.proofGapRequest && signals.canvasHelper) {
+    unverified.push("The canvas-helper proof-command and visual-proof artifact inventory is unverified until repo evidence is supplied.");
+  }
+  if (signals.boundedPromptRequest && signals.admissionApp) {
+    unverified.push("The app-admissions bounded prompt allowlist (files + one proof command) is unverified until repo evidence is supplied.");
+  }
+  if (signals.boundedPromptRequest && signals.brightspace) {
+    unverified.push("The Brightspace bounded prompt allowlist is unverified until local repo evidence is supplied.");
+  }
+  if (signals.boundedPromptRequest && signals.canvasHelper) {
+    unverified.push("The canvas-helper bounded prompt allowlist and proof artifact path are unverified until local repo evidence is supplied.");
+  }
   if (!unverified.length && !hasCommandOutput) {
     unverified.push("Runtime behavior remains unverified until local command evidence is supplied.");
   }
   if (rollupPresent || (brightspace && (buildNotRun || ingestNotRun))) {
     risks.push("The current risk is no longer the Rollup package itself; it is unproven build/ingest gate status.");
+  }
+  if (signals.repoRiskRequest && signals.admissionApp) {
+    risks.push("Operational risk: publish/sync/deploy could be attempted without proving build/preflight state.");
+  }
+  if (signals.repoRiskRequest && signals.brightspace) {
+    risks.push("Operational risk: ingest/build can be reported as fixed without gate evidence.");
+  }
+  if (signals.repoRiskRequest && signals.canvasHelper) {
+    risks.push("Operational risk: visual completion claims can be accepted without rendered screenshot evidence.");
   }
   if (!risks.length) {
     risks.push("The main risk is upgrading weak or missing evidence into a hard completion claim.");
@@ -1033,6 +1099,33 @@ function projectControlVerdict(input: ProjectControlSignals): string {
   }
   if (input.codexClaimsTestsPassed) {
     return "Not proven; the tests-passed claim needs local command evidence.";
+  }
+  if (input.repoRiskRequest && input.admissionApp) {
+    return "Not proven; app-admissions operating risk cannot be judged safely without local command evidence.";
+  }
+  if (input.repoRiskRequest && input.brightspace) {
+    return "Not proven; Brightspace operating risk cannot be judged safely without build/ingest command evidence.";
+  }
+  if (input.repoRiskRequest && input.canvasHelper) {
+    return "Not proven; canvas-helper operating risk cannot be judged safely without rendered proof evidence.";
+  }
+  if (input.proofGapRequest && input.admissionApp) {
+    return "Proof gap is unverified; app-admissions command inventory needs local repo evidence.";
+  }
+  if (input.proofGapRequest && input.brightspace) {
+    return "Proof gap is unverified; Brightspace command inventory needs local repo evidence.";
+  }
+  if (input.proofGapRequest && input.canvasHelper) {
+    return "Proof gap is unverified; canvas-helper command and visual-proof inventory needs local repo evidence.";
+  }
+  if (input.boundedPromptRequest && input.admissionApp) {
+    return "A bounded prompt can be drafted, but its strongest command/file scope remains unverified until local repo evidence is supplied.";
+  }
+  if (input.boundedPromptRequest && input.brightspace) {
+    return "A bounded prompt can be drafted, but its strongest Brightspace command/file scope remains unverified until local repo evidence is supplied.";
+  }
+  if (input.boundedPromptRequest && input.canvasHelper) {
+    return "A bounded prompt can be drafted, but its strongest canvas-helper file/proof-artifact scope remains unverified until local repo evidence is supplied.";
   }
   return "Needs evidence before approval.";
 }
@@ -1307,6 +1400,20 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.visualProofClaim) {
+    if (input.canvasHelper) {
+      return [
+        "```txt",
+        "Work only in /Users/deanguedo/Documents/GitHub/canvas-helper.",
+        "Do not claim Sports Wellness is fixed from source/CSS changes alone.",
+        "Inspect only:",
+        "- projects/sportswellness/workspace/index.html",
+        "- projects/sportswellness/workspace/styles.css",
+        "- projects/sportswellness/workspace/main.js",
+        "Request one rendered screenshot artifact (desktop viewport) and report checklist results for text fit, symmetry, icon containment, and overlap.",
+        "If screenshot evidence is unavailable, stop and report that gap instead of claiming fixed.",
+        "```"
+      ].join("\n");
+    }
     return [
       "```txt",
       "Do not claim the UI/layout fix is visually verified from source or CSS alone.",
@@ -1505,6 +1612,101 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "Return the exact command output that proves the tests passed.",
       "Include the command, exit code, relevant output snippet, and first remaining failure if it did not pass.",
       "Do not claim completion without local command evidence.",
+      "```"
+    ].join("\n");
+  }
+  if (input.boundedPromptRequest && input.admissionApp) {
+    return [
+      "```txt",
+      "In /Users/deanguedo/Documents/GitHub/ADMISSION-APP, build one bounded proof packet only.",
+      "Scope: evidence collection and one proof command; no publish/sync/deploy and no source mutation.",
+      "Files to inspect first: package.json, docs/PIPELINE.md, tools/, pipeline/, scripts/.",
+      "Run exactly one proof command: npm run build:pages.",
+      "Report: cwd, exact command, exit code, output, files changed (if any), first failure, and what remains unverified.",
+      "Stop condition: after that single command and report; do not broaden scope.",
+      "```"
+    ].join("\n");
+  }
+  if (input.boundedPromptRequest && input.brightspace) {
+    return [
+      "```txt",
+      "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, target only the highest-risk blocker.",
+      "Scope: dependency/build/ingest proof only; no parser/source/fixture/gold edits and no ingest:seed-gold.",
+      "Allowed commands:",
+      "- npm ls @rollup/rollup-darwin-arm64 rollup vite",
+      "- npm run build",
+      "- npm run ingest:ci",
+      "Report exact command outputs, exit codes, changed files, and first remaining failure.",
+      "Stop condition: if any forbidden scope appears, stop and report boundary violation.",
+      "```"
+    ].join("\n");
+  }
+  if (input.boundedPromptRequest && input.canvasHelper) {
+    return [
+      "```txt",
+      "In /Users/deanguedo/Documents/GitHub/canvas-helper, target only the Sports Wellness visual-proof gap.",
+      "Inspect only: projects/sportswellness/workspace/index.html, styles.css, main.js.",
+      "Proof artifact required: one rendered screenshot of the affected preview state (desktop viewport).",
+      "Report: repo path, files inspected, screenshot path/artifact, checklist (text fit, symmetry, containment, overlap), and first remaining visual failure.",
+      "Stop condition: do not broaden to other projects or claim fixed without screenshot evidence.",
+      "```"
+    ].join("\n");
+  }
+  if (input.repoRiskRequest && input.admissionApp) {
+    return [
+      "```txt",
+      "Audit app-admissions operating risk with one bounded proof step.",
+      "Do not publish/sync/deploy or mutate source.",
+      "Run exactly npm run build:pages from the repo root and report cwd, exit code, and output.",
+      "Then classify verified vs unverified readiness (build, publish/sync, pipeline QA).",
+      "```"
+    ].join("\n");
+  }
+  if (input.repoRiskRequest && input.brightspace) {
+    return [
+      "```txt",
+      "Audit brightspacequizexporter operating risk with gate proof only.",
+      "Do not edit parser/source/fixtures/gold and do not run ingest:seed-gold.",
+      "Run npm run build and npm run ingest:ci in order and report exact outputs.",
+      "Return first remaining failure if either gate fails.",
+      "```"
+    ].join("\n");
+  }
+  if (input.repoRiskRequest && input.canvasHelper) {
+    return [
+      "```txt",
+      "Audit canvas-helper operating risk for Sports Wellness with rendered proof only.",
+      "Inspect the sportswellness workspace files and request one rendered screenshot artifact.",
+      "Do not claim fixed from CSS/source inspection alone.",
+      "Return checklist status: text fit, symmetry, containment, overlap.",
+      "```"
+    ].join("\n");
+  }
+  if (input.proofGapRequest && input.admissionApp) {
+    return [
+      "```txt",
+      "Inventory app-admissions proof commands from local repo evidence only.",
+      "Inspect package.json/scripts and docs for build/test/pipeline validation commands.",
+      "Run exactly one command: npm run build:pages.",
+      "Return what is verified, what remains unverified, and the next bounded proof command.",
+      "```"
+    ].join("\n");
+  }
+  if (input.proofGapRequest && input.brightspace) {
+    return [
+      "```txt",
+      "Inventory Brightspace proof commands from local repo evidence only.",
+      "Confirm script surfaces, then run exactly one gate proof command: npm run ingest:ci.",
+      "Report exact output, first failure, and which claims remain unverified.",
+      "```"
+    ].join("\n");
+  }
+  if (input.proofGapRequest && input.canvasHelper) {
+    return [
+      "```txt",
+      "Inventory canvas-helper proof commands/artifacts for Sports Wellness only.",
+      "Identify build/test commands plus the rendered preview artifact path used for visual proof.",
+      "If no screenshot artifact can be produced, report that as the primary unverified gap.",
       "```"
     ].join("\n");
   }

@@ -348,6 +348,39 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("Run tools/validate-apps-script-structure.ps1");
   });
 
+  it("produces a repo-specific app-admissions risk answer in plain-task mode", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "What is the biggest current operating risk in app-admissions and what is the one next proof step?",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("app-admissions operating risk");
+    expect(output.output).toContain("publish/sync/deploy");
+    expect(output.output).toContain("npm run build:pages");
+    expect(output.output).not.toContain("Return the smallest evidence packet for this claim");
+  });
+
+  it("produces a repo-specific canvas-helper bounded prompt in plain-task mode", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Create one bounded Codex prompt for canvas-helper that targets the most evidence-backed issue only and includes one exact proof command or proof artifact request.",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/canvas-helper");
+    expect(output.output).toContain("projects/sportswellness/workspace/index.html");
+    expect(output.output).toContain("rendered screenshot");
+    expect(output.output).toContain("Stop condition");
+    expect(output.output).not.toContain("Return the smallest evidence packet for this claim");
+  });
+
   it("validates exactly one next action", () => {
     const result = validateModeOutput("project_control", [
       "## Verdict",
