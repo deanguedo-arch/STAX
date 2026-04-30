@@ -1,0 +1,392 @@
+{
+  "campaignId": "dogfood_10_tasks_2026-04-30",
+  "purpose": "Track whether STAX reduces Codex cleanup burden and catches real project-control proof failures.",
+  "tasks": [
+    {
+      "taskId": "real_codex_001",
+      "repo": "ADMISSION-APP",
+      "startedAt": "2026-04-30T20:30:22.292Z",
+      "task": "Audit ADMISSION-APP publish/sync readiness and produce one bounded, non-publishing proof step.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "Initial project_control answer drifted to iOS/TestFlight preflight because injected repo evidence contained release docs, even though the user task was publish/sync readiness.",
+      "patchesMade": [
+        "Prioritize explicit ADMISSION-APP publish/sync task intent over unrelated iOS release evidence.",
+        "Classify pwsh missing during preflight as clean failure, not fake-complete."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        "forbiddenCommandsAvoided": [
+          "SYNC_ALL",
+          "SYNC_PROGRAMS",
+          "PUBLISH_DATA_TO_SHEETS",
+          "publish",
+          "sync",
+          "deploy",
+          "push"
+        ],
+        "candidateProofCommand": "pwsh -NoProfile -ExecutionPolicy Bypass -File ./tools/validate-sync-surface.ps1",
+        "exitCode": 127,
+        "firstRemainingFailure": "pwsh is not installed; cannot run tools/validate-sync-surface.ps1 in this environment."
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": false,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "clean_failure",
+      "staxCriticalMiss": false,
+      "humanDecision": "continue_with_patch_and_regression",
+      "evalCandidate": true,
+      "notes": "This task produced useful dogfood signal: STAX was safe but initially mis-targeted the proof lane; after patching it correctly kept publish/sync blocked and labeled the failed preflight as clean failure."
+    },
+    {
+      "taskId": "real_codex_002",
+      "repo": "canvas-helper",
+      "startedAt": "2026-04-30T21:20:00.000Z",
+      "task": "Audit Sports Wellness layout readiness and require rendered proof for text fit, border symmetry, and SMART goals/checkmark containment.",
+      "staxInitialPromptUseful": true,
+      "staxInitialMiss": "Initial project_control answer included a stray Brightspace verified line because repo evidence from earlier benchmark context leaked into a canvas-helper bounded-prompt task.",
+      "patchesMade": [
+        "Keep canvas-helper visual-proof project_control prompts from leaking Brightspace context.",
+        "Added a regression test for canvas-helper Sports Wellness visual proof prompts."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/canvas-helper",
+        "commandsRun": [
+          "npm run studio:codex:session -- --no-headroom",
+          "npm run build:studio"
+        ],
+        "proofArtifacts": [
+          "fixtures/real_use/artifacts/real_codex_002_sportswellness_phase1_viewport.png",
+          "fixtures/real_use/artifacts/real_codex_002_sportswellness_smart_goals.png",
+          "fixtures/real_use/artifacts/real_codex_002_sportswellness_mark_complete.png"
+        ],
+        "buildExitCode": 0,
+        "firstRemainingFailure": ""
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": false,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": true,
+      "cleanupPromptsAfterCodex": 0,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted",
+      "evalCandidate": true,
+      "notes": "STAX correctly required rendered proof instead of accepting CSS/source claims. In-app browser screenshots showed the SMART goals section text fitting at mobile width and the completion control contained after marking Phase 1 complete. No canvas-helper source files were changed."
+    },
+    {
+      "taskId": "real_codex_003",
+      "repo": "STAX",
+      "startedAt": "2026-04-30T20:46:40.000Z",
+      "task": "Audit current STAX uncommitted campaign/dogfood/comparison-integrity changes before any commit-ready claim.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "The first project_control self-audit leaked ADMISSION-APP/TestFlight/SHEETS context from prior evidence and returned the wrong repo lane.",
+      "patchesMade": [
+        "Added an explicit STAX commit-readiness/dogfood task lane.",
+        "Scoped the STAX lane narrowly so normal STAX memory/proof benchmark cases still use their existing proof rules.",
+        "Added a regression test preventing ADMISSION-APP/TestFlight/Sports Wellness leakage in STAX commit-readiness audits."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
+        "commandsRun": [
+          "npm test -- tests/projectControlMode.test.ts tests/admissionsHelperTrainingRound2.test.ts tests/admissionsHelperTrainingRound3Stateful.test.ts",
+          "npm run typecheck",
+          "npm test",
+          "npm run rax -- eval",
+          "npm run rax -- run \"Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.\""
+        ],
+        "typecheckExitCode": 0,
+        "testExitCode": 0,
+        "evalExitCode": 0,
+        "fitnessSmokeExitCode": 0,
+        "firstRemainingFailure": ""
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": true,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted_after_patch",
+      "evalCandidate": true,
+      "notes": "This task showed the full dogfood loop working: STAX exposed a wrong-context miss, a focused regression caught the issue, and the full required validation passed afterward."
+    },
+    {
+      "taskId": "real_codex_004",
+      "repo": "ADMISSION-APP",
+      "startedAt": "2026-04-30T20:52:30.000Z",
+      "task": "Audit whether scraped admissions data contains the right fields and coverage for the app it built.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "The first project_control answer routed scrape/data correctness to Sheets publish/sync safety instead of a data-contract and field-coverage audit.",
+      "patchesMade": [
+        "Added a scrape/data correctness project_control lane for ADMISSION-APP.",
+        "Prevented scrape/data correctness tasks from being swallowed by Sheets publish/sync safety.",
+        "Added a regression test for data-contract audit routing."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        "commandsRun": [
+          "python3 tools/validate-dataset.py --input data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv",
+          "python3 pipeline/check_avg_total_fixtures.py",
+          "python3 pipeline/check_enrichment_link_fixtures.py",
+          "python3 pipeline/check_nait_program_filter_fixtures.py"
+        ],
+        "canonicalRows": 334,
+        "canonicalColumns": 31,
+        "missingRequiredHeaders": [],
+        "institutionCounts": {
+          "NorQuest": 77,
+          "NAIT": 131,
+          "UAlberta": 14,
+          "MacEwan": 112
+        },
+        "highBlankRates": {
+          "Avg_Total": "324/334 = 97.0%",
+          "Min_Avg_Final": "227/334 = 68.0%",
+          "English_Req": "177/334 = 53.0%",
+          "Math_Req": "231/334 = 69.2%",
+          "Science_Req": "312/334 = 93.4%",
+          "Elective_Qty": "227/334 = 68.0%"
+        },
+        "datasetValidationExitCode": 0,
+        "avgTotalFixtures": "8 passed, 0 failed",
+        "enrichmentLinkFixtures": "5 passed, 0 failed",
+        "naitProgramFilterFixtures": "8 passed, 0 failed",
+        "firstRemainingFailure": "Data shape validates and fixture checks pass, but coverage for app-consumed admissions requirement fields is too sparse to call scrape/data correctness proven."
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": false,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "clean_failure",
+      "staxCriticalMiss": false,
+      "humanDecision": "continue_with_patch_and_regression",
+      "evalCandidate": true,
+      "notes": "The safe conclusion is that ADMISSION-APP has valid canonical shape and passing fixture checks, but scrape/data quality is not proven good enough for app correctness because many core requirement fields are blank."
+    },
+    {
+      "taskId": "real_codex_005",
+      "repo": "ADMISSION-APP",
+      "startedAt": "2026-04-30T20:56:26.000Z",
+      "task": "Audit the Codex report from the ADMISSION-APP scrape/data coverage audit.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "STAX stayed safe but repeated the same data-contract audit even though the Codex report already supplied coverage results and fixture outcomes.",
+      "patchesMade": [
+        "Detected supplied scrape/data coverage audit results in project_control.",
+        "Moved next action from rerunning the same audit to tracing the first concrete coverage gap.",
+        "Added a regression test for supplied ADMISSION-APP coverage audits."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
+        "commandsRun": [
+          "npm test -- tests/projectControlMode.test.ts",
+          "npm run --silent rax -- run --mode project_control --file /tmp/stax-real-task-005.txt"
+        ],
+        "focusedTestExitCode": 0,
+        "staxRerunExitCode": 0,
+        "firstRemainingFailure": ""
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": false,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted_after_patch",
+      "evalCandidate": true,
+      "notes": "After patching, STAX correctly treated the supplied audit as provisional but advanced to the first concrete data gap: why Avg_Total and core requirement fields are blank for most canonical rows."
+    },
+    {
+      "taskId": "real_codex_006",
+      "repo": "ADMISSION-APP",
+      "startedAt": "2026-04-30T20:58:00.000Z",
+      "task": "Trace the first concrete ADMISSION-APP Avg_Total coverage gap without mutating canonical data.",
+      "staxInitialPromptUseful": true,
+      "staxInitialMiss": "",
+      "patchesMade": [],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        "commandsRun": [
+          "python3 read-only canonical/index/candidate inspection snippets"
+        ],
+        "targetRow": {
+          "canonicalRow": 216,
+          "institution": "NAIT",
+          "program": "Water and Wastewater Technician",
+          "canonicalCredential": "Certificate",
+          "indexCredential": "Specialized Certificate",
+          "canonicalUrl": "https://www.nait.ca/programs/water-wastewater-technician",
+          "indexUrl": "https://www.nait.ca/coned/water-wastewater-tech-programming-distance",
+          "minAvgFinal": "60.0",
+          "avgTotal": ""
+        },
+        "coverageFindings": {
+          "canonicalRowsWithMinAvgAndBlankAvgTotal": 101,
+          "pipelineArtifactCandidateRows": 1,
+          "waterWastewaterCandidatePresent": false
+        },
+        "firstRemainingFailure": "Avg_Total is blank mostly because extraction/candidate generation has not covered most canonical rows; the Water and Wastewater example also shows canonical/index URL and credential drift."
+      },
+      "staxReportAudited": false,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": false,
+      "cleanupPromptsAfterCodex": 0,
+      "finalOutcome": "clean_failure",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted",
+      "evalCandidate": true,
+      "notes": "This task produced a useful concrete blocker: do not patch app logic yet. The next ADMISSION move should be a bounded candidate-generation/identity-alignment proof for one institution/field, not publish/sync."
+    },
+    {
+      "taskId": "real_codex_007",
+      "repo": "ADMISSION-APP",
+      "startedAt": "2026-04-30T20:59:24.000Z",
+      "task": "Audit the Avg_Total gap trace report and choose the next bounded action.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "STAX misread safety text saying no publish/sync was run as a Sheets publish/sync task, instead of staying on Avg_Total coverage and identity drift.",
+      "patchesMade": [
+        "Expanded scrape/data correctness intent detection to include Avg_Total coverage, identity drift, and canonical data gap language.",
+        "Expanded supplied coverage detection to recognize row-count/Avg_Total gap reports and one-row candidate artifacts.",
+        "Added a regression test preventing Avg_Total gap reports from routing to Sheets publish safety."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
+        "commandsRun": [
+          "npm test -- tests/projectControlMode.test.ts",
+          "npm run --silent rax -- run --mode project_control --file /tmp/stax-real-task-007.txt"
+        ],
+        "focusedTestExitCode": 0,
+        "staxRerunExitCode": 0,
+        "firstRemainingFailure": ""
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": false,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted_after_patch",
+      "evalCandidate": true,
+      "notes": "After patching, STAX kept the task in the data-gap lane and recommended tracing why Avg_Total/core requirements are blank, instead of re-entering Sheets publish/sync safety."
+    },
+    {
+      "taskId": "real_codex_008",
+      "repo": "brightspacequizexporter",
+      "startedAt": "2026-04-30T21:08:00.000Z",
+      "task": "Audit Brightspace dependency/build/ingest readiness and choose one bounded next proof step.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "The first project_control answer leaked ADMISSION-APP/iOS/TestFlight context into an explicit Brightspace dependency readiness task.",
+      "patchesMade": [
+        "Added explicit Brightspace project-control isolation so dependency prompts do not inherit ADMISSION release or app-store context.",
+        "Added a Brightspace default proof lane that asks for dependency inspection before build/ingest claims.",
+        "Added a regression test preventing Brightspace dependency prompts from leaking ADMISSION release context."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+        "commandsRun": [
+          "npm ls @rollup/rollup-darwin-arm64 rollup vite"
+        ],
+        "dependencyInspectionExitCode": 0,
+        "dependencyInspectionSummary": "vite@7.3.1, rollup@4.59.0, and @rollup/rollup-darwin-arm64@4.59.0 are installed in the Brightspace dependency tree.",
+        "preExistingModifiedFiles": [
+          "python_ingest/section_parsers/__init__.py",
+          "src/storage/local/googleFormsBridgeConfig.ts"
+        ],
+        "firstRemainingFailure": "Dependency presence is proven, but build and ingest are not proven until their commands run."
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": true,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted_after_patch",
+      "evalCandidate": true,
+      "notes": "After patching, STAX kept the task on Brightspace and correctly chose dependency inspection as the next bounded proof step instead of claiming build/ingest readiness."
+    },
+    {
+      "taskId": "real_codex_009",
+      "repo": "brightspacequizexporter",
+      "startedAt": "2026-04-30T21:12:00.000Z",
+      "task": "Audit the Brightspace dependency proof and decide whether build/ingest readiness is proven.",
+      "staxInitialPromptUseful": true,
+      "staxInitialMiss": "",
+      "patchesMade": [],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+        "commandsRun": [
+          "npm run build",
+          "npm run ingest:ci"
+        ],
+        "buildExitCode": 0,
+        "ingestCiExitCode": 0,
+        "ingestCiSummary": "ingest:ci ran build, promotion-check, intake manifest validation for 35 manifests, the focused ingest suite, and 22 manual ingest benchmarks successfully.",
+        "preExistingModifiedFiles": [
+          "python_ingest/section_parsers/__init__.py",
+          "src/storage/local/googleFormsBridgeConfig.ts"
+        ],
+        "newTrackedChangesFromProofCommands": false,
+        "firstRemainingFailure": ""
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": true,
+      "cleanupPromptsAfterCodex": 0,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted",
+      "evalCandidate": false,
+      "notes": "This completed the Brightspace proof chain: dependency inspection, build, and ingest:ci all passed, with no new tracked Brightspace changes from the proof commands."
+    },
+    {
+      "taskId": "real_codex_010",
+      "repo": "STAX",
+      "startedAt": "2026-04-30T21:08:07.984Z",
+      "task": "Audit the STAX dogfood campaign state before calling it complete.",
+      "staxInitialPromptUseful": false,
+      "staxInitialMiss": "The first self-audit was run as a one-line shell argument, so the labeled Command Evidence block was not parsed; before patching, the STAX commit-readiness lane also did not have a specific dogfood campaign completion path for supplied validation evidence.",
+      "patchesMade": [
+        "Added dogfood campaign audit detection for STAX project_control tasks.",
+        "Added supplied STAX validation evidence recognition for typecheck, tests, and eval.",
+        "Added a regression test proving supplied validation evidence is accepted while a 9/10 campaign remains incomplete."
+      ],
+      "codexAction": {
+        "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
+        "commandsRun": [
+          "npm run typecheck",
+          "npm test",
+          "npm run rax -- eval",
+          "npm run rax -- run \"Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.\"",
+          "npm run --silent rax -- run --mode project_control --file /tmp/stax-task10-*.txt"
+        ],
+        "typecheckExitCode": 0,
+        "testExitCode": 0,
+        "testSummary": "113 files passed, 561 tests passed",
+        "evalExitCode": 0,
+        "evalSummary": "16/16 evals passed",
+        "fitnessSmokeExitCode": 0,
+        "projectControlSelfAuditExitCode": 0,
+        "selfAuditRunFolder": "runs/2026-04-30/run-2026-04-30T21-08-07-984Z-nkzcz6",
+        "firstRemainingFailure": ""
+      },
+      "staxReportAudited": true,
+      "fakeCompleteCaught": true,
+      "missingProofCaught": true,
+      "wrongRepoPrevented": true,
+      "cleanupPromptsAfterCodex": 1,
+      "finalOutcome": "verified_next_state",
+      "staxCriticalMiss": false,
+      "humanDecision": "accepted_after_patch",
+      "evalCandidate": true,
+      "notes": "This closes the 10-task dogfood loop without overclaiming: STAX now accepts supplied local validation evidence, still rejects 9/10 as incomplete, and the final recorded action is to update the campaign ledger/report to 10/10."
+    }
+  ]
+}

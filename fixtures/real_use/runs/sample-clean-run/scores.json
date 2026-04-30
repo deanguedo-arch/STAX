@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {
+      "taskId": "case_001",
+      "staxScore": 9,
+      "chatgptScore": 7,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false
+    },
+    {
+      "taskId": "case_002",
+      "staxScore": 8,
+      "chatgptScore": 8,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false
+    }
+  ]
+}

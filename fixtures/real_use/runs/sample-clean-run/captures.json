@@ -1,0 +1,14 @@
+{
+  "captures": [
+    {
+      "taskId": "case_001",
+      "staxOutput": "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok\n## Codex Prompt if needed\nok",
+      "chatgptOutput": "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok\n## Codex Prompt if needed\nok"
+    },
+    {
+      "taskId": "case_002",
+      "staxOutput": "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok\n## Codex Prompt if needed\nok",
+      "chatgptOutput": "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok\n## Codex Prompt if needed\nok"
+    }
+  ]
+}

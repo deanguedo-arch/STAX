@@ -413,6 +413,293 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("Needs evidence before approval");
   });
 
+  it("classifies command evidence source strength in plain-task mode", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Task: Classify strong vs weak proof when command evidence includes local_stax, codex_reported, and human_pasted outputs.",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("local STAX command evidence");
+    expect(output.output).toContain("codex_reported and human_pasted outputs are weak/provisional");
+    expect(output.output).not.toContain("Collect the smallest local evidence packet");
+  });
+
+  it("rejects Codex-reported-only test proof with a bounded rerun step", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Task: Can tests be considered passed if only Codex-reported output exists? Provide one bounded next proof step.",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("No; tests cannot be considered passed from Codex-reported output alone");
+    expect(output.output).toContain("cwd, command, exit code");
+    expect(output.output).not.toContain("Needs evidence before approval");
+  });
+
+  it("catches repo targeting traps in plain-task mode", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Task: Command evidence was captured from canvas-helper but report claims Brightspace proof. Is it valid?",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("canvas-helper command evidence cannot prove Brightspace readiness");
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/brightspacequizexporter");
+    expect(output.output).not.toContain("Collect the smallest local evidence packet");
+  });
+
+  it("writes cleanup-minimizing proof prompts instead of generic evidence requests", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Task: Given a partially useful Codex report, what is the one next bounded prompt that minimizes cleanup prompts?",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Use one evidence-harvesting prompt");
+    expect(output.output).toContain("Inspect only files tied to the report's main claim");
+    expect(output.output).not.toContain("Collect the smallest local evidence packet");
+  });
+
+  it("prioritizes explicit ADMISSION-APP publish/sync readiness over unrelated release evidence", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit ADMISSION-APP publish/sync readiness and give me one bounded Codex prompt.",
+        "",
+        "Context:",
+        "- Repo/workspace: app-admissions / ADMISSION-APP.",
+        "- Goal: prove whether publish/sync is ready enough to proceed to a human decision.",
+        "- Safety boundary: do not publish, sync, deploy, push, or mutate production data.",
+        "- Need: one non-publishing preflight or validation proof step with exact command output."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("ADMISSION-APP publish/sync is not proven ready");
+    expect(output.output).toContain("non-publishing preflight");
+    expect(output.output).not.toContain("TestFlight");
+    expect(output.output).not.toContain("iOS wrapper");
+  });
+
+  it("routes ADMISSION-APP scrape data correctness to a data-contract audit, not Sheets publish", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit ADMISSION-APP scrape/data correctness and give me one bounded Codex prompt.",
+        "",
+        "Context:",
+        "- Repo/workspace: ADMISSION-APP at /Users/deanguedo/Documents/GitHub/ADMISSION-APP.",
+        "- Goal: determine whether the scraped admissions data contains the right fields and coverage for the app it built.",
+        "- Safety boundary: do not run publish/sync/deploy/push, do not mutate canonical data, and do not claim data correctness from file existence alone.",
+        "- Need: inspect app data consumers, scraper/output files, validation scripts, and identify one read-only proof command or audit step that compares required app fields against scraped/canonical data."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("data-contract");
+    expect(output.output).toContain("ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv");
+    expect(output.output).toContain("blank rates");
+    expect(output.output).toContain("check_avg_total_fixtures.py");
+    expect(output.output).not.toContain("Sheets sync safety needs target/config/validation evidence");
+    expect(output.output).not.toContain("SYNC_ALL");
+  });
+
+  it("classifies missing pwsh preflight as a clean failure instead of fake-complete", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit this Codex report for the ADMISSION-APP publish/sync readiness task.",
+        "",
+        "Codex report:",
+        "- CWD: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        "- Candidate read-only validation command found: tools/validate-sync-surface.ps1.",
+        "- I did not run SYNC_ALL, SYNC_PROGRAMS, PUBLISH_DATA_TO_SHEETS, publish, sync, deploy, push, or any data-mutating command.",
+        "- Exit code: 127",
+        "- Output: BLOCKED: pwsh is not installed; cannot run tools/validate-sync-surface.ps1 in this environment.",
+        "",
+        "Question: What is verified, weak/provisional, unverified, risk, and the one next action? Also say whether this is a clean failure or a fake-complete."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Clean failure, not fake-complete");
+    expect(output.output).toContain("pwsh/PowerShell available");
+    expect(output.output).not.toContain("Run tools/validate-sync-surface.ps1 first and report target Sheet/config status");
+  });
+
+  it("keeps canvas-helper visual proof prompts from leaking Brightspace context", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit canvas-helper Sports Wellness layout readiness and give me one bounded Codex prompt.",
+        "",
+        "Context:",
+        "- Repo/workspace: canvas-helper.",
+        "- Target project: sportswellness.",
+        "- Goal: verify whether the UI/layout is actually ready, especially text fit, border symmetry, and the SMART goals checkmark containment.",
+        "- Safety boundary: do not claim fixed from CSS/source changes alone.",
+        "- Need: rendered preview or screenshot proof artifact before accepting any UI-fix claim."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("This task requests a bounded Codex prompt for canvas-helper");
+    expect(output.output).toContain("rendered Sports Wellness screenshot");
+    expect(output.output).not.toContain("brightspacequizexporter");
+    expect(output.output).not.toContain("Brightspace bounded prompt");
+  });
+
+  it("keeps STAX commit-readiness audits from leaking app repo context", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit the current STAX repo before commit and give me one bounded Codex prompt.",
+        "",
+        "Context:",
+        "- Repo/workspace: STAX.",
+        "- Goal: decide whether the current uncommitted campaign/dogfood/comparison-integrity changes are ready to commit, or what one proof action is still needed first.",
+        "- Safety boundary: do not claim ready to commit unless local command evidence proves typecheck/tests/eval or states what remains unverified."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("This task explicitly targets the STAX repo/worktree");
+    expect(output.output).toContain("npm run typecheck");
+    expect(output.output).toContain("npm test");
+    expect(output.output).toContain("npm run rax -- eval");
+    expect(output.output).not.toContain("ADMISSION-APP");
+    expect(output.output).not.toContain("TestFlight");
+    expect(output.output).not.toContain("Sports Wellness");
+  });
+
+  it("moves supplied ADMISSION-APP coverage audits to the first concrete data gap", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit this Codex report for ADMISSION-APP scrape/data correctness.",
+        "",
+        "Codex report:",
+        "- CWD: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        "- Ran python3 tools/validate-dataset.py --input data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv. Exit code 0. Result: validation passed.",
+        "- Ran python3 pipeline/check_avg_total_fixtures.py. Exit code 0. Result: 8 passed, 0 failed.",
+        "- Read-only coverage audit found canonical headers present, 334 rows.",
+        "- High blank rates: Avg_Total 324/334 = 97.0%, Min_Avg_Final 227/334 = 68.0%, English_Req 177/334 = 53.0%, Math_Req 231/334 = 69.2%, Science_Req 312/334 = 93.4%, Elective_Qty 227/334 = 68.0%."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("valid schema/fixtures but sparse admissions requirement coverage");
+    expect(output.output).toContain("first concrete data gap");
+    expect(output.output).toContain("Avg_Total");
+    expect(output.output).not.toContain("Run one read-only ADMISSION-APP data-contract audit");
+  });
+
+  it("keeps ADMISSION-APP Avg_Total gap reports out of Sheets publish routing", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit this Codex report for ADMISSION-APP Avg_Total coverage.",
+        "",
+        "Codex report:",
+        "- CWD: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        "- No publish/sync/deploy/push commands were run.",
+        "- Canonical row 216: Institution=NAIT, Program=Water and Wastewater Technician, Min_Avg_Final=60.0, Avg_Total blank.",
+        "- pipeline/program_index.cleaned.csv has the same program with a different credential and source_url.",
+        "- pipeline_artifacts/extract/avg_total_candidates.csv has only 1 row total and does not include Water and Wastewater Technician.",
+        "- Across canonical data, 101 rows have Min_Avg_Final present but Avg_Total blank.",
+        "- Proposed conclusion: first blocker is extraction/candidate coverage and identity drift, not Sheets publish."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("sparse admissions requirement coverage");
+    expect(output.output).toContain("Avg_Total");
+    expect(output.output).toContain("identity drift");
+    expect(output.output).not.toContain("Sheets sync safety needs target/config/validation evidence");
+    expect(output.output).not.toContain("SYNC_ALL");
+  });
+
+  it("keeps Brightspace dependency prompts from leaking ADMISSION release context", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit brightspacequizexporter dependency/build/ingest readiness and give me one bounded next action.",
+        "",
+        "Context:",
+        "- Repo/workspace: brightspacequizexporter at /Users/deanguedo/Documents/GitHub/brightspacequizexporter.",
+        "- Known prior risk: Rollup optional native dependency/install integrity blocked build/ingest proof.",
+        "- Safety boundary: do not edit parser/source/tests/fixtures/gold, do not run ingest:seed-gold, do not commit/push, and do not claim ingest fixed without build and ingest:ci command evidence.",
+        "- Need: decide the next proof command before any repair."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("brightspacequizexporter");
+    expect(output.output).toContain("npm ls @rollup/rollup-darwin-arm64 rollup vite");
+    expect(output.output).not.toContain("TestFlight");
+    expect(output.output).not.toContain("ADMISSION-APP build");
+    expect(output.output).not.toContain("Sheets sync");
+  });
+
+  it("uses supplied STAX validation evidence while keeping dogfood campaign completion honest", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Task: Audit the STAX dogfood campaign state before calling it complete.",
+        "Repo Evidence: fixtures/real_use/dogfood_10_tasks_2026-04-30.json records 9/10 real tasks across ADMISSION-APP, brightspacequizexporter, canvas-helper, and STAX.",
+        "Command Evidence: npm run typecheck passed. npm test passed with 113 files and 561 tests. npm run rax -- eval passed 16/16. npm run rax -- run fitness smoke passed.",
+        "Codex Report: The campaign has strong proof and zero STAX critical misses so far, but only 9 of 10 dogfood tasks are recorded."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Supplied local STAX validation evidence says typecheck, tests, and eval passed");
+    expect(output.output).toContain("only 9 of 10 real tasks");
+    expect(output.output).toContain("Record the 10th real dogfood task");
+    expect(output.output).not.toContain("tests-passed claim is unverified");
+    expect(output.output).not.toContain("ADMISSION-APP build");
+  });
+
   it("validates exactly one next action", () => {
     const result = validateModeOutput("project_control", [
       "## Verdict",

@@ -30,6 +30,47 @@ Scored summary (2026-04-30T14:17:41.208Z):
 - STAX critical misses: 0
 - ChatGPT critical misses: 1
 
+Phase 12 integrity-locked run (2026-04-30):
+
+- runId: `phase12-stateful-2026-04-30`
+- integrity command: `npm run campaign:integrity -- --run=phase12-stateful-2026-04-30`
+- integrity status: passed
+- run folder: `fixtures/real_use/runs/phase12-stateful-2026-04-30`
+- summary:
+  - Total scored cases: 10
+  - STAX wins: 1
+  - ChatGPT wins: 0
+  - Ties: 9
+  - STAX critical misses: 0
+  - ChatGPT critical misses: 1
+
+Dogfood 10-task loop (2026-04-30):
+
+- ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
+- real tasks recorded: 10/10
+- repos represented: 4 (`ADMISSION-APP`, `brightspacequizexporter`, `canvas-helper`, `STAX`)
+- current STAX critical misses: 0
+- meaningful catches so far:
+  - ADMISSION-APP publish/sync proof stayed blocked after a missing `pwsh` preflight.
+  - canvas-helper Sports Wellness visual readiness required rendered proof instead of source/CSS-only claims.
+  - STAX commit-readiness self-audit exposed and then fixed cross-context leakage from prior app-repo evidence.
+  - ADMISSION-APP scrape/data correctness stayed separate from Sheets publish safety and surfaced sparse app-consumed field coverage.
+  - A supplied ADMISSION-APP coverage audit now advances to the first concrete data gap instead of looping on the same audit.
+  - The first Avg_Total gap trace found 101 canonical rows with `Min_Avg_Final` but blank `Avg_Total`, only one candidate row, and URL/credential drift in a concrete NAIT example.
+  - ADMISSION-APP Avg_Total gap reports no longer route to Sheets publish/sync just because the safety boundary mentions not publishing or syncing.
+  - Brightspace dependency readiness stayed scoped to the Brightspace repo and required `npm ls @rollup/rollup-darwin-arm64 rollup vite` before build/ingest claims.
+  - Brightspace dependency inspection, `npm run build`, and `npm run ingest:ci` all passed; proof commands did not create new tracked Brightspace changes.
+  - STAX dogfood campaign self-audit now accepts supplied local validation evidence while still refusing to call a 9/10 ledger complete.
+- latest validation evidence:
+  - `npm run typecheck`: passed
+  - `npm test`: passed, 113 files and 561 tests
+  - `npm run rax -- eval`: passed, 16/16
+  - fitness smoke: passed
+- proof artifacts for Task 2:
+  - `fixtures/real_use/artifacts/real_codex_002_sportswellness_phase1_viewport.png`
+  - `fixtures/real_use/artifacts/real_codex_002_sportswellness_smart_goals.png`
+  - `fixtures/real_use/artifacts/real_codex_002_sportswellness_mark_complete.png`
+
 Latest campaign evidence:
 
 ```txt
@@ -55,6 +96,11 @@ runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T14-
 runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T14-17-41-208Z.md
 fixtures/real_use/phase11_subscription_capture.json
 fixtures/real_use/phase11_subscription_scores.json
+fixtures/real_use/runs/phase12-stateful-2026-04-30/manifest.json
+fixtures/real_use/runs/phase12-stateful-2026-04-30/cases.json
+fixtures/real_use/runs/phase12-stateful-2026-04-30/captures.json
+fixtures/real_use/runs/phase12-stateful-2026-04-30/scores.json
+fixtures/real_use/runs/phase12-stateful-2026-04-30/report.md
 ```
 
 ## External Comparison Starter
@@ -225,13 +271,13 @@ For every counted session, record:
 
 | # | Date | Repo | Task | STAX Recommendation | Action Taken | Outcome | Time Saved/Wasted | Failure Mode | Correction Needed | Codex Improved? | Dean Fought System? |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 |  |  |  |  |  |  |  |  |  |  |  |
-| 2 |  |  |  |  |  |  |  |  |  |  |  |
-| 3 |  |  |  |  |  |  |  |  |  |  |  |
-| 4 |  |  |  |  |  |  |  |  |  |  |  |
-| 5 |  |  |  |  |  |  |  |  |  |  |  |
-| 6 |  |  |  |  |  |  |  |  |  |  |  |
-| 7 |  |  |  |  |  |  |  |  |  |  |  |
+| 1 | 2026-04-30 | ADMISSION-APP | Publish/sync readiness proof | Run one non-publishing preflight, do not accept publish readiness without proof | Located `tools/validate-sync-surface.ps1`; preflight blocked because `pwsh` is unavailable | Clean failure | Saved cleanup by avoiding publish/sync/deploy attempts | Initial answer drifted to iOS/TestFlight context | Patched project-control targeting and clean-failure wording | Yes | Briefly |
+| 2 | 2026-04-30 | canvas-helper | Sports Wellness visual readiness proof | Require rendered preview/screenshot proof for text fit, border symmetry, and checkmark containment | Used in-app browser on Sports Wellness preview; captured screenshots; ran `npm run build:studio` | Verified next state | Saved cleanup by requiring visual artifact before accepting UI readiness | Initial answer leaked Brightspace context | Patched canvas-helper visual-proof targeting regression | Yes | No |
+| 3 | 2026-04-30 | STAX | Current uncommitted campaign changes before commit | Review STAX diff and rerun typecheck, tests, eval before commit-ready claim | Patched STAX-lane targeting; ran focused regressions plus full required validation | Verified next state | Saved cleanup by catching wrong-context self-audit before commit | Initial answer leaked ADMISSION-APP/TestFlight context | Added narrow STAX commit-readiness regression | Yes | Briefly |
+| 4 | 2026-04-30 | ADMISSION-APP | Scrape/data correctness for the built app | Run data-contract and coverage audit before any correctness claim | Ran schema validation plus Avg_Total, enrichment-link, and NAIT filter fixture checks; measured canonical blank rates | Clean failure | Saved cleanup by separating valid schema from useful coverage | Initial answer routed to Sheets publish/sync | Added scrape/data correctness regression | Yes | Briefly |
+| 5 | 2026-04-30 | ADMISSION-APP | Audit supplied scrape/data coverage report | Trace first concrete data gap instead of rerunning same audit | Patched supplied-coverage detection and reran project_control | Verified next state | Saved one redundant audit loop | Initial answer repeated the same audit step | Added supplied coverage audit regression | Yes | Briefly |
+| 6 | 2026-04-30 | ADMISSION-APP | Trace first Avg_Total gap | Verify one narrow coverage blocker without mutation | Found 101 canonical min-average rows with blank Avg_Total; candidate artifact has 1 row; Water/Wastewater has URL/credential drift | Clean failure | Saved cleanup by identifying extraction/candidate coverage as blocker | None | None | Yes | No |
+| 7 | 2026-04-30 | ADMISSION-APP | Audit Avg_Total gap report | Stay on data-gap lane and pick one bounded trace/fix prompt | Patched Avg_Total/identity-drift intent detection and reran project_control | Verified next state | Saved cleanup by avoiding Sheets publish/sync detour | Initial answer routed to Sheets publish/sync | Added Avg_Total gap routing regression | Yes | Briefly |
 | 8 |  |  |  |  |  |  |  |  |  |  |  |
 | 9 |  |  |  |  |  |  |  |  |  |  |  |
 | 10 |  |  |  |  |  |  |  |  |  |  |  |
@@ -325,8 +371,11 @@ This campaign cannot show:
 
 ## Current Conclusion
 
-No real-use claim is proven yet. STAX has strong architecture and validation,
-but this report remains empty until real project sessions are recorded.
+Early dogfood signal exists, but the 10-task claim is not proven yet. The first
+seven real tasks show STAX is useful as a project-control layer when it forces
+proof boundaries, catches missing proof, and turns misses into regressions. The
+campaign still needs 3 more real tasks, zero critical misses, and a downward
+cleanup-burden trend before making a stronger real-use claim.
 
 ## Validation
 

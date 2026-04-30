@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { validatePhase11CaptureIntegrity } from "../src/campaign/Phase11CaptureIntegrity.js";
 
 type CaptureEntry = {
@@ -22,11 +23,16 @@ const CAPTURE_PATH = path.join(
   "phase11_subscription_capture.json"
 );
 
-function parseArgs(): { taskId?: string } {
+function parseArgs(): { taskId?: string; copy: boolean } {
   const taskFlag = process.argv.find((arg) => arg.startsWith("--task="));
-  if (!taskFlag) return {};
+  const copy = process.argv.includes("--copy");
+  if (!taskFlag) return { copy };
   const value = taskFlag.slice("--task=".length).trim();
-  return value ? { taskId: value } : {};
+  return value ? { taskId: value, copy } : { copy };
+}
+
+function writeClipboard(text: string): void {
+  execFileSync("pbcopy", { input: text });
 }
 
 function buildPrompt(taskPrompt: string): string {
@@ -86,6 +92,8 @@ async function main(): Promise<void> {
 
   const remaining = capture.entries.filter((item) => !item.chatgptOutput?.trim()).length;
   const selectedIssue = integrity.issues.find((issue) => issue.taskId === entry.taskId)?.reason ?? null;
+  const prompt = buildPrompt(entry.prompt);
+  if (args.copy) writeClipboard(prompt);
 
   process.stdout.write(
     JSON.stringify(
@@ -96,7 +104,8 @@ async function main(): Promise<void> {
         category: entry.category,
         remainingIncludingThis: remaining,
         captureIssue: selectedIssue,
-        prompt: buildPrompt(entry.prompt)
+        copiedToClipboard: args.copy,
+        prompt
       },
       null,
       2

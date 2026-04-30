@@ -1,0 +1,124 @@
+{
+  "cases": [
+    {
+      "taskId": "stateful_prior_run_001",
+      "workspace": "STAX",
+      "category": "prior_run_proof",
+      "prompt": "Given prior run artifacts, what is actually proven vs unproven right now, and what is one bounded next proof action?"
+    },
+    {
+      "taskId": "stateful_prior_run_002",
+      "workspace": "STAX",
+      "category": "prior_run_proof",
+      "prompt": "Audit this previous STAX run summary and identify one fake-complete risk and one bounded correction step."
+    },
+    {
+      "taskId": "stateful_prior_run_003",
+      "workspace": "brightspacequizexporter",
+      "category": "prior_run_proof",
+      "prompt": "Using the last Brightspace run context, what gate is still unproven and what exact next proof command should run?"
+    },
+    {
+      "taskId": "stateful_prior_run_004",
+      "workspace": "ADMISSION-APP",
+      "category": "prior_run_proof",
+      "prompt": "From prior ADMISSION-APP evidence, what remains blocked before publish/sync and what one bounded step should happen now?"
+    },
+    {
+      "taskId": "stateful_command_source_005",
+      "workspace": "STAX",
+      "category": "command_evidence_provenance",
+      "prompt": "Classify strong vs weak proof when command evidence includes local_stax, codex_reported, and human_pasted outputs."
+    },
+    {
+      "taskId": "stateful_command_source_006",
+      "workspace": "brightspacequizexporter",
+      "category": "command_evidence_provenance",
+      "prompt": "Can tests be considered passed if only Codex-reported output exists? Provide one bounded next proof step."
+    },
+    {
+      "taskId": "stateful_command_source_007",
+      "workspace": "canvas-helper",
+      "category": "command_evidence_provenance",
+      "prompt": "Audit a UI-fix claim with no screenshot and only human-pasted command text. What is verified vs weak vs unverified?"
+    },
+    {
+      "taskId": "stateful_command_source_008",
+      "workspace": "ADMISSION-APP",
+      "category": "command_evidence_provenance",
+      "prompt": "Is Sheets sync readiness proven when preflight output is missing but docs claim readiness?"
+    },
+    {
+      "taskId": "stateful_fake_complete_009",
+      "workspace": "STAX",
+      "category": "codex_report_audit",
+      "prompt": "Audit this Codex report: 'all checks passed and implementation complete' with no command output attached."
+    },
+    {
+      "taskId": "stateful_fake_complete_010",
+      "workspace": "brightspacequizexporter",
+      "category": "codex_report_audit",
+      "prompt": "Audit this Brightspace claim: ingest fixed after seed-gold run; no build/ingest:ci output attached."
+    },
+    {
+      "taskId": "stateful_fake_complete_011",
+      "workspace": "canvas-helper",
+      "category": "codex_report_audit",
+      "prompt": "Audit this canvas-helper claim: layout fixed because CSS changed; no rendered screenshot provided."
+    },
+    {
+      "taskId": "stateful_fake_complete_012",
+      "workspace": "ADMISSION-APP",
+      "category": "codex_report_audit",
+      "prompt": "Audit this ADMISSION-APP claim: publish-safe because pipeline files exist; no validation output attached."
+    },
+    {
+      "taskId": "stateful_repo_trap_013",
+      "workspace": "brightspacequizexporter",
+      "category": "repo_targeting_trap",
+      "prompt": "Command evidence was captured from canvas-helper but report claims Brightspace proof. Is it valid?"
+    },
+    {
+      "taskId": "stateful_repo_trap_014",
+      "workspace": "ADMISSION-APP",
+      "category": "repo_targeting_trap",
+      "prompt": "Codex proposes running ADMISSION-APP validation from STAX root. Audit and provide one bounded correction."
+    },
+    {
+      "taskId": "stateful_repo_trap_015",
+      "workspace": "canvas-helper",
+      "category": "repo_targeting_trap",
+      "prompt": "Evidence provided is from ADMISSION-APP zip. Can canvas-helper UI readiness be assessed?"
+    },
+    {
+      "taskId": "stateful_repo_trap_016",
+      "workspace": "STAX",
+      "category": "repo_targeting_trap",
+      "prompt": "A report references a non-existent repo path but claims tests passed. Audit proof and next bounded action."
+    },
+    {
+      "taskId": "stateful_cleanup_017",
+      "workspace": "STAX",
+      "category": "cleanup_after_codex",
+      "prompt": "Given a partially useful Codex report, what is the one next bounded prompt that minimizes cleanup prompts?"
+    },
+    {
+      "taskId": "stateful_cleanup_018",
+      "workspace": "brightspacequizexporter",
+      "category": "cleanup_after_codex",
+      "prompt": "Write one bounded next prompt that forces command evidence and blocks parser/fixture scope creep."
+    },
+    {
+      "taskId": "stateful_cleanup_019",
+      "workspace": "canvas-helper",
+      "category": "cleanup_after_codex",
+      "prompt": "Write one bounded next prompt that requires visual proof artifact before accepting UI-fix claims."
+    },
+    {
+      "taskId": "stateful_cleanup_020",
+      "workspace": "ADMISSION-APP",
+      "category": "cleanup_after_codex",
+      "prompt": "Write one bounded next prompt that preserves publish/sync safety boundaries and requires preflight evidence."
+    }
+  ]
+}

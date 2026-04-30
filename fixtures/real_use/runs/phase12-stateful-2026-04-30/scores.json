@@ -1,0 +1,84 @@
+{
+  "entries": [
+    {
+      "taskId": "app_admissions_risk_001",
+      "staxScore": 8,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T17:16:22.260Z."
+    },
+    {
+      "taskId": "app_admissions_proof_gap_002",
+      "staxScore": 8,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T15:01:00.386Z."
+    },
+    {
+      "taskId": "app_admissions_bounded_prompt_003",
+      "staxScore": 8,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T15:03:36.025Z."
+    },
+    {
+      "taskId": "brightspace_risk_004",
+      "staxScore": 7,
+      "chatgptScore": 2,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": true,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T15:05:10.786Z."
+    },
+    {
+      "taskId": "brightspace_fake_complete_005",
+      "staxScore": 9,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T15:10:58.657Z."
+    },
+    {
+      "taskId": "brightspace_bounded_prompt_006",
+      "staxScore": 8,
+      "chatgptScore": 8,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T15:22:05.672Z."
+    },
+    {
+      "taskId": "canvas_risk_007",
+      "staxScore": 8,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T15:25:14.161Z."
+    },
+    {
+      "taskId": "canvas_visual_proof_008",
+      "staxScore": 9,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T16:33:05.926Z."
+    },
+    {
+      "taskId": "canvas_fake_complete_009",
+      "staxScore": 9,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T16:37:09.412Z."
+    },
+    {
+      "taskId": "canvas_bounded_prompt_010",
+      "staxScore": 9,
+      "chatgptScore": 9,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "note": "Captured via browser-assisted ChatGPT subscription run (clipboard) at 2026-04-30T16:41:22.682Z."
+    }
+  ]
+}

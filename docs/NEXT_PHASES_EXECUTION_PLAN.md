@@ -44,6 +44,14 @@ Make every STAX-vs-ChatGPT benchmark run reproducible, timestamped, and evidence
 - `src/campaign/Phase11CaptureIntegrity.ts` validates capture rows.
 - `scripts/validatePhase11CaptureIntegrity.ts` provides explicit preflight validation.
 - `tests/phase11CaptureIntegrity.test.ts` covers corrupted capture and missing-section failures.
+- `src/campaign/ComparisonIntegrity.ts` validates run-folder integrity:
+  - required files
+  - capture corruption patterns
+  - required section presence
+  - conflicting/stale score files
+  - report summary vs canonical score summary
+- `scripts/campaignIntegrity.ts` exposes `npm run campaign:integrity -- --run <runId>`.
+- `tests/comparisonIntegrity.test.ts` covers clean pass + required failure modes.
 
 ### Artifacts (run-scoped)
 - `fixtures/real_use/<run-id>/cases.json` (proposed)
@@ -139,6 +147,7 @@ Implemented now:
 - `npm run campaign:phase11:capture`
 - `npm run campaign:phase11:integrity`
 - `npm run campaign:phase11:subscription`
+- `npm run campaign:integrity -- --run sample-clean-run`
 
 Proposed (not implemented in this patch):
 - per-run isolated fixture folders under `fixtures/real_use/<run-id>/...`
@@ -163,6 +172,7 @@ Implemented:
 - capture-integrity validator
 - capture-integrity CLI preflight command
 - integrity tests
+- run-folder integrity command and validator
 
 Documented only (next execution slices):
 - run-scoped fixture folder migration

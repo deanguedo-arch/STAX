@@ -1,0 +1,11 @@
+{
+  "runId": "phaseB-stateful-20-2026-04-30",
+  "createdAt": "2026-04-30T19:11:06.865Z",
+  "caseCount": 20,
+  "staxSource": "local_stax_cli_stateful",
+  "chatgptSource": "raw_chatgpt_browser",
+  "scoringRubricVersion": "project_control_rubric_v1",
+  "criticalMissRulesVersion": "critical_miss_v1",
+  "canonicalScoresFile": "scores.json",
+  "canonicalReportFile": "report.md"
+}

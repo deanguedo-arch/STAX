@@ -1,0 +1,64 @@
+{
+  "cases": [
+    {
+      "taskId": "app_admissions_risk_001",
+      "workspace": "app-admissions",
+      "category": "repo_risk_audit",
+      "prompt": "What is the biggest current operating risk in app-admissions and what is the one next proof step?"
+    },
+    {
+      "taskId": "app_admissions_proof_gap_002",
+      "workspace": "app-admissions",
+      "category": "proof_gap_audit",
+      "prompt": "What tests or proof commands exist in app-admissions and what is still unverified?"
+    },
+    {
+      "taskId": "app_admissions_bounded_prompt_003",
+      "workspace": "app-admissions",
+      "category": "bounded_codex_prompt",
+      "prompt": "Create one bounded Codex prompt for app-admissions based only on current repo evidence. Include files to inspect, one command to run, acceptance criteria, and a stop condition."
+    },
+    {
+      "taskId": "brightspace_risk_004",
+      "workspace": "brightspacequizexporter",
+      "category": "repo_risk_audit",
+      "prompt": "What is the biggest current operating risk in brightspacequizexporter and what is the one next proof step?"
+    },
+    {
+      "taskId": "brightspace_fake_complete_005",
+      "workspace": "brightspacequizexporter",
+      "category": "codex_report_audit",
+      "prompt": "Audit this Codex report for brightspacequizexporter: Codex says all tests passed and ingest is fixed, but it provides no file list, no diff summary, and no command output."
+    },
+    {
+      "taskId": "brightspace_bounded_prompt_006",
+      "workspace": "brightspacequizexporter",
+      "category": "bounded_codex_prompt",
+      "prompt": "Create one bounded Codex prompt for brightspacequizexporter that targets only the current highest-risk blocker and does not broaden scope."
+    },
+    {
+      "taskId": "canvas_risk_007",
+      "workspace": "canvas-helper",
+      "category": "repo_risk_audit",
+      "prompt": "What is the biggest current operating risk in canvas-helper and what one next proof step should happen now?"
+    },
+    {
+      "taskId": "canvas_visual_proof_008",
+      "workspace": "canvas-helper",
+      "category": "visual_proof_gap",
+      "prompt": "For Sports Wellness preview issues, what is verified vs unverified right now, and what is one next proof step?"
+    },
+    {
+      "taskId": "canvas_fake_complete_009",
+      "workspace": "canvas-helper",
+      "category": "codex_report_audit",
+      "prompt": "Audit this Codex report for canvas-helper: Codex says the UI is fixed and tests pass, but gives no screenshot evidence and no command output."
+    },
+    {
+      "taskId": "canvas_bounded_prompt_010",
+      "workspace": "canvas-helper",
+      "category": "bounded_codex_prompt",
+      "prompt": "Create one bounded Codex prompt for canvas-helper that targets the most evidence-backed issue only and includes one exact proof command or proof artifact request."
+    }
+  ]
+}
