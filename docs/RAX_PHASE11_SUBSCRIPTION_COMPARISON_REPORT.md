@@ -44,12 +44,12 @@ No OpenAI API key is required for this lane.
 ## Latest Run
 
 ```txt
-status: scored_with_losses
+status: scored_no_losses
 summary:
 - total: 10
 - STAX wins: 1
-- ChatGPT wins: 7
-- ties: 2
+- ChatGPT wins: 0
+- ties: 9
 - STAX critical misses: 0
 - ChatGPT critical misses: 1
 scoreFile: fixtures/real_use/phase11_subscription_capture.json
@@ -58,8 +58,8 @@ scoreFile: fixtures/real_use/phase11_subscription_capture.json
 Artifacts:
 
 ```txt
-runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T13-12-33-363Z.json
-runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T13-12-33-363Z.md
+runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T14-17-41-208Z.json
+runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T14-17-41-208Z.md
 runs/real_use_campaign/<date>/phase11_browser_prompt_pack_<timestamp>.md
 ```
 
@@ -72,17 +72,14 @@ critical miss overrides score margin
 
 ## Next Action
 
-Do not promote based on this round. Use the scored losses as direct patch
-targets.
+Keep promotion blocked. This round removed losses but did not prove strong
+superiority.
 
 Immediate focus:
 
 ```txt
-1. Reduce generic project_control responses (risk/proof-gap/bounded-prompt tasks).
-2. Improve repo-specific bounded prompt synthesis in AnalystAgent project_control paths.
-3. Add eval/fixture coverage from the 7 ChatGPT-winning cases.
-4. Re-run Phase 11 after patching to check if STAX win/tie share improves.
+1. Convert high-value ties into STAX wins using repo-specific next-action precision.
+2. Re-run browser-assisted capture for any prompts where ChatGPT wording changed materially.
+3. Add regression coverage for newly fixed plain-task codex-report and visual-proof routing.
+4. Keep STAX critical misses at zero while pushing win count above tie-only parity.
 ```
-
-Promotion remains blocked until repeated rounds show stronger STAX performance
-while retaining zero STAX critical misses.

@@ -679,6 +679,7 @@ type ProjectControlSignals = {
   targetRepoPath?: string;
   repoPathWithheld: boolean;
   wrongRepoEvidencePaths: string[];
+  codexReportAuditRequest: boolean;
   brightspace: boolean;
   rollupPresent: boolean;
   buildNotRun: boolean;
@@ -711,11 +712,17 @@ type ProjectControlSignals = {
 };
 
 function parseProjectControlPacket(input: string): ProjectControlPacket {
+  const task = extractLabeledBlock(input, "Task", ["Repo Evidence", "Command Evidence", "Codex Report", "Return"]) || input.trim();
+  let codexReport = extractLabeledBlock(input, "Codex Report", ["Return"]);
+  if (!codexReport) {
+    const inlineCodexReport = task.match(/audit this codex report[^:]*:\s*([\s\S]+)/i)?.[1];
+    if (inlineCodexReport) codexReport = inlineCodexReport.trim();
+  }
   return {
-    task: extractLabeledBlock(input, "Task", ["Repo Evidence", "Command Evidence", "Codex Report", "Return"]) || input.trim(),
+    task,
     repoEvidence: extractLabeledBlock(input, "Repo Evidence", ["Command Evidence", "Codex Report", "Return"]),
     commandEvidence: extractLabeledBlock(input, "Command Evidence", ["Codex Report", "Return"]),
-    codexReport: extractLabeledBlock(input, "Codex Report", ["Return"])
+    codexReport
   };
 }
 
@@ -762,8 +769,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const buildNotRun = buildIngestUnproven || /npm run build (?:and )?npm run ingest:ci have not been run|build .*not been run|npm run build.*not been run|build and ingest .*not proven/i.test(combined);
   const ingestNotRun = buildIngestUnproven || /ingest:ci .*not been run|npm run ingest:ci.*not been run|ingest gate .*unproven|ingest .*not proven/i.test(combined);
   const docsOnly = /diff summary .*only shows docs\/|only docs\/|docs-only/i.test(combined);
-  const codexClaimsTestsPassed = /\b(all tests passed|tests passed|npm test passed|test suite passed)\b/i.test(packet.codexReport);
-  const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished|ready|verified)\b/i.test(packet.codexReport);
+  const codexClaimSurface = [packet.codexReport, packet.task].join("\n");
+  const codexClaimsTestsPassed = /\b(all tests passed|tests passed|npm test passed|test suite passed)\b/i.test(codexClaimSurface);
+  const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished|ready|verified)\b/i.test(codexClaimSurface);
   const evidenceText = packet.commandEvidence + "\n" + packet.repoEvidence;
   const negatesCommandEvidence = /\b(no local .*command evidence|no local command output|command evidence:\s*none|none supplied|not supplied)\b/i.test(evidenceText);
   const hasCommandOutput = !hasWrongRepoEvidence && !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
@@ -774,6 +782,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     targetRepoPath,
     repoPathWithheld,
     wrongRepoEvidencePaths,
+    codexReportAuditRequest: /audit this codex report/i.test(packet.task),
     brightspace,
     rollupPresent,
     buildNotRun,
@@ -788,7 +797,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     sheetsPublishClaim: /SYNC_ALL|SYNC_PROGRAMS|publish to Sheets|Google Sheets|sheets_sync|target Sheet/i.test(combined),
     ualbertaPipelineClaim: /UAlberta|ualberta|check_ualberta_url_map_fixtures|ualberta_program_seed|canonical_url_map/i.test(combined),
     avgTotalApplyClaim: /Avg_Total|apply-avg-total-candidates|avg_total_candidates|DryRun/i.test(combined),
-    visualProofClaim: /visual|layout|looks good|CSS|screenshot|rendered preview|WebAppStyles|card text fit|checkmark containment/i.test(taskAndReport),
+    visualProofClaim: /visual|layout|looks good|CSS|screenshot|rendered preview|\bpreview\b|WebAppStyles|card text fit|checkmark containment/i.test(taskAndReport),
     appsScriptStructureClaim: /Apps Script deploy|validate-apps-script-structure|export-appsscript-bundles|WebApp\.html|Code\.gs|EligibilityEngine\.gs/i.test(combined),
     humanPastedWeakProof: /human-pasted|Human-pasted|human pasted/i.test(combined),
     memoryAutoApprovalClaim: /approved project memory|saved .*memory|auto-save|raw model output|approval metadata|poison scan/i.test(combined),
@@ -812,6 +821,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
 
   if (targetRepoPath) {
     verified.push(`Target repo path is ${targetRepoPath}.`);
+  }
+  if (signals.codexReportAuditRequest) {
+    verified.push("This task is a Codex report audit request.");
   }
   if (!packet.repoEvidence.trim() && !packet.commandEvidence.trim() && !packet.codexReport.trim()) {
     verified.push("No repo evidence, command evidence, or Codex report was supplied in this task packet.");
@@ -968,9 +980,11 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   }
   if (signals.repoRiskRequest && signals.canvasHelper && !hasCommandOutput) {
     unverified.push("The current canvas-helper rendered UI readiness state is unverified without local proof artifact.");
+    unverified.push("Rendered screenshot path, viewport, and visual checklist findings are unverified.");
   }
   if (signals.proofGapRequest && signals.admissionApp) {
     unverified.push("The app-admissions proof-command inventory is unverified until package/scripts evidence is supplied.");
+    unverified.push("Whether package.json defines build/test/pipeline scripts is unverified from the current packet.");
   }
   if (signals.proofGapRequest && signals.brightspace) {
     unverified.push("The Brightspace proof-command inventory is unverified until package/scripts evidence is supplied.");
@@ -1098,6 +1112,9 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     return "Not proven; the claimed file path is unsupported by supplied repo evidence.";
   }
   if (input.codexClaimsTestsPassed) {
+    if (input.codexReportAuditRequest) {
+      return "Not proven; the Codex report claims tests/completion without local command evidence.";
+    }
     return "Not proven; the tests-passed claim needs local command evidence.";
   }
   if (input.repoRiskRequest && input.admissionApp) {
@@ -1229,6 +1246,12 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Ask Codex to prove the claimed file exists with a file listing or diff before accepting any test-pass or implementation claim.";
   }
   if (input.codexClaimsTestsPassed) {
+    if (input.codexReportAuditRequest && input.brightspace) {
+      return "Require a Brightspace evidence packet: exact files changed plus npm run build and npm run ingest:ci outputs with first remaining failure if any.";
+    }
+    if (input.codexReportAuditRequest && input.canvasHelper) {
+      return "Require a canvas-helper evidence packet: exact files changed, one rendered screenshot artifact for Sports Wellness, and local command output for any claimed tests.";
+    }
     if (input.targetRepoPath?.endsWith("/STAX")) {
       return "In /Users/deanguedo/Documents/GitHub/STAX, rerun npm test and report exact command output, exit code, and first failure before treating the rollout as proven.";
     }
@@ -1597,6 +1620,25 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.codexClaimsTestsPassed) {
+    if (input.codexReportAuditRequest && input.brightspace) {
+      return [
+        "```txt",
+        "Audit this brightspacequizexporter Codex report as unproven until local evidence is attached.",
+        "Do not edit parser/source/fixtures/gold and do not run ingest:seed-gold.",
+        "Require: exact files changed, npm run build output, npm run ingest:ci output, and first remaining failure if any.",
+        "If evidence is missing, stop and mark completion as unverified.",
+        "```"
+      ].join("\n");
+    }
+    if (input.codexReportAuditRequest && input.canvasHelper) {
+      return [
+        "```txt",
+        "Audit this canvas-helper Codex report as unproven until visual and command evidence is attached.",
+        "Require: exact files changed, one rendered Sports Wellness screenshot artifact, and local command output for any claimed tests.",
+        "If screenshot or command output is missing, stop and mark completion as unverified.",
+        "```"
+      ].join("\n");
+    }
     if (input.targetRepoPath?.endsWith("/STAX")) {
       return [
         "```txt",

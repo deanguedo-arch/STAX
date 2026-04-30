@@ -15,18 +15,18 @@ as usage proof.
 
 ## Campaign Status
 
-- Status: phase11_subscription_comparison_scored_with_losses
+- Status: phase11_subscription_comparison_scored_no_losses
 - Real sessions recorded: 10/10 (project-control campaign run)
 - Distinct repos used: 3/3
 - Fixture edits during counted sessions: not_allowed
-- Current proof level: real_use_candidate (scored comparison complete; improvement loop required)
+- Current proof level: real_use_candidate (no-loss comparison achieved; decisive-win loop still required)
 - Browser capture progress: 10/10 ChatGPT subscription outputs captured and scored in `fixtures/real_use/phase11_subscription_capture.json`
 
-Scored summary (2026-04-30T13:12:33.363Z):
+Scored summary (2026-04-30T14:17:41.208Z):
 
 - STAX wins: 1
-- ChatGPT wins: 7
-- Ties: 2
+- ChatGPT wins: 0
+- Ties: 9
 - STAX critical misses: 0
 - ChatGPT critical misses: 1
 
@@ -52,6 +52,10 @@ runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T13-12-34-160Z.json
 runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T13-12-34-160Z.md
 runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T13-12-33-363Z.json
 runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T13-12-33-363Z.md
+runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T14-16-50-034Z.json
+runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T14-16-50-034Z.md
+runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T14-17-41-208Z.json
+runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T14-17-41-208Z.md
 fixtures/real_use/phase11_subscription_capture.json
 fixtures/real_use/phase11_subscription_scores.json
 ```

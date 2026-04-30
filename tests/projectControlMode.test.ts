@@ -381,6 +381,38 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("Return the smallest evidence packet for this claim");
   });
 
+  it("treats plain-task Brightspace Codex report audits as unproven and requests gate evidence", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Audit this Codex report for brightspacequizexporter: Codex says all tests passed and ingest is fixed, but it provides no file list, no diff summary, and no command output.",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Codex report claims tests/completion without local command evidence");
+    expect(output.output).toContain("npm run build");
+    expect(output.output).toContain("npm run ingest:ci");
+    expect(output.output).not.toContain("Needs evidence before approval");
+  });
+
+  it("treats plain-task Sports Wellness preview audits as visual-proof gaps", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "For Sports Wellness preview issues, what is verified vs unverified right now, and what is one next proof step?",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Not visually proven");
+    expect(output.output).toContain("rendered screenshot");
+    expect(output.output).toContain("text fit");
+    expect(output.output).not.toContain("Needs evidence before approval");
+  });
+
   it("validates exactly one next action", () => {
     const result = validateModeOutput("project_control", [
       "## Verdict",
