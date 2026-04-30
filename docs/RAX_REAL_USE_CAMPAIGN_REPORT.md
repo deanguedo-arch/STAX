@@ -34,12 +34,9 @@ Latest campaign evidence:
 
 ```txt
 docs/RAX_PHASE10_REAL_WORKFLOW_REPORT.md
-docs/RAX_PHASE11_PROVIDER_COMPARISON_REPORT.md
 docs/RAX_PHASE11_SUBSCRIPTION_COMPARISON_REPORT.md
 runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T03-55-54-271Z.json
 runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T03-55-54-271Z.md
-runs/real_use_campaign/2026-04-30/phase11_provider_comparison_2026-04-30T03-55-53-529Z.json
-runs/real_use_campaign/2026-04-30/phase11_provider_comparison_2026-04-30T03-55-53-529Z.md
 runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T12-26-53-290Z.json
 runs/real_use_campaign/2026-04-30/phase10_campaign_2026-04-30T12-26-53-290Z.md
 runs/real_use_campaign/2026-04-30/phase11_subscription_comparison_2026-04-30T12-26-52-244Z.json

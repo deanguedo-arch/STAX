@@ -5,6 +5,7 @@ import {
   compareSubscriptionCampaign,
   type SubscriptionScoreEntry
 } from "../src/campaign/SubscriptionCampaignComparison.js";
+import { validatePhase11CaptureIntegrity } from "../src/campaign/Phase11CaptureIntegrity.js";
 
 type Phase10Summary = {
   campaignId: string;
@@ -53,8 +54,12 @@ type SubscriptionCaptureInput = {
 };
 
 type Phase11SubscriptionResult = {
+  runId: string;
   executedAt: string;
   scoreFile: string;
+  scorerVersion: string;
+  rubricVersion: string;
+  sourceModel: string;
   mockRun: Phase10Summary;
   comparison: ReturnType<typeof compareSubscriptionCampaign>;
 };
@@ -67,19 +72,14 @@ const PHASE10_FIXTURE_PATH = path.join(
 );
 
 function parseArgs(): { scoreFile: string } {
+  const canonical = path.join(process.cwd(), "fixtures", "real_use", "phase11_subscription_capture.json");
   const scoreFileFlag = process.argv.find((arg) => arg.startsWith("--scores="));
   if (!scoreFileFlag) {
-    return {
-      scoreFile: path.join(process.cwd(), "fixtures", "real_use", "phase11_subscription_capture.json")
-    };
+    return { scoreFile: canonical };
   }
-  const value = scoreFileFlag.slice("--scores=".length).trim();
-  if (!value) {
-    throw new Error("Score file path must not be empty.");
-  }
-  return {
-    scoreFile: path.isAbsolute(value) ? value : path.join(process.cwd(), value)
-  };
+  throw new Error(
+    "Non-canonical score files are blocked. Use fixtures/real_use/phase11_subscription_capture.json."
+  );
 }
 
 function extractJsonObject(text: string): string {
@@ -155,13 +155,21 @@ function toScoreInput(input: SubscriptionScoreInput | SubscriptionCaptureInput):
 async function ensureScoreTemplate(
   scoreFile: string,
   fixture: Phase10Fixture
-): Promise<{ created: boolean; data: SubscriptionScoreInput }> {
+): Promise<{
+  created: boolean;
+  data: SubscriptionScoreInput;
+  rawCaptureEntries: Array<{ taskId: string; chatgptOutput?: string | null }>;
+}> {
   try {
     const raw = await fs.readFile(scoreFile, "utf8");
     const parsed = JSON.parse(raw) as SubscriptionScoreInput | SubscriptionCaptureInput;
     return {
       created: false,
-      data: toScoreInput(parsed)
+      data: toScoreInput(parsed),
+      rawCaptureEntries: (parsed.entries ?? []).map((entry) => ({
+        taskId: entry.taskId,
+        chatgptOutput: (entry as { chatgptOutput?: string | null }).chatgptOutput ?? null
+      }))
     };
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
@@ -186,7 +194,11 @@ async function ensureScoreTemplate(
   await fs.writeFile(scoreFile, JSON.stringify(template, null, 2), "utf8");
   return {
     created: true,
-    data: toScoreInput(template)
+    data: toScoreInput(template),
+    rawCaptureEntries: template.entries.map((entry) => ({
+      taskId: entry.taskId,
+      chatgptOutput: (entry as { chatgptOutput?: string | null }).chatgptOutput ?? null
+    }))
   };
 }
 
@@ -240,10 +252,22 @@ function renderMarkdown(result: Phase11SubscriptionResult, templateCreated: bool
 async function main(): Promise<void> {
   const { scoreFile } = parseArgs();
   const executedAt = new Date().toISOString();
+  const runId = `phase11_subscription_comparison_${executedAt.replace(/[:.]/g, "-")}`;
   const fixture = await loadPhase10Fixture();
   const mockRun = await runPhase10WithMock();
 
-  const { created, data } = await ensureScoreTemplate(scoreFile, fixture);
+  const { created, data, rawCaptureEntries } = await ensureScoreTemplate(scoreFile, fixture);
+  const integrity = validatePhase11CaptureIntegrity({
+    campaignId: data.campaignId,
+    entries: rawCaptureEntries
+  });
+  if (!integrity.pass) {
+    const preview = integrity.issues
+      .slice(0, 5)
+      .map((issue) => `${issue.taskId}: ${issue.reason}`)
+      .join("; ");
+    throw new Error(`Capture integrity failed: ${preview}`);
+  }
   const completedEntries = (data.entries ?? []).filter(isCompletedEntry);
   const comparison = compareSubscriptionCampaign(
     completedEntries,
@@ -257,13 +281,16 @@ async function main(): Promise<void> {
   }
 
   const result: Phase11SubscriptionResult = {
+    runId,
     executedAt,
     scoreFile,
+    scorerVersion: "phase11_subscription_v2",
+    rubricVersion: "project_control_rubric_v1",
+    sourceModel: "chatgpt_subscription_browser_assisted",
     mockRun,
     comparison
   };
 
-  const runId = `phase11_subscription_comparison_${executedAt.replace(/[:.]/g, "-")}`;
   const baseDir = path.join(process.cwd(), "runs", "real_use_campaign", executedAt.slice(0, 10));
   await fs.mkdir(baseDir, { recursive: true });
   const jsonPath = path.join(baseDir, `${runId}.json`);

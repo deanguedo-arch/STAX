@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { execSync } from "node:child_process";
+import { validatePhase11CaptureIntegrity } from "../src/campaign/Phase11CaptureIntegrity.js";
 
 type CaptureEntry = {
   taskId: string;
@@ -35,6 +36,14 @@ async function main(): Promise<void> {
   const text = readClipboard();
   if (!text) {
     throw new Error("Clipboard is empty. Copy a ChatGPT response first.");
+  }
+  const clipboardCheck = validatePhase11CaptureIntegrity({
+    campaignId: "phase11_clipboard_probe",
+    entries: [{ taskId: "clipboard", chatgptOutput: text }]
+  });
+  if (!clipboardCheck.pass) {
+    const reason = clipboardCheck.issues[0]?.reason ?? "Clipboard text failed capture integrity.";
+    throw new Error(`Clipboard capture rejected: ${reason}`);
   }
 
   const raw = await fs.readFile(CAPTURE_PATH, "utf8");

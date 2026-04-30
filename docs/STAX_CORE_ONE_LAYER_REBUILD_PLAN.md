@@ -219,9 +219,8 @@ Phase 12:
 - rerun `npm run campaign:phase11` and record scored artifacts
 - promote only repeated STAX wins with zero STAX critical misses into stronger regression/redteam cases
 
-Phase 13 (optional):
-- run `npm run campaign:phase11:provider` only if API or local ollama access becomes available
-- compare provider-backed campaign outputs for specificity and cleanup burden
+Phase 13:
+- closed (provider/API comparison path removed from this repo workflow)
 ```
 
 ## Execution Status (Current)
@@ -289,11 +288,8 @@ Phase 10:
 - latest campaign run completed across 3 repos; status remained `real_use_candidate` because generator provider was mock
 
 Phase 11:
-- mock-vs-provider comparison module added (`src/campaign/ProviderCampaignComparison.ts`)
-- phase11 comparison runner added (`scripts/runPhase11ProviderComparison.ts`)
-- comparison unit tests added (`tests/providerCampaignComparison.test.ts`)
-- campaign script added (`npm run campaign:phase11`)
-- latest run generated comparison artifacts and correctly blocked non-mock promotion due missing provider credentials (`provider_run_blocked`)
+- campaign script stabilized on subscription/browser comparison entrypoint (`npm run campaign:phase11`)
+- provider/API comparison lane removed to match no-API operating model
 
 Phase 12:
 - subscription baseline comparison module added (`src/campaign/SubscriptionCampaignComparison.ts`)
