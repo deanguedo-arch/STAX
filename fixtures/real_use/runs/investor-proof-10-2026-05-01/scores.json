@@ -1,0 +1,84 @@
+{
+  "entries": [
+    {
+      "taskId": "investor_admission_sync_001",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_admission_contract_002",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_admission_avg_total_003",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_brightspace_dependency_004",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_brightspace_ingest_005",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_brightspace_fakeproof_006",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_canvas_visual_007",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_stax_provenance_008",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_stax_commit_009",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    },
+    {
+      "taskId": "investor_repo_trap_010",
+      "staxScore": null,
+      "chatgptScore": null,
+      "staxCriticalMiss": null,
+      "chatgptCriticalMiss": null,
+      "note": ""
+    }
+  ]
+}

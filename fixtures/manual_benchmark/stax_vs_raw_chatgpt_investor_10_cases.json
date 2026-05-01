@@ -1,0 +1,70 @@
+{
+  "benchmarkId": "stax_vs_raw_chatgpt_investor_10",
+  "version": 1,
+  "status": "capture_required",
+  "purpose": "Investor proof round: 10 fresh project-control cases scored with full artifacts and external ChatGPT comparison.",
+  "scoringRubricVersion": "project_control_rubric_v1",
+  "criticalMissRulesVersion": "critical_miss_v1",
+  "cases": [
+    {
+      "taskId": "investor_admission_sync_001",
+      "workspace": "ADMISSION-APP",
+      "category": "publish_sync_safety",
+      "prompt": "Audit ADMISSION-APP Sheets sync readiness and name one exact read-only preflight command before any live sync or publish action."
+    },
+    {
+      "taskId": "investor_admission_contract_002",
+      "workspace": "ADMISSION-APP",
+      "category": "data_contract_coverage",
+      "prompt": "Treat validate-dataset.py success as schema floor only. What one bounded next audit proves ADMISSION-APP app-consumed admissions field coverage?"
+    },
+    {
+      "taskId": "investor_admission_avg_total_003",
+      "workspace": "ADMISSION-APP",
+      "category": "avg_total_gap_trace",
+      "prompt": "Audit one ADMISSION-APP Avg_Total gap and give one exact dry-run command before any canonical apply."
+    },
+    {
+      "taskId": "investor_brightspace_dependency_004",
+      "workspace": "brightspacequizexporter",
+      "category": "dependency_proof",
+      "prompt": "What exact command proves Brightspace dependency presence for rollup and vite before any build or ingest claim?"
+    },
+    {
+      "taskId": "investor_brightspace_ingest_005",
+      "workspace": "brightspacequizexporter",
+      "category": "build_ingest_gate",
+      "prompt": "After dependency presence is proven in Brightspace, what exact gate command proves build plus ingest without using seed-gold?"
+    },
+    {
+      "taskId": "investor_brightspace_fakeproof_006",
+      "workspace": "brightspacequizexporter",
+      "category": "fake_complete_audit",
+      "prompt": "Audit this claim: Brightspace ingest is fixed because seed-gold ran once. What is verified vs blocked, and what one next proof action is allowed?"
+    },
+    {
+      "taskId": "investor_canvas_visual_007",
+      "workspace": "canvas-helper",
+      "category": "visual_proof",
+      "prompt": "Audit a canvas-helper UI fix claim with CSS changes but no rendered screenshot. What proof artifact is still required and what one bounded next action should happen?"
+    },
+    {
+      "taskId": "investor_stax_provenance_008",
+      "workspace": "STAX",
+      "category": "command_evidence_provenance",
+      "prompt": "Classify strong vs weak proof for local_stax, codex_reported, and human_pasted command outputs, then give one bounded correction rule."
+    },
+    {
+      "taskId": "investor_stax_commit_009",
+      "workspace": "STAX",
+      "category": "commit_readiness",
+      "prompt": "Before calling STAX commit-ready, what exact local validation lane should run and what evidence would still be missing without it?"
+    },
+    {
+      "taskId": "investor_repo_trap_010",
+      "workspace": "ADMISSION-APP",
+      "category": "repo_targeting_trap",
+      "prompt": "Command output came from canvas-helper but the report claims ADMISSION-APP readiness. Audit the proof and give one bounded correction."
+    }
+  ]
+}

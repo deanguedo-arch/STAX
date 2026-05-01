@@ -15,12 +15,19 @@ as usage proof.
 
 ## Campaign Status
 
-- Status: phase11_subscription_comparison_scored_no_losses
+- Status: scoped_9_5_claim_earned
 - Real sessions recorded: 10/10 (project-control campaign run)
 - Distinct repos used: 3/3
 - Fixture edits during counted sessions: not_allowed
-- Current proof level: real_use_candidate (no-loss comparison achieved; decisive-win loop still required)
+- Current proof level: real_use_proven_for_scoped_project_control_workflow
 - Browser capture progress: 10/10 ChatGPT subscription outputs captured and scored in `fixtures/real_use/phase11_subscription_capture.json`
+
+Fresh investor proof round progress:
+
+- runId: `investor-proof-10-2026-05-01`
+- STAX outputs refreshed: 10/10
+- ChatGPT outputs captured: 10/10
+- executable scoring complete: yes
 
 Scored summary (2026-04-30T14:17:41.208Z):
 
@@ -164,18 +171,51 @@ fixtures/real_use/dogfood_round_c_10_tasks.json
 fixtures/real_use/operating_window_30_tasks.json
 ```
 
-9.5 gate status snapshot:
+Current 9.5 gate snapshot (2026-05-01):
 
-- `npm run campaign:baseline`: `baseline_incomplete`
+- `npm run campaign:baseline`: `baseline_ready`
 - `npm run campaign:failures`: `tracked`
-- `npm run campaign:dogfood:c`: `invalid`
-- `npm run campaign:operating-window`: `invalid`
-- `npm run campaign:promotion-gate`: `promotion_blocked`
-- current blockers:
-  - fewer than 3 clean evidence runs are recorded
-  - baseline cleanup ledger is not ready
-  - fresh dogfood Round C has not passed
-  - 30-task operating window has not passed
+- `npm run campaign:dogfood:c`: `round_c_passed`
+- `npm run campaign:operating-window`: `operating_window_passed`
+- `npm run campaign:promotion-gate`: `promotion_ready`
+- internal blockers: none
+- external verdict: scoped 9.5 approved for Dean's Codex/repo project-control
+  workflow after the fresh investor round
+
+Investor proof run (2026-05-01):
+
+- run folder:
+  `fixtures/real_use/runs/investor-proof-10-2026-05-01`
+- fixture source:
+  `fixtures/manual_benchmark/stax_vs_raw_chatgpt_investor_10_cases.json`
+- commands:
+  - `npm run campaign:investor:prepare -- --run investor-proof-10-2026-05-01`
+  - `npm run campaign:investor:refresh -- --run investor-proof-10-2026-05-01`
+  - `npm run campaign:investor:score -- --run investor-proof-10-2026-05-01`
+- summary:
+  - Total scored cases: 10
+  - STAX wins: 7
+  - ChatGPT wins: 0
+  - Ties: 3
+  - no external baseline rows: 0
+  - superiority status: `not_proven`
+- interpretation:
+  - This is enough for the scoped workflow claim because STAX produced a clean
+    no-loss result with a positive win margin on fresh cases.
+  - This is not enough to claim broad superiority over ChatGPT.
+
+External judge result:
+
+- thread reviewed the fresh investor proof pack plus the standing promotion-gate
+  evidence
+- verdict: yes
+- score: 9.5 / 10
+- allowed claim:
+  - STAX is 9.5 for Dean's Codex/repo project-control workflow
+- still blocked:
+  - general "beats ChatGPT" claim
+  - production-ready claim
+  - arbitrary-domain claim
 
 ## External Comparison Starter
 
