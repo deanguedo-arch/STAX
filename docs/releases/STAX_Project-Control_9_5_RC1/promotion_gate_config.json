@@ -1,0 +1,8 @@
+{
+  "requiredCleanRuns": 3,
+  "comparisonRunIds": [
+    "phase12-stateful-2026-04-30",
+    "phaseB-stateful-20-2026-04-30",
+    "investor-proof-10-2026-05-01"
+  ]
+}

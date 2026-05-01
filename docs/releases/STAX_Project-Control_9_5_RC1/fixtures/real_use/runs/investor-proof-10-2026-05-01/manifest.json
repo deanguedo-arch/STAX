@@ -1,0 +1,11 @@
+{
+  "runId": "investor-proof-10-2026-05-01",
+  "createdAt": "2026-05-01T12:08:43.341Z",
+  "caseCount": 10,
+  "staxSource": "local_stax_cli_stateful",
+  "chatgptSource": "raw_chatgpt_iab",
+  "scoringRubricVersion": "project_control_rubric_v1",
+  "criticalMissRulesVersion": "critical_miss_v1",
+  "canonicalScoresFile": "scores.json",
+  "canonicalReportFile": "report.md"
+}

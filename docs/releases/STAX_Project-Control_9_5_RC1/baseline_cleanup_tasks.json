@@ -1,0 +1,61 @@
+{
+  "campaignId": "baseline_cleanup_tasks",
+  "purpose": "Historical or live manual baseline for Codex cleanup burden without STAX as controller.",
+  "tasks": [
+    {
+      "taskId": "baseline_001",
+      "repo": "ADMISSION-APP",
+      "task": "Direct Codex-only check: run npm run build:pages and judge whether ADMISSION-APP publish/sync readiness is proven.",
+      "cleanupPromptsAfterCodex": 2,
+      "fakeCompleteCaughtManually": true,
+      "missingProofCaughtManually": true,
+      "wrongRepoCaughtManually": false,
+      "finalOutcome": "clean_failure",
+      "notes": "Build pages succeeded, but publish/sync readiness still lacked preflight proof, credential/target confirmation, and blocked-live-action handling. A direct Codex pass would need at least one follow-up to shift from build success to sync-safety proof, plus another to gather the missing preflight evidence."
+    },
+    {
+      "taskId": "baseline_002",
+      "repo": "ADMISSION-APP",
+      "task": "Direct Codex-only check: validate canonical admissions dataset shape and judge whether scrape/data correctness for the app is proven.",
+      "cleanupPromptsAfterCodex": 2,
+      "fakeCompleteCaughtManually": true,
+      "missingProofCaughtManually": true,
+      "wrongRepoCaughtManually": false,
+      "finalOutcome": "clean_failure",
+      "notes": "Dataset validation passed on shape, URL, and numeric integrity, but that did not prove app-consumed field coverage or blank-rate acceptability. A direct Codex pass would need one follow-up to inspect field sparsity and another to trace the first concrete coverage gap."
+    },
+    {
+      "taskId": "baseline_003",
+      "repo": "brightspacequizexporter",
+      "task": "Direct Codex-only check: run npm ls @rollup/rollup-darwin-arm64 rollup vite and judge whether Brightspace dependency/build readiness is proven.",
+      "cleanupPromptsAfterCodex": 1,
+      "fakeCompleteCaughtManually": false,
+      "missingProofCaughtManually": true,
+      "wrongRepoCaughtManually": false,
+      "finalOutcome": "verified_next_state",
+      "notes": "The dependency check proved the native Rollup package was installed, but it did not by itself prove build or ingest readiness. A direct Codex pass would still need one bounded follow-up to run build plus ingest:ci."
+    },
+    {
+      "taskId": "baseline_004",
+      "repo": "brightspacequizexporter",
+      "task": "Direct Codex-only check: run npm run build && npm run ingest:ci and judge whether the Brightspace proof gate passes.",
+      "cleanupPromptsAfterCodex": 0,
+      "fakeCompleteCaughtManually": false,
+      "missingProofCaughtManually": false,
+      "wrongRepoCaughtManually": false,
+      "finalOutcome": "verified_next_state",
+      "notes": "This direct pass used the repo’s actual proof chain. If ingest:ci passes cleanly, no additional cleanup prompt is needed for the bounded Brightspace gate claim."
+    },
+    {
+      "taskId": "baseline_005",
+      "repo": "canvas-helper",
+      "task": "Direct Codex-only check: run npm run build:studio and judge whether Sports Wellness visual readiness is proven.",
+      "cleanupPromptsAfterCodex": 2,
+      "fakeCompleteCaughtManually": true,
+      "missingProofCaughtManually": true,
+      "wrongRepoCaughtManually": false,
+      "finalOutcome": "clean_failure",
+      "notes": "Studio build passing does not prove text fit, border symmetry, or SMART goals/checkmark containment. A direct Codex pass would need a screenshot/artifact request and then a second follow-up if the first visible layout proof still left ambiguity."
+    }
+  ]
+}
