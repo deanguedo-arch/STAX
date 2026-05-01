@@ -1,0 +1,940 @@
+{
+  "total": 20,
+  "staxBetter": 7,
+  "externalBetter": 0,
+  "ties": 13,
+  "noLocalBasis": 0,
+  "noExternalBaseline": 0,
+  "expectedMismatches": 0,
+  "confidence": "promising",
+  "superiorityStatus": "not_proven",
+  "superiorityGaps": [
+    "Current benchmark slice has not passed; fix slice failures before evaluating superiority."
+  ],
+  "proofIntegrityGaps": [],
+  "holdoutFreshnessGaps": [],
+  "continueLoopRequired": true,
+  "stopConditionMet": false,
+  "results": [
+    {
+      "caseId": "stateful_prior_run_001",
+      "repo": "STAX",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.55,
+        "commandSpecificity": 0.75,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 76
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.85,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 59
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Given prior run artifacts, what is actually proven vs unproven right now, and what is one bounded next proof action?",
+      "reasons": [
+        "STAX 76 vs external 59.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for STAX/stateful_prior_run_001 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_prior_run_002",
+      "repo": "STAX",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.64,
+        "commandSpecificity": 0.75,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 77
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.69,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 1,
+        "riskControl": 0.15,
+        "total": 74
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Audit this previous STAX run summary and identify one fake-complete risk and one bounded correction step.",
+      "reasons": [
+        "STAX 77 vs external 74.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for STAX/stateful_prior_run_002 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_prior_run_003",
+      "repo": "brightspacequizexporter",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 1,
+        "commandSpecificity": 0.45,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 79
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.78,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 82
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Using the last Brightspace run context, what gate is still unproven and what exact next proof command should run?",
+      "reasons": [
+        "STAX 79 vs external 82.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for brightspacequizexporter/stateful_prior_run_003 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_prior_run_004",
+      "repo": "ADMISSION-APP",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 1,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 88
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 0.85,
+        "localSpecificity": 0.49,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 47
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "From prior ADMISSION-APP evidence, what remains blocked before publish/sync and what one bounded step should happen now?",
+      "reasons": [
+        "STAX 88 vs external 47.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: proofHonesty=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for ADMISSION-APP/stateful_prior_run_004 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_command_source_005",
+      "repo": "STAX",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.64,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 53
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.6,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.35,
+        "total": 54
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Classify strong vs weak proof when command evidence includes local_stax, codex_reported, and human_pasted outputs.",
+      "reasons": [
+        "STAX 53 vs external 54.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for STAX/stateful_command_source_005 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_command_source_006",
+      "repo": "brightspacequizexporter",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.46,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 50
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 0.97,
+        "localSpecificity": 0.41,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 47
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Can tests be considered passed if only Codex-reported output exists? Provide one bounded next proof step.",
+      "reasons": [
+        "STAX 50 vs external 47.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: proofHonesty=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for brightspacequizexporter/stateful_command_source_006 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_command_source_007",
+      "repo": "canvas-helper",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.78,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 58
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.69,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 55
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Audit a UI-fix claim with no screenshot and only human-pasted command text. What is verified vs weak vs unverified?",
+      "reasons": [
+        "STAX 58 vs external 55.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for canvas-helper/stateful_command_source_007 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_command_source_008",
+      "repo": "ADMISSION-APP",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 1,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 86
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.5,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 49
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Is Sheets sync readiness proven when preflight output is missing but docs claim readiness?",
+      "reasons": [
+        "STAX 86 vs external 49.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for ADMISSION-APP/stateful_command_source_008 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_fake_complete_009",
+      "repo": "STAX",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.63,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 80
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.58,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 54
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Audit this Codex report: 'all checks passed and implementation complete' with no command output attached.",
+      "reasons": [
+        "STAX 80 vs external 54.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for STAX/stateful_fake_complete_009 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_fake_complete_010",
+      "repo": "brightspacequizexporter",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.84,
+        "commandSpecificity": 0.45,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 75
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.49,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 79
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Audit this Brightspace claim: ingest fixed after seed-gold run; no build/ingest:ci output attached.",
+      "reasons": [
+        "STAX 75 vs external 79.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for brightspacequizexporter/stateful_fake_complete_010 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_fake_complete_011",
+      "repo": "canvas-helper",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 1,
+        "commandSpecificity": 0.45,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 79
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 0.99,
+        "localSpecificity": 0.44,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 76
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Audit this canvas-helper claim: layout fixed because CSS changed; no rendered screenshot provided.",
+      "reasons": [
+        "STAX 79 vs external 76.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: commandSpecificity=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for canvas-helper/stateful_fake_complete_011 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_fake_complete_012",
+      "repo": "ADMISSION-APP",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 1,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 85
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.67,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 52
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Audit this ADMISSION-APP claim: publish-safe because pipeline files exist; no validation output attached.",
+      "reasons": [
+        "STAX 85 vs external 52.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for ADMISSION-APP/stateful_fake_complete_012 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_repo_trap_013",
+      "repo": "brightspacequizexporter",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.71,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 55
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.62,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 55
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Command evidence was captured from canvas-helper but report claims Brightspace proof. Is it valid?",
+      "reasons": [
+        "STAX 55 vs external 55.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for brightspacequizexporter/stateful_repo_trap_013 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_repo_trap_014",
+      "repo": "ADMISSION-APP",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 0.85,
+        "localSpecificity": 1,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 81
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 0.93,
+        "localSpecificity": 0.53,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 50
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Codex proposes running ADMISSION-APP validation from STAX root. Audit and provide one bounded correction.",
+      "reasons": [
+        "STAX 81 vs external 50.",
+        "STAX strongest dimension: localSpecificity=1.00",
+        "External strongest dimension: proofHonesty=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for ADMISSION-APP/stateful_repo_trap_014 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_repo_trap_015",
+      "repo": "canvas-helper",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.62,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 53
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.58,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 54
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Evidence provided is from ADMISSION-APP zip. Can canvas-helper UI readiness be assessed?",
+      "reasons": [
+        "STAX 53 vs external 54.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for canvas-helper/stateful_repo_trap_015 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_repo_trap_016",
+      "repo": "STAX",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.55,
+        "commandSpecificity": 0.75,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 74
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.69,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 81
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "A report references a non-existent repo path but claims tests passed. Audit proof and next bounded action.",
+      "reasons": [
+        "STAX 74 vs external 81.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for STAX/stateful_repo_trap_016 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_cleanup_017",
+      "repo": "STAX",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.46,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 52
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.55,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.75,
+        "riskControl": 0.15,
+        "total": 53
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Given a partially useful Codex report, what is the one next bounded prompt that minimizes cleanup prompts?",
+      "reasons": [
+        "STAX 52 vs external 53.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for STAX/stateful_cleanup_017 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_cleanup_018",
+      "repo": "brightspacequizexporter",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.46,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.1,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 50
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.41,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 52
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Write one bounded next prompt that forces command evidence and blocks parser/fixture scope creep.",
+      "reasons": [
+        "STAX 50 vs external 52.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for brightspacequizexporter/stateful_cleanup_018 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_cleanup_019",
+      "repo": "canvas-helper",
+      "winner": "tie",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.46,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 51
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.5,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.5,
+        "riskControl": 0.15,
+        "total": 53
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Write one bounded next prompt that requires visual proof artifact before accepting UI-fix claims.",
+      "reasons": [
+        "STAX 51 vs external 53.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for canvas-helper/stateful_cleanup_019 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    },
+    {
+      "caseId": "stateful_cleanup_020",
+      "repo": "ADMISSION-APP",
+      "winner": "stax_better",
+      "staxScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 1,
+        "commandSpecificity": 1,
+        "boundedNextAction": 0.75,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 85
+      },
+      "staxAnswerSource": "local_stax_cli_stateful",
+      "externalScore": {
+        "actualAnswer": 1,
+        "localSpecificity": 0.46,
+        "commandSpecificity": 0,
+        "boundedNextAction": 0.25,
+        "proofHonesty": 1,
+        "codexReadiness": 0.25,
+        "riskControl": 0.15,
+        "total": 51
+      },
+      "externalAnswerSource": "raw_chatgpt_browser",
+      "externalCapturedAt": "2026-04-30T00:00:00.000Z",
+      "externalPrompt": "Write one bounded next prompt that preserves publish/sync safety boundaries and requires preflight evidence.",
+      "reasons": [
+        "STAX 85 vs external 51.",
+        "STAX strongest dimension: actualAnswer=1.00",
+        "External strongest dimension: actualAnswer=1.00"
+      ],
+      "missingLocalEvidence": [],
+      "externalBaselineGaps": [],
+      "suggestedEval": "Add or keep a benchmark fixture for ADMISSION-APP/stateful_cleanup_020 requiring STAX not to regress below tie.",
+      "suggestedPromptPatch": "No prompt patch required for this fixture unless future runs regress.",
+      "proofIntegrity": {
+        "allowed": true,
+        "claimLevel": "trained_slice_pass",
+        "firstPassEligible": false,
+        "superiorityEligible": false,
+        "reasons": [],
+        "requiredLabel": "trained_slice_pass"
+      }
+    }
+  ]
+}

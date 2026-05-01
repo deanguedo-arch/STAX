@@ -722,6 +722,8 @@ type ProjectControlSignals = {
   repoRiskRequest: boolean;
   proofGapRequest: boolean;
   priorRunProofRequest: boolean;
+  priorRunProvenVsUnprovenRequest: boolean;
+  priorRunFakeCompleteRequest: boolean;
   commandSourceClassificationRequest: boolean;
   codexReportedOnlyProofRequest: boolean;
   uiHumanPastedNoScreenshotRequest: boolean;
@@ -804,10 +806,15 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const reportAndCommand = [packet.codexReport, packet.commandEvidence].join("\n");
   const taskAndReport = [packet.task, packet.codexReport].join("\n");
   const explicitStaxTask = /current STAX repo|STAX repo before commit|before commit|commit-readiness|uncommitted campaign|comparison-integrity|dogfood/i.test(packet.task);
+  const staxRepoContext =
+    explicitStaxTask ||
+    targetRepoPath === "/Users/deanguedo/Documents/GitHub/STAX" ||
+    /(?:^|\n)\s*(?:Repo|Target repo path):\s*\/Users\/deanguedo\/Documents\/GitHub\/STAX\b/i.test(packet.repoEvidence) ||
+    /\bworkspace:\s*STAX\b/i.test(packet.repoEvidence);
   const dogfoodCampaignAudit = /dogfood campaign|dogfood_10_tasks|real tasks recorded|campaign state/i.test(combined);
   const scrapeDataCorrectnessRequest = /scrape\/data correctness|scrape\/data coverage audit|scraped admissions data|scraper\/output|data correctness|right fields and coverage|app data consumers|Avg_Total coverage|Avg_Total gap|Avg_Total gap trace|identity drift|canonical data gap/i.test(packet.task);
   const scrapeCoverageAuditSupplied = scrapeDataCorrectnessRequest && /High blank rates|blank rates:|Avg_Total\s+\d+\/\d+|\d+\s+rows have Min_Avg_Final present but Avg_Total blank|canonical headers present|avg_total_candidates\.csv has only|validate-dataset\.py[\s\S]{0,200}Exit code 0/i.test(combined);
-  const brightspace = !explicitStaxTask && /brightspace|brightspacequizexporter/i.test(combined);
+  const brightspace = !staxRepoContext && /brightspace|brightspacequizexporter/i.test(combined);
   const rollupPresent = /@rollup\/rollup-darwin-arm64@?4\.59\.0/i.test(combined) && /\bnpm ls\b/i.test(combined);
   const buildIngestUnproven = lower.includes("build/ingest gate") && lower.includes("unproven");
   const buildNotRun = buildIngestUnproven || /npm run build (?:and )?npm run ingest:ci have not been run|build .*not been run|npm run build.*not been run|build and ingest .*not proven/i.test(combined);
@@ -821,9 +828,15 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const hasCommandOutput = !hasWrongRepoEvidence && !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
   const staxValidationEvidence = !hasWrongRepoEvidence && !negatesCommandEvidence && /npm run typecheck passed/i.test(evidenceText) && /npm test passed/i.test(evidenceText) && /npm run rax -- eval passed/i.test(evidenceText);
   const inventedPathRisk = /src\/not-real|not-real-provider-router/i.test(combined);
-  const explicitBrightspaceTask = /brightspace|brightspacequizexporter/i.test(taskAndReport);
-  const explicitAdmissionTask = /ADMISSION-APP|admissions checker|admissions pipeline|app-admissions|admission-app/i.test(taskAndReport);
-  const explicitCanvasTask = /canvas-helper|Sports Wellness|sportswellness/i.test(taskAndReport);
+  const explicitBrightspaceTask =
+    /brightspace|brightspacequizexporter/i.test(taskAndReport) ||
+    targetRepoPath === "/Users/deanguedo/Documents/GitHub/brightspacequizexporter";
+  const explicitAdmissionTask =
+    /ADMISSION-APP|admissions checker|admissions pipeline|app-admissions|admission-app/i.test(taskAndReport) ||
+    targetRepoPath === "/Users/deanguedo/Documents/GitHub/ADMISSION-APP";
+  const explicitCanvasTask =
+    /canvas-helper|Sports Wellness|sportswellness/i.test(taskAndReport) ||
+    targetRepoPath === "/Users/deanguedo/Documents/GitHub/canvas-helper";
   const explicitPublishSyncTask = /\b(publish\/sync|publish|sync|Sheets|sheets_sync|Google Sheets|preflight)\b/i.test(taskAndReport);
   const signals: ProjectControlSignals = {
     targetRepoPath,
@@ -838,28 +851,30 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     inventedPathRisk,
     codexClaimsTestsPassed,
     codexClaimsComplete,
-    admissionApp: !explicitStaxTask && !explicitBrightspaceTask && /ADMISSION-APP|admissions checker|admissions pipeline|app-admissions|admission-app/i.test(combined),
-    buildPagesClaim: !explicitStaxTask && !explicitBrightspaceTask && /build:pages|Pages build|tools\/build-pages\.js/i.test(combined),
-    iosReleaseClaim: !explicitStaxTask && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /TestFlight|App Store|iOS wrapper|IOS_RELEASE_GATE|mobile\/ios-wrapper|release readiness|submit to TestFlight/i.test(combined),
-    sheetsPublishClaim: !explicitStaxTask && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /SYNC_ALL|SYNC_PROGRAMS|publish to Sheets|Google Sheets|sheets_sync|target Sheet/i.test(combined),
-    ualbertaPipelineClaim: !explicitStaxTask && !explicitBrightspaceTask && /UAlberta|ualberta|check_ualberta_url_map_fixtures|ualberta_program_seed|canonical_url_map/i.test(combined),
-    avgTotalApplyClaim: !explicitStaxTask && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /Avg_Total|apply-avg-total-candidates|avg_total_candidates|DryRun/i.test(combined),
+    admissionApp: !staxRepoContext && !explicitBrightspaceTask && /ADMISSION-APP|admissions checker|admissions pipeline|app-admissions|admission-app/i.test(combined),
+    buildPagesClaim: !staxRepoContext && !explicitBrightspaceTask && /build:pages|Pages build|tools\/build-pages\.js/i.test(combined),
+    iosReleaseClaim: !staxRepoContext && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /TestFlight|App Store|iOS wrapper|IOS_RELEASE_GATE|mobile\/ios-wrapper|release readiness|submit to TestFlight/i.test(combined),
+    sheetsPublishClaim: !staxRepoContext && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /SYNC_ALL|SYNC_PROGRAMS|publish to Sheets|Google Sheets|sheets_sync|target Sheet/i.test(combined),
+    ualbertaPipelineClaim: !staxRepoContext && !explicitBrightspaceTask && /UAlberta|ualberta|check_ualberta_url_map_fixtures|ualberta_program_seed|canonical_url_map/i.test(combined),
+    avgTotalApplyClaim: !staxRepoContext && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /Avg_Total|apply-avg-total-candidates|avg_total_candidates|DryRun/i.test(combined),
     visualProofClaim: /visual|layout|looks good|CSS|screenshot|rendered preview|\bpreview\b|WebAppStyles|card text fit|checkmark containment/i.test(taskAndReport),
-    appsScriptStructureClaim: !explicitStaxTask && !explicitBrightspaceTask && /Apps Script deploy|validate-apps-script-structure|export-appsscript-bundles|WebApp\.html|Code\.gs|EligibilityEngine\.gs/i.test(combined),
+    appsScriptStructureClaim: !staxRepoContext && !explicitBrightspaceTask && /Apps Script deploy|validate-apps-script-structure|export-appsscript-bundles|WebApp\.html|Code\.gs|EligibilityEngine\.gs/i.test(combined),
     humanPastedWeakProof: /human-pasted|Human-pasted|human pasted/i.test(combined),
     memoryAutoApprovalClaim: /approved project memory|saved .*memory|auto-save|raw model output|approval metadata|poison scan/i.test(combined),
     dependencyScopeViolation: /src\/parser\.ts|parser logic|source\/parser|forbidden tracked changes/i.test(reportAndCommand),
     seedGoldMisuse: /\b(?:ran|run|running|succeeded|updated|changed|used|fixed)\b[\s\S]{0,100}\b(?:ingest:seed-gold|seed-gold|gold files|gold\/|fixture\/gold)\b/i.test(reportAndCommand),
     scriptExistsAsProof: /script exists|scripts exist|package\.json (?:has|contains)|existence of the .*script|because package\.json (?:has|contains)/i.test(combined),
-    pipelinePublishClaim: !explicitStaxTask && !explicitBrightspaceTask && /ready to publish|publish-safe|canonical CSV exists|pipeline files exist|validate-canonical|QA gates|pipeline output|publish readiness/i.test(combined),
+    pipelinePublishClaim: !staxRepoContext && !explicitBrightspaceTask && /ready to publish|publish-safe|canonical CSV exists|pipeline files exist|validate-canonical|QA gates|pipeline output|publish readiness/i.test(combined),
     sheetsValidationCommandKnown: /validate-sync-surface\.ps1/i.test(combined),
     canvasBuildStudioClaim: /build:studio|studio build/i.test(combined),
     ualbertaFixtureCommandKnown: /pipeline\/check_ualberta_url_map_fixtures\.py/i.test(combined),
-    canvasHelper: !explicitStaxTask && !explicitBrightspaceTask && /canvas-helper|Sports Wellness|sportswellness/i.test(combined),
+    canvasHelper: !staxRepoContext && !explicitBrightspaceTask && /canvas-helper|Sports Wellness|sportswellness/i.test(combined),
     boundedPromptRequest: /create one bounded codex prompt|bounded codex prompt|write one bounded next prompt|one next bounded prompt|bounded next action/i.test(packet.task),
     repoRiskRequest: /biggest current operating risk|what is risky in/i.test(packet.task),
     proofGapRequest: /what tests.*proof is missing|proof gap|what tests or proof commands/i.test(packet.task),
     priorRunProofRequest: /prior run|previous STAX run|last Brightspace run context|prior ADMISSION-APP evidence/i.test(packet.task),
+    priorRunProvenVsUnprovenRequest: /what is actually proven vs unproven/i.test(packet.task),
+    priorRunFakeCompleteRequest: /fake-complete risk and one bounded correction step/i.test(packet.task),
     commandSourceClassificationRequest: /classify strong vs weak proof|local_stax|codex_reported|human_pasted/i.test(packet.task),
     codexReportedOnlyProofRequest: /only Codex-reported output|Codex-reported output exists/i.test(packet.task),
     uiHumanPastedNoScreenshotRequest: /UI-fix claim with no screenshot|human-pasted command text/i.test(packet.task),
@@ -919,6 +934,15 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (signals.codexReportedOnlyProofRequest) {
     verified.push("The task asks whether Codex-reported command output can prove a test-pass state.");
   }
+  if (signals.priorRunProofRequest && signals.explicitBrightspaceTask) {
+    verified.push("The task asks what Brightspace gate is still unproven from prior-run context.");
+  }
+  if (signals.priorRunProofRequest && signals.explicitAdmissionTask) {
+    verified.push("The task asks what remains blocked before ADMISSION-APP publish/sync from prior evidence.");
+  }
+  if (signals.priorRunProofRequest && !signals.explicitBrightspaceTask && !signals.explicitAdmissionTask) {
+    verified.push("The task asks for a prior-run proof audit rather than a fresh completion claim.");
+  }
   if (signals.crossRepoEvidenceTrap) {
     verified.push("The task states command evidence came from canvas-helper while the proof claim targets Brightspace.");
   }
@@ -927,6 +951,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   }
   if (signals.crossRepoZipEvidenceTrap) {
     verified.push("The supplied evidence source is ADMISSION-APP while the readiness question targets canvas-helper.");
+  }
+  if (signals.nonExistentRepoPathClaim) {
+    verified.push("The report references a non-existent repo path.");
   }
   if (!packet.repoEvidence.trim() && !packet.commandEvidence.trim() && !packet.codexReport.trim()) {
     verified.push("No repo evidence, command evidence, or Codex report was supplied in this task packet.");
@@ -963,6 +990,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   }
   if (/no local .*command evidence|no local command output/i.test(combined)) {
     verified.push("The supplied evidence includes no local command output for the claimed pass/completion state.");
+  }
+  if (signals.priorRunProofRequest && !hasCommandOutput) {
+    verified.push("No prior-run diff summary, command output, or repo-local artifact was supplied as hard proof.");
   }
   if (docsOnly) {
     verified.push("The supplied diff evidence is docs-only; no runtime/source/test change is supplied.");
@@ -1222,11 +1252,27 @@ function projectControlVerdict(input: ProjectControlSignals): string {
   if (input.dogfoodCampaignAudit && input.staxValidationEvidence) {
     return "Validation-backed but not campaign-complete; the supplied evidence proves local STAX checks passed, while the dogfood ledger still has only 9 of 10 real tasks.";
   }
+  if (input.priorRunProofRequest && input.explicitBrightspaceTask) {
+    return "Brightspace prior-run proof is incomplete until the build and ingest:ci gates have local command evidence.";
+  }
+  if (input.priorRunProofRequest && input.explicitAdmissionTask) {
+    return "ADMISSION-APP publish/sync remains blocked until local preflight validation evidence exists.";
+  }
+  if (input.priorRunProvenVsUnprovenRequest) {
+    return "What is proven right now is only that no repo-local diff, test, or eval evidence was supplied; runtime behavior and completion remain unproven.";
+  }
+  if (input.priorRunFakeCompleteRequest) {
+    return "Fake-complete risk is present: a prior run summary can sound complete without repo-local diff or command evidence.";
+  }
+  if (input.priorRunProofRequest) {
+    return "Prior-run completion is not proven from summary context alone; it needs local artifact or command evidence.";
+  }
   if (input.explicitStaxTask) {
     return "Not commit-ready as proven until the STAX worktree has local validation evidence and the current diff is reviewed.";
   }
   if (
     input.explicitBrightspaceTask &&
+    !input.priorRunProofRequest &&
     !input.rollupPresent &&
     !input.wrongRepoEvidencePaths.length &&
     !input.crossRepoEvidenceTrap &&
@@ -1279,15 +1325,6 @@ function projectControlVerdict(input: ProjectControlSignals): string {
   }
   if (input.admissionPipelineFilesPublishSafeRequest) {
     return "Not publish-safe; ADMISSION-APP pipeline file existence is not validation or preflight proof.";
-  }
-  if (input.priorRunProofRequest && input.explicitBrightspaceTask) {
-    return "Brightspace prior-run proof is incomplete until the build and ingest:ci gates have local command evidence.";
-  }
-  if (input.priorRunProofRequest && input.explicitAdmissionTask) {
-    return "ADMISSION-APP publish/sync remains blocked until local preflight validation evidence exists.";
-  }
-  if (input.priorRunProofRequest) {
-    return "Prior-run completion is not proven from summary context alone; it needs local artifact or command evidence.";
   }
   if (input.wrongRepoEvidencePaths.length) {
     return "Not proven; supplied command/report evidence points at the wrong repo for this task.";
@@ -1414,7 +1451,7 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Collect canvas-helper-specific evidence only: changed files plus rendered screenshot or local preview output from /Users/deanguedo/Documents/GitHub/canvas-helper.";
   }
   if (input.nonExistentRepoPathClaim) {
-    return "Stop on the missing repo path, then require the correct repo root plus pwd, git rev-parse --show-toplevel, and the local test command output.";
+    return "Stop on the missing repo path, then require the correct repo root and rerun pwd && git rev-parse --show-toplevel && npm test before accepting any tests-passed claim.";
   }
   if (input.cleanupMinimizationRequest) {
     return "Ask Codex to inspect only the main claimed changed area, produce exact files/diff summary, run one proof command or produce one artifact, then stop.";
@@ -1437,11 +1474,27 @@ function projectControlNextAction(input: ProjectControlSignals): string {
   if (input.dogfoodCampaignAudit && input.staxValidationEvidence) {
     return "Record the 10th real dogfood task in fixtures/real_use/dogfood_10_tasks_2026-04-30.json and update docs/RAX_REAL_USE_CAMPAIGN_REPORT.md to 10/10 with the validation evidence and any remaining limits.";
   }
+  if (input.priorRunProofRequest && input.explicitBrightspaceTask) {
+    return "Run npm run build and then npm run ingest:ci from /Users/deanguedo/Documents/GitHub/brightspacequizexporter and report the first remaining failure or passing output.";
+  }
+  if (input.priorRunProofRequest && input.explicitAdmissionTask) {
+    return `Run ${ADMISSION_SURFACE.commands.syncPreflight} or ${ADMISSION_SURFACE.commands.canonicalValidation} from ${ADMISSION_SURFACE.repoPath} and capture exact output before ${formatBlockedActions(ADMISSION_SURFACE)}.`;
+  }
+  if (input.priorRunProvenVsUnprovenRequest) {
+    return "From /Users/deanguedo/Documents/GitHub/STAX, run pwd && git status --short && git diff --stat && npm test, then report exactly what is proven, unproven, and the first failure if any.";
+  }
+  if (input.priorRunFakeCompleteRequest) {
+    return "From /Users/deanguedo/Documents/GitHub/STAX, run pwd && git status --short && git diff --stat && npm test so the prior summary is downgraded or confirmed by repo-local evidence.";
+  }
+  if (input.priorRunProofRequest) {
+    return "Run one local proof audit from the STAX repo root: show repo identity, relevant diff, exact command output, and first remaining failure.";
+  }
   if (input.explicitStaxTask) {
     return "From /Users/deanguedo/Documents/GitHub/STAX, review the current diff and rerun npm run typecheck, npm test, and npm run rax -- eval before any commit-ready claim.";
   }
   if (
     input.explicitBrightspaceTask &&
+    !input.priorRunProofRequest &&
     !input.rollupPresent &&
     !input.wrongRepoEvidencePaths.length &&
     !input.crossRepoEvidenceTrap &&
@@ -1458,15 +1511,6 @@ function projectControlNextAction(input: ProjectControlSignals): string {
   }
   if (input.admissionPipelineFilesPublishSafeRequest) {
     return "Run one existing non-publishing ADMISSION-APP pipeline/preflight validation command and capture cwd, command, exit code, and output before any publish/sync.";
-  }
-  if (input.priorRunProofRequest && input.explicitBrightspaceTask) {
-    return "Run npm run build and then npm run ingest:ci from /Users/deanguedo/Documents/GitHub/brightspacequizexporter and report the first remaining failure or passing output.";
-  }
-  if (input.priorRunProofRequest && input.explicitAdmissionTask) {
-    return `Run ${ADMISSION_SURFACE.commands.syncPreflight} or ${ADMISSION_SURFACE.commands.canonicalValidation} from ${ADMISSION_SURFACE.repoPath} and capture exact output before ${formatBlockedActions(ADMISSION_SURFACE)}.`;
-  }
-  if (input.priorRunProofRequest) {
-    return "Run one local proof audit from the STAX repo root: show repo identity, relevant diff, exact command output, and first remaining failure.";
   }
   if (input.repoPathWithheld) {
     if (input.seedGoldMisuse) {
@@ -1790,7 +1834,7 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "```txt",
       "First verify the intended repo path exists.",
       "If it does not exist, stop and report that tests are unverified.",
-      "If the correct repo root is supplied, run pwd, git rev-parse --show-toplevel, and one local test command.",
+      "If the correct repo root is supplied, run exactly: pwd && git rev-parse --show-toplevel && npm test",
       "Return path existence, git root, exact test output, exit code, and pass/fail based only on local evidence.",
       "```"
     ].join("\n");
@@ -1846,6 +1890,26 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "Work in /Users/deanguedo/Documents/GitHub/ADMISSION-APP.",
       "Run one existing non-publishing preflight/validation command for publish/sync readiness.",
       "Return cwd, command, exit code, output, and what remains blocked.",
+      "```"
+    ].join("\n");
+  }
+  if (input.priorRunProvenVsUnprovenRequest) {
+    return [
+      "```txt",
+      "Audit the prior STAX run by proving only what local repo evidence supports.",
+      "From /Users/deanguedo/Documents/GitHub/STAX, run exactly: pwd && git status --short && git diff --stat && npm test",
+      "Return what is proven, what remains unproven, the exact command output, and the first failure if any.",
+      "Do not claim completion from the prior summary alone.",
+      "```"
+    ].join("\n");
+  }
+  if (input.priorRunFakeCompleteRequest) {
+    return [
+      "```txt",
+      "Audit the previous STAX run summary for fake-complete risk.",
+      "From /Users/deanguedo/Documents/GitHub/STAX, run exactly: pwd && git status --short && git diff --stat && npm test",
+      "Return one fake-complete risk, one bounded correction step, the exact command output, and the first failure if any.",
+      "Do not accept the prior summary as proof.",
       "```"
     ].join("\n");
   }

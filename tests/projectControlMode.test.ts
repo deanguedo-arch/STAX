@@ -697,6 +697,27 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("SYNC_ALL");
   });
 
+  it("keeps generic STAX prior-run proof tasks in the STAX lane when repo evidence targets STAX", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Given prior run artifacts, what is actually proven vs unproven right now, and what is one bounded next proof action?",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/STAX\nNo local STAX command evidence supplied yet.",
+        commandEvidence: "No local STAX command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("/Users/deanguedo/Documents/GitHub/STAX");
+    expect(output.output).toContain("pwd && git status --short && git diff --stat && npm test");
+    expect(output.output).not.toContain("build:pages");
+    expect(output.output).not.toContain("validate-sync-surface.ps1");
+  });
+
   it("keeps Brightspace dependency prompts from leaking ADMISSION release context", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
