@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { validateProjectControlCaptureOutput } from "./CaptureValidation.js";
 
 export type ComparisonIntegrityIssue = {
   code:
@@ -62,23 +63,6 @@ type ScoresFile = {
 
 const REQUIRED_FILES = ["cases.json", "captures.json", "scores.json", "report.md", "manifest.json"] as const;
 
-const BANNED_CAPTURE_PATTERNS = [
-  /please copy/i,
-  /reply copied/i,
-  /as soon as you say copied/i,
-  /ready on case/i,
-  /paste the response now/i
-];
-
-const REQUIRED_SECTION_PATTERNS = [
-  /##?\s*verdict/i,
-  /##?\s*verified/i,
-  /##?\s*weak\s*\/\s*provisional/i,
-  /##?\s*unverified/i,
-  /##?\s*risk/i,
-  /##?\s*one\s+next\s+action/i
-];
-
 function scoreSummary(entries: ScoresFile["entries"]) {
   let staxWins = 0;
   let chatgptWins = 0;
@@ -124,10 +108,6 @@ function parseReportSummary(report: string) {
     staxCriticalMisses: n(/STAX critical misses:\s*(\d+)/i),
     chatgptCriticalMisses: n(/ChatGPT critical misses:\s*(\d+)/i)
   };
-}
-
-function hasRequiredSections(text: string): boolean {
-  return REQUIRED_SECTION_PATTERNS.every((pattern) => pattern.test(text));
 }
 
 export async function validateComparisonRunIntegrity(input: {
@@ -205,23 +185,22 @@ export async function validateComparisonRunIntegrity(input: {
   }
 
   for (const capture of captures.captures) {
-    const staxText = (capture.staxOutput ?? "").trim();
-    const chatgptText = (capture.chatgptOutput ?? "").trim();
-    if (!staxText || !chatgptText) {
+    const staxValidation = validateProjectControlCaptureOutput(capture.staxOutput);
+    const chatgptValidation = validateProjectControlCaptureOutput(capture.chatgptOutput);
+    if (staxValidation.issues.includes("missing_output") || chatgptValidation.issues.includes("missing_output")) {
       issues.push({
         code: "missing_capture_output",
         message: `Missing STAX/ChatGPT output for task ${capture.taskId}`
       });
       continue;
     }
-    const combined = `${staxText}\n${chatgptText}`;
-    if (BANNED_CAPTURE_PATTERNS.some((pattern) => pattern.test(combined))) {
+    if (staxValidation.issues.includes("operational_capture_text") || chatgptValidation.issues.includes("operational_capture_text")) {
       issues.push({
         code: "corrupted_capture",
         message: `Operational capture text found in task ${capture.taskId}`
       });
     }
-    if (!hasRequiredSections(staxText) || !hasRequiredSections(chatgptText)) {
+    if (staxValidation.issues.includes("missing_required_sections") || chatgptValidation.issues.includes("missing_required_sections")) {
       issues.push({
         code: "missing_required_sections",
         message: `Required sections missing in task ${capture.taskId}`

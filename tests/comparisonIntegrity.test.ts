@@ -97,6 +97,14 @@ describe("validateComparisonRunIntegrity", () => {
     expect(result.issues.some((i) => i.code === "corrupted_capture")).toBe(true);
   });
 
+  it("uses the shared capture validator for subscription capture corruption", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    await writeRun(baseDir, "bad-phase11-capture", { chatgptOutput: `${GOOD_OUTPUT}\nfailed to copy to clipboard` });
+    const result = await validateComparisonRunIntegrity({ runId: "bad-phase11-capture", baseDir });
+    expect(result.pass).toBe(false);
+    expect(result.issues.some((i) => i.code === "corrupted_capture")).toBe(true);
+  });
+
   it("fails when conflicting score files exist", async () => {
     const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
     await writeRun(baseDir, "conflict", { extraScoreFile: { name: "scores_backup.json", content: "{}" } });

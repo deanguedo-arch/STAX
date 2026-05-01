@@ -1,3 +1,5 @@
+import { validateProjectControlCaptureOutput } from "./CaptureValidation.js";
+
 export type Phase11CaptureEntry = {
   taskId: string;
   chatgptOutput: string | null;
@@ -18,27 +20,12 @@ export type CaptureIntegrityResult = {
   issues: CaptureIntegrityIssue[];
 };
 
-const REQUIRED_TOKENS = [
-  /\bverdict\b/i,
-  /\bverified\b/i,
-  /\bweak\b/i,
-  /\bunverified\b/i,
-  /\brisk\b/i,
-  /\bnext action\b/i
-];
-
-const CORRUPTION_PATTERNS = [
-  /failed to copy to clipboard/i,
-  /^\s*copied\s*$/i,
-  /you are being tested on a project-control task/i
-];
-
 export function validatePhase11CaptureIntegrity(input: Phase11CaptureFile): CaptureIntegrityResult {
   const issues: CaptureIntegrityIssue[] = [];
 
   for (const entry of input.entries ?? []) {
-    const text = (entry.chatgptOutput ?? "").trim();
-    if (!text) {
+    const result = validateProjectControlCaptureOutput(entry.chatgptOutput);
+    if (result.issues.includes("missing_output")) {
       issues.push({
         taskId: entry.taskId,
         reason: "Missing chatgptOutput."
@@ -46,16 +33,14 @@ export function validatePhase11CaptureIntegrity(input: Phase11CaptureFile): Capt
       continue;
     }
 
-    if (CORRUPTION_PATTERNS.some((pattern) => pattern.test(text))) {
+    if (result.issues.includes("operational_capture_text")) {
       issues.push({
         taskId: entry.taskId,
         reason: "Captured output appears to be operational capture text, not a task answer."
       });
-      continue;
     }
 
-    const missing = REQUIRED_TOKENS.filter((pattern) => !pattern.test(text));
-    if (missing.length > 0) {
+    if (result.issues.includes("missing_required_sections")) {
       issues.push({
         taskId: entry.taskId,
         reason: "Captured output is missing required project-control sections."
