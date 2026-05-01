@@ -1,0 +1,89 @@
+{
+  "campaignId": "failure_ledger_2026-04-30",
+  "entries": [
+    {
+      "failureId": "fail_001",
+      "sourceTaskId": "real_codex_001",
+      "failureType": "wrong_repo_lane",
+      "severity": "major",
+      "expectedBehavior": "Stay in ADMISSION-APP publish/sync readiness and block live actions behind preflight evidence.",
+      "actualBehavior": "Initial answer drifted into iOS/TestFlight preflight due to unrelated release docs in repo evidence.",
+      "patchTarget": "tests/projectControlMode.test.ts",
+      "evalCandidate": true,
+      "status": "patch_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_001"
+    },
+    {
+      "failureId": "fail_002",
+      "sourceTaskId": "real_codex_003",
+      "failureType": "cross_repo_context_leak",
+      "severity": "major",
+      "expectedBehavior": "STAX self-audit should stay in the STAX commit-readiness lane.",
+      "actualBehavior": "Initial self-audit leaked ADMISSION-APP/TestFlight/Sheets context from prior evidence.",
+      "patchTarget": "src/agents/AnalystAgent.ts",
+      "evalCandidate": true,
+      "status": "patch_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_003"
+    },
+    {
+      "failureId": "fail_003",
+      "sourceTaskId": "real_codex_004",
+      "failureType": "wrong_task_routing",
+      "severity": "major",
+      "expectedBehavior": "Scrape/data correctness should route to data-contract and field-coverage audit.",
+      "actualBehavior": "Initial answer routed scrape/data correctness to Sheets publish/sync safety.",
+      "patchTarget": "tests/projectControlMode.test.ts",
+      "evalCandidate": true,
+      "status": "eval_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_004"
+    },
+    {
+      "failureId": "fail_004",
+      "sourceTaskId": "real_codex_005",
+      "failureType": "repeated_audit_loop",
+      "severity": "major",
+      "expectedBehavior": "Supplied ADMISSION-APP coverage audit should advance to the first concrete data gap.",
+      "actualBehavior": "STAX repeated the same data-contract audit despite already-supplied coverage results.",
+      "patchTarget": "tests/projectControlMode.test.ts",
+      "evalCandidate": true,
+      "status": "patch_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_005"
+    },
+    {
+      "failureId": "fail_005",
+      "sourceTaskId": "real_codex_007",
+      "failureType": "safety_text_misread",
+      "severity": "major",
+      "expectedBehavior": "Avg_Total gap audit should stay on coverage and identity drift.",
+      "actualBehavior": "Safety text saying no publish/sync was run was misread as a Sheets publish/sync task.",
+      "patchTarget": "tests/projectControlMode.test.ts",
+      "evalCandidate": true,
+      "status": "patch_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_007"
+    },
+    {
+      "failureId": "fail_006",
+      "sourceTaskId": "real_codex_008",
+      "failureType": "brightspace_context_leak",
+      "severity": "major",
+      "expectedBehavior": "Brightspace dependency readiness should stay scoped to Brightspace dependency proof.",
+      "actualBehavior": "Initial answer leaked ADMISSION-APP/iOS/TestFlight context into the Brightspace task.",
+      "patchTarget": "src/projectControl/RepoProofSurfaceRegistry.ts",
+      "evalCandidate": true,
+      "status": "patch_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_008"
+    },
+    {
+      "failureId": "fail_007",
+      "sourceTaskId": "real_codex_010",
+      "failureType": "supplied_evidence_not_parsed",
+      "severity": "major",
+      "expectedBehavior": "Dogfood self-audit should parse supplied local validation evidence and remain completion-blocked honestly.",
+      "actualBehavior": "First self-audit treated the one-line shell argument as unstructured text and lacked a specific dogfood campaign completion lane.",
+      "patchTarget": "src/agents/AnalystAgent.ts",
+      "evalCandidate": true,
+      "status": "patch_created",
+      "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_010"
+    }
+  ]
+}

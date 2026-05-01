@@ -96,8 +96,13 @@ Test STAX’s true advantage: local state/evidence continuity.
 - `fixtures/real_use/runs/phaseB-stateful-20-2026-04-30`
 - Integrity command: `npm run campaign:integrity -- --run phaseB-stateful-20-2026-04-30`
 - Integrity status: passed
-- Summary: 20 cases, 0 STAX wins, 0 ChatGPT wins, 20 ties, 0 STAX critical misses, 0 ChatGPT critical misses.
-- Interpretation: safe no-loss stateful comparison, not decisive superiority.
+- Canonical comparison summary: 20 cases, 0 STAX wins, 0 ChatGPT wins, 20 ties, 0 STAX critical misses, 0 ChatGPT critical misses.
+- Executable rerun summary:
+  - `npm run campaign:phaseB:refresh -- --run phaseB-stateful-20-2026-04-30`
+  - `npm run campaign:phaseB:score -- --run phaseB-stateful-20-2026-04-30`
+  - `fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/executable_benchmark_summary.json`
+  - 7 STAX wins, 0 ChatGPT wins, 13 ties.
+- Interpretation: safe no-loss stateful comparison with a promising executable rerun, but still not decisive superiority or a 9+ claim.
 
 ## Phase C — Cleanup Burden KPI
 
@@ -127,12 +132,27 @@ Track whether STAX reduces Dean’s real Codex cleanup burden.
 - cleanup burden trends downward versus baseline
 
 ### Implemented check
+- `src/campaign/BaselineCleanup.ts`
+- `scripts/baselineCleanup.ts`
+- `npm run campaign:baseline`
 - `src/campaign/RealUseCampaignIntegrity.ts`
 - `scripts/realUseCampaignIntegrity.ts`
 - `npm run campaign:real-use:integrity`
 - `src/campaign/RealUseReplayGate.ts`
 - `scripts/realUseReplayGate.ts`
 - `npm run campaign:real-use:replay`
+- `src/campaign/DogfoodRoundC.ts`
+- `scripts/dogfoodRoundC.ts`
+- `npm run campaign:dogfood:c`
+- `src/campaign/FailureLedger.ts`
+- `scripts/failureLedger.ts`
+- `npm run campaign:failures`
+- `src/campaign/OperatingWindow.ts`
+- `scripts/operatingWindow.ts`
+- `npm run campaign:operating-window`
+- `src/campaign/PromotionGate95.ts`
+- `scripts/promotionGate95.ts`
+- `npm run campaign:promotion-gate`
 
 ### Current ledger result
 - Ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
@@ -153,6 +173,13 @@ Current replay result:
 
 Interpretation: current behavior has repaired the observed first-prompt routing
 misses, but this does not rewrite the historical cleanup ledger.
+
+Current new-gate results:
+- `npm run campaign:baseline`: `baseline_incomplete`
+- `npm run campaign:failures`: `tracked`
+- `npm run campaign:dogfood:c`: `invalid` (fresh round not yet recorded)
+- `npm run campaign:operating-window`: `invalid` (30-task window not yet recorded)
+- `npm run campaign:promotion-gate`: `promotion_blocked`
 
 ## Phase D — Promotion Gate
 
@@ -184,8 +211,13 @@ Implemented now:
 - `npm run campaign:phase11:integrity`
 - `npm run campaign:phase11:subscription`
 - `npm run campaign:integrity -- --run sample-clean-run`
+- `npm run campaign:baseline`
 - `npm run campaign:real-use:integrity`
 - `npm run campaign:real-use:replay`
+- `npm run campaign:dogfood:c`
+- `npm run campaign:failures`
+- `npm run campaign:operating-window`
+- `npm run campaign:promotion-gate`
 
 Implemented run-scoped comparison folders:
 - `fixtures/real_use/runs/<run-id>/...`
@@ -214,20 +246,30 @@ Implemented:
 - integrity tests
 - run-folder integrity command and validator
 - Phase B stateful run integrity check
+- executable Phase B STAX refresh/scoring loop
 - Phase C real-use campaign ledger integrity check
 - Phase C real-use replay gate for current first-prompt routing
+- baseline cleanup ledger gate
+- failure ledger gate
+- fresh dogfood Round C gate
+- operating-window gate
+- 9.5 promotion gate
 
 Documented only (next execution slices):
-- cleanup-burden trendline against a baseline
-- promotion to 9+ after clean repeated real-use runs
+- fresh measured baseline cleanup counts
+- fresh Round C task evidence
+- 30-task operating window evidence
+- promotion to 9.5 after clean repeated real-use runs
 
 ## Next One Bounded Action
 
 Run:
 
 ```bash
-npm run campaign:phase11:integrity
-npm run campaign:phase11:subscription
+npm run campaign:baseline
+npm run campaign:failures
+npm run campaign:dogfood:c
+npm run campaign:promotion-gate
 ```
 
-Then record the resulting run IDs in the real-use campaign report and promote only zero-miss patterns.
+Then fill the missing evidence instead of broadening architecture: measure five baseline tasks, record ten fresh Round C tasks, and only then re-evaluate the promotion gate.

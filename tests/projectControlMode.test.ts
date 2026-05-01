@@ -697,6 +697,26 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("SYNC_ALL");
   });
 
+  it("routes explicit Avg_Total gap trace tasks to a concrete row-level trace", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit the ADMISSION-APP Avg_Total gap trace and choose one bounded next action.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        commandEvidence: "No local command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("pipeline/program_index.cleaned.csv");
+    expect(output.output).toContain("pipeline_artifacts/extract/avg_total_candidates.csv");
+    expect(output.output).toContain("identity drift");
+  });
+
   it("keeps generic STAX prior-run proof tasks in the STAX lane when repo evidence targets STAX", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
@@ -743,6 +763,101 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("Sheets sync");
   });
 
+  it("routes Brightspace build-gate tasks to npm run build instead of dependency inspection", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Validate whether Brightspace build gate is clear before ingest.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+        commandEvidence: "No local command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("npm run build");
+    expect(output.output).not.toContain("npm ls @rollup/rollup-darwin-arm64 rollup vite");
+  });
+
+  it("routes Brightspace ingest-gate tasks to npm run ingest:ci", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Validate whether Brightspace ingest gate is clear.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+        commandEvidence: "No local command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("npm run ingest:ci");
+    expect(output.output).toContain("ingest:promotion-check");
+  });
+
+  it("advances a passing Brightspace build report to ingest instead of falling back to npm ls", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit this Codex report for brightspacequizexporter.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+        commandEvidence: "cwd=/Users/deanguedo/Documents/GitHub/brightspacequizexporter\n$ npm run build\nExit code: 0\nBuild passed.",
+        codexReport: "Ran npm run build from /Users/deanguedo/Documents/GitHub/brightspacequizexporter. Exit code 0."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("build gate is locally proven");
+    expect(output.output).toContain("npm run ingest:ci");
+    expect(output.output).not.toContain("npm ls @rollup/rollup-darwin-arm64 rollup vite");
+  });
+
+  it("treats a passing Brightspace ingest report as a stop-and-record proof state", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit this Codex report for brightspacequizexporter.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+        commandEvidence: "cwd=/Users/deanguedo/Documents/GitHub/brightspacequizexporter\n$ npm run ingest:ci\nExit code: 0\nbuild passed\ningest:promotion-check passed",
+        codexReport: "Ran npm run ingest:ci from /Users/deanguedo/Documents/GitHub/brightspacequizexporter. Exit code 0."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("ingest gate is locally proven");
+    expect(output.output).toContain("Record the passing npm run ingest:ci evidence");
+    expect(output.output).not.toContain("npm ls @rollup/rollup-darwin-arm64 rollup vite");
+  });
+
+  it("treats passing validate-dataset output as schema floor, not the end of the ADMISSION data audit", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit this Codex report for ADMISSION-APP.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        commandEvidence: "cwd=/Users/deanguedo/Documents/GitHub/ADMISSION-APP\n$ python3 tools/validate-dataset.py --input data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv\nExit code: 0\nDataset validation summary\nValidation passed.",
+        codexReport: "Ran python3 tools/validate-dataset.py --input data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv from /Users/deanguedo/Documents/GitHub/ADMISSION-APP. Exit code 0."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("schema validation passed");
+    expect(output.output).toContain("field-coverage audit");
+    expect(output.output).not.toContain("Collect the smallest local evidence packet");
+  });
+
   it("uses supplied STAX validation evidence while keeping dogfood campaign completion honest", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
@@ -763,6 +878,47 @@ describe("project_control mode", () => {
     expect(output.output).toContain("Record the 10th real dogfood task");
     expect(output.output).not.toContain("tests-passed claim is unverified");
     expect(output.output).not.toContain("ADMISSION-APP build");
+  });
+
+  it("routes STAX self-audit tasks to the exact requested command lane", async () => {
+    const runtime = await createDefaultRuntime();
+
+    const typecheckOutput = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit STAX validation readiness and give one bounded next action.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/STAX",
+        commandEvidence: "No local STAX command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+    expect(typecheckOutput.output).toContain("npm run typecheck");
+    expect(typecheckOutput.output).not.toContain("Collect the smallest local evidence packet");
+
+    const evalOutput = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit STAX eval readiness before any 9.5 claim.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/STAX",
+        commandEvidence: "No local STAX command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+    expect(evalOutput.output).toContain("npm run rax -- eval");
+
+    const gateOutput = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit STAX 9.5 promotion-gate status and give one bounded next action.",
+        repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/STAX",
+        commandEvidence: "No local STAX command evidence supplied.",
+        codexReport: "None supplied."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+    expect(gateOutput.output).toContain("npm run campaign:promotion-gate");
   });
 
   it.each([

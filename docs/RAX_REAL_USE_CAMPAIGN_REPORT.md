@@ -59,6 +59,23 @@ Phase B stateful advantage run (2026-04-30):
   - ChatGPT critical misses: 0
 - interpretation: safe no-loss stateful comparison, not decisive superiority.
 
+Phase B executable rerun (current local STAX against captured ChatGPT baseline):
+
+- command sequence:
+  - `npm run campaign:phaseB:refresh -- --run phaseB-stateful-20-2026-04-30`
+  - `npm run campaign:phaseB:score -- --run phaseB-stateful-20-2026-04-30`
+- artifact:
+  - `fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/executable_benchmark_summary.json`
+- summary:
+  - Total scored cases: 20
+  - STAX wins: 7
+  - ChatGPT wins: 0
+  - Ties: 13
+  - STAX critical misses: 0
+- interpretation:
+  - The executable STAX rerun is now ahead on this slice.
+  - This is still not enough for a 9+ or 9.5 claim because the external side is a captured baseline, not a fresh live rerun in the current turn, and the real-use cleanup gates remain blocked.
+
 Dogfood 10-task loop (2026-04-30):
 
 - ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
@@ -97,7 +114,7 @@ Dogfood 10-task loop (2026-04-30):
   - STAX dogfood campaign self-audit now accepts supplied local validation evidence while still refusing to call a 9/10 ledger complete.
 - latest validation evidence:
   - `npm run typecheck`: passed
-  - `npm test`: passed, 114 files and 581 tests
+  - `npm test`: passed, 122 files and 602 tests
   - `npm run rax -- eval`: passed, 16/16
   - fitness smoke: passed
 - proof artifacts for Task 2:
@@ -140,7 +157,25 @@ fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/cases.json
 fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/captures.json
 fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/scores.json
 fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/report.md
+fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/executable_benchmark_summary.json
+fixtures/real_use/failure_ledger.json
+fixtures/real_use/baseline_cleanup_tasks.json
+fixtures/real_use/dogfood_round_c_10_tasks.json
+fixtures/real_use/operating_window_30_tasks.json
 ```
+
+9.5 gate status snapshot:
+
+- `npm run campaign:baseline`: `baseline_incomplete`
+- `npm run campaign:failures`: `tracked`
+- `npm run campaign:dogfood:c`: `invalid`
+- `npm run campaign:operating-window`: `invalid`
+- `npm run campaign:promotion-gate`: `promotion_blocked`
+- current blockers:
+  - fewer than 3 clean evidence runs are recorded
+  - baseline cleanup ledger is not ready
+  - fresh dogfood Round C has not passed
+  - 30-task operating window has not passed
 
 ## External Comparison Starter
 
