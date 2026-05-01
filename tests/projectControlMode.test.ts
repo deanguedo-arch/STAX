@@ -634,6 +634,23 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("Run one read-only ADMISSION-APP data-contract audit");
   });
 
+  it("keeps sparse ADMISSION-APP scrape coverage prompts in the data-contract lane", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Audit the Codex report from the ADMISSION-APP scrape/data coverage audit.",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("data-contract");
+    expect(output.output).toContain("field coverage");
+    expect(output.output).toContain("ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv");
+    expect(output.output).not.toContain("TestFlight");
+    expect(output.output).not.toContain("mobile/ios-wrapper");
+  });
+
   it("keeps ADMISSION-APP Avg_Total gap reports out of Sheets publish routing", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
@@ -659,6 +676,24 @@ describe("project_control mode", () => {
     expect(output.output).toContain("Avg_Total");
     expect(output.output).toContain("identity drift");
     expect(output.output).not.toContain("Sheets sync safety needs target/config/validation evidence");
+    expect(output.output).not.toContain("SYNC_ALL");
+  });
+
+  it("keeps sparse Avg_Total gap trace prompts out of release routing", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      "Audit the Avg_Total gap trace report and choose the next bounded action.",
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Avg_Total");
+    expect(output.output).toContain("data gap");
+    expect(output.output).toContain("ADMISSION-APP");
+    expect(output.output).not.toContain("TestFlight");
+    expect(output.output).not.toContain("mobile/ios-wrapper");
     expect(output.output).not.toContain("SYNC_ALL");
   });
 

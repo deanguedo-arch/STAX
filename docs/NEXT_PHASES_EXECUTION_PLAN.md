@@ -130,6 +130,9 @@ Track whether STAX reduces Dean’s real Codex cleanup burden.
 - `src/campaign/RealUseCampaignIntegrity.ts`
 - `scripts/realUseCampaignIntegrity.ts`
 - `npm run campaign:real-use:integrity`
+- `src/campaign/RealUseReplayGate.ts`
+- `scripts/realUseReplayGate.ts`
+- `npm run campaign:real-use:replay`
 
 ### Current ledger result
 - Ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
@@ -143,6 +146,13 @@ Track whether STAX reduces Dean’s real Codex cleanup burden.
 
 Interpretation: the real-use loop has strong safety/catch signal, but it does
 not yet prove cleanup reduction or a 9+ promotion gate.
+
+Current replay result:
+- `npm run campaign:real-use:replay`: passed
+- 10/10 historical dogfood tasks now hit the expected current proof lane.
+
+Interpretation: current behavior has repaired the observed first-prompt routing
+misses, but this does not rewrite the historical cleanup ledger.
 
 ## Phase D — Promotion Gate
 
@@ -175,6 +185,7 @@ Implemented now:
 - `npm run campaign:phase11:subscription`
 - `npm run campaign:integrity -- --run sample-clean-run`
 - `npm run campaign:real-use:integrity`
+- `npm run campaign:real-use:replay`
 
 Implemented run-scoped comparison folders:
 - `fixtures/real_use/runs/<run-id>/...`
@@ -204,6 +215,7 @@ Implemented:
 - run-folder integrity command and validator
 - Phase B stateful run integrity check
 - Phase C real-use campaign ledger integrity check
+- Phase C real-use replay gate for current first-prompt routing
 
 Documented only (next execution slices):
 - cleanup-burden trendline against a baseline

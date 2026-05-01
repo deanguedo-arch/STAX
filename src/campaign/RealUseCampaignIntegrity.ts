@@ -4,6 +4,7 @@ import path from "node:path";
 export type RealUseCampaignTask = {
   taskId: string;
   repo: string;
+  task?: string;
   staxInitialPromptUseful?: boolean;
   staxReportAudited?: boolean;
   fakeCompleteCaught?: boolean;

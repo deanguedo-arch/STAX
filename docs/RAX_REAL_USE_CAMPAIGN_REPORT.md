@@ -67,6 +67,8 @@ Dogfood 10-task loop (2026-04-30):
 - current STAX critical misses: 0
 - executable integrity command: `npm run campaign:real-use:integrity`
 - executable integrity status: `promotion_blocked`
+- current replay command: `npm run campaign:real-use:replay`
+- current replay status: `passed` (10/10 historical dogfood tasks now hit the expected current proof lane)
 - computed ledger summary:
   - meaningful catches: 10/10
   - fake-complete catches: 9/10
@@ -78,6 +80,10 @@ Dogfood 10-task loop (2026-04-30):
 - promotion blockers:
   - not every task has an accepted human decision
   - fewer than 8 useful initial STAX prompts recorded
+- replay interpretation:
+  - The historical first-prompt ledger remains unchanged and promotion-blocked.
+  - Current STAX behavior now passes the replay gate for the same 10 task prompts.
+  - The next proof must come from a fresh real-use round, not by rewriting the old ledger.
 - meaningful catches so far:
   - ADMISSION-APP publish/sync proof stayed blocked after a missing `pwsh` preflight.
   - canvas-helper Sports Wellness visual readiness required rendered proof instead of source/CSS-only claims.

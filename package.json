@@ -27,6 +27,7 @@
     "campaign:phase11:subscription": "tsx scripts/runPhase11SubscriptionComparison.ts",
     "campaign:integrity": "tsx scripts/campaignIntegrity.ts",
     "campaign:real-use:integrity": "tsx scripts/realUseCampaignIntegrity.ts",
+    "campaign:real-use:replay": "tsx scripts/realUseReplayGate.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
     "campaign:phaseB:capture": "tsx scripts/phaseBCaptureClipboard.ts",

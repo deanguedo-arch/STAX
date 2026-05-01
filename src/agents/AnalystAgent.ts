@@ -805,7 +805,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const taskAndReport = [packet.task, packet.codexReport].join("\n");
   const explicitStaxTask = /current STAX repo|STAX repo before commit|before commit|commit-readiness|uncommitted campaign|comparison-integrity|dogfood/i.test(packet.task);
   const dogfoodCampaignAudit = /dogfood campaign|dogfood_10_tasks|real tasks recorded|campaign state/i.test(combined);
-  const scrapeDataCorrectnessRequest = /scrape\/data correctness|scraped admissions data|scraper\/output|data correctness|right fields and coverage|app data consumers|Avg_Total coverage|identity drift|canonical data gap/i.test(packet.task);
+  const scrapeDataCorrectnessRequest = /scrape\/data correctness|scrape\/data coverage audit|scraped admissions data|scraper\/output|data correctness|right fields and coverage|app data consumers|Avg_Total coverage|Avg_Total gap|Avg_Total gap trace|identity drift|canonical data gap/i.test(packet.task);
   const scrapeCoverageAuditSupplied = scrapeDataCorrectnessRequest && /High blank rates|blank rates:|Avg_Total\s+\d+\/\d+|\d+\s+rows have Min_Avg_Final present but Avg_Total blank|canonical headers present|avg_total_candidates\.csv has only|validate-dataset\.py[\s\S]{0,200}Exit code 0/i.test(combined);
   const brightspace = !explicitStaxTask && /brightspace|brightspacequizexporter/i.test(combined);
   const rollupPresent = /@rollup\/rollup-darwin-arm64@?4\.59\.0/i.test(combined) && /\bnpm ls\b/i.test(combined);
@@ -840,10 +840,10 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     codexClaimsComplete,
     admissionApp: !explicitStaxTask && !explicitBrightspaceTask && /ADMISSION-APP|admissions checker|admissions pipeline|app-admissions|admission-app/i.test(combined),
     buildPagesClaim: !explicitStaxTask && !explicitBrightspaceTask && /build:pages|Pages build|tools\/build-pages\.js/i.test(combined),
-    iosReleaseClaim: !explicitStaxTask && !explicitBrightspaceTask && /TestFlight|App Store|iOS wrapper|IOS_RELEASE_GATE|mobile\/ios-wrapper|release readiness|submit to TestFlight/i.test(combined),
+    iosReleaseClaim: !explicitStaxTask && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /TestFlight|App Store|iOS wrapper|IOS_RELEASE_GATE|mobile\/ios-wrapper|release readiness|submit to TestFlight/i.test(combined),
     sheetsPublishClaim: !explicitStaxTask && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /SYNC_ALL|SYNC_PROGRAMS|publish to Sheets|Google Sheets|sheets_sync|target Sheet/i.test(combined),
     ualbertaPipelineClaim: !explicitStaxTask && !explicitBrightspaceTask && /UAlberta|ualberta|check_ualberta_url_map_fixtures|ualberta_program_seed|canonical_url_map/i.test(combined),
-    avgTotalApplyClaim: !explicitStaxTask && !explicitBrightspaceTask && /Avg_Total|apply-avg-total-candidates|avg_total_candidates|DryRun/i.test(combined),
+    avgTotalApplyClaim: !explicitStaxTask && !explicitBrightspaceTask && !scrapeDataCorrectnessRequest && /Avg_Total|apply-avg-total-candidates|avg_total_candidates|DryRun/i.test(combined),
     visualProofClaim: /visual|layout|looks good|CSS|screenshot|rendered preview|\bpreview\b|WebAppStyles|card text fit|checkmark containment/i.test(taskAndReport),
     appsScriptStructureClaim: !explicitStaxTask && !explicitBrightspaceTask && /Apps Script deploy|validate-apps-script-structure|export-appsscript-bundles|WebApp\.html|Code\.gs|EligibilityEngine\.gs/i.test(combined),
     humanPastedWeakProof: /human-pasted|Human-pasted|human pasted/i.test(combined),
@@ -1432,7 +1432,7 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     if (input.scrapeCoverageAuditSupplied) {
       return "Treat the supplied audit as provisional, then trace the first concrete gap: why Avg_Total and core requirement fields are blank for most canonical rows, starting with one institution and one field.";
     }
-    return "Run one read-only ADMISSION-APP data-contract audit: compare app-consumed columns to data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv headers, report blank rates for admissions requirement fields, then run existing pipeline fixture checks.";
+    return "Run one read-only/dry-run ADMISSION-APP data-contract audit: compare app-consumed columns to data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv headers, report blank rates for admissions requirement fields, then run existing pipeline fixture checks.";
   }
   if (input.dogfoodCampaignAudit && input.staxValidationEvidence) {
     return "Record the 10th real dogfood task in fixtures/real_use/dogfood_10_tasks_2026-04-30.json and update docs/RAX_REAL_USE_CAMPAIGN_REPORT.md to 10/10 with the validation evidence and any remaining limits.";
@@ -1639,7 +1639,7 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "Inspect app data consumers in apps_script/EligibilityProgramsData.gs and apps_script/EligibilityEngine.gs.",
       "Compare the consumed fields against data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv headers.",
       "Report row count, institution counts, missing required headers, and blank rates for admissions fields: Min_Avg_Final, Competitive_Final, Avg_Total, English_Req, English_Min, Math_Req, Math_Min, Science_Req, Science_Min, Elective_Qty, Elective_Pool, Requirement_Type, Program_URL.",
-      "Run existing read-only checks only: python3 tools/validate-dataset.py --input data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv, python3 pipeline/check_avg_total_fixtures.py, python3 pipeline/check_enrichment_link_fixtures.py, and python3 pipeline/check_nait_program_filter_fixtures.py.",
+      "Run existing read-only/dry-run checks only: python3 tools/validate-dataset.py --input data/ALBERTA_ADMISSIONS_MASTER_CANONICAL.csv, python3 pipeline/check_avg_total_fixtures.py, python3 pipeline/check_enrichment_link_fixtures.py, and python3 pipeline/check_nait_program_filter_fixtures.py.",
       "Return what is verified, weak, unverified, and the first data gap. Do not call the scrape correct from file existence alone.",
       "```"
     ].join("\n");
