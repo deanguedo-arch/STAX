@@ -27,6 +27,11 @@ Included files:
 - `promotion_gate_config.json`
 - `fixtures/real_use/runs/investor-proof-10-2026-05-01/`
 
+Archive packaging note:
+
+- The release tarball is generated with macOS metadata suppression so it does
+  not carry AppleDouble `._*` sidecar entries.
+
 Canonical investor summary:
 
 - Total cases: 10

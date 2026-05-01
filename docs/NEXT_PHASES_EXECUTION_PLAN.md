@@ -1,13 +1,19 @@
 # NEXT PHASES EXECUTION PLAN
 
 Date: 2026-04-30  
-Status: active (usage-proof + hardening)  
+Status: historical (plan completed; kept for provenance)  
 Scope rule: no new architecture expansion.
+
+Current source of truth:
+- `docs/STAX_9_5_PROMOTION_REPORT.md`
+- `docs/RAX_REAL_USE_CAMPAIGN_REPORT.md`
+- `docs/releases/STAX_Project-Control_9_5_RC1/`
 
 ## Purpose
 
 Define the next phase after STAX Core MVP Lock and provider-backed project-control work.  
-The next phase is usage-proof and hardening, not architecture expansion.
+This plan is now historical: the repo completed the usage-proof and hardening
+lane and reached the scoped `STAX Project-Control 9.5 RC1` checkpoint.
 
 ## Constraints
 
@@ -210,7 +216,7 @@ Implemented now:
 - `npm run campaign:phase11:capture`
 - `npm run campaign:phase11:integrity`
 - `npm run campaign:phase11:subscription`
-- `npm run campaign:integrity -- --run sample-clean-run`
+- `npm run campaign:integrity -- --run investor-proof-10-2026-05-01`
 - `npm run campaign:baseline`
 - `npm run campaign:real-use:integrity`
 - `npm run campaign:real-use:replay`

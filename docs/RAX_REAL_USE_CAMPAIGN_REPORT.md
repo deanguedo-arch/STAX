@@ -27,7 +27,8 @@ Fresh investor proof round progress:
 - runId: `investor-proof-10-2026-05-01`
 - STAX outputs refreshed: 10/10
 - ChatGPT outputs captured: 10/10
-- executable scoring complete: yes
+- canonical scoring complete: yes
+- integrity checked: yes
 
 Scored summary (2026-04-30T14:17:41.208Z):
 
@@ -81,9 +82,10 @@ Phase B executable rerun (current local STAX against captured ChatGPT baseline):
   - STAX critical misses: 0
 - interpretation:
   - The executable STAX rerun is now ahead on this slice.
-  - This is still not enough for a 9+ or 9.5 claim because the external side is a captured baseline, not a fresh live rerun in the current turn, and the real-use cleanup gates remain blocked.
+  - This section is historical context only; the later investor proof round is
+    the canonical promotion-counted external comparison lane.
 
-Dogfood 10-task loop (2026-04-30):
+Historical dogfood 10-task loop (2026-04-30):
 
 - ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
 - real tasks recorded: 10/10

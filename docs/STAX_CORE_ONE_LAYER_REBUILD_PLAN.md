@@ -2,7 +2,11 @@
 
 Date: 2026-04-29
 Owner: Dean
-Status: active
+Status: historical (core rebuild direction preserved; RC1 proof lane completed)
+
+Current source of truth:
+- `docs/STAX_9_5_PROMOTION_REPORT.md`
+- `docs/releases/STAX_Project-Control_9_5_RC1/`
 
 ## Decision
 

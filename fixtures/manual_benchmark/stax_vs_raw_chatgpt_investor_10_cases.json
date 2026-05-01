@@ -1,7 +1,7 @@
 {
   "benchmarkId": "stax_vs_raw_chatgpt_investor_10",
   "version": 1,
-  "status": "capture_required",
+  "status": "integrity_checked",
   "purpose": "Investor proof round: 10 fresh project-control cases scored with full artifacts and external ChatGPT comparison.",
   "scoringRubricVersion": "project_control_rubric_v1",
   "criticalMissRulesVersion": "critical_miss_v1",
