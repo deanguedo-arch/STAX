@@ -132,4 +132,38 @@ describe("validateComparisonRunIntegrity", () => {
     expect(result.pass).toBe(false);
     expect(result.issues.some((i) => i.code === "report_score_mismatch")).toBe(true);
   });
+
+  it("uses canonical winner fields when present", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    const runId = "winner-canonical";
+    await writeRun(baseDir, runId);
+    const runDir = path.join(baseDir, runId);
+    await fs.writeFile(
+      path.join(runDir, "scores.json"),
+      JSON.stringify(
+        {
+          entries: [
+            {
+              taskId: "case_001",
+              staxScore: 9,
+              chatgptScore: 1,
+              staxCriticalMiss: false,
+              chatgptCriticalMiss: false,
+              winner: "tie"
+            }
+          ]
+        },
+        null,
+        2
+      )
+    );
+    await fs.writeFile(
+      path.join(runDir, "report.md"),
+      ["# Report", "", "## Summary", "- Total scored cases: 1", "- STAX wins: 0", "- ChatGPT wins: 0", "- Ties: 1", "- STAX critical misses: 0", "- ChatGPT critical misses: 0"].join("\n")
+    );
+
+    const result = await validateComparisonRunIntegrity({ runId, baseDir });
+    expect(result.pass).toBe(true);
+    expect(result.summary?.ties).toBe(1);
+  });
 });

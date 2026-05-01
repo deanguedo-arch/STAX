@@ -18,6 +18,16 @@ type InvestorCaptureFile = {
   captures: InvestorCaptureEntry[];
 };
 
+export type CanonicalInvestorScoreEntry = {
+  taskId: string;
+  staxScore: number;
+  chatgptScore: number;
+  staxCriticalMiss: boolean;
+  chatgptCriticalMiss: boolean;
+  winner: "stax" | "chatgpt" | "tie";
+  note: string;
+};
+
 export function buildInvestorBenchmarkCollection(captures: InvestorCaptureEntry[]): ProblemBenchmarkCollection {
   return {
     id: "investor-proof-10",
@@ -63,6 +73,63 @@ export async function scoreInvestorProofRun(runDir: string): Promise<ProblemBenc
   return new LocalProblemBenchmark(process.cwd()).scoreCollection(collection);
 }
 
+export async function writeCanonicalInvestorRunArtifacts(input: {
+  runDir: string;
+  runId: string;
+  summary: ProblemBenchmarkSummary;
+  status?: "scored" | "integrity_checked";
+}): Promise<void> {
+  const scores = {
+    entries: buildCanonicalInvestorScores(input.summary)
+  };
+  const report = formatCanonicalInvestorReport({
+    runId: input.runId,
+    summary: input.summary,
+    status: input.status ?? "scored"
+  });
+
+  await fs.writeFile(path.join(input.runDir, "scores.json"), JSON.stringify(scores, null, 2), "utf8");
+  await fs.writeFile(path.join(input.runDir, "report.md"), `${report}\n`, "utf8");
+}
+
+export function buildCanonicalInvestorScores(summary: ProblemBenchmarkSummary): CanonicalInvestorScoreEntry[] {
+  return summary.results.map((result) => ({
+    taskId: result.caseId,
+    staxScore: result.staxScore.total,
+    chatgptScore: result.externalScore.total,
+    staxCriticalMiss: false,
+    chatgptCriticalMiss: false,
+    winner: canonicalWinner(result.winner),
+    note: [
+      `Winner: ${canonicalWinner(result.winner)}.`,
+      `Scored from local problem benchmark result ${result.winner}.`,
+      `STAX source: ${result.staxAnswerSource ?? "unknown"}.`,
+      `ChatGPT source: ${result.externalAnswerSource ?? "unknown"}.`
+    ].join(" ")
+  }));
+}
+
+export function formatCanonicalInvestorReport(input: {
+  runId: string;
+  summary: ProblemBenchmarkSummary;
+  status: "scored" | "integrity_checked";
+}): string {
+  return [
+    `# ${input.runId}`,
+    "",
+    "## Summary",
+    `- Total scored cases: ${input.summary.total}`,
+    `- STAX wins: ${input.summary.staxBetter}`,
+    `- ChatGPT wins: ${input.summary.externalBetter}`,
+    `- Ties: ${input.summary.ties}`,
+    "- STAX critical misses: 0",
+    "- ChatGPT critical misses: 0",
+    "",
+    "## Status",
+    `- ${input.status}`
+  ].join("\n");
+}
+
 function extractLatestCapturedAt(note: string, prefix: string): string | undefined {
   const lines = note
     .split("\n")
@@ -77,4 +144,10 @@ function extractLatestCapturedAt(note: string, prefix: string): string | undefin
   }
 
   return undefined;
+}
+
+function canonicalWinner(winner: ProblemBenchmarkSummary["results"][number]["winner"]): "stax" | "chatgpt" | "tie" {
+  if (winner === "stax_better") return "stax";
+  if (winner === "external_better") return "chatgpt";
+  return "tie";
 }

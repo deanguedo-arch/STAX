@@ -192,6 +192,7 @@ Investor proof run (2026-05-01):
   - `npm run campaign:investor:prepare -- --run investor-proof-10-2026-05-01`
   - `npm run campaign:investor:refresh -- --run investor-proof-10-2026-05-01`
   - `npm run campaign:investor:score -- --run investor-proof-10-2026-05-01`
+  - `npm run campaign:integrity -- --run investor-proof-10-2026-05-01`
 - summary:
   - Total scored cases: 10
   - STAX wins: 7
@@ -199,6 +200,7 @@ Investor proof run (2026-05-01):
   - Ties: 3
   - no external baseline rows: 0
   - superiority status: `not_proven`
+  - canonical status: `integrity_checked`
 - interpretation:
   - This is enough for the scoped workflow claim because STAX produced a clean
     no-loss result with a positive win margin on fresh cases.

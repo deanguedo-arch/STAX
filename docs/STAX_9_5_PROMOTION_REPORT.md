@@ -151,7 +151,7 @@ Representative clean runs configured for promotion:
 
 - `phase12-stateful-2026-04-30`
 - `phaseB-stateful-20-2026-04-30`
-- `sample-clean-run`
+- `investor-proof-10-2026-05-01`
 
 Phase B executable comparison summary:
 
@@ -164,8 +164,9 @@ Important caveat:
 
 - The comparison side is scoped to project-control workflow quality, not broad
   model superiority.
-- One clean run is `sample-clean-run`, which weakens any broader claim but does
-  not block the scoped 9.5 workflow claim the external judge allowed.
+- The investor proof run is now canonical and counted by the promotion gate,
+  which closes the earlier gap between executable benchmark scoring and the
+  canonical run artifacts.
 
 ### Fresh Investor Proof Round
 
@@ -217,9 +218,7 @@ The judge's remaining caveat is now a scope caveat, not a blocker:
 
 1. the claim is approved only for Dean's Codex/repo project-control workflow,
 2. the comparison margin is positive and credible, but not a proof of broad
-   ChatGPT superiority,
-3. one clean evidence run is still `sample-clean-run`, which matters for broader
-   confidence narratives more than for the scoped claim.
+   ChatGPT superiority.
 
 ## Allowed Claim Right Now
 
@@ -245,7 +244,8 @@ Required next step:
 
 - keep adding fresh real tasks so the claim stays backed by current evidence,
 - convert every miss or weak tie into eval or prompt/regression coverage,
-- replace `sample-clean-run` with a third fully fresh clean run when convenient,
+- add another fully fresh clean run when convenient so the evidence set keeps
+  aging well under skeptical review,
 - keep the external judge thread aligned when major campaign numbers move.
 
 ## Bottom Line

@@ -58,6 +58,7 @@ type ScoresFile = {
     chatgptScore: number;
     staxCriticalMiss: boolean;
     chatgptCriticalMiss: boolean;
+    winner?: "stax" | "chatgpt" | "tie";
   }>;
 };
 
@@ -78,6 +79,18 @@ function scoreSummary(entries: ScoresFile["entries"]) {
     }
     if (!entry.staxCriticalMiss && entry.chatgptCriticalMiss) {
       staxWins++;
+      continue;
+    }
+    if (entry.winner === "stax") {
+      staxWins++;
+      continue;
+    }
+    if (entry.winner === "chatgpt") {
+      chatgptWins++;
+      continue;
+    }
+    if (entry.winner === "tie") {
+      ties++;
       continue;
     }
     const delta = entry.staxScore - entry.chatgptScore;

@@ -2,83 +2,93 @@
   "entries": [
     {
       "taskId": "investor_admission_sync_001",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 86,
+      "chatgptScore": 58,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_admission_contract_002",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 69,
+      "chatgptScore": 57,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_admission_avg_total_003",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 80,
+      "chatgptScore": 53,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_brightspace_dependency_004",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 76,
+      "chatgptScore": 47,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_brightspace_ingest_005",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 77,
+      "chatgptScore": 73,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "tie",
+      "note": "Winner: tie. Scored from local problem benchmark result tie. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_brightspace_fakeproof_006",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 75,
+      "chatgptScore": 56,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_canvas_visual_007",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 79,
+      "chatgptScore": 57,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_stax_provenance_008",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 53,
+      "chatgptScore": 52,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "tie",
+      "note": "Winner: tie. Scored from local problem benchmark result tie. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_stax_commit_009",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 65,
+      "chatgptScore": 61,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "tie",
+      "note": "Winner: tie. Scored from local problem benchmark result tie. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     },
     {
       "taskId": "investor_repo_trap_010",
-      "staxScore": null,
-      "chatgptScore": null,
-      "staxCriticalMiss": null,
-      "chatgptCriticalMiss": null,
-      "note": ""
+      "staxScore": 74,
+      "chatgptScore": 53,
+      "staxCriticalMiss": false,
+      "chatgptCriticalMiss": false,
+      "winner": "stax",
+      "note": "Winner: stax. Scored from local problem benchmark result stax_better. STAX source: local_stax_cli_stateful. ChatGPT source: raw_chatgpt_iab."
     }
   ]
 }

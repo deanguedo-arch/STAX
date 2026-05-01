@@ -2,11 +2,11 @@
 
 ## Summary
 - Total scored cases: 10
-- STAX wins: 0
+- STAX wins: 7
 - ChatGPT wins: 0
-- Ties: 10
+- Ties: 3
 - STAX critical misses: 0
 - ChatGPT critical misses: 0
 
 ## Status
-- capture_required
+- integrity_checked

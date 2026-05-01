@@ -1,10 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { LocalProblemBenchmark } from "../src/compare/LocalProblemBenchmark.js";
+import { validateComparisonRunIntegrity } from "../src/campaign/ComparisonIntegrity.js";
 import {
   buildInvestorBenchmarkCollection,
   loadInvestorCaptures,
-  scoreInvestorProofRun
+  scoreInvestorProofRun,
+  writeCanonicalInvestorRunArtifacts
 } from "../src/campaign/InvestorProofBenchmark.js";
 
 function parseArgs(): { runId: string } {
@@ -30,6 +32,22 @@ async function main(): Promise<void> {
   await fs.writeFile(summaryPath, JSON.stringify(summary, null, 2), "utf8");
   await fs.writeFile(reportPath, `${scorer.formatSummary(summary)}\n`, "utf8");
   await fs.writeFile(fixturePath, JSON.stringify(collection, null, 2), "utf8");
+  await writeCanonicalInvestorRunArtifacts({
+    runDir,
+    runId,
+    summary,
+    status: "scored"
+  });
+
+  const integrity = await validateComparisonRunIntegrity({ runId });
+  if (integrity.pass) {
+    await writeCanonicalInvestorRunArtifacts({
+      runDir,
+      runId,
+      summary,
+      status: "integrity_checked"
+    });
+  }
 
   process.stdout.write(
     `${JSON.stringify(
@@ -44,14 +62,20 @@ async function main(): Promise<void> {
         noExternalBaseline: summary.noExternalBaseline,
         stopConditionMet: summary.stopConditionMet,
         superiorityStatus: summary.superiorityStatus,
+        canonicalStatus: integrity.pass ? "integrity_checked" : "scored",
+        integrityStatus: integrity.pass ? "passed" : "failed",
         executableBenchmarkFixture: path.relative(process.cwd(), fixturePath),
         executableBenchmarkSummary: path.relative(process.cwd(), summaryPath),
-        executableBenchmarkReport: path.relative(process.cwd(), reportPath)
+        executableBenchmarkReport: path.relative(process.cwd(), reportPath),
+        canonicalScoresFile: path.relative(process.cwd(), path.join(runDir, "scores.json")),
+        canonicalReportFile: path.relative(process.cwd(), path.join(runDir, "report.md"))
       },
       null,
       2
     )}\n`
   );
+
+  if (!integrity.pass) process.exitCode = 1;
 }
 
 main().catch((error) => {
