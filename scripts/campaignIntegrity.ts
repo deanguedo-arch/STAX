@@ -2,9 +2,13 @@ import path from "node:path";
 import { validateComparisonRunIntegrity } from "../src/campaign/ComparisonIntegrity.js";
 
 function parseArgs(): { runId?: string } {
-  const runFlag = process.argv.find((arg) => arg.startsWith("--run="));
-  if (!runFlag) return {};
-  const runId = runFlag.slice("--run=".length).trim();
+  const equalsFlag = process.argv.find((arg) => arg.startsWith("--run="));
+  if (equalsFlag) {
+    const runId = equalsFlag.slice("--run=".length).trim();
+    return runId ? { runId } : {};
+  }
+  const runIndex = process.argv.indexOf("--run");
+  const runId = runIndex >= 0 ? process.argv[runIndex + 1]?.trim() : undefined;
   return runId ? { runId } : {};
 }
 

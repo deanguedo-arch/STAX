@@ -44,12 +44,40 @@ Phase 12 integrity-locked run (2026-04-30):
   - STAX critical misses: 0
   - ChatGPT critical misses: 1
 
+Phase B stateful advantage run (2026-04-30):
+
+- runId: `phaseB-stateful-20-2026-04-30`
+- integrity command: `npm run campaign:integrity -- --run phaseB-stateful-20-2026-04-30`
+- integrity status: passed
+- run folder: `fixtures/real_use/runs/phaseB-stateful-20-2026-04-30`
+- summary:
+  - Total scored cases: 20
+  - STAX wins: 0
+  - ChatGPT wins: 0
+  - Ties: 20
+  - STAX critical misses: 0
+  - ChatGPT critical misses: 0
+- interpretation: safe no-loss stateful comparison, not decisive superiority.
+
 Dogfood 10-task loop (2026-04-30):
 
 - ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
 - real tasks recorded: 10/10
 - repos represented: 4 (`ADMISSION-APP`, `brightspacequizexporter`, `canvas-helper`, `STAX`)
 - current STAX critical misses: 0
+- executable integrity command: `npm run campaign:real-use:integrity`
+- executable integrity status: `promotion_blocked`
+- computed ledger summary:
+  - meaningful catches: 10/10
+  - fake-complete catches: 9/10
+  - missing-proof catches: 10/10
+  - wrong-repo prevented: 5/10
+  - cleanup prompts after Codex: 7
+  - useful initial STAX prompts: 3/10
+  - accepted human decisions: 8/10
+- promotion blockers:
+  - not every task has an accepted human decision
+  - fewer than 8 useful initial STAX prompts recorded
 - meaningful catches so far:
   - ADMISSION-APP publish/sync proof stayed blocked after a missing `pwsh` preflight.
   - canvas-helper Sports Wellness visual readiness required rendered proof instead of source/CSS-only claims.
@@ -63,7 +91,7 @@ Dogfood 10-task loop (2026-04-30):
   - STAX dogfood campaign self-audit now accepts supplied local validation evidence while still refusing to call a 9/10 ledger complete.
 - latest validation evidence:
   - `npm run typecheck`: passed
-  - `npm test`: passed, 113 files and 561 tests
+  - `npm test`: passed, 114 files and 581 tests
   - `npm run rax -- eval`: passed, 16/16
   - fitness smoke: passed
 - proof artifacts for Task 2:
@@ -101,6 +129,11 @@ fixtures/real_use/runs/phase12-stateful-2026-04-30/cases.json
 fixtures/real_use/runs/phase12-stateful-2026-04-30/captures.json
 fixtures/real_use/runs/phase12-stateful-2026-04-30/scores.json
 fixtures/real_use/runs/phase12-stateful-2026-04-30/report.md
+fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/manifest.json
+fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/cases.json
+fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/captures.json
+fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/scores.json
+fixtures/real_use/runs/phaseB-stateful-20-2026-04-30/report.md
 ```
 
 ## External Comparison Starter

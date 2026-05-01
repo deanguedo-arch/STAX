@@ -50,16 +50,17 @@ Make every STAX-vs-ChatGPT benchmark run reproducible, timestamped, and evidence
   - required section presence
   - conflicting/stale score files
   - report summary vs canonical score summary
-- `scripts/campaignIntegrity.ts` exposes `npm run campaign:integrity -- --run <runId>`.
+- `scripts/campaignIntegrity.ts` exposes `npm run campaign:integrity -- --run <runId>` and `--run=<runId>`.
 - `tests/comparisonIntegrity.test.ts` covers clean pass + required failure modes.
 
 ### Artifacts (run-scoped)
-- `fixtures/real_use/<run-id>/cases.json` (proposed)
-- `fixtures/real_use/<run-id>/captures.json` (proposed)
-- `fixtures/real_use/<run-id>/scores.json` (proposed)
-- `docs/reports/<run-id>.md` (proposed)
+- `fixtures/real_use/runs/<run-id>/cases.json`
+- `fixtures/real_use/runs/<run-id>/captures.json`
+- `fixtures/real_use/runs/<run-id>/scores.json`
+- `fixtures/real_use/runs/<run-id>/report.md`
+- `fixtures/real_use/runs/<run-id>/manifest.json`
 
-Current canonical implementation remains at:
+Current subscription comparison implementation remains at:
 - `fixtures/real_use/phase11_subscription_capture.json`
 - `runs/real_use_campaign/<date>/phase11_subscription_comparison_<timestamp>.md`
 
@@ -91,6 +92,13 @@ Test STAX’s true advantage: local state/evidence continuity.
 - STAX wins or ties while showing lower cleanup burden
 - every STAX miss becomes eval/patch candidate
 
+### Current run
+- `fixtures/real_use/runs/phaseB-stateful-20-2026-04-30`
+- Integrity command: `npm run campaign:integrity -- --run phaseB-stateful-20-2026-04-30`
+- Integrity status: passed
+- Summary: 20 cases, 0 STAX wins, 0 ChatGPT wins, 20 ties, 0 STAX critical misses, 0 ChatGPT critical misses.
+- Interpretation: safe no-loss stateful comparison, not decisive superiority.
+
 ## Phase C — Cleanup Burden KPI
 
 ### Goal
@@ -117,6 +125,24 @@ Track whether STAX reduces Dean’s real Codex cleanup burden.
 - 0 STAX critical misses
 - at least 3 meaningful catches across 10 tasks
 - cleanup burden trends downward versus baseline
+
+### Implemented check
+- `src/campaign/RealUseCampaignIntegrity.ts`
+- `scripts/realUseCampaignIntegrity.ts`
+- `npm run campaign:real-use:integrity`
+
+### Current ledger result
+- Ledger: `fixtures/real_use/dogfood_10_tasks_2026-04-30.json`
+- Status: `promotion_blocked`
+- 10 tasks recorded
+- 0 STAX critical misses
+- 10 meaningful catches
+- 7 cleanup prompts after Codex
+- 3/10 useful initial STAX prompts
+- 8/10 accepted human decisions
+
+Interpretation: the real-use loop has strong safety/catch signal, but it does
+not yet prove cleanup reduction or a 9+ promotion gate.
 
 ## Phase D — Promotion Gate
 
@@ -148,9 +174,10 @@ Implemented now:
 - `npm run campaign:phase11:integrity`
 - `npm run campaign:phase11:subscription`
 - `npm run campaign:integrity -- --run sample-clean-run`
+- `npm run campaign:real-use:integrity`
 
-Proposed (not implemented in this patch):
-- per-run isolated fixture folders under `fixtures/real_use/<run-id>/...`
+Implemented run-scoped comparison folders:
+- `fixtures/real_use/runs/<run-id>/...`
 
 ## Allowed Claims vs Not Allowed Claims
 
@@ -158,12 +185,14 @@ Allowed:
 - STAX is ready for usage-proof testing.
 - STAX has benchmark scaffolding.
 - STAX has shown safety/no-loss signals in early runs when artifacts support it.
+- STAX has a 10-task real-use ledger with strong safety/catch signal but blocked promotion.
 
 Not allowed:
 - STAX beats ChatGPT generally.
 - STAX is production-ready.
 - STAX is 9+.
 - STAX reduces cleanup burden until 10 real tasks prove it.
+- STAX has proven decisive superiority from Phase B; Phase B is tie-heavy.
 
 ## What This Patch Implements vs Documents
 
@@ -173,11 +202,12 @@ Implemented:
 - capture-integrity CLI preflight command
 - integrity tests
 - run-folder integrity command and validator
+- Phase B stateful run integrity check
+- Phase C real-use campaign ledger integrity check
 
 Documented only (next execution slices):
-- run-scoped fixture folder migration
-- full stateful round dataset expansion
-- KPI dashboarding for cleanup burden trendline
+- cleanup-burden trendline against a baseline
+- promotion to 9+ after clean repeated real-use runs
 
 ## Next One Bounded Action
 
