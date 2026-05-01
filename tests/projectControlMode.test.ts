@@ -156,7 +156,7 @@ describe("project_control mode", () => {
     expect(memoryOutput.output).toContain("pending review");
   });
 
-  it("does not invent a Sheets validation command when evidence only names publish scripts", async () => {
+  it("uses the registry Sheets validation surfaces when evidence names publish scripts", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
       benchmarkPrompt({
@@ -169,9 +169,12 @@ describe("project_control mode", () => {
 
     expect(output.taskMode).toBe("project_control");
     expect(output.validation.valid).toBe(true);
-    expect(output.output).toContain("Sheets sync safety needs target/config/validation evidence");
-    expect(output.output).toContain("identify a read-only Sheets sync preflight");
-    expect(output.output).not.toContain("Run tools/validate-sync-surface.ps1 first");
+    expect(output.output).toContain("config/sheets_sync.json");
+    expect(output.output).toContain("tools/validate-sync-surface.ps1");
+    expect(output.output).toContain("tools/validate-apps-script-structure.ps1");
+    expect(output.output).toContain("tools/validate-canonical.ps1");
+    expect(output.output).toContain("SYNC_ALL.cmd");
+    expect(output.output).toContain("PUBLISH_DATA_TO_SHEETS.bat");
   });
 
   it("turns generic build-script claims into package script inspection plus exact build proof", async () => {
@@ -359,7 +362,9 @@ describe("project_control mode", () => {
     expect(output.taskMode).toBe("project_control");
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("app-admissions operating risk");
-    expect(output.output).toContain("publish/sync/deploy");
+    expect(output.output).toContain("SYNC_ALL.cmd");
+    expect(output.output).toContain("PUBLISH_DATA_TO_SHEETS.bat");
+    expect(output.output).toContain("tools/validate-sync-surface.ps1");
     expect(output.output).toContain("npm run build:pages");
     expect(output.output).not.toContain("Return the smallest evidence packet for this claim");
   });
@@ -492,7 +497,9 @@ describe("project_control mode", () => {
     expect(output.taskMode).toBe("project_control");
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("ADMISSION-APP publish/sync is not proven ready");
-    expect(output.output).toContain("non-publishing preflight");
+    expect(output.output).toContain("non-publishing ADMISSION-APP preflight");
+    expect(output.output).toContain("tools/validate-sync-surface.ps1");
+    expect(output.output).toContain("config/sheets_sync.json");
     expect(output.output).not.toContain("TestFlight");
     expect(output.output).not.toContain("iOS wrapper");
   });
@@ -569,7 +576,9 @@ describe("project_control mode", () => {
     expect(output.taskMode).toBe("project_control");
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("This task requests a bounded Codex prompt for canvas-helper");
-    expect(output.output).toContain("rendered Sports Wellness screenshot");
+    expect(output.output).toContain("rendered screenshot/checklist for Sports Wellness");
+    expect(output.output).toContain("npm run build:studio");
+    expect(output.output).toContain("npm run test:course-shell");
     expect(output.output).not.toContain("brightspacequizexporter");
     expect(output.output).not.toContain("Brightspace bounded prompt");
   });
@@ -698,6 +707,48 @@ describe("project_control mode", () => {
     expect(output.output).toContain("Record the 10th real dogfood task");
     expect(output.output).not.toContain("tests-passed claim is unverified");
     expect(output.output).not.toContain("ADMISSION-APP build");
+  });
+
+  it.each([
+    {
+      caseId: "app_admissions_risk_001",
+      prompt: "What is the biggest current operating risk in app-admissions and what is the one next proof step?",
+      expected: ["npm run build:pages", "tools/validate-sync-surface.ps1", "SYNC_ALL.cmd"]
+    },
+    {
+      caseId: "app_admissions_proof_gap_002",
+      prompt: "What tests or proof commands are missing for ADMISSION-APP publish/sync readiness?",
+      expected: ["npm run build:pages", "tools/validate-sync-surface.ps1", "tools/validate-canonical.ps1"]
+    },
+    {
+      caseId: "app_admissions_bounded_prompt_003",
+      prompt: "Create one bounded Codex prompt for ADMISSION-APP publish/sync readiness with exact proof surfaces.",
+      expected: ["config/sheets_sync.json", "tools/validate-apps-script-structure.ps1", "PUBLISH_DATA_TO_SHEETS.bat"]
+    },
+    {
+      caseId: "canvas_risk_007",
+      prompt: "What is the biggest current operating risk in canvas-helper Sports Wellness?",
+      expected: ["rendered screenshot/checklist", "npm run build:studio", "CSS/source"]
+    },
+    {
+      caseId: "canvas_visual_proof_008",
+      prompt: "Audit whether a Sports Wellness visual fix is proven from CSS alone.",
+      expected: ["rendered screenshot/checklist", "projects/sportswellness/workspace/styles.css", "not claim"]
+    },
+    {
+      caseId: "canvas_bounded_prompt_010",
+      prompt: "Create one bounded Codex prompt for canvas-helper Sports Wellness visual proof.",
+      expected: ["projects/sportswellness/workspace/index.html", "npm run test:course-shell", "Stop condition"]
+    }
+  ])("uses repo proof surfaces for high-value tie case $caseId", async ({ prompt, expected }) => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(prompt, [], { mode: "project_control" });
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    for (const phrase of expected) {
+      expect(output.output).toContain(phrase);
+    }
   });
 
   it("validates exactly one next action", () => {

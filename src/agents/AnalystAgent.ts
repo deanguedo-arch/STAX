@@ -2,6 +2,7 @@ import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
+import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
 import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
 import { StrategicDecisionFormatter } from "../strategy/StrategicDecisionFormatter.js";
 
@@ -682,6 +683,10 @@ type ProjectControlPacket = {
   codexReport: string;
 };
 
+const ADMISSION_SURFACE = getRepoProofSurface("admission_app");
+const CANVAS_SURFACE = getRepoProofSurface("canvas_helper");
+const BRIGHTSPACE_SURFACE = getRepoProofSurface("brightspacequizexporter");
+
 type ProjectControlSignals = {
   targetRepoPath?: string;
   repoPathWithheld: boolean;
@@ -981,7 +986,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     verified.push("The supplied evidence identifies UAlberta pipeline files or fixture commands, but not a passing fixture run.");
   }
   if (signals.sheetsPublishClaim) {
-    verified.push("The supplied evidence identifies Sheets publish/sync surfaces, but not a verified target or safe publish run.");
+    verified.push(`The supplied evidence identifies Sheets publish/sync surfaces; registry proof surfaces are ${ADMISSION_SURFACE.commands.syncPreflight}, ${ADMISSION_SURFACE.commands.appsScriptValidation}, ${ADMISSION_SURFACE.commands.canonicalValidation}, and ${ADMISSION_SURFACE.files.requiredSheetsConfig}.`);
   }
   if (signals.scrapeDataCorrectnessRequest) {
     if (signals.scrapeCoverageAuditSupplied) {
@@ -1165,7 +1170,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     risks.push("The current risk is no longer the Rollup package itself; it is unproven build/ingest gate status.");
   }
   if (signals.repoRiskRequest && signals.admissionApp) {
-    risks.push("Operational risk: publish/sync/deploy could be attempted without proving build/preflight state.");
+    risks.push(`Operational risk: ${formatBlockedActions(ADMISSION_SURFACE)} could be attempted without ${ADMISSION_SURFACE.commands.build} and preflight evidence.`);
   }
   if (signals.repoRiskRequest && signals.brightspace) {
     risks.push("Operational risk: ingest/build can be reported as fixed without gate evidence.");
@@ -1228,7 +1233,7 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     !input.dependencyScopeViolation &&
     !input.codexClaimsTestsPassed
   ) {
-    return "Brightspace dependency/build/ingest readiness is not proven until dependency inspection runs in the target repo.";
+    return `Brightspace dependency/build/ingest readiness is not proven until ${BRIGHTSPACE_SURFACE.commands.dependencyProof} runs in the target repo.`;
   }
   if (input.commandSourceClassificationRequest) {
     return "Strong proof requires local STAX command evidence; codex_reported and human_pasted outputs are weak/provisional.";
@@ -1243,7 +1248,7 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     return "No; Sheets sync readiness is not proven when preflight output is missing.";
   }
   if (input.brightspaceSeedGoldNoCiRequest) {
-    return "Not proven; seed-gold output is not a substitute for build and ingest:ci proof.";
+    return `Not proven; ${BRIGHTSPACE_SURFACE.commands.forbiddenSeedGold} output is not a substitute for ${BRIGHTSPACE_SURFACE.commands.build} and ${BRIGHTSPACE_SURFACE.commands.ingestGate} proof.`;
   }
   if (input.crossRepoEvidenceTrap) {
     return "Invalid proof; canvas-helper command evidence cannot prove Brightspace readiness.";
@@ -1267,7 +1272,7 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     return "UI-fix claims require a visual proof artifact before acceptance.";
   }
   if (input.explicitPublishSyncTask && input.admissionApp && !input.sheetsPublishClaim && !input.pipelinePublishClaim && !input.ualbertaPipelineClaim) {
-    return "ADMISSION-APP publish/sync is not proven ready until a non-publishing preflight or validation command passes locally.";
+    return `ADMISSION-APP publish/sync is not proven ready until ${ADMISSION_SURFACE.commands.syncPreflight}, ${ADMISSION_SURFACE.commands.appsScriptValidation}, or ${ADMISSION_SURFACE.commands.canonicalValidation} passes locally.`;
   }
   if (input.publishPreflightPromptRequest) {
     return "Publish/sync remains blocked until preflight evidence is produced locally.";
@@ -1306,7 +1311,7 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     return "Not safe to execute yet; the target repo path is withheld.";
   }
   if (input.seedGoldMisuse) {
-    return "Reject as proof; ingest:seed-gold or gold mutation is outside the allowed proof boundary.";
+    return `Reject as proof; ${BRIGHTSPACE_SURFACE.commands.forbiddenSeedGold} or gold mutation is outside the allowed proof boundary.`;
   }
   if (input.dependencyScopeViolation) {
     return "Reject or require correction; the dependency repair appears to touch forbidden source/parser scope.";
@@ -1318,7 +1323,7 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     return "Not release-ready as proven; checklist existence or unchecked gates do not prove TestFlight/App Store readiness.";
   }
   if (input.sheetsPublishClaim) {
-    return "Do not publish yet; Sheets sync safety needs target/config/validation evidence.";
+    return `Do not publish yet; Sheets sync safety needs target/config/validation evidence: ${ADMISSION_SURFACE.files.requiredSheetsConfig} plus read-only Sheets sync preflight from ${ADMISSION_SURFACE.commands.syncPreflight}, ${ADMISSION_SURFACE.commands.appsScriptValidation}, or ${ADMISSION_SURFACE.commands.canonicalValidation}.`;
   }
   if (input.pipelinePublishClaim) {
     return "Do not publish yet; canonical output existence is not pipeline QA proof.";
@@ -1354,7 +1359,7 @@ function projectControlVerdict(input: ProjectControlSignals): string {
     return "Not proven; the tests-passed claim needs local command evidence.";
   }
   if (input.repoRiskRequest && input.admissionApp) {
-    return "Not proven; app-admissions operating risk cannot be judged safely without local command evidence.";
+    return `Not proven; app-admissions operating risk is publish/sync without ${ADMISSION_SURFACE.commands.build} and preflight evidence.`;
   }
   if (input.repoRiskRequest && input.brightspace) {
     return "Not proven; Brightspace operating risk cannot be judged safely without build/ingest command evidence.";
@@ -1446,10 +1451,10 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "In /Users/deanguedo/Documents/GitHub/brightspacequizexporter, run npm ls @rollup/rollup-darwin-arm64 rollup vite and report exact output before any repair.";
   }
   if (input.explicitPublishSyncTask && input.admissionApp && !input.sheetsPublishClaim && !input.pipelinePublishClaim && !input.ualbertaPipelineClaim) {
-    return "Run one existing non-publishing ADMISSION-APP publish/sync preflight or validation command and capture cwd, command, exit code, and output before any publish or sync.";
+    return `Run ${ADMISSION_SURFACE.commands.build} plus one non-publishing ADMISSION-APP preflight command (${ADMISSION_SURFACE.commands.syncPreflight}, ${ADMISSION_SURFACE.commands.appsScriptValidation}, or ${ADMISSION_SURFACE.commands.canonicalValidation}) and capture cwd, command, exit code, and output before ${formatBlockedActions(ADMISSION_SURFACE)}.`;
   }
   if (input.publishPreflightPromptRequest) {
-    return "Send a preflight-only prompt that forbids publish, sync, deploy, push, and production data mutation until local validation output is captured.";
+    return `Send a preflight-only prompt that forbids ${formatBlockedActions(ADMISSION_SURFACE)}, deploy, push, and production data mutation until ${ADMISSION_SURFACE.commands.syncPreflight} or ${ADMISSION_SURFACE.commands.canonicalValidation} output is captured.`;
   }
   if (input.admissionPipelineFilesPublishSafeRequest) {
     return "Run one existing non-publishing ADMISSION-APP pipeline/preflight validation command and capture cwd, command, exit code, and output before any publish/sync.";
@@ -1458,7 +1463,7 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Run npm run build and then npm run ingest:ci from /Users/deanguedo/Documents/GitHub/brightspacequizexporter and report the first remaining failure or passing output.";
   }
   if (input.priorRunProofRequest && input.explicitAdmissionTask) {
-    return "Run one non-publishing ADMISSION-APP preflight/validation command from /Users/deanguedo/Documents/GitHub/ADMISSION-APP and capture exact output before any publish or sync.";
+    return `Run ${ADMISSION_SURFACE.commands.syncPreflight} or ${ADMISSION_SURFACE.commands.canonicalValidation} from ${ADMISSION_SURFACE.repoPath} and capture exact output before ${formatBlockedActions(ADMISSION_SURFACE)}.`;
   }
   if (input.priorRunProofRequest) {
     return "Run one local proof audit from the STAX repo root: show repo identity, relevant diff, exact command output, and first remaining failure.";
@@ -1507,7 +1512,7 @@ function projectControlNextAction(input: ProjectControlSignals): string {
   }
   if (input.visualProofClaim) {
     if (input.canvasHelper) {
-      return "Provide a rendered Sports Wellness screenshot or visual finding that checks text fit, border symmetry, and checkmark containment.";
+      return `Provide ${CANVAS_SURFACE.proofArtifacts[0]} for Sports Wellness, including text fit, border symmetry, and checkmark containment; then run ${CANVAS_SURFACE.commands.build} only if build proof is also claimed.`;
     }
     if (input.admissionApp) {
       return "Capture rendered web app evidence and complete docs/WEBAPP_QA_CHECKLIST.md before calling the layout fixed.";
@@ -1519,9 +1524,9 @@ function projectControlNextAction(input: ProjectControlSignals): string {
   }
   if (input.sheetsPublishClaim) {
     if (input.sheetsValidationCommandKnown) {
-      return "Run tools/validate-sync-surface.ps1 first and report target Sheet/config status before any SYNC_ALL or publish command.";
+      return `Inspect target/config/validation evidence, then run read-only Sheets sync preflight ${ADMISSION_SURFACE.commands.syncPreflight} first and report target Sheet/${ADMISSION_SURFACE.files.requiredSheetsConfig} status before any SYNC_ALL.cmd, PUBLISH_DATA_TO_SHEETS.bat publish command, or SYNC_PROGRAMS.cmd.`;
     }
-    return "Inspect the repo docs/scripts to identify a read-only Sheets sync preflight or validation path, then report target Sheet/config status before any SYNC_ALL or publish command.";
+    return `Inspect target/config/validation evidence, then run read-only Sheets sync preflight ${ADMISSION_SURFACE.commands.syncPreflight}; if unavailable, run ${ADMISSION_SURFACE.commands.appsScriptValidation} or ${ADMISSION_SURFACE.commands.canonicalValidation}, then report target Sheet/${ADMISSION_SURFACE.files.requiredSheetsConfig} status before any SYNC_ALL.cmd, PUBLISH_DATA_TO_SHEETS.bat publish command, or SYNC_PROGRAMS.cmd.`;
   }
   if (input.pipelinePublishClaim) {
     if (input.ualbertaPipelineClaim && input.ualbertaFixtureCommandKnown) {
@@ -1585,19 +1590,19 @@ function projectControlNextAction(input: ProjectControlSignals): string {
     return "Confirm Brightspace gate status with npm run build followed by npm run ingest:ci, then report the first remaining failure or passing output.";
   }
   if (input.repoRiskRequest && input.admissionApp) {
-    return "Confirm app-admissions operating risk with npm run build:pages and report exact output before any readiness claim.";
+    return `Confirm app-admissions operating risk with ${ADMISSION_SURFACE.commands.build} and one preflight (${ADMISSION_SURFACE.commands.syncPreflight} or ${ADMISSION_SURFACE.commands.canonicalValidation}), then report exact output before any readiness claim.`;
   }
   if (input.repoRiskRequest && input.canvasHelper) {
-    return "Confirm canvas-helper risk with rendered preview evidence for Sports Wellness (text fit, symmetry, containment) before any “fixed” claim.";
+    return `Confirm canvas-helper risk with ${CANVAS_SURFACE.proofArtifacts[0]} for Sports Wellness and ${CANVAS_SURFACE.commands.build} output before any fixed/build claim.`;
   }
   if (input.proofGapRequest && input.brightspace) {
     return "List the discovered Brightspace test/ingest surfaces and run the next missing proof gate (npm run ingest:ci), then report the first failure.";
   }
   if (input.proofGapRequest && input.admissionApp) {
-    return "List known app-admissions scripts and run npm run build:pages as the next proof command, then report the first failure.";
+    return `List known app-admissions proof surfaces (${ADMISSION_SURFACE.commands.build}, ${ADMISSION_SURFACE.commands.syncPreflight}, ${ADMISSION_SURFACE.commands.appsScriptValidation}, ${ADMISSION_SURFACE.commands.canonicalValidation}) and run the single safest missing proof command, then report the first failure.`;
   }
   if (input.proofGapRequest && input.canvasHelper) {
-    return "List known canvas-helper proof surfaces and request/render one concrete visual proof artifact for Sports Wellness before closing the task.";
+    return `List known canvas-helper proof surfaces (${CANVAS_SURFACE.commands.build}, ${CANVAS_SURFACE.commands.typecheck}, ${CANVAS_SURFACE.commands.courseShellTest}, ${CANVAS_SURFACE.commands.e2e}/${CANVAS_SURFACE.commands.scopedE2e}) and request one ${CANVAS_SURFACE.proofArtifacts[0]} for Sports Wellness before closing the task.`;
   }
   return "Collect the smallest local evidence packet: relevant diff, exact command output, and first remaining failure if any.";
 }
@@ -1716,10 +1721,14 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   if (input.explicitPublishSyncTask && input.admissionApp && !input.sheetsPublishClaim && !input.pipelinePublishClaim && !input.ualbertaPipelineClaim) {
     return [
       "```txt",
-      "Do not publish, sync, deploy, push, or mutate production data.",
-      "Work in /Users/deanguedo/Documents/GitHub/ADMISSION-APP.",
-      "Inspect package scripts and docs to identify the safest existing non-publishing preflight/validation command for publish/sync readiness.",
-      "Run exactly one such command.",
+      `Do not run ${formatBlockedActions(ADMISSION_SURFACE)}, deploy, push, or mutate production data.`,
+      `Work in ${ADMISSION_SURFACE.repoPath}.`,
+      `Check required config surface: ${ADMISSION_SURFACE.files.requiredSheetsConfig}; ${ADMISSION_SURFACE.files.exampleSheetsConfig} is example-only.`,
+      "Run exactly one existing non-publishing proof command:",
+      `- ${ADMISSION_SURFACE.commands.build}`,
+      `- ${ADMISSION_SURFACE.commands.syncPreflight}`,
+      `- or ${ADMISSION_SURFACE.commands.appsScriptValidation}`,
+      `- or ${ADMISSION_SURFACE.commands.canonicalValidation}`,
       "Return cwd, exact command, exit code, full relevant output, and remaining publish/sync blockers.",
       "Stop after the preflight/validation result.",
       "```"
@@ -1728,9 +1737,9 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   if (input.sheetsDocsOnlyReadinessRequest || input.publishPreflightPromptRequest) {
     return [
       "```txt",
-      "Do not publish, sync, deploy, push, or mutate production data.",
-      "From the repo root, identify the safest existing read-only preflight/validation command for publish/sync readiness.",
-      "Run only that preflight command.",
+      `Do not run ${formatBlockedActions(ADMISSION_SURFACE)}, deploy, push, or mutate production data.`,
+      `From ${ADMISSION_SURFACE.repoPath}, verify ${ADMISSION_SURFACE.files.requiredSheetsConfig}; do not treat ${ADMISSION_SURFACE.files.exampleSheetsConfig} as live config.`,
+      `Run only one preflight command: ${ADMISSION_SURFACE.commands.syncPreflight} or ${ADMISSION_SURFACE.commands.canonicalValidation}.`,
       "Return repo path, command, exit code, full relevant output, explicit PASS/FAIL, and missing env/config reported by the command.",
       "Stop after preflight evidence.",
       "```"
@@ -1987,14 +1996,16 @@ function projectControlPrompt(input: ProjectControlSignals): string {
     if (input.canvasHelper) {
       return [
         "```txt",
-        "Work only in /Users/deanguedo/Documents/GitHub/canvas-helper.",
+        `Work only in ${CANVAS_SURFACE.repoPath}.`,
         "Do not claim Sports Wellness is fixed from source/CSS changes alone.",
         "Inspect only:",
-        "- projects/sportswellness/workspace/index.html",
-        "- projects/sportswellness/workspace/styles.css",
-        "- projects/sportswellness/workspace/main.js",
-        "Request one rendered screenshot artifact (desktop viewport) and report checklist results for text fit, symmetry, icon containment, and overlap.",
-        "If screenshot evidence is unavailable, stop and report that gap instead of claiming fixed.",
+        `- ${CANVAS_SURFACE.files.sportsWellnessHtml}`,
+        `- ${CANVAS_SURFACE.files.sportsWellnessCss}`,
+        `- ${CANVAS_SURFACE.files.sportsWellnessJs}`,
+        `Proof artifact required: ${CANVAS_SURFACE.proofArtifacts[0]} (desktop viewport).`,
+        `If claiming build success too, run ${CANVAS_SURFACE.commands.build}; for broader course shell proof use ${CANVAS_SURFACE.commands.courseShellTest}, and for scoped e2e use ${CANVAS_SURFACE.commands.scopedE2e}.`,
+        "Report checklist results for text fit, symmetry, icon containment, and overlap.",
+        "Stop condition: if screenshot evidence is unavailable, stop and report that gap instead of claiming fixed.",
         "```"
       ].join("\n");
     }
@@ -2020,14 +2031,13 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   }
 
   if (input.sheetsPublishClaim) {
-    const validationStep = input.sheetsValidationCommandKnown
-      ? "Run tools/validate-sync-surface.ps1 if that command is confirmed by repo evidence."
-      : "Inspect docs/scripts first to identify the repo's read-only sync preflight or validation command; if none exists, report that blocker instead of inventing one.";
     return [
       "```txt",
-      "Do not run SYNC_ALL, SYNC_PROGRAMS, or any publish command yet.",
-      validationStep,
-      "Validate the sync surface: target Sheet identity, config presence, credential boundary, and local validation requirements.",
+      `Do not run ${formatBlockedActions(ADMISSION_SURFACE)} yet.`,
+      `Work in ${ADMISSION_SURFACE.repoPath}.`,
+      `Validate the sync surface with ${ADMISSION_SURFACE.commands.syncPreflight}.`,
+      `Also verify ${ADMISSION_SURFACE.files.requiredSheetsConfig}; ${ADMISSION_SURFACE.files.exampleSheetsConfig} is example-only.`,
+      `If Apps Script or canonical readiness is the claim, use ${ADMISSION_SURFACE.commands.appsScriptValidation} or ${ADMISSION_SURFACE.commands.canonicalValidation}.`,
       "Report exact validation output or the exact missing-validation blocker without printing secrets.",
       "```"
     ].join("\n");
@@ -2111,9 +2121,9 @@ function projectControlPrompt(input: ProjectControlSignals): string {
     if (input.canvasBuildStudioClaim) {
       return [
         "```txt",
-        "In /Users/deanguedo/Documents/GitHub/canvas-helper, verify build success only.",
+        `In ${CANVAS_SURFACE.repoPath}, verify build success only.`,
         "Do not modify files.",
-        "Run exactly npm run build:studio.",
+        `Run exactly ${CANVAS_SURFACE.commands.build}.`,
         "Report exact command output, exit code, and first failure if it fails.",
         "Do not claim tests or previews passed unless separately run with local output.",
         "```"
@@ -2221,10 +2231,10 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   if (input.boundedPromptRequest && input.admissionApp) {
     return [
       "```txt",
-      "In /Users/deanguedo/Documents/GitHub/ADMISSION-APP, build one bounded proof packet only.",
-      "Scope: evidence collection and one proof command; no publish/sync/deploy and no source mutation.",
-      "Files to inspect first: package.json, docs/PIPELINE.md, tools/, pipeline/, scripts/.",
-      "Run exactly one proof command: npm run build:pages.",
+      `In ${ADMISSION_SURFACE.repoPath}, build one bounded proof packet only.`,
+      `Scope: evidence collection and one proof command; do not run ${formatBlockedActions(ADMISSION_SURFACE)}, deploy, push, or source mutation.`,
+      `Files/surfaces to inspect first: package.json, ${ADMISSION_SURFACE.files.pipelineDocs}, tools/, pipeline/, ${ADMISSION_SURFACE.files.requiredSheetsConfig}, ${ADMISSION_SURFACE.files.exampleSheetsConfig}.`,
+      `Run exactly one proof command selected for the claim: ${ADMISSION_SURFACE.commands.build}, ${ADMISSION_SURFACE.commands.syncPreflight}, ${ADMISSION_SURFACE.commands.appsScriptValidation}, or ${ADMISSION_SURFACE.commands.canonicalValidation}.`,
       "Report: cwd, exact command, exit code, output, files changed (if any), first failure, and what remains unverified.",
       "Stop condition: after that single command and report; do not broaden scope.",
       "```"
@@ -2247,9 +2257,10 @@ function projectControlPrompt(input: ProjectControlSignals): string {
   if (input.boundedPromptRequest && input.canvasHelper) {
     return [
       "```txt",
-      "In /Users/deanguedo/Documents/GitHub/canvas-helper, target only the Sports Wellness visual-proof gap.",
-      "Inspect only: projects/sportswellness/workspace/index.html, styles.css, main.js.",
-      "Proof artifact required: one rendered screenshot of the affected preview state (desktop viewport).",
+      `In ${CANVAS_SURFACE.repoPath}, target only the Sports Wellness visual-proof gap.`,
+      `Inspect only: ${CANVAS_SURFACE.files.sportsWellnessHtml}, ${CANVAS_SURFACE.files.sportsWellnessCss}, ${CANVAS_SURFACE.files.sportsWellnessJs}.`,
+      `Proof artifact required: ${CANVAS_SURFACE.proofArtifacts[0]} of the affected preview state (desktop viewport).`,
+      `Build proof command if needed: ${CANVAS_SURFACE.commands.build}. Course shell/e2e proof surfaces: ${CANVAS_SURFACE.commands.courseShellTest}, ${CANVAS_SURFACE.commands.e2e}, ${CANVAS_SURFACE.commands.scopedE2e}.`,
       "Report: repo path, files inspected, screenshot path/artifact, checklist (text fit, symmetry, containment, overlap), and first remaining visual failure.",
       "Stop condition: do not broaden to other projects or claim fixed without screenshot evidence.",
       "```"
@@ -2259,8 +2270,9 @@ function projectControlPrompt(input: ProjectControlSignals): string {
     return [
       "```txt",
       "Audit app-admissions operating risk with one bounded proof step.",
-      "Do not publish/sync/deploy or mutate source.",
-      "Run exactly npm run build:pages from the repo root and report cwd, exit code, and output.",
+      `Do not run ${formatBlockedActions(ADMISSION_SURFACE)}, deploy, push, or mutate source.`,
+      `Run exactly ${ADMISSION_SURFACE.commands.build} from ${ADMISSION_SURFACE.repoPath} and report cwd, exit code, and output.`,
+      `If the risk is Sheets/publish readiness, the next proof surface is ${ADMISSION_SURFACE.commands.syncPreflight} with ${ADMISSION_SURFACE.files.requiredSheetsConfig}.`,
       "Then classify verified vs unverified readiness (build, publish/sync, pipeline QA).",
       "```"
     ].join("\n");
@@ -2279,7 +2291,8 @@ function projectControlPrompt(input: ProjectControlSignals): string {
     return [
       "```txt",
       "Audit canvas-helper operating risk for Sports Wellness with rendered proof only.",
-      "Inspect the sportswellness workspace files and request one rendered screenshot artifact.",
+      `Inspect ${CANVAS_SURFACE.files.sportsWellnessHtml}, ${CANVAS_SURFACE.files.sportsWellnessCss}, and ${CANVAS_SURFACE.files.sportsWellnessJs}; request one ${CANVAS_SURFACE.proofArtifacts[0]}.`,
+      `Use ${CANVAS_SURFACE.commands.build} only for build proof, not visual proof.`,
       "Do not claim fixed from CSS/source inspection alone.",
       "Return checklist status: text fit, symmetry, containment, overlap.",
       "```"
@@ -2308,7 +2321,8 @@ function projectControlPrompt(input: ProjectControlSignals): string {
     return [
       "```txt",
       "Inventory canvas-helper proof commands/artifacts for Sports Wellness only.",
-      "Identify build/test commands plus the rendered preview artifact path used for visual proof.",
+      `Known commands: ${CANVAS_SURFACE.commands.build}, ${CANVAS_SURFACE.commands.typecheck}, ${CANVAS_SURFACE.commands.courseShellTest}, ${CANVAS_SURFACE.commands.e2e}, ${CANVAS_SURFACE.commands.scopedE2e}.`,
+      `Visual proof requires ${CANVAS_SURFACE.proofArtifacts[0]}; CSS diff alone is not proof.`,
       "If no screenshot artifact can be produced, report that as the primary unverified gap.",
       "```"
     ].join("\n");
