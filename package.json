@@ -31,6 +31,7 @@
     "campaign:real-use:replay": "tsx scripts/realUseReplayGate.ts",
     "campaign:dogfood:c": "tsx scripts/dogfoodRoundC.ts",
     "campaign:failures": "tsx scripts/failureLedger.ts",
+    "campaign:closed-loop": "tsx scripts/closedLoopCodexCampaign.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
     "campaign:phaseB:capture": "tsx scripts/phaseBCaptureClipboard.ts",
