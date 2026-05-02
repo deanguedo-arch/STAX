@@ -61,6 +61,8 @@ describe("project_control mode", () => {
     expect(output.taskMode).toBe("project_control");
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("## Verdict");
+    expect(output.output).toContain("- Status: Reject");
+    expect(output.output).toContain("- Why:");
     expect(output.output).toContain("Not proven");
     expect(output.output).toContain("tests-passed claim is unverified");
     expect(output.output).toContain("## One Next Action");

@@ -1,6 +1,7 @@
+import { validateProjectControlCardShape } from "../projectControl/ControlCard.js";
 import { PROJECT_CONTROL_REQUIRED_HEADINGS } from "../schemas/ProjectControlOutput.js";
 import type { ValidationResult } from "../utils/validators.js";
-import { missingHeadings, sectionContent, sectionLines } from "./markdownSections.js";
+import { missingHeadings, sectionContent } from "./markdownSections.js";
 
 export class ProjectControlValidator {
   validate(output: string): ValidationResult {
@@ -8,12 +9,7 @@ export class ProjectControlValidator {
       (heading) => `Missing required heading: ${heading}`
     );
 
-    const oneNextActionLines = sectionLines(output, "## One Next Action").filter((line) =>
-      /^[-*\d]/.test(line.trim())
-    );
-    if (oneNextActionLines.length > 1) {
-      issues.push("Project control output must give exactly one next action.");
-    }
+    issues.push(...validateProjectControlCardShape(output));
 
     const verified = sectionContent(output, "## Verified");
     if (/\b(tests?|build|ingest|typecheck)\s+(pass|passed|verified)\b/i.test(verified) && !/\blocal STAX command evidence\b|\bexit code 0\b|\brun-\d{4}|runs\/\d{4}/i.test(verified)) {

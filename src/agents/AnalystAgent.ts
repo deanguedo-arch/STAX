@@ -2,6 +2,7 @@ import type { Agent, AgentInput } from "./Agent.js";
 import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
+import { renderProjectControlVerdictCard } from "../projectControl/ControlCard.js";
 import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
 import { renderRepoTransferProjectControl } from "../repoTransfer/RepoTransferProjectControl.js";
 import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
@@ -1250,12 +1251,12 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     risks.push("The main risk is upgrading weak or missing evidence into a hard completion claim.");
   }
 
+  const verdict = projectControlVerdict(signals);
   const nextAction = projectControlNextAction(signals);
   const prompt = projectControlPrompt(signals);
 
   return [
-    "## Verdict",
-    `- ${projectControlVerdict(signals)}`,
+    ...renderProjectControlVerdictCard(verdict),
     "",
     "## Verified",
     ...bulletize(verified, "No hard completion/runtime claim is verified from the supplied evidence."),

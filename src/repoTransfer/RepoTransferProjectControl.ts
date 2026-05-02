@@ -1,3 +1,5 @@
+import { renderProjectControlVerdictCard } from "../projectControl/ControlCard.js";
+
 type ProjectControlPacket = {
   task: string;
   repoEvidence: string;
@@ -159,12 +161,12 @@ export function renderRepoTransferProjectControl(packet: ProjectControlPacket): 
     archetype?.riskyActions.length ? `Do not run or recommend live actions yet: ${archetype.riskyActions.join(", ")}.` : undefined
   ].filter(Boolean) as string[];
 
+  const verdict = transferVerdict({ repo, archetype, taskKind, fakeCompleteTrap, scriptExistsTrap });
   const nextAction = nextTransferAction({ repo, archetype, taskKind, fakeCompleteTrap, scriptExistsTrap });
   const prompt = transferCodexPrompt({ repo, archetype, taskKind });
 
   return [
-    "## Verdict",
-    `- ${transferVerdict({ repo, archetype, taskKind, fakeCompleteTrap, scriptExistsTrap })}`,
+    ...renderProjectControlVerdictCard(verdict),
     "",
     "## Verified",
     ...bulletize(verified),
