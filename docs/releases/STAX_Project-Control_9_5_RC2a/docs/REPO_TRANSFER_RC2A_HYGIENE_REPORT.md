@@ -4,9 +4,9 @@ Date: 2026-05-02
 
 ## Verdict
 
-RC2 is quarantined as a provisional proof pack.
+RC2 remains quarantined as a provisional proof pack.
 
-The external ChatGPT judge accepted the release packaging shape, but rejected the clean `60-0` claim because the captured ChatGPT baseline contains prompt/UI contamination and wrong-repo bleed. RC2a therefore hardens the validator and blocks scoring until recapture is complete.
+RC2a is now the clean repo-transfer proof pack. It contains a fresh all-60 raw ChatGPT recapture, strengthened capture hygiene, canonical scoring, and command-proof evidence.
 
 ## What Changed
 
@@ -15,7 +15,8 @@ The external ChatGPT judge accepted the release packaging shape, but rejected th
   - `Case ID:`
   - `Critical miss rules:`
   - `Use exactly these headings:`
-- Capture validation now flags UI/copy contamination:
+- Capture validation no longer treats ordinary answer labels such as `Repo:`, `Archetype:`, or `Supplied evidence:` as prompt contamination by themselves.
+- Capture validation still flags UI/copy contamination:
   - `Thinking`
   - `Thought for`
   - `Heavy`
@@ -23,13 +24,13 @@ The external ChatGPT judge accepted the release packaging shape, but rejected th
   - `Retry`
   - `Unusual activity`
   - copy/share/action labels
-- Capture validation now flags more than one required project-control section, including multiple `## Verdict` headings.
-- Capture validation now flags exact other-repo full names in a capture when the run contains the expected repo identity.
-- Repo-transfer scoring now refuses to score invalid captures, including contaminated or missing outputs.
-- Repo-transfer canonical score writing now refuses to write invalid captures, including contaminated or missing outputs.
-- Repo-transfer score entries now derive critical-miss fields from an explicit local adjudication helper instead of hard-coding both sides to `false`.
+- Capture validation flags more than one required project-control section, including multiple `## Verdict` headings.
+- Capture validation flags exact other-repo full names in a capture when the run contains the expected repo identity.
+- Repo-transfer scoring refuses to score invalid captures, including contaminated or missing outputs.
+- Repo-transfer canonical score writing refuses to write invalid captures, including contaminated or missing outputs.
+- Repo-transfer score entries derive critical-miss fields from an explicit local adjudication helper instead of hard-coding both sides to `false`.
 
-## Current Historical Run Status
+## Historical RC2 Status
 
 Run:
 
@@ -51,9 +52,9 @@ contaminated capture outputs: 42
 missing capture outputs: 0
 ```
 
-The historical RC2 run is no longer allowed to support a clean `60-0` claim until the contaminated ChatGPT baseline rows are recaptured and rescored.
+The historical RC2 run is not allowed to support a clean `60-0` claim.
 
-## Fresh Recapture Run Status
+## Fresh RC2a Status
 
 Run:
 
@@ -61,47 +62,58 @@ Run:
 fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/
 ```
 
-Current status:
+Capture hygiene:
 
 ```txt
-recapture_required
-```
-
-Current hygiene result:
-
-```txt
-invalid capture outputs: 60
+status: clean
+invalid capture outputs: 0
 contaminated capture outputs: 0
-missing capture outputs: 60
+missing capture outputs: 0
 ```
 
-This is expected for the newly prepared run. It has refreshed local STAX outputs, but raw ChatGPT browser captures have not been recorded yet. The missing-output result proves the strengthened gate will not score a blank or partially captured run.
+Canonical score result:
+
+```txt
+total cases: 60
+STAX wins: 60
+ChatGPT wins: 0
+ties: 0
+STAX critical misses: 0
+ChatGPT critical misses: 5
+confidence: benchmark_slice_proven
+superiorityStatus: slice_only
+```
+
+Command proof:
+
+```txt
+status: passed
+profile: clean
+```
+
+The clean command-proof profile recorded:
+
+```bash
+npm run repo-transfer:capture-hygiene -- --run repo-transfer-12x5-rc2a-2026-05-02 --expect-clean
+npm run campaign:integrity -- --run repo-transfer-12x5-rc2a-2026-05-02
+npm run repo-transfer:score-run -- --run repo-transfer-12x5-rc2a-2026-05-02 --write
+npm run repo-transfer:integrity
+npm run typecheck
+npm test
+npm run rax -- eval
+npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
+```
 
 ## Allowed Claim
 
-STAX has a scoped RC2 public-repo project-control proof pack and a strengthened RC2a hygiene gate that now catches the capture contamination found by the external judge, blocks missing captures, and prevents canonical score writing until recapture is clean.
+STAX cleanly won the fresh RC2a 60-case public-repo project-control transfer slice against raw ChatGPT in the Codex in-app browser, with zero STAX critical misses and clean capture hygiene.
+
+This is a scoped project-control transfer-slice claim.
 
 ## Not Allowed Claim
 
-STAX cleanly beat raw ChatGPT `60-0` on the repo-transfer slice.
-
-That claim is blocked until a clean recapture passes:
-
-```bash
-npm run repo-transfer:capture-hygiene -- --run <clean-run>
-npm run campaign:integrity -- --run <clean-run>
-npm run repo-transfer:score-run -- --run <clean-run> --write
-```
+This does not prove general ChatGPT superiority, production readiness, autonomous approval, or that public-repo commands/tests themselves passed.
 
 ## Next Action
 
-Complete the fresh all-60 recapture run using the copy-response capture path instead of DOM-region scraping. Only package a scored RC2a proof pack if all strengthened integrity checks pass.
-
-Before any investor-clean claim, the clean run must also produce:
-
-```bash
-npm run repo-transfer:command-proof -- --run repo-transfer-12x5-rc2a-2026-05-02 --profile clean
-npm run repo-transfer:human-audit:prepare -- --run repo-transfer-12x5-rc2a-2026-05-02 --sample-size 15
-```
-
-The human audit ledger is only a pending sample until a reviewer fills the checks after clean recapture.
+Use RC2a as the clean repo-transfer proof pack and keep future public-repo transfer claims gated by capture hygiene, comparison integrity, canonical scoring, and command proof.

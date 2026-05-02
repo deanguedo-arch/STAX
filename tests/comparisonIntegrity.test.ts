@@ -142,6 +142,15 @@ describe("validateComparisonRunIntegrity", () => {
     expect(result.issues.some((i) => i.code === "corrupted_capture" && /embedded_benchmark_prompt/.test(i.message))).toBe(true);
   });
 
+  it("allows ordinary repo, archetype, and supplied-evidence labels in a valid audit answer", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    await writeRun(baseDir, "repo-archetype-labels", {
+      chatgptOutput: `${GOOD_OUTPUT}\nRepo: vitejs/vite\nArchetype: js_build_tooling\nSupplied evidence: no command evidence was supplied.`
+    });
+    const result = await validateComparisonRunIntegrity({ runId: "repo-archetype-labels", baseDir });
+    expect(result.pass).toBe(true);
+  });
+
   it("fails on UI capture contamination", async () => {
     const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
     await writeRun(baseDir, "bad-ui-capture", {

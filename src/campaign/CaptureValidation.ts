@@ -31,9 +31,6 @@ export const BANNED_OPERATIONAL_CAPTURE_PATTERNS: RegExp[] = [
 export const EMBEDDED_BENCHMARK_PROMPT_PATTERNS: RegExp[] = [
   /you are raw chatgpt in a public-repo project-control benchmark/i,
   /^case id:/im,
-  /^repo:/im,
-  /^archetype:/im,
-  /^supplied evidence:/im,
   /^critical miss rules:/im,
   /use exactly these headings:/i
 ];

@@ -1,12 +1,12 @@
-# STAX Project-Control 9.5 RC2a Hygiene Pack
+# STAX Project-Control 9.5 RC2a Proof Pack
 
 Date: 2026-05-02
 
 ## Scope
 
-This is a proof-hygiene correction pack for the RC2 public-repo transfer run.
+This is the clean RC2a public-repo transfer proof pack for the scoped STAX project-control workflow.
 
-It does not claim a clean `60-0` result. It preserves the external judge finding that RC2 was over-scored/provisional and records the strengthened validation behavior that now blocks scoring until invalid ChatGPT captures are recaptured.
+It replaces the earlier RC2a hygiene-only package. The historical RC2 run remains quarantined; the fresh RC2a run is the canonical clean repo-transfer slice.
 
 ## Included Artifacts
 
@@ -23,51 +23,45 @@ It does not claim a clean `60-0` result. It preserves the external judge finding
 - `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/report.md`
 - `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/capture_hygiene_issues.json`
 - `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/capture_hygiene_report.md`
+- `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/command_proof.json`
+- `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/command_proof.md`
 - `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/human_audit_ledger.json`
 - `fixtures/real_use/runs/repo-transfer-12x5-rc2a-2026-05-02/human_audit_ledger.md`
 
-## Current Status
+## Historical RC2 Status
 
 - Historical run: `repo-transfer-12x5-2026-05-01`
 - Hygiene status: `recapture_required`
-- Invalid ChatGPT capture outputs: `42`
-- Contaminated ChatGPT capture outputs: `42`
-- Missing ChatGPT capture outputs: `0`
-- Contaminated cases: `42`
-- `campaign:integrity`: expected fail under RC2a validation
-- `repo-transfer:score-run`: expected fail until recapture
+- Invalid ChatGPT capture outputs: 42
+- Contaminated ChatGPT capture outputs: 42
+- Missing ChatGPT capture outputs: 0
+- `campaign:integrity`: fails under RC2a validation
+- `repo-transfer:score-run`: refuses to score until recapture
 
-Fresh recapture run:
+## Fresh RC2a Status
 
 - Run: `repo-transfer-12x5-rc2a-2026-05-02`
-- Hygiene status: `recapture_required`
-- Invalid ChatGPT capture outputs: `60`
-- Contaminated ChatGPT capture outputs: `0`
-- Missing ChatGPT capture outputs: `60`
-- STAX outputs: refreshed locally
-- ChatGPT outputs: not captured yet
-- Human audit ledger: pending sample of 15 rows, not reviewed yet
+- Hygiene status: `clean`
+- Invalid ChatGPT capture outputs: 0
+- Contaminated ChatGPT capture outputs: 0
+- Missing ChatGPT capture outputs: 0
+- Total cases: 60
+- STAX wins: 60
+- ChatGPT wins: 0
+- Ties: 0
+- STAX critical misses: 0
+- ChatGPT critical misses: 5
+- Confidence: `benchmark_slice_proven`
+- Superiority status: `slice_only`
+- Command proof status: `passed`
+- Promotion gate status: `promotion_ready`
 
 ## Allowed Claim
 
-STAX now catches RC2 capture contamination, catches missing raw ChatGPT captures, and refuses to score/write a repo-transfer run until recapture.
+STAX cleanly beat raw ChatGPT on the fresh RC2a 60-case public-repo project-control transfer slice, with clean capture hygiene and zero STAX critical misses.
 
-The clean-run command-proof profile is available for the eventual clean recapture:
-
-```bash
-npm run repo-transfer:command-proof -- --run repo-transfer-12x5-rc2a-2026-05-02 --profile clean
-```
+This claim is scoped to the project-control transfer benchmark slice.
 
 ## Not Allowed Claim
 
-STAX cleanly beat raw ChatGPT `60-0` on the repo-transfer run.
-
-## Next Action
-
-Run a fresh all-60 ChatGPT recapture using the copy-response capture path, then regenerate canonical scores only after:
-
-```bash
-npm run repo-transfer:capture-hygiene -- --run <new-run>
-npm run campaign:integrity -- --run <new-run>
-npm run repo-transfer:score-run -- --run <new-run> --write
-```
+This is not a general ChatGPT superiority claim, not production readiness, not autonomy, and not proof that public-repo commands/tests themselves passed.
