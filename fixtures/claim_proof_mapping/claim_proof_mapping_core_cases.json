@@ -1,0 +1,283 @@
+{
+  "fixtureSet": "claim_proof_mapping_core_cases_v1",
+  "cases": [
+    {
+      "caseId": "claim_001_implementation_supported",
+      "description": "Implementation claim has source diff, behavior test, and command evidence.",
+      "repeat": 5,
+      "claimType": "implementation",
+      "claim": "Provider-backed analyst implementation is complete.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "source_diff", "strength": "strong", "description": "Source diff touches AnalystAgent." },
+        { "proofType": "behavior_test", "strength": "strong", "description": "Test proves provider output wins." },
+        { "proofType": "command_evidence_after_diff", "strength": "strong", "description": "npm test passed after diff." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_002_implementation_missing_behavior",
+      "description": "Implementation claim lacks behavior proof.",
+      "repeat": 5,
+      "claimType": "implementation",
+      "claim": "Runtime behavior is implemented.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "source_diff", "strength": "strong", "description": "Source changed." },
+        { "proofType": "command_evidence_after_diff", "strength": "strong", "description": "Typecheck passed." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_003_implementation_weak_command",
+      "description": "Implementation claim has weak command evidence only.",
+      "repeat": 5,
+      "claimType": "implementation",
+      "claim": "Implementation is done.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "source_diff", "strength": "strong", "description": "Source changed." },
+        { "proofType": "behavior_test", "strength": "strong", "description": "Test added." },
+        { "proofType": "command_evidence_after_diff", "strength": "weak", "description": "Codex reported tests passed." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_004_implementation_no_command",
+      "description": "Implementation claim lacks command evidence after diff.",
+      "repeat": 5,
+      "claimType": "implementation",
+      "claim": "Implementation and test are done.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "source_diff", "strength": "strong", "description": "Source changed." },
+        { "proofType": "behavior_test", "strength": "strong", "description": "Test added." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_005_test_supported",
+      "description": "Test claim has test diff and command evidence.",
+      "repeat": 5,
+      "claimType": "test",
+      "claim": "Regression test was added and run.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "test_diff", "strength": "strong", "description": "Test diff added." },
+        { "proofType": "command_evidence_after_diff", "strength": "strong", "description": "Focused test passed." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_006_test_no_command",
+      "description": "Test claim lacks command evidence.",
+      "repeat": 5,
+      "claimType": "test",
+      "claim": "Regression test passed.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "test_diff", "strength": "strong", "description": "Test file exists." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_007_behavior_supported",
+      "description": "Behavior claim has behavior test and command evidence.",
+      "repeat": 5,
+      "claimType": "behavior",
+      "claim": "Parser now handles the edge case.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "behavior_test", "strength": "strong", "description": "Behavior assertion covers edge case." },
+        { "proofType": "command_evidence_after_diff", "strength": "strong", "description": "Test command passed." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_008_behavior_build_only",
+      "description": "Build proof does not prove behavior.",
+      "repeat": 5,
+      "claimType": "behavior",
+      "claim": "UI behavior is fixed.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "build_proof", "strength": "strong", "description": "Build passed." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_009_visual_supported",
+      "description": "Visual claim has rendered visual proof.",
+      "repeat": 5,
+      "claimType": "visual",
+      "claim": "Cards render without overflow.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "rendered_visual_proof", "strength": "strong", "description": "Screenshot checklist passed." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_010_visual_no_rendered_proof",
+      "description": "Visual claim lacks rendered proof.",
+      "repeat": 5,
+      "claimType": "visual",
+      "claim": "The screen looks correct.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "source_diff", "strength": "strong", "description": "CSS changed." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_011_data_supported",
+      "description": "Data claim has validation, row count, and dry-run proof.",
+      "repeat": 5,
+      "claimType": "data",
+      "claim": "Pipeline output is safe to sync.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "data_validation", "strength": "strong", "description": "Validation script passed." },
+        { "proofType": "row_count_diff", "strength": "strong", "description": "Row-count diff reviewed." },
+        { "proofType": "dry_run_artifact", "strength": "strong", "description": "Dry-run artifact captured." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_012_data_no_dry_run",
+      "description": "Data claim lacks dry-run proof.",
+      "repeat": 5,
+      "claimType": "data",
+      "claim": "Pipeline is ready to publish.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "data_validation", "strength": "strong", "description": "Validation passed." },
+        { "proofType": "row_count_diff", "strength": "strong", "description": "Rows checked." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_013_release_supported",
+      "description": "Release claim has build, command, environment, and rollback proof.",
+      "repeat": 5,
+      "claimType": "release_deploy",
+      "claim": "Release gate is ready.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "build_proof", "strength": "strong", "description": "Build passed." },
+        { "proofType": "command_evidence_after_diff", "strength": "strong", "description": "Gate command passed." },
+        { "proofType": "target_environment_proof", "strength": "strong", "description": "Target verified." },
+        { "proofType": "rollback_plan", "strength": "strong", "description": "Rollback plan recorded." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_014_release_no_rollback",
+      "description": "Release claim lacks rollback proof.",
+      "repeat": 5,
+      "claimType": "release_deploy",
+      "claim": "Ready to deploy.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "build_proof", "strength": "strong", "description": "Build passed." },
+        { "proofType": "command_evidence_after_diff", "strength": "strong", "description": "Gate passed." },
+        { "proofType": "target_environment_proof", "strength": "strong", "description": "Target verified." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_015_release_build_only",
+      "description": "Build-only evidence cannot prove release readiness.",
+      "repeat": 5,
+      "claimType": "release_deploy",
+      "claim": "Ready to publish.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "build_proof", "strength": "strong", "description": "Build passed." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_016_memory_supported",
+      "description": "Memory promotion has human approval and source run reference.",
+      "repeat": 5,
+      "claimType": "memory_promotion",
+      "claim": "Promote lesson to approved memory.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "human_approval", "strength": "strong", "description": "Human approved." },
+        { "proofType": "source_run_reference", "strength": "strong", "description": "Source task linked." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_017_memory_no_approval",
+      "description": "Memory promotion lacks approval.",
+      "repeat": 5,
+      "claimType": "memory_promotion",
+      "claim": "Save model output to memory.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "source_run_reference", "strength": "strong", "description": "Source task linked." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_018_security_supported",
+      "description": "Security claim has targeted test and secret scan.",
+      "repeat": 5,
+      "claimType": "security",
+      "claim": "Secret redaction is verified.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "security_test", "strength": "strong", "description": "Security test passed." },
+        { "proofType": "secret_scan", "strength": "strong", "description": "Secret scan passed." }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true
+    },
+    {
+      "caseId": "claim_019_security_no_test",
+      "description": "Security claim lacks targeted security test.",
+      "repeat": 5,
+      "claimType": "security",
+      "claim": "Security issue is fixed.",
+      "hardClaim": true,
+      "suppliedProof": [
+        { "proofType": "secret_scan", "strength": "strong", "description": "No secrets found." }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false
+    },
+    {
+      "caseId": "claim_020_ambiguous_missing_proof",
+      "description": "Soft implementation claim with missing proof remains provisional, not hard accepted.",
+      "repeat": 5,
+      "claimType": "implementation",
+      "claim": "Implementation appears likely but needs verification.",
+      "hardClaim": false,
+      "suppliedProof": [
+        { "proofType": "source_diff", "strength": "weak", "description": "Diff summary only." }
+      ],
+      "expectedVerdict": "provisional",
+      "shouldAccept": false
+    }
+  ]
+}
