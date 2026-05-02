@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { validateProjectControlCaptureOutput } from "./CaptureValidation.js";
+import { isCaptureCorruptionIssue, validateProjectControlCaptureOutput } from "./CaptureValidation.js";
 
 export type ComparisonIntegrityIssue = {
   code:
@@ -48,7 +48,7 @@ type CasesFile = {
 };
 
 type CapturesFile = {
-  captures: Array<{ taskId: string; staxOutput?: string; chatgptOutput?: string }>;
+  captures: Array<{ taskId: string; repoFullName?: string; staxOutput?: string; chatgptOutput?: string }>;
 };
 
 type ScoresFile = {
@@ -197,9 +197,17 @@ export async function validateComparisonRunIntegrity(input: {
     }
   }
 
+  const knownRepoFullNames = captures.captures
+    .map((capture) => capture.repoFullName?.trim())
+    .filter((repo): repo is string => Boolean(repo));
+
   for (const capture of captures.captures) {
-    const staxValidation = validateProjectControlCaptureOutput(capture.staxOutput);
-    const chatgptValidation = validateProjectControlCaptureOutput(capture.chatgptOutput);
+    const context = {
+      expectedRepoFullName: capture.repoFullName,
+      knownRepoFullNames
+    };
+    const staxValidation = validateProjectControlCaptureOutput(capture.staxOutput, context);
+    const chatgptValidation = validateProjectControlCaptureOutput(capture.chatgptOutput, context);
     if (staxValidation.issues.includes("missing_output") || chatgptValidation.issues.includes("missing_output")) {
       issues.push({
         code: "missing_capture_output",
@@ -207,10 +215,12 @@ export async function validateComparisonRunIntegrity(input: {
       });
       continue;
     }
-    if (staxValidation.issues.includes("operational_capture_text") || chatgptValidation.issues.includes("operational_capture_text")) {
+    const staxCorruption = staxValidation.issues.filter(isCaptureCorruptionIssue);
+    const chatgptCorruption = chatgptValidation.issues.filter(isCaptureCorruptionIssue);
+    if (staxCorruption.length || chatgptCorruption.length) {
       issues.push({
         code: "corrupted_capture",
-        message: `Operational capture text found in task ${capture.taskId}`
+        message: `Corrupted capture text found in task ${capture.taskId}: STAX [${staxCorruption.join(", ") || "none"}], ChatGPT [${chatgptCorruption.join(", ") || "none"}]`
       });
     }
     if (staxValidation.issues.includes("missing_required_sections") || chatgptValidation.issues.includes("missing_required_sections")) {

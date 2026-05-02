@@ -1,0 +1,11 @@
+{
+  "runId": "repo-transfer-12x5-rc2a-2026-05-02",
+  "createdAt": "2026-05-02T14:08:31.740Z",
+  "caseCount": 60,
+  "staxSource": "local_stax_project_control_transfer",
+  "chatgptSource": "raw_chatgpt_iab_instant",
+  "scoringRubricVersion": "repo_transfer_project_control_v1",
+  "criticalMissRulesVersion": "repo_transfer_critical_miss_v1",
+  "canonicalScoresFile": "scores.json",
+  "canonicalReportFile": "report.md"
+}

@@ -1,4 +1,4 @@
-import { validateProjectControlCaptureOutput } from "./CaptureValidation.js";
+import { isCaptureCorruptionIssue, validateProjectControlCaptureOutput } from "./CaptureValidation.js";
 
 export type Phase11CaptureEntry = {
   taskId: string;
@@ -33,10 +33,11 @@ export function validatePhase11CaptureIntegrity(input: Phase11CaptureFile): Capt
       continue;
     }
 
-    if (result.issues.includes("operational_capture_text")) {
+    const corruptionIssues = result.issues.filter(isCaptureCorruptionIssue);
+    if (corruptionIssues.length) {
       issues.push({
         taskId: entry.taskId,
-        reason: "Captured output appears to be operational capture text, not a task answer."
+        reason: `Captured output appears to be operational capture text, not a task answer: ${corruptionIssues.join(", ")}.`
       });
     }
 

@@ -12,6 +12,14 @@ async function writeRun(
   runId: string,
   options?: {
     chatgptOutput?: string;
+    staxOutput?: string;
+    repoFullName?: string;
+    secondCapture?: {
+      taskId: string;
+      repoFullName: string;
+      staxOutput: string;
+      chatgptOutput: string;
+    };
     extraScoreFile?: { name: string; content: string };
     reportOverride?: string;
   }
@@ -36,7 +44,11 @@ async function writeRun(
       2
     )
   );
-  await fs.writeFile(path.join(runDir, "cases.json"), JSON.stringify({ cases: [{ taskId: "case_001" }] }, null, 2));
+  const cases = [
+    { taskId: "case_001" },
+    ...(options?.secondCapture ? [{ taskId: options.secondCapture.taskId }] : [])
+  ];
+  await fs.writeFile(path.join(runDir, "cases.json"), JSON.stringify({ cases }, null, 2));
   await fs.writeFile(
     path.join(runDir, "captures.json"),
     JSON.stringify(
@@ -44,9 +56,11 @@ async function writeRun(
         captures: [
           {
             taskId: "case_001",
-            staxOutput: GOOD_OUTPUT,
+            repoFullName: options?.repoFullName,
+            staxOutput: options?.staxOutput ?? GOOD_OUTPUT,
             chatgptOutput: options?.chatgptOutput ?? GOOD_OUTPUT
-          }
+          },
+          ...(options?.secondCapture ? [options.secondCapture] : [])
         ]
       },
       null,
@@ -64,7 +78,18 @@ async function writeRun(
             chatgptScore: 7,
             staxCriticalMiss: false,
             chatgptCriticalMiss: false
-          }
+          },
+          ...(options?.secondCapture
+            ? [
+                {
+                  taskId: options.secondCapture.taskId,
+                  staxScore: 9,
+                  chatgptScore: 7,
+                  staxCriticalMiss: false,
+                  chatgptCriticalMiss: false
+                }
+              ]
+            : [])
         ]
       },
       null,
@@ -74,7 +99,17 @@ async function writeRun(
   await fs.writeFile(
     path.join(runDir, "report.md"),
     options?.reportOverride ??
-      ["# Report", "", "## Summary", "- Total scored cases: 1", "- STAX wins: 1", "- ChatGPT wins: 0", "- Ties: 0", "- STAX critical misses: 0", "- ChatGPT critical misses: 0"].join("\n")
+      [
+        "# Report",
+        "",
+        "## Summary",
+        `- Total scored cases: ${cases.length}`,
+        `- STAX wins: ${cases.length}`,
+        "- ChatGPT wins: 0",
+        "- Ties: 0",
+        "- STAX critical misses: 0",
+        "- ChatGPT critical misses: 0"
+      ].join("\n")
   );
   if (options?.extraScoreFile) {
     await fs.writeFile(path.join(runDir, options.extraScoreFile.name), options.extraScoreFile.content);
@@ -95,6 +130,54 @@ describe("validateComparisonRunIntegrity", () => {
     const result = await validateComparisonRunIntegrity({ runId: "bad-capture", baseDir });
     expect(result.pass).toBe(false);
     expect(result.issues.some((i) => i.code === "corrupted_capture")).toBe(true);
+  });
+
+  it("fails on embedded benchmark prompt contamination", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    await writeRun(baseDir, "bad-prompt-capture", {
+      chatgptOutput: `${GOOD_OUTPUT}\nYou are raw ChatGPT in a public-repo project-control benchmark.\nCase ID: bad_case\nCritical miss rules: none`
+    });
+    const result = await validateComparisonRunIntegrity({ runId: "bad-prompt-capture", baseDir });
+    expect(result.pass).toBe(false);
+    expect(result.issues.some((i) => i.code === "corrupted_capture" && /embedded_benchmark_prompt/.test(i.message))).toBe(true);
+  });
+
+  it("fails on UI capture contamination", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    await writeRun(baseDir, "bad-ui-capture", {
+      chatgptOutput: `${GOOD_OUTPUT}\nThought for 7s\nHeavy\nRetry`
+    });
+    const result = await validateComparisonRunIntegrity({ runId: "bad-ui-capture", baseDir });
+    expect(result.pass).toBe(false);
+    expect(result.issues.some((i) => i.code === "corrupted_capture" && /ui_capture_text/.test(i.message))).toBe(true);
+  });
+
+  it("fails when one capture contains more than one verdict section", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    await writeRun(baseDir, "bad-multi-verdict", {
+      chatgptOutput: `${GOOD_OUTPUT}\n\n${GOOD_OUTPUT}`
+    });
+    const result = await validateComparisonRunIntegrity({ runId: "bad-multi-verdict", baseDir });
+    expect(result.pass).toBe(false);
+    expect(result.issues.some((i) => i.code === "corrupted_capture" && /multiple_required_sections/.test(i.message))).toBe(true);
+  });
+
+  it("fails on exact other-repo contamination", async () => {
+    const baseDir = await fs.mkdtemp(path.join(os.tmpdir(), "stax-integrity-"));
+    await writeRun(baseDir, "bad-other-repo", {
+      repoFullName: "storybookjs/storybook",
+      chatgptOutput: `${GOOD_OUTPUT}\nThis answer accidentally cites laravel/framework.`,
+      secondCapture: {
+        taskId: "case_002",
+        repoFullName: "laravel/framework",
+        staxOutput: GOOD_OUTPUT,
+        chatgptOutput: GOOD_OUTPUT
+      },
+      reportOverride: ["# Report", "", "## Summary", "- Total scored cases: 2", "- STAX wins: 2", "- ChatGPT wins: 0", "- Ties: 0", "- STAX critical misses: 0", "- ChatGPT critical misses: 0"].join("\n")
+    });
+    const result = await validateComparisonRunIntegrity({ runId: "bad-other-repo", baseDir });
+    expect(result.pass).toBe(false);
+    expect(result.issues.some((i) => i.code === "corrupted_capture" && /wrong_repo_contamination/.test(i.message))).toBe(true);
   });
 
   it("uses the shared capture validator for subscription capture corruption", async () => {

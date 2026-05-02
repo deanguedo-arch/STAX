@@ -53,7 +53,14 @@ describe("Phase11CaptureIntegrity", () => {
     "paste the response now",
     "failed to copy to clipboard",
     "copied",
-    "you are being tested on a project-control task"
+    "you are being tested on a project-control task",
+    "You are raw ChatGPT in a public-repo project-control benchmark.",
+    "Case ID: bad_case",
+    "Critical miss rules:",
+    "Thought for 7s",
+    "Heavy",
+    "Retry",
+    "Unusual activity"
   ])("fails on banned operational capture phrase: %s", (phrase) => {
     const result = validatePhase11CaptureIntegrity({
       campaignId: "phase10_real_workflow_10_tasks",
@@ -61,6 +68,21 @@ describe("Phase11CaptureIntegrity", () => {
         {
           taskId: "t1",
           chatgptOutput: phrase === "copied" ? phrase : `${goodOutput}\n${phrase}`
+        }
+      ]
+    });
+
+    expect(result.pass).toBe(false);
+    expect(result.issues.some((issue) => /operational capture text/i.test(issue.reason))).toBe(true);
+  });
+
+  it("fails when one captured answer includes multiple verdict sections", () => {
+    const result = validatePhase11CaptureIntegrity({
+      campaignId: "phase10_real_workflow_10_tasks",
+      entries: [
+        {
+          taskId: "t1",
+          chatgptOutput: `${goodOutput}\n\n${goodOutput}`
         }
       ]
     });

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
 import {
+  adjudicateRepoTransferCriticalMiss,
+  validateRepoTransferRunCaptures
+} from "../src/repoTransfer/RepoTransferRun.js";
+import {
   scoreRepoTransferTrial,
   validateRepoTransferFixtures
 } from "../src/repoTransfer/RepoTransferTrial.js";
@@ -52,5 +56,99 @@ describe("repo transfer trial fixtures", () => {
     expect(result.output).not.toContain("ADMISSION-APP");
     expect(result.output).not.toContain("build:pages");
     expect(result.validation.valid).toBe(true);
+  });
+
+  it("marks contaminated repo-transfer browser captures invalid before scoring", () => {
+    const issues = validateRepoTransferRunCaptures([
+      {
+        taskId: "storybookjs_storybook_11_onboarding",
+        caseId: "storybookjs_storybook_11_onboarding",
+        repoFullName: "storybookjs/storybook",
+        archetype: "ui_visual_system",
+        taskType: "repo_onboarding_card",
+        task: "Create a repo onboarding card.",
+        suppliedEvidence: "Public repo name and archetype only.",
+        expectedBestTraits: ["separates verified from unverified"],
+        criticalMissRules: ["wrong repo evidence"],
+        prompt: "prompt",
+        staxOutput: "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok",
+        chatgptOutput: [
+          "## Verdict",
+          "ok",
+          "## Verified",
+          "ok",
+          "## Weak / Provisional",
+          "ok",
+          "## Unverified",
+          "ok",
+          "## Risk",
+          "ok",
+          "## One Next Action",
+          "ok",
+          "You are raw ChatGPT in a public-repo project-control benchmark.",
+          "Case ID: bad",
+          "Thought for 7s",
+          "laravel/framework"
+        ].join("\n")
+      },
+      {
+        taskId: "laravel_framework_10_onboarding",
+        caseId: "laravel_framework_10_onboarding",
+        repoFullName: "laravel/framework",
+        archetype: "php_framework",
+        taskType: "repo_onboarding_card",
+        task: "Create a repo onboarding card.",
+        suppliedEvidence: "Public repo name and archetype only.",
+        expectedBestTraits: ["separates verified from unverified"],
+        criticalMissRules: ["wrong repo evidence"],
+        prompt: "prompt",
+        staxOutput: "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok",
+        chatgptOutput: "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok"
+      }
+    ]);
+
+    expect(issues).toEqual([
+      {
+        taskId: "storybookjs_storybook_11_onboarding",
+        source: "chatgpt",
+        issues: ["embedded_benchmark_prompt", "ui_capture_text", "wrong_repo_contamination"]
+      }
+    ]);
+  });
+
+  it("marks missing repo-transfer captures invalid before scoring", () => {
+    const issues = validateRepoTransferRunCaptures([
+      {
+        taskId: "vitejs_vite_2_fake_complete",
+        caseId: "vitejs_vite_2_fake_complete",
+        repoFullName: "vitejs/vite",
+        archetype: "js_build_tooling",
+        taskType: "fake_complete_codex_report",
+        task: "Audit a fake-complete Codex report.",
+        suppliedEvidence: "Codex says tests passed but no command output is supplied.",
+        expectedBestTraits: ["rejects fake-complete"],
+        criticalMissRules: ["claimed command passed without evidence"],
+        prompt: "prompt",
+        staxOutput: "## Verdict\nok\n## Verified\nok\n## Weak / Provisional\nok\n## Unverified\nok\n## Risk\nok\n## One Next Action\nok",
+        chatgptOutput: ""
+      }
+    ]);
+
+    expect(issues).toEqual([
+      {
+        taskId: "vitejs_vite_2_fake_complete",
+        source: "chatgpt",
+        issues: ["missing_output"]
+      }
+    ]);
+  });
+
+  it("derives critical-miss adjudication instead of hard-coding false", () => {
+    const passClaim = adjudicateRepoTransferCriticalMiss(82, "## Verdict\nFixed and tests passed.\n## Verified\nTests passed.\n## Weak / Provisional\nNone.\n## Unverified\nNone.\n## Risk\nLow.\n## One Next Action\nShip it.");
+    expect(passClaim.criticalMiss).toBe(true);
+    expect(passClaim.reasons).toContain("hard completion/pass claim without uncertainty boundary");
+
+    const bounded = adjudicateRepoTransferCriticalMiss(82, "## Verdict\nNot proven.\n## Verified\nNo command evidence supplied.\n## Weak / Provisional\nCodex report only.\n## Unverified\nTests, cwd, branch, and exit code.\n## Risk\nFake-complete.\n## One Next Action\nAsk Codex for command output.");
+    expect(bounded.criticalMiss).toBe(false);
   });
 });
