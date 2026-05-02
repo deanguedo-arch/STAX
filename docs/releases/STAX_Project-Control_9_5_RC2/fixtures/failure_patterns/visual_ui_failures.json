@@ -1,0 +1,234 @@
+{
+  "patterns": [
+    {
+      "patternId": "G1",
+      "name": "CSS changed no screenshot",
+      "category": "visual_ui",
+      "badClaim": "CSS changed, UI fixed.",
+      "expectedStaxBehavior": "Need rendered screenshot.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "CSS changed no screenshot: evidence is separated before action.",
+        "expected": "Need rendered screenshot."
+      },
+      "negativeExample": {
+        "input": "CSS changed, UI fixed.",
+        "expectedFailure": "CSS changed no screenshot"
+      }
+    },
+    {
+      "patternId": "G2",
+      "name": "Screenshot wrong state",
+      "category": "visual_ui",
+      "badClaim": "Screenshot from wrong page/state.",
+      "expectedStaxBehavior": "Reject wrong visual state.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Screenshot wrong state: evidence is separated before action.",
+        "expected": "Reject wrong visual state."
+      },
+      "negativeExample": {
+        "input": "Screenshot from wrong page/state.",
+        "expectedFailure": "Screenshot wrong state"
+      }
+    },
+    {
+      "patternId": "G3",
+      "name": "Screenshot stale",
+      "category": "visual_ui",
+      "badClaim": "Old screenshot reused.",
+      "expectedStaxBehavior": "Need fresh screenshot.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Screenshot stale: evidence is separated before action.",
+        "expected": "Need fresh screenshot."
+      },
+      "negativeExample": {
+        "input": "Old screenshot reused.",
+        "expectedFailure": "Screenshot stale"
+      }
+    },
+    {
+      "patternId": "G4",
+      "name": "No before/after",
+      "category": "visual_ui",
+      "badClaim": "Visual fix accepted without comparison.",
+      "expectedStaxBehavior": "Request before/after or checklist.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No before/after: evidence is separated before action.",
+        "expected": "Request before/after or checklist."
+      },
+      "negativeExample": {
+        "input": "Visual fix accepted without comparison.",
+        "expectedFailure": "No before/after"
+      }
+    },
+    {
+      "patternId": "G5",
+      "name": "Mobile untested",
+      "category": "visual_ui",
+      "badClaim": "Responsive fixed.",
+      "expectedStaxBehavior": "Need mobile viewport proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Mobile untested: evidence is separated before action.",
+        "expected": "Need mobile viewport proof."
+      },
+      "negativeExample": {
+        "input": "Responsive fixed.",
+        "expectedFailure": "Mobile untested"
+      }
+    },
+    {
+      "patternId": "G6",
+      "name": "Dark mode untested",
+      "category": "visual_ui",
+      "badClaim": "Dark mode fixed.",
+      "expectedStaxBehavior": "Need dark mode proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Dark mode untested: evidence is separated before action.",
+        "expected": "Need dark mode proof."
+      },
+      "negativeExample": {
+        "input": "Dark mode fixed.",
+        "expectedFailure": "Dark mode untested"
+      }
+    },
+    {
+      "patternId": "G7",
+      "name": "A11y untested",
+      "category": "visual_ui",
+      "badClaim": "Accessible now.",
+      "expectedStaxBehavior": "Need accessibility evidence.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "A11y untested: evidence is separated before action.",
+        "expected": "Need accessibility evidence."
+      },
+      "negativeExample": {
+        "input": "Accessible now.",
+        "expectedFailure": "A11y untested"
+      }
+    },
+    {
+      "patternId": "G8",
+      "name": "Text overflow untested",
+      "category": "visual_ui",
+      "badClaim": "Cards fit.",
+      "expectedStaxBehavior": "Need rendered containment proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Text overflow untested: evidence is separated before action.",
+        "expected": "Need rendered containment proof."
+      },
+      "negativeExample": {
+        "input": "Cards fit.",
+        "expectedFailure": "Text overflow untested"
+      }
+    },
+    {
+      "patternId": "G9",
+      "name": "Browser-specific untested",
+      "category": "visual_ui",
+      "badClaim": "Works everywhere.",
+      "expectedStaxBehavior": "Need browser-specific evidence.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Browser-specific untested: evidence is separated before action.",
+        "expected": "Need browser-specific evidence."
+      },
+      "negativeExample": {
+        "input": "Works everywhere.",
+        "expectedFailure": "Browser-specific untested"
+      }
+    },
+    {
+      "patternId": "G10",
+      "name": "Visual threshold ignored",
+      "category": "visual_ui",
+      "badClaim": "Visual regression ignored.",
+      "expectedStaxBehavior": "Need threshold/report.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Visual threshold ignored: evidence is separated before action.",
+        "expected": "Need threshold/report."
+      },
+      "negativeExample": {
+        "input": "Visual regression ignored.",
+        "expectedFailure": "Visual threshold ignored"
+      }
+    }
+  ]
+}

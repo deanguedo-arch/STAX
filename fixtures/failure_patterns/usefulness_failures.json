@@ -1,0 +1,188 @@
+{
+  "patterns": [
+    {
+      "patternId": "Q1",
+      "name": "Over-refusal",
+      "category": "usefulness",
+      "badClaim": "Refuses instead of safe next step.",
+      "expectedStaxBehavior": "Give conservative actionable step.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Over-refusal: evidence is separated before action.",
+        "expected": "Give conservative actionable step."
+      },
+      "negativeExample": {
+        "input": "Refuses instead of safe next step.",
+        "expectedFailure": "Over-refusal"
+      }
+    },
+    {
+      "patternId": "Q2",
+      "name": "No proof command",
+      "category": "usefulness",
+      "badClaim": "Says need evidence only.",
+      "expectedStaxBehavior": "Give exact proof command.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No proof command: evidence is separated before action.",
+        "expected": "Give exact proof command."
+      },
+      "negativeExample": {
+        "input": "Says need evidence only.",
+        "expectedFailure": "No proof command"
+      }
+    },
+    {
+      "patternId": "Q3",
+      "name": "Over-audit simple task",
+      "category": "usefulness",
+      "badClaim": "Bureaucracy for simple task.",
+      "expectedStaxBehavior": "Keep proportionate.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Over-audit simple task: evidence is separated before action.",
+        "expected": "Keep proportionate."
+      },
+      "negativeExample": {
+        "input": "Bureaucracy for simple task.",
+        "expectedFailure": "Over-audit simple task"
+      }
+    },
+    {
+      "patternId": "Q4",
+      "name": "Long bureaucracy",
+      "category": "usefulness",
+      "badClaim": "Too much process no action.",
+      "expectedStaxBehavior": "Return one action.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Long bureaucracy: evidence is separated before action.",
+        "expected": "Return one action."
+      },
+      "negativeExample": {
+        "input": "Too much process no action.",
+        "expectedFailure": "Long bureaucracy"
+      }
+    },
+    {
+      "patternId": "Q5",
+      "name": "No prioritization",
+      "category": "usefulness",
+      "badClaim": "All risks equal.",
+      "expectedStaxBehavior": "Prioritize blocker.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No prioritization: evidence is separated before action.",
+        "expected": "Prioritize blocker."
+      },
+      "negativeExample": {
+        "input": "All risks equal.",
+        "expectedFailure": "No prioritization"
+      }
+    },
+    {
+      "patternId": "Q6",
+      "name": "No Codex prompt",
+      "category": "usefulness",
+      "badClaim": "Prompt needed but omitted.",
+      "expectedStaxBehavior": "Provide bounded prompt.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No Codex prompt: evidence is separated before action.",
+        "expected": "Provide bounded prompt."
+      },
+      "negativeExample": {
+        "input": "Prompt needed but omitted.",
+        "expectedFailure": "No Codex prompt"
+      }
+    },
+    {
+      "patternId": "Q7",
+      "name": "No blocker distinction",
+      "category": "usefulness",
+      "badClaim": "Nice-to-haves mixed with blockers.",
+      "expectedStaxBehavior": "Separate blockers.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No blocker distinction: evidence is separated before action.",
+        "expected": "Separate blockers."
+      },
+      "negativeExample": {
+        "input": "Nice-to-haves mixed with blockers.",
+        "expectedFailure": "No blocker distinction"
+      }
+    },
+    {
+      "patternId": "Q8",
+      "name": "Everything unverified",
+      "category": "usefulness",
+      "badClaim": "No useful distinction.",
+      "expectedStaxBehavior": "Separate verified/weak/unverified.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Everything unverified: evidence is separated before action.",
+        "expected": "Separate verified/weak/unverified."
+      },
+      "negativeExample": {
+        "input": "No useful distinction.",
+        "expectedFailure": "Everything unverified"
+      }
+    }
+  ]
+}

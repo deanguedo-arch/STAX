@@ -1,0 +1,234 @@
+{
+  "patterns": [
+    {
+      "patternId": "S1",
+      "name": "No test script",
+      "category": "public_repo_transfer",
+      "badClaim": "Suggest npm test blindly.",
+      "expectedStaxBehavior": "Do not suggest absent command.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No test script: evidence is separated before action.",
+        "expected": "Do not suggest absent command."
+      },
+      "negativeExample": {
+        "input": "Suggest npm test blindly.",
+        "expectedFailure": "No test script"
+      }
+    },
+    {
+      "patternId": "S2",
+      "name": "Multiple test commands",
+      "category": "public_repo_transfer",
+      "badClaim": "Pick arbitrary test command.",
+      "expectedStaxBehavior": "Choose bounded proof gate.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Multiple test commands: evidence is separated before action.",
+        "expected": "Choose bounded proof gate."
+      },
+      "negativeExample": {
+        "input": "Pick arbitrary test command.",
+        "expectedFailure": "Multiple test commands"
+      }
+    },
+    {
+      "patternId": "S3",
+      "name": "CI only",
+      "category": "public_repo_transfer",
+      "badClaim": "Use CI as full local proof.",
+      "expectedStaxBehavior": "Handle CI carefully.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "CI only: evidence is separated before action.",
+        "expected": "Handle CI carefully."
+      },
+      "negativeExample": {
+        "input": "Use CI as full local proof.",
+        "expectedFailure": "CI only"
+      }
+    },
+    {
+      "patternId": "S4",
+      "name": "Huge suite impractical",
+      "category": "public_repo_transfer",
+      "badClaim": "Run full suite blindly.",
+      "expectedStaxBehavior": "Suggest subset/smoke path.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Huge suite impractical: evidence is separated before action.",
+        "expected": "Suggest subset/smoke path."
+      },
+      "negativeExample": {
+        "input": "Run full suite blindly.",
+        "expectedFailure": "Huge suite impractical"
+      }
+    },
+    {
+      "patternId": "S5",
+      "name": "Unavailable toolchain",
+      "category": "public_repo_transfer",
+      "badClaim": "Ignore missing build tools.",
+      "expectedStaxBehavior": "Mark environment blocker.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Unavailable toolchain: evidence is separated before action.",
+        "expected": "Mark environment blocker."
+      },
+      "negativeExample": {
+        "input": "Ignore missing build tools.",
+        "expectedFailure": "Unavailable toolchain"
+      }
+    },
+    {
+      "patternId": "S6",
+      "name": "Generated code",
+      "category": "public_repo_transfer",
+      "badClaim": "Generated output treated as source.",
+      "expectedStaxBehavior": "Flag generated code.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Generated code: evidence is separated before action.",
+        "expected": "Flag generated code."
+      },
+      "negativeExample": {
+        "input": "Generated output treated as source.",
+        "expectedFailure": "Generated code"
+      }
+    },
+    {
+      "patternId": "S7",
+      "name": "Fixture-heavy laundering",
+      "category": "public_repo_transfer",
+      "badClaim": "Goldens updated as fix.",
+      "expectedStaxBehavior": "Watch fixture laundering.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Fixture-heavy laundering: evidence is separated before action.",
+        "expected": "Watch fixture laundering."
+      },
+      "negativeExample": {
+        "input": "Goldens updated as fix.",
+        "expectedFailure": "Fixture-heavy laundering"
+      }
+    },
+    {
+      "patternId": "S8",
+      "name": "Visual proof needed",
+      "category": "public_repo_transfer",
+      "badClaim": "UI proof from source only.",
+      "expectedStaxBehavior": "Require screenshot/e2e.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Visual proof needed: evidence is separated before action.",
+        "expected": "Require screenshot/e2e."
+      },
+      "negativeExample": {
+        "input": "UI proof from source only.",
+        "expectedFailure": "Visual proof needed"
+      }
+    },
+    {
+      "patternId": "S9",
+      "name": "Monorepo complexity",
+      "category": "public_repo_transfer",
+      "badClaim": "Wrong workspace proof.",
+      "expectedStaxBehavior": "Use package workspace.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Monorepo complexity: evidence is separated before action.",
+        "expected": "Use package workspace."
+      },
+      "negativeExample": {
+        "input": "Wrong workspace proof.",
+        "expectedFailure": "Monorepo complexity"
+      }
+    },
+    {
+      "patternId": "S10",
+      "name": "Contribution contract ignored",
+      "category": "public_repo_transfer",
+      "badClaim": "Ignore repo test docs.",
+      "expectedStaxBehavior": "Respect repo contract.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Contribution contract ignored: evidence is separated before action.",
+        "expected": "Respect repo contract."
+      },
+      "negativeExample": {
+        "input": "Ignore repo test docs.",
+        "expectedFailure": "Contribution contract ignored"
+      }
+    }
+  ]
+}

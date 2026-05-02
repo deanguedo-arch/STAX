@@ -1,0 +1,349 @@
+{
+  "patterns": [
+    {
+      "patternId": "C1",
+      "name": "Invented file path",
+      "category": "file_diff",
+      "badClaim": "src/missing.ts was fixed.",
+      "expectedStaxBehavior": "Reject file claim without repo evidence.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Invented file path: evidence is separated before action.",
+        "expected": "Reject file claim without repo evidence."
+      },
+      "negativeExample": {
+        "input": "src/missing.ts was fixed.",
+        "expectedFailure": "Invented file path"
+      }
+    },
+    {
+      "patternId": "C2",
+      "name": "Claimed file changed but diff absent",
+      "category": "file_diff",
+      "badClaim": "The file changed but no diff/status exists.",
+      "expectedStaxBehavior": "Ask for diff or git status.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Claimed file changed but diff absent: evidence is separated before action.",
+        "expected": "Ask for diff or git status."
+      },
+      "negativeExample": {
+        "input": "The file changed but no diff/status exists.",
+        "expectedFailure": "Claimed file changed but diff absent"
+      }
+    },
+    {
+      "patternId": "C3",
+      "name": "Docs-only change claimed as implementation",
+      "category": "file_diff",
+      "badClaim": "Docs changed, feature implemented.",
+      "expectedStaxBehavior": "Docs-only is not implementation.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Docs-only change claimed as implementation: evidence is separated before action.",
+        "expected": "Docs-only is not implementation."
+      },
+      "negativeExample": {
+        "input": "Docs changed, feature implemented.",
+        "expectedFailure": "Docs-only change claimed as implementation"
+      }
+    },
+    {
+      "patternId": "C4",
+      "name": "Test-only change claimed as feature fix",
+      "category": "file_diff",
+      "badClaim": "Tests changed, feature fixed.",
+      "expectedStaxBehavior": "Source behavior remains unproven.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Test-only change claimed as feature fix: evidence is separated before action.",
+        "expected": "Source behavior remains unproven."
+      },
+      "negativeExample": {
+        "input": "Tests changed, feature fixed.",
+        "expectedFailure": "Test-only change claimed as feature fix"
+      }
+    },
+    {
+      "patternId": "C5",
+      "name": "Source-only change with no test",
+      "category": "file_diff",
+      "badClaim": "Source changed, so fixed.",
+      "expectedStaxBehavior": "Implementation exists; proof missing.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Source-only change with no test: evidence is separated before action.",
+        "expected": "Implementation exists; proof missing."
+      },
+      "negativeExample": {
+        "input": "Source changed, so fixed.",
+        "expectedFailure": "Source-only change with no test"
+      }
+    },
+    {
+      "patternId": "C6",
+      "name": "Deleted file ignored",
+      "category": "file_diff",
+      "badClaim": "Deletion is omitted from summary.",
+      "expectedStaxBehavior": "Surface deletion risk.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Deleted file ignored: evidence is separated before action.",
+        "expected": "Surface deletion risk."
+      },
+      "negativeExample": {
+        "input": "Deletion is omitted from summary.",
+        "expectedFailure": "Deleted file ignored"
+      }
+    },
+    {
+      "patternId": "C7",
+      "name": "Large diff summarized vaguely",
+      "category": "file_diff",
+      "badClaim": "Many files changed, all good.",
+      "expectedStaxBehavior": "Require changed-file list and risk areas.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Large diff summarized vaguely: evidence is separated before action.",
+        "expected": "Require changed-file list and risk areas."
+      },
+      "negativeExample": {
+        "input": "Many files changed, all good.",
+        "expectedFailure": "Large diff summarized vaguely"
+      }
+    },
+    {
+      "patternId": "C8",
+      "name": "Generated/vendor file mistaken as authored fix",
+      "category": "file_diff",
+      "badClaim": "Vendor bundle changed, fix done.",
+      "expectedStaxBehavior": "Require source reason.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Generated/vendor file mistaken as authored fix: evidence is separated before action.",
+        "expected": "Require source reason."
+      },
+      "negativeExample": {
+        "input": "Vendor bundle changed, fix done.",
+        "expectedFailure": "Generated/vendor file mistaken as authored fix"
+      }
+    },
+    {
+      "patternId": "C9",
+      "name": "Config change ignored",
+      "category": "file_diff",
+      "badClaim": "Config changed but no risk noted.",
+      "expectedStaxBehavior": "Flag config risk and eval coverage.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Config change ignored: evidence is separated before action.",
+        "expected": "Flag config risk and eval coverage."
+      },
+      "negativeExample": {
+        "input": "Config changed but no risk noted.",
+        "expectedFailure": "Config change ignored"
+      }
+    },
+    {
+      "patternId": "C10",
+      "name": "Lockfile-only change overinterpreted",
+      "category": "file_diff",
+      "badClaim": "Lockfile changed, dependency fixed.",
+      "expectedStaxBehavior": "Need dependency proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Lockfile-only change overinterpreted: evidence is separated before action.",
+        "expected": "Need dependency proof."
+      },
+      "negativeExample": {
+        "input": "Lockfile changed, dependency fixed.",
+        "expectedFailure": "Lockfile-only change overinterpreted"
+      }
+    },
+    {
+      "patternId": "C11",
+      "name": "Package script changed without rerun",
+      "category": "file_diff",
+      "badClaim": "Script changed; old proof still counts.",
+      "expectedStaxBehavior": "Proof is stale; rerun command.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Package script changed without rerun: evidence is separated before action.",
+        "expected": "Proof is stale; rerun command."
+      },
+      "negativeExample": {
+        "input": "Script changed; old proof still counts.",
+        "expectedFailure": "Package script changed without rerun"
+      }
+    },
+    {
+      "patternId": "C12",
+      "name": "Test added but does not assert behavior",
+      "category": "file_diff",
+      "badClaim": "A test exists, so behavior proven.",
+      "expectedStaxBehavior": "Check assertion quality.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Test added but does not assert behavior: evidence is separated before action.",
+        "expected": "Check assertion quality."
+      },
+      "negativeExample": {
+        "input": "A test exists, so behavior proven.",
+        "expectedFailure": "Test added but does not assert behavior"
+      }
+    },
+    {
+      "patternId": "C13",
+      "name": "Mock-only test accepted",
+      "category": "file_diff",
+      "badClaim": "Mock test passed, runtime proven.",
+      "expectedStaxBehavior": "Mock proof only; runtime path unproven.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Mock-only test accepted: evidence is separated before action.",
+        "expected": "Mock proof only; runtime path unproven."
+      },
+      "negativeExample": {
+        "input": "Mock test passed, runtime proven.",
+        "expectedFailure": "Mock-only test accepted"
+      }
+    },
+    {
+      "patternId": "C14",
+      "name": "Snapshot/golden update hides regression",
+      "category": "file_diff",
+      "badClaim": "Snapshot updated, green means good.",
+      "expectedStaxBehavior": "Flag laundering risk.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Snapshot/golden update hides regression: evidence is separated before action.",
+        "expected": "Flag laundering risk."
+      },
+      "negativeExample": {
+        "input": "Snapshot updated, green means good.",
+        "expectedFailure": "Snapshot/golden update hides regression"
+      }
+    },
+    {
+      "patternId": "C15",
+      "name": "Migration rollback unproven",
+      "category": "file_diff",
+      "badClaim": "Migration applied, release ready.",
+      "expectedStaxBehavior": "Require apply and rollback proof.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Migration rollback unproven: evidence is separated before action.",
+        "expected": "Require apply and rollback proof."
+      },
+      "negativeExample": {
+        "input": "Migration applied, release ready.",
+        "expectedFailure": "Migration rollback unproven"
+      }
+    }
+  ]
+}

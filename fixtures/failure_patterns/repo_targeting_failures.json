@@ -1,0 +1,234 @@
+{
+  "patterns": [
+    {
+      "patternId": "B1",
+      "name": "Wrong repo",
+      "category": "repo_targeting",
+      "badClaim": "STAX evidence proves ADMISSION-APP.",
+      "expectedStaxBehavior": "Stop on repo mismatch.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Wrong repo: evidence is separated before action.",
+        "expected": "Stop on repo mismatch."
+      },
+      "negativeExample": {
+        "input": "STAX evidence proves ADMISSION-APP.",
+        "expectedFailure": "Wrong repo"
+      }
+    },
+    {
+      "patternId": "B2",
+      "name": "Wrong workspace",
+      "category": "repo_targeting",
+      "badClaim": "packages/a tests prove packages/b.",
+      "expectedStaxBehavior": "Require workspace identity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Wrong workspace: evidence is separated before action.",
+        "expected": "Require workspace identity."
+      },
+      "negativeExample": {
+        "input": "packages/a tests prove packages/b.",
+        "expectedFailure": "Wrong workspace"
+      }
+    },
+    {
+      "patternId": "B3",
+      "name": "Wrong package manager",
+      "category": "repo_targeting",
+      "badClaim": "Run npm test in a Poetry repo.",
+      "expectedStaxBehavior": "Detect package manager and scripts first.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Wrong package manager: evidence is separated before action.",
+        "expected": "Detect package manager and scripts first."
+      },
+      "negativeExample": {
+        "input": "Run npm test in a Poetry repo.",
+        "expectedFailure": "Wrong package manager"
+      }
+    },
+    {
+      "patternId": "B4",
+      "name": "Wrong language/toolchain assumption",
+      "category": "repo_targeting",
+      "badClaim": "Run TypeScript typecheck in a Python repo.",
+      "expectedStaxBehavior": "Avoid unsupported tool assumptions.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Wrong language/toolchain assumption: evidence is separated before action.",
+        "expected": "Avoid unsupported tool assumptions."
+      },
+      "negativeExample": {
+        "input": "Run TypeScript typecheck in a Python repo.",
+        "expectedFailure": "Wrong language/toolchain assumption"
+      }
+    },
+    {
+      "patternId": "B5",
+      "name": "Wrong branch/ref",
+      "category": "repo_targeting",
+      "badClaim": "Unknown branch output proves current task.",
+      "expectedStaxBehavior": "Require current branch and commit evidence.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Wrong branch/ref: evidence is separated before action.",
+        "expected": "Require current branch and commit evidence."
+      },
+      "negativeExample": {
+        "input": "Unknown branch output proves current task.",
+        "expectedFailure": "Wrong branch/ref"
+      }
+    },
+    {
+      "patternId": "B6",
+      "name": "Wrong path casing",
+      "category": "repo_targeting",
+      "badClaim": "Import path exists with different casing.",
+      "expectedStaxBehavior": "Validate exact path casing.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Wrong path casing: evidence is separated before action.",
+        "expected": "Validate exact path casing."
+      },
+      "negativeExample": {
+        "input": "Import path exists with different casing.",
+        "expectedFailure": "Wrong path casing"
+      }
+    },
+    {
+      "patternId": "B7",
+      "name": "Root-vs-subdir confusion",
+      "category": "repo_targeting",
+      "badClaim": "Root command proves subdir package.",
+      "expectedStaxBehavior": "Name correct cwd.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Root-vs-subdir confusion: evidence is separated before action.",
+        "expected": "Name correct cwd."
+      },
+      "negativeExample": {
+        "input": "Root command proves subdir package.",
+        "expectedFailure": "Root-vs-subdir confusion"
+      }
+    },
+    {
+      "patternId": "B8",
+      "name": "Monorepo package boundary error",
+      "category": "repo_targeting",
+      "badClaim": "Workspace-wide proof covers target package.",
+      "expectedStaxBehavior": "Name package, workspace, and command scope.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Monorepo package boundary error: evidence is separated before action.",
+        "expected": "Name package, workspace, and command scope."
+      },
+      "negativeExample": {
+        "input": "Workspace-wide proof covers target package.",
+        "expectedFailure": "Monorepo package boundary error"
+      }
+    },
+    {
+      "patternId": "B9",
+      "name": "Similar repo names",
+      "category": "repo_targeting",
+      "badClaim": "canvas-helper evidence proves course-helper.",
+      "expectedStaxBehavior": "Require explicit repo identity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Similar repo names: evidence is separated before action.",
+        "expected": "Require explicit repo identity."
+      },
+      "negativeExample": {
+        "input": "canvas-helper evidence proves course-helper.",
+        "expectedFailure": "Similar repo names"
+      }
+    },
+    {
+      "patternId": "B10",
+      "name": "Cross-repo evidence bleed",
+      "category": "repo_targeting",
+      "badClaim": "Repo A evidence proves repo B.",
+      "expectedStaxBehavior": "Reject cross-repo evidence bleed.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Cross-repo evidence bleed: evidence is separated before action.",
+        "expected": "Reject cross-repo evidence bleed."
+      },
+      "negativeExample": {
+        "input": "Repo A evidence proves repo B.",
+        "expectedFailure": "Cross-repo evidence bleed"
+      }
+    }
+  ]
+}

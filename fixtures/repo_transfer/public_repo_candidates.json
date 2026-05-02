@@ -1,0 +1,201 @@
+{
+  "candidates": [
+    {
+      "repoFullName": "microsoft/playwright",
+      "archetype": "typescript_e2e_browser",
+      "whySelected": "Large TypeScript/browser automation repo that stresses e2e, browser dependencies, and visual proof boundaries.",
+      "expectedProofGates": [
+        "npm/pnpm scripts",
+        "targeted test",
+        "browser/e2e proof"
+      ],
+      "highRiskPatterns": [
+        "A20",
+        "G1",
+        "S4"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect microsoft/playwright docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "vitejs/vite",
+      "archetype": "js_build_tooling",
+      "whySelected": "JS build tooling repo with package scripts, plugin tests, and build-vs-runtime proof boundaries.",
+      "expectedProofGates": [
+        "pnpm build",
+        "targeted tests",
+        "typecheck"
+      ],
+      "highRiskPatterns": [
+        "A2",
+        "A13",
+        "E2"
+      ],
+      "fullLocalTestsLikelyTooExpensive": false,
+      "recommendedFirstBoundedAuditTask": "Inspect vitejs/vite docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "pytest-dev/pytest",
+      "archetype": "python_test_framework",
+      "whySelected": "Python test-framework repo with pytest command selection and fixture-heavy behavior.",
+      "expectedProofGates": [
+        "pytest subset",
+        "tox/nox"
+      ],
+      "highRiskPatterns": [
+        "B3",
+        "F5",
+        "S4"
+      ],
+      "fullLocalTestsLikelyTooExpensive": false,
+      "recommendedFirstBoundedAuditTask": "Inspect pytest-dev/pytest docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "django/django",
+      "archetype": "python_web_framework",
+      "whySelected": "Python web framework with large suite, integration settings, and migration risk.",
+      "expectedProofGates": [
+        "targeted test module",
+        "system checks"
+      ],
+      "highRiskPatterns": [
+        "I9",
+        "F4",
+        "S4"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect django/django docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "rust-lang/rust-clippy",
+      "archetype": "rust_lint_workspace",
+      "whySelected": "Rust lint workspace with cargo/clippy distinctions and fixture/golden-style tests.",
+      "expectedProofGates": [
+        "cargo test",
+        "cargo dev",
+        "clippy test"
+      ],
+      "highRiskPatterns": [
+        "A17",
+        "S9",
+        "E3"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect rust-lang/rust-clippy docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "tokio-rs/tokio",
+      "archetype": "rust_async_workspace",
+      "whySelected": "Rust async workspace with feature-gated tests and package scoping.",
+      "expectedProofGates": [
+        "cargo test -p target",
+        "feature-specific tests"
+      ],
+      "highRiskPatterns": [
+        "F4",
+        "S9",
+        "A14"
+      ],
+      "fullLocalTestsLikelyTooExpensive": false,
+      "recommendedFirstBoundedAuditTask": "Inspect tokio-rs/tokio docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "kubernetes/kubernetes",
+      "archetype": "go_monorepo_integration",
+      "whySelected": "Huge Go monorepo with integration/env blockers and impractical full-suite risk.",
+      "expectedProofGates": [
+        "targeted go test",
+        "hack scripts"
+      ],
+      "highRiskPatterns": [
+        "S4",
+        "E15",
+        "I6"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect kubernetes/kubernetes docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "hashicorp/terraform",
+      "archetype": "go_infra_tooling",
+      "whySelected": "Go infrastructure tooling with provider/service boundaries and release risk.",
+      "expectedProofGates": [
+        "go test package",
+        "acceptance tests only when explicit"
+      ],
+      "highRiskPatterns": [
+        "J3",
+        "I10",
+        "S5"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect hashicorp/terraform docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "rails/rails",
+      "archetype": "ruby_framework",
+      "whySelected": "Ruby framework with multiple components, database-backed tests, and system-test boundaries.",
+      "expectedProofGates": [
+        "bundle exec test target",
+        "component test"
+      ],
+      "highRiskPatterns": [
+        "F4",
+        "S4",
+        "B7"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect rails/rails docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "laravel/framework",
+      "archetype": "php_framework",
+      "whySelected": "PHP framework with Composer/PHPUnit command selection and integration boundaries.",
+      "expectedProofGates": [
+        "composer test",
+        "phpunit subset"
+      ],
+      "highRiskPatterns": [
+        "B3",
+        "E2",
+        "S5"
+      ],
+      "fullLocalTestsLikelyTooExpensive": false,
+      "recommendedFirstBoundedAuditTask": "Inspect laravel/framework docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "storybookjs/storybook",
+      "archetype": "ui_visual_system",
+      "whySelected": "UI tooling repo that stresses visual, docs, browser, and monorepo proof boundaries.",
+      "expectedProofGates": [
+        "build",
+        "test",
+        "visual/e2e"
+      ],
+      "highRiskPatterns": [
+        "G1",
+        "G5",
+        "S9"
+      ],
+      "fullLocalTestsLikelyTooExpensive": true,
+      "recommendedFirstBoundedAuditTask": "Inspect storybookjs/storybook docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    },
+    {
+      "repoFullName": "dbt-labs/dbt-core",
+      "archetype": "data_pipeline",
+      "whySelected": "Data pipeline repo with dry-run, validation, environment, and data-quality boundaries.",
+      "expectedProofGates": [
+        "unit",
+        "integration subset",
+        "dry-run validation"
+      ],
+      "highRiskPatterns": [
+        "H5",
+        "H10",
+        "S5"
+      ],
+      "fullLocalTestsLikelyTooExpensive": false,
+      "recommendedFirstBoundedAuditTask": "Inspect dbt-labs/dbt-core docs and package/tooling files to identify one bounded proof gate; do not run full suites or destructive commands."
+    }
+  ]
+}

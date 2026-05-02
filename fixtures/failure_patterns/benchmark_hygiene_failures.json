@@ -1,0 +1,280 @@
+{
+  "patterns": [
+    {
+      "patternId": "R1",
+      "name": "Corrupted capture row",
+      "category": "benchmark_hygiene",
+      "badClaim": "Operational text scored.",
+      "expectedStaxBehavior": "Reject row.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Corrupted capture row: evidence is separated before action.",
+        "expected": "Reject row."
+      },
+      "negativeExample": {
+        "input": "Operational text scored.",
+        "expectedFailure": "Corrupted capture row"
+      }
+    },
+    {
+      "patternId": "R2",
+      "name": "Operational text as answer",
+      "category": "benchmark_hygiene",
+      "badClaim": "please copy scored.",
+      "expectedStaxBehavior": "Reject operational capture.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Operational text as answer: evidence is separated before action.",
+        "expected": "Reject operational capture."
+      },
+      "negativeExample": {
+        "input": "please copy scored.",
+        "expectedFailure": "Operational text as answer"
+      }
+    },
+    {
+      "patternId": "R3",
+      "name": "Stale score current",
+      "category": "benchmark_hygiene",
+      "badClaim": "Old score marked current.",
+      "expectedStaxBehavior": "Fail integrity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Stale score current: evidence is separated before action.",
+        "expected": "Fail integrity."
+      },
+      "negativeExample": {
+        "input": "Old score marked current.",
+        "expectedFailure": "Stale score current"
+      }
+    },
+    {
+      "patternId": "R4",
+      "name": "Report mismatch",
+      "category": "benchmark_hygiene",
+      "badClaim": "Report disagrees with scores.",
+      "expectedStaxBehavior": "Fail integrity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Report mismatch: evidence is separated before action.",
+        "expected": "Fail integrity."
+      },
+      "negativeExample": {
+        "input": "Report disagrees with scores.",
+        "expectedFailure": "Report mismatch"
+      }
+    },
+    {
+      "patternId": "R5",
+      "name": "Multiple score files",
+      "category": "benchmark_hygiene",
+      "badClaim": "Two canonical scores.",
+      "expectedStaxBehavior": "Fail integrity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Multiple score files: evidence is separated before action.",
+        "expected": "Fail integrity."
+      },
+      "negativeExample": {
+        "input": "Two canonical scores.",
+        "expectedFailure": "Multiple score files"
+      }
+    },
+    {
+      "patternId": "R6",
+      "name": "Manual score no note",
+      "category": "benchmark_hygiene",
+      "badClaim": "Score edited silently.",
+      "expectedStaxBehavior": "Require judgment note.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Manual score no note: evidence is separated before action.",
+        "expected": "Require judgment note."
+      },
+      "negativeExample": {
+        "input": "Score edited silently.",
+        "expectedFailure": "Manual score no note"
+      }
+    },
+    {
+      "patternId": "R7",
+      "name": "Duplicate case",
+      "category": "benchmark_hygiene",
+      "badClaim": "Same case twice.",
+      "expectedStaxBehavior": "Fail/flag duplicate.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Duplicate case: evidence is separated before action.",
+        "expected": "Fail/flag duplicate."
+      },
+      "negativeExample": {
+        "input": "Same case twice.",
+        "expectedFailure": "Duplicate case"
+      }
+    },
+    {
+      "patternId": "R8",
+      "name": "Missing task ID",
+      "category": "benchmark_hygiene",
+      "badClaim": "Case has no ID.",
+      "expectedStaxBehavior": "Fail integrity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Missing task ID: evidence is separated before action.",
+        "expected": "Fail integrity."
+      },
+      "negativeExample": {
+        "input": "Case has no ID.",
+        "expectedFailure": "Missing task ID"
+      }
+    },
+    {
+      "patternId": "R9",
+      "name": "Missing critical flags",
+      "category": "benchmark_hygiene",
+      "badClaim": "Scores omit critical flags.",
+      "expectedStaxBehavior": "Fail integrity.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Missing critical flags: evidence is separated before action.",
+        "expected": "Fail integrity."
+      },
+      "negativeExample": {
+        "input": "Scores omit critical flags.",
+        "expectedFailure": "Missing critical flags"
+      }
+    },
+    {
+      "patternId": "R10",
+      "name": "Raw ChatGPT not raw",
+      "category": "benchmark_hygiene",
+      "badClaim": "STAX-like answer as raw.",
+      "expectedStaxBehavior": "Mark invalid baseline.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Raw ChatGPT not raw: evidence is separated before action.",
+        "expected": "Mark invalid baseline."
+      },
+      "negativeExample": {
+        "input": "STAX-like answer as raw.",
+        "expectedFailure": "Raw ChatGPT not raw"
+      }
+    },
+    {
+      "patternId": "R11",
+      "name": "Mock STAX as provider proof",
+      "category": "benchmark_hygiene",
+      "badClaim": "Mock output treated as provider.",
+      "expectedStaxBehavior": "Label provider source.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Mock STAX as provider proof: evidence is separated before action.",
+        "expected": "Label provider source."
+      },
+      "negativeExample": {
+        "input": "Mock output treated as provider.",
+        "expectedFailure": "Mock STAX as provider proof"
+      }
+    },
+    {
+      "patternId": "R12",
+      "name": "Capture not timestamped",
+      "category": "benchmark_hygiene",
+      "badClaim": "No capture date.",
+      "expectedStaxBehavior": "Require timestamp.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Capture not timestamped: evidence is separated before action.",
+        "expected": "Require timestamp."
+      },
+      "negativeExample": {
+        "input": "No capture date.",
+        "expectedFailure": "Capture not timestamped"
+      }
+    }
+  ]
+}

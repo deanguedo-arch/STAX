@@ -3,6 +3,7 @@ import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
 import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
+import { renderRepoTransferProjectControl } from "../repoTransfer/RepoTransferProjectControl.js";
 import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
 import { StrategicDecisionFormatter } from "../strategy/StrategicDecisionFormatter.js";
 
@@ -806,6 +807,9 @@ function extractLabeledBlock(input: string, label: string, followingLabels: stri
 }
 
 function renderProjectControl(packet: ProjectControlPacket): string {
+  const transferOutput = renderRepoTransferProjectControl(packet);
+  if (transferOutput) return transferOutput;
+
   const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
   const lower = combined.toLowerCase();
   const targetRepoPath = extractTargetRepoPath(packet.repoEvidence);

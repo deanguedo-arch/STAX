@@ -1,0 +1,349 @@
+{
+  "patterns": [
+    {
+      "patternId": "F1",
+      "name": "No red/green proof",
+      "category": "test_quality",
+      "badClaim": "Test added but never failed before.",
+      "expectedStaxBehavior": "Need meaningful assertion or red/green proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No red/green proof: evidence is separated before action.",
+        "expected": "Need meaningful assertion or red/green proof."
+      },
+      "negativeExample": {
+        "input": "Test added but never failed before.",
+        "expectedFailure": "No red/green proof"
+      }
+    },
+    {
+      "patternId": "F2",
+      "name": "Implementation detail test",
+      "category": "test_quality",
+      "badClaim": "Test checks internals only.",
+      "expectedStaxBehavior": "Behavior contract missing.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Implementation detail test: evidence is separated before action.",
+        "expected": "Behavior contract missing."
+      },
+      "negativeExample": {
+        "input": "Test checks internals only.",
+        "expectedFailure": "Implementation detail test"
+      }
+    },
+    {
+      "patternId": "F3",
+      "name": "Happy path only",
+      "category": "test_quality",
+      "badClaim": "Only happy path tested.",
+      "expectedStaxBehavior": "Need negative or edge case.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Happy path only: evidence is separated before action.",
+        "expected": "Need negative or edge case."
+      },
+      "negativeExample": {
+        "input": "Only happy path tested.",
+        "expectedFailure": "Happy path only"
+      }
+    },
+    {
+      "patternId": "F4",
+      "name": "Mocks away integration",
+      "category": "test_quality",
+      "badClaim": "Mock hides broken integration.",
+      "expectedStaxBehavior": "Integration path unproven.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Mocks away integration: evidence is separated before action.",
+        "expected": "Integration path unproven."
+      },
+      "negativeExample": {
+        "input": "Mock hides broken integration.",
+        "expectedFailure": "Mocks away integration"
+      }
+    },
+    {
+      "patternId": "F5",
+      "name": "Outdated fixture",
+      "category": "test_quality",
+      "badClaim": "Fixture is stale.",
+      "expectedStaxBehavior": "Fixture freshness risk.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Outdated fixture: evidence is separated before action.",
+        "expected": "Fixture freshness risk."
+      },
+      "negativeExample": {
+        "input": "Fixture is stale.",
+        "expectedFailure": "Outdated fixture"
+      }
+    },
+    {
+      "patternId": "F6",
+      "name": "Test not included in command",
+      "category": "test_quality",
+      "badClaim": "New test file not run.",
+      "expectedStaxBehavior": "Command may not cover test.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Test not included in command: evidence is separated before action.",
+        "expected": "Command may not cover test."
+      },
+      "negativeExample": {
+        "input": "New test file not run.",
+        "expectedFailure": "Test not included in command"
+      }
+    },
+    {
+      "patternId": "F7",
+      "name": "Skipped test",
+      "category": "test_quality",
+      "badClaim": "Test is skipped.",
+      "expectedStaxBehavior": "Skipped test is not proof.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Skipped test: evidence is separated before action.",
+        "expected": "Skipped test is not proof."
+      },
+      "negativeExample": {
+        "input": "Test is skipped.",
+        "expectedFailure": "Skipped test"
+      }
+    },
+    {
+      "patternId": "F8",
+      "name": "Flaky test",
+      "category": "test_quality",
+      "badClaim": "Known flaky test passed.",
+      "expectedStaxBehavior": "Weak proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Flaky test: evidence is separated before action.",
+        "expected": "Weak proof."
+      },
+      "negativeExample": {
+        "input": "Known flaky test passed.",
+        "expectedFailure": "Flaky test"
+      }
+    },
+    {
+      "patternId": "F9",
+      "name": "Snapshot only",
+      "category": "test_quality",
+      "badClaim": "Snapshot asserts everything.",
+      "expectedStaxBehavior": "Weak semantic proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Snapshot only: evidence is separated before action.",
+        "expected": "Weak semantic proof."
+      },
+      "negativeExample": {
+        "input": "Snapshot asserts everything.",
+        "expectedFailure": "Snapshot only"
+      }
+    },
+    {
+      "patternId": "F10",
+      "name": "Coverage unmeasured",
+      "category": "test_quality",
+      "badClaim": "Coverage improved.",
+      "expectedStaxBehavior": "Coverage unverified.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Coverage unmeasured: evidence is separated before action.",
+        "expected": "Coverage unverified."
+      },
+      "negativeExample": {
+        "input": "Coverage improved.",
+        "expectedFailure": "Coverage unmeasured"
+      }
+    },
+    {
+      "patternId": "F11",
+      "name": "Test count drift",
+      "category": "test_quality",
+      "badClaim": "Unexpected count change.",
+      "expectedStaxBehavior": "Surface count drift.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Test count drift: evidence is separated before action.",
+        "expected": "Surface count drift."
+      },
+      "negativeExample": {
+        "input": "Unexpected count change.",
+        "expectedFailure": "Test count drift"
+      }
+    },
+    {
+      "patternId": "F12",
+      "name": "E2E missing for UI",
+      "category": "test_quality",
+      "badClaim": "Unit proof for UI flow.",
+      "expectedStaxBehavior": "Visual/flow proof missing.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "E2E missing for UI: evidence is separated before action.",
+        "expected": "Visual/flow proof missing."
+      },
+      "negativeExample": {
+        "input": "Unit proof for UI flow.",
+        "expectedFailure": "E2E missing for UI"
+      }
+    },
+    {
+      "patternId": "F13",
+      "name": "Accessibility untested",
+      "category": "test_quality",
+      "badClaim": "A11y fixed.",
+      "expectedStaxBehavior": "Accessibility unproven.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Accessibility untested: evidence is separated before action.",
+        "expected": "Accessibility unproven."
+      },
+      "negativeExample": {
+        "input": "A11y fixed.",
+        "expectedFailure": "Accessibility untested"
+      }
+    },
+    {
+      "patternId": "F14",
+      "name": "Performance unbenchmarked",
+      "category": "test_quality",
+      "badClaim": "Performance improved.",
+      "expectedStaxBehavior": "Performance unproven.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Performance unbenchmarked: evidence is separated before action.",
+        "expected": "Performance unproven."
+      },
+      "negativeExample": {
+        "input": "Performance improved.",
+        "expectedFailure": "Performance unbenchmarked"
+      }
+    },
+    {
+      "patternId": "F15",
+      "name": "Security untested",
+      "category": "test_quality",
+      "badClaim": "Security fixed.",
+      "expectedStaxBehavior": "Security unproven.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Security untested: evidence is separated before action.",
+        "expected": "Security unproven."
+      },
+      "negativeExample": {
+        "input": "Security fixed.",
+        "expectedFailure": "Security untested"
+      }
+    }
+  ]
+}

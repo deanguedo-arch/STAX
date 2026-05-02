@@ -1,0 +1,694 @@
+{
+  "patterns": [
+    {
+      "patternId": "M1",
+      "name": "Style inflates confidence",
+      "category": "confidence",
+      "badClaim": "Fluent answer means high confidence.",
+      "expectedStaxBehavior": "Score evidence quality only.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Style inflates confidence: evidence is separated before action.",
+        "expected": "Score evidence quality only."
+      },
+      "negativeExample": {
+        "input": "Fluent answer means high confidence.",
+        "expectedFailure": "Style inflates confidence"
+      }
+    },
+    {
+      "patternId": "M2",
+      "name": "Recommendation inflates confidence",
+      "category": "confidence",
+      "badClaim": "Recommended therefore confident.",
+      "expectedStaxBehavior": "Recommendation does not raise confidence.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Recommendation inflates confidence: evidence is separated before action.",
+        "expected": "Recommendation does not raise confidence."
+      },
+      "negativeExample": {
+        "input": "Recommended therefore confident.",
+        "expectedFailure": "Recommendation inflates confidence"
+      }
+    },
+    {
+      "patternId": "M3",
+      "name": "Single-source high confidence",
+      "category": "confidence",
+      "badClaim": "One source proves high confidence.",
+      "expectedStaxBehavior": "Apply single-source cap.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Single-source high confidence: evidence is separated before action.",
+        "expected": "Apply single-source cap."
+      },
+      "negativeExample": {
+        "input": "One source proves high confidence.",
+        "expectedFailure": "Single-source high confidence"
+      }
+    },
+    {
+      "patternId": "M4",
+      "name": "AI-only high confidence",
+      "category": "confidence",
+      "badClaim": "AI extraction is high confidence.",
+      "expectedStaxBehavior": "Apply AI-only cap.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "AI-only high confidence: evidence is separated before action.",
+        "expected": "Apply AI-only cap."
+      },
+      "negativeExample": {
+        "input": "AI extraction is high confidence.",
+        "expectedFailure": "AI-only high confidence"
+      }
+    },
+    {
+      "patternId": "M5",
+      "name": "Missing data no cap",
+      "category": "confidence",
+      "badClaim": "Critical missing data ignored.",
+      "expectedStaxBehavior": "Cap confidence.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Missing data no cap: evidence is separated before action.",
+        "expected": "Cap confidence."
+      },
+      "negativeExample": {
+        "input": "Critical missing data ignored.",
+        "expectedFailure": "Missing data no cap"
+      }
+    },
+    {
+      "patternId": "M6",
+      "name": "Conflict no cap",
+      "category": "confidence",
+      "badClaim": "Conflict ignored.",
+      "expectedStaxBehavior": "Cap confidence.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Conflict no cap: evidence is separated before action.",
+        "expected": "Cap confidence."
+      },
+      "negativeExample": {
+        "input": "Conflict ignored.",
+        "expectedFailure": "Conflict no cap"
+      }
+    },
+    {
+      "patternId": "M7",
+      "name": "Recency ignored",
+      "category": "confidence",
+      "badClaim": "Old proof used as fresh.",
+      "expectedStaxBehavior": "Use recency scoring.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Recency ignored: evidence is separated before action.",
+        "expected": "Use recency scoring."
+      },
+      "negativeExample": {
+        "input": "Old proof used as fresh.",
+        "expectedFailure": "Recency ignored"
+      }
+    },
+    {
+      "patternId": "M8",
+      "name": "Source type ignored",
+      "category": "confidence",
+      "badClaim": "Opinion equals measurement.",
+      "expectedStaxBehavior": "Weight source type.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Source type ignored: evidence is separated before action.",
+        "expected": "Weight source type."
+      },
+      "negativeExample": {
+        "input": "Opinion equals measurement.",
+        "expectedFailure": "Source type ignored"
+      }
+    },
+    {
+      "patternId": "M9",
+      "name": "Confidence as importance",
+      "category": "confidence",
+      "badClaim": "Important means confident.",
+      "expectedStaxBehavior": "Confidence is not importance.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Confidence as importance: evidence is separated before action.",
+        "expected": "Confidence is not importance."
+      },
+      "negativeExample": {
+        "input": "Important means confident.",
+        "expectedFailure": "Confidence as importance"
+      }
+    },
+    {
+      "patternId": "M10",
+      "name": "Confidence as value",
+      "category": "confidence",
+      "badClaim": "Valuable means confident.",
+      "expectedStaxBehavior": "Confidence is not value.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Confidence as value: evidence is separated before action.",
+        "expected": "Confidence is not value."
+      },
+      "negativeExample": {
+        "input": "Valuable means confident.",
+        "expectedFailure": "Confidence as value"
+      }
+    },
+    {
+      "patternId": "N1",
+      "name": "Silent source choice",
+      "category": "conflict",
+      "badClaim": "Pick one conflicting source.",
+      "expectedStaxBehavior": "Surface conflict.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Silent source choice: evidence is separated before action.",
+        "expected": "Surface conflict."
+      },
+      "negativeExample": {
+        "input": "Pick one conflicting source.",
+        "expectedFailure": "Silent source choice"
+      }
+    },
+    {
+      "patternId": "N2",
+      "name": "Conflict hidden",
+      "category": "conflict",
+      "badClaim": "Summary hides conflict.",
+      "expectedStaxBehavior": "Expose conflict.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Conflict hidden: evidence is separated before action.",
+        "expected": "Expose conflict."
+      },
+      "negativeExample": {
+        "input": "Summary hides conflict.",
+        "expectedFailure": "Conflict hidden"
+      }
+    },
+    {
+      "patternId": "N3",
+      "name": "Style resolves conflict",
+      "category": "conflict",
+      "badClaim": "More fluent source wins.",
+      "expectedStaxBehavior": "Resolve by evidence only.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Style resolves conflict: evidence is separated before action.",
+        "expected": "Resolve by evidence only."
+      },
+      "negativeExample": {
+        "input": "More fluent source wins.",
+        "expectedFailure": "Style resolves conflict"
+      }
+    },
+    {
+      "patternId": "N4",
+      "name": "Old overrides new",
+      "category": "conflict",
+      "badClaim": "Old evidence wins silently.",
+      "expectedStaxBehavior": "Explain temporal choice.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Old overrides new: evidence is separated before action.",
+        "expected": "Explain temporal choice."
+      },
+      "negativeExample": {
+        "input": "Old evidence wins silently.",
+        "expectedFailure": "Old overrides new"
+      }
+    },
+    {
+      "patternId": "N5",
+      "name": "New overrides old",
+      "category": "conflict",
+      "badClaim": "New evidence wins silently.",
+      "expectedStaxBehavior": "Explain temporal choice.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "New overrides old: evidence is separated before action.",
+        "expected": "Explain temporal choice."
+      },
+      "negativeExample": {
+        "input": "New evidence wins silently.",
+        "expectedFailure": "New overrides old"
+      }
+    },
+    {
+      "patternId": "N6",
+      "name": "Bad entity merge",
+      "category": "conflict",
+      "badClaim": "Merge entities without confidence.",
+      "expectedStaxBehavior": "Surface possible duplicate.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Bad entity merge: evidence is separated before action.",
+        "expected": "Surface possible duplicate."
+      },
+      "negativeExample": {
+        "input": "Merge entities without confidence.",
+        "expectedFailure": "Bad entity merge"
+      }
+    },
+    {
+      "patternId": "N7",
+      "name": "Duplicate hidden",
+      "category": "conflict",
+      "badClaim": "Duplicates ignored.",
+      "expectedStaxBehavior": "Surface duplicates.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Duplicate hidden: evidence is separated before action.",
+        "expected": "Surface duplicates."
+      },
+      "negativeExample": {
+        "input": "Duplicates ignored.",
+        "expectedFailure": "Duplicate hidden"
+      }
+    },
+    {
+      "patternId": "N8",
+      "name": "Command conflict ignored",
+      "category": "conflict",
+      "badClaim": "Conflicting command outputs ignored.",
+      "expectedStaxBehavior": "Surface conflict.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Command conflict ignored: evidence is separated before action.",
+        "expected": "Surface conflict."
+      },
+      "negativeExample": {
+        "input": "Conflicting command outputs ignored.",
+        "expectedFailure": "Command conflict ignored"
+      }
+    },
+    {
+      "patternId": "N9",
+      "name": "User/Codex conflict ignored",
+      "category": "conflict",
+      "badClaim": "Conflicting claims ignored.",
+      "expectedStaxBehavior": "Surface conflict.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "User/Codex conflict ignored: evidence is separated before action.",
+        "expected": "Surface conflict."
+      },
+      "negativeExample": {
+        "input": "Conflicting claims ignored.",
+        "expectedFailure": "User/Codex conflict ignored"
+      }
+    },
+    {
+      "patternId": "N10",
+      "name": "No audit trace conflict",
+      "category": "conflict",
+      "badClaim": "Conflict absent from trace.",
+      "expectedStaxBehavior": "Trace conflict.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No audit trace conflict: evidence is separated before action.",
+        "expected": "Trace conflict."
+      },
+      "negativeExample": {
+        "input": "Conflict absent from trace.",
+        "expectedFailure": "No audit trace conflict"
+      }
+    },
+    {
+      "patternId": "O1",
+      "name": "Old proof reused",
+      "category": "freshness",
+      "badClaim": "Old proof proves current.",
+      "expectedStaxBehavior": "Date proof and rerun if stale.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Old proof reused: evidence is separated before action.",
+        "expected": "Date proof and rerun if stale."
+      },
+      "negativeExample": {
+        "input": "Old proof proves current.",
+        "expectedFailure": "Old proof reused"
+      }
+    },
+    {
+      "patternId": "O2",
+      "name": "Old branch proof",
+      "category": "freshness",
+      "badClaim": "Old branch output used.",
+      "expectedStaxBehavior": "Require branch freshness.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Old branch proof: evidence is separated before action.",
+        "expected": "Require branch freshness."
+      },
+      "negativeExample": {
+        "input": "Old branch output used.",
+        "expectedFailure": "Old branch proof"
+      }
+    },
+    {
+      "patternId": "O3",
+      "name": "Old screenshot",
+      "category": "freshness",
+      "badClaim": "Old screenshot reused.",
+      "expectedStaxBehavior": "Need fresh visual proof.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Old screenshot: evidence is separated before action.",
+        "expected": "Need fresh visual proof."
+      },
+      "negativeExample": {
+        "input": "Old screenshot reused.",
+        "expectedFailure": "Old screenshot"
+      }
+    },
+    {
+      "patternId": "O4",
+      "name": "Old CI run",
+      "category": "freshness",
+      "badClaim": "Old CI proves current commit.",
+      "expectedStaxBehavior": "Require commit-matched CI.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Old CI run: evidence is separated before action.",
+        "expected": "Require commit-matched CI."
+      },
+      "negativeExample": {
+        "input": "Old CI proves current commit.",
+        "expectedFailure": "Old CI run"
+      }
+    },
+    {
+      "patternId": "O5",
+      "name": "Timezone confusion",
+      "category": "freshness",
+      "badClaim": "Local date misread.",
+      "expectedStaxBehavior": "Store ISO UTC and local metadata.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Timezone confusion: evidence is separated before action.",
+        "expected": "Store ISO UTC and local metadata."
+      },
+      "negativeExample": {
+        "input": "Local date misread.",
+        "expectedFailure": "Timezone confusion"
+      }
+    },
+    {
+      "patternId": "O6",
+      "name": "Occurred vs received",
+      "category": "freshness",
+      "badClaim": "Capture time equals event time.",
+      "expectedStaxBehavior": "Distinguish occurredAt and receivedAt.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Occurred vs received: evidence is separated before action.",
+        "expected": "Distinguish occurredAt and receivedAt."
+      },
+      "negativeExample": {
+        "input": "Capture time equals event time.",
+        "expectedFailure": "Occurred vs received"
+      }
+    },
+    {
+      "patternId": "O7",
+      "name": "Stale dependency state",
+      "category": "freshness",
+      "badClaim": "Old dependency proof used.",
+      "expectedStaxBehavior": "Refresh dependency proof.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Stale dependency state: evidence is separated before action.",
+        "expected": "Refresh dependency proof."
+      },
+      "negativeExample": {
+        "input": "Old dependency proof used.",
+        "expectedFailure": "Stale dependency state"
+      }
+    },
+    {
+      "patternId": "O8",
+      "name": "Stale memory",
+      "category": "freshness",
+      "badClaim": "Old memory used as current.",
+      "expectedStaxBehavior": "Warn or refresh memory.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Stale memory: evidence is separated before action.",
+        "expected": "Warn or refresh memory."
+      },
+      "negativeExample": {
+        "input": "Old memory used as current.",
+        "expectedFailure": "Stale memory"
+      }
+    },
+    {
+      "patternId": "O9",
+      "name": "Stale benchmark baseline",
+      "category": "freshness",
+      "badClaim": "Old baseline used as fresh.",
+      "expectedStaxBehavior": "Mark stale baseline.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Stale benchmark baseline: evidence is separated before action.",
+        "expected": "Mark stale baseline."
+      },
+      "negativeExample": {
+        "input": "Old baseline used as fresh.",
+        "expectedFailure": "Stale benchmark baseline"
+      }
+    },
+    {
+      "patternId": "O10",
+      "name": "Stale docs current",
+      "category": "freshness",
+      "badClaim": "Old docs interpreted as current.",
+      "expectedStaxBehavior": "Date docs and verify current state.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Stale docs current: evidence is separated before action.",
+        "expected": "Date docs and verify current state."
+      },
+      "negativeExample": {
+        "input": "Old docs interpreted as current.",
+        "expectedFailure": "Stale docs current"
+      }
+    }
+  ]
+}

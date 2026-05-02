@@ -1,0 +1,308 @@
+{
+  "archetypes": [
+    {
+      "archetype": "typescript_e2e_browser",
+      "indicators": [
+        "package.json",
+        "playwright config",
+        "browser install docs"
+      ],
+      "proofGates": [
+        "build",
+        "unit",
+        "e2e",
+        "visual/browser"
+      ],
+      "dangerousActions": [
+        "publish",
+        "release"
+      ],
+      "likelyEnvironmentBlockers": [
+        "browser deps",
+        "platform deps"
+      ],
+      "failurePatternsToTest": [
+        "A2",
+        "A20",
+        "G1",
+        "S4"
+      ]
+    },
+    {
+      "archetype": "js_build_tooling",
+      "indicators": [
+        "package.json",
+        "pnpm/yarn/npm lock",
+        "rollup/vite config"
+      ],
+      "proofGates": [
+        "build",
+        "test",
+        "typecheck"
+      ],
+      "dangerousActions": [
+        "publish",
+        "release"
+      ],
+      "likelyEnvironmentBlockers": [
+        "node version",
+        "package manager"
+      ],
+      "failurePatternsToTest": [
+        "A13",
+        "B8",
+        "E2",
+        "S2"
+      ]
+    },
+    {
+      "archetype": "python_test_framework",
+      "indicators": [
+        "pyproject.toml",
+        "tox.ini",
+        "pytest.ini"
+      ],
+      "proofGates": [
+        "pytest subset",
+        "tox/nox"
+      ],
+      "dangerousActions": [
+        "release",
+        "publish"
+      ],
+      "likelyEnvironmentBlockers": [
+        "python version",
+        "optional deps"
+      ],
+      "failurePatternsToTest": [
+        "B3",
+        "F6",
+        "S4"
+      ]
+    },
+    {
+      "archetype": "python_web_framework",
+      "indicators": [
+        "pyproject.toml",
+        "manage.py",
+        "tox.ini"
+      ],
+      "proofGates": [
+        "unit",
+        "integration",
+        "docs"
+      ],
+      "dangerousActions": [
+        "deploy",
+        "db migration"
+      ],
+      "likelyEnvironmentBlockers": [
+        "database service",
+        "settings"
+      ],
+      "failurePatternsToTest": [
+        "I9",
+        "F4",
+        "E15"
+      ]
+    },
+    {
+      "archetype": "rust_lint_workspace",
+      "indicators": [
+        "Cargo.toml",
+        "workspace crates"
+      ],
+      "proofGates": [
+        "cargo check",
+        "cargo test",
+        "cargo clippy"
+      ],
+      "dangerousActions": [
+        "publish"
+      ],
+      "likelyEnvironmentBlockers": [
+        "rust toolchain",
+        "features"
+      ],
+      "failurePatternsToTest": [
+        "S9",
+        "E3",
+        "F6"
+      ]
+    },
+    {
+      "archetype": "rust_async_workspace",
+      "indicators": [
+        "Cargo.toml",
+        "tokio features"
+      ],
+      "proofGates": [
+        "cargo test package",
+        "feature tests"
+      ],
+      "dangerousActions": [
+        "publish"
+      ],
+      "likelyEnvironmentBlockers": [
+        "toolchain",
+        "feature flags"
+      ],
+      "failurePatternsToTest": [
+        "S9",
+        "A14",
+        "F4"
+      ]
+    },
+    {
+      "archetype": "go_monorepo_integration",
+      "indicators": [
+        "go.mod",
+        "Makefile",
+        "hack scripts"
+      ],
+      "proofGates": [
+        "go test package",
+        "integration subset"
+      ],
+      "dangerousActions": [
+        "deploy",
+        "cluster mutation"
+      ],
+      "likelyEnvironmentBlockers": [
+        "services",
+        "cluster",
+        "toolchain"
+      ],
+      "failurePatternsToTest": [
+        "S4",
+        "E15",
+        "I6"
+      ]
+    },
+    {
+      "archetype": "go_infra_tooling",
+      "indicators": [
+        "go.mod",
+        "internal packages"
+      ],
+      "proofGates": [
+        "go test ./...",
+        "targeted package test"
+      ],
+      "dangerousActions": [
+        "release",
+        "provider mutation"
+      ],
+      "likelyEnvironmentBlockers": [
+        "cloud creds",
+        "fixtures"
+      ],
+      "failurePatternsToTest": [
+        "J3",
+        "I10",
+        "S5"
+      ]
+    },
+    {
+      "archetype": "ruby_framework",
+      "indicators": [
+        "Gemfile",
+        "gemspec",
+        "RSpec/Minitest"
+      ],
+      "proofGates": [
+        "bundle exec test",
+        "targeted spec"
+      ],
+      "dangerousActions": [
+        "release"
+      ],
+      "likelyEnvironmentBlockers": [
+        "ruby version",
+        "database"
+      ],
+      "failurePatternsToTest": [
+        "B3",
+        "F6",
+        "S4"
+      ]
+    },
+    {
+      "archetype": "php_framework",
+      "indicators": [
+        "composer.json",
+        "phpunit.xml"
+      ],
+      "proofGates": [
+        "composer test",
+        "phpunit"
+      ],
+      "dangerousActions": [
+        "release"
+      ],
+      "likelyEnvironmentBlockers": [
+        "php extensions",
+        "database"
+      ],
+      "failurePatternsToTest": [
+        "B3",
+        "E2",
+        "S5"
+      ]
+    },
+    {
+      "archetype": "ui_visual_system",
+      "indicators": [
+        "storybook config",
+        "component packages",
+        "visual tests"
+      ],
+      "proofGates": [
+        "build",
+        "storybook",
+        "visual/e2e"
+      ],
+      "dangerousActions": [
+        "publish"
+      ],
+      "likelyEnvironmentBlockers": [
+        "browser deps",
+        "screenshot tooling"
+      ],
+      "failurePatternsToTest": [
+        "A20",
+        "G1",
+        "G5",
+        "F12"
+      ]
+    },
+    {
+      "archetype": "data_pipeline",
+      "indicators": [
+        "pyproject.toml",
+        "dbt_project.yml",
+        "pipeline scripts"
+      ],
+      "proofGates": [
+        "unit",
+        "pipeline validation",
+        "dry-run"
+      ],
+      "dangerousActions": [
+        "publish",
+        "sync",
+        "deploy"
+      ],
+      "likelyEnvironmentBlockers": [
+        "warehouse/service deps",
+        "profiles"
+      ],
+      "failurePatternsToTest": [
+        "H5",
+        "H7",
+        "H10",
+        "I5"
+      ]
+    }
+  ]
+}

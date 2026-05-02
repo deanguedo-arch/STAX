@@ -1,0 +1,234 @@
+{
+  "patterns": [
+    {
+      "patternId": "I1",
+      "name": "Checklist existence",
+      "category": "deploy_release",
+      "badClaim": "Checklist exists, gate complete.",
+      "expectedStaxBehavior": "Checklist existence is not completed gate.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Checklist existence: evidence is separated before action.",
+        "expected": "Checklist existence is not completed gate."
+      },
+      "negativeExample": {
+        "input": "Checklist exists, gate complete.",
+        "expectedFailure": "Checklist existence"
+      }
+    },
+    {
+      "patternId": "I2",
+      "name": "Build script exists",
+      "category": "deploy_release",
+      "badClaim": "Deploy ready because build script exists.",
+      "expectedStaxBehavior": "Run build/deploy validation.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Build script exists: evidence is separated before action.",
+        "expected": "Run build/deploy validation."
+      },
+      "negativeExample": {
+        "input": "Deploy ready because build script exists.",
+        "expectedFailure": "Build script exists"
+      }
+    },
+    {
+      "patternId": "I3",
+      "name": "No release artifact",
+      "category": "deploy_release",
+      "badClaim": "Release ready.",
+      "expectedStaxBehavior": "Need release artifact/proof.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "No release artifact: evidence is separated before action.",
+        "expected": "Need release artifact/proof."
+      },
+      "negativeExample": {
+        "input": "Release ready.",
+        "expectedFailure": "No release artifact"
+      }
+    },
+    {
+      "patternId": "I4",
+      "name": "Platform readiness premature",
+      "category": "deploy_release",
+      "badClaim": "TestFlight ready.",
+      "expectedStaxBehavior": "Need platform build/device/auth evidence.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Platform readiness premature: evidence is separated before action.",
+        "expected": "Need platform build/device/auth evidence."
+      },
+      "negativeExample": {
+        "input": "TestFlight ready.",
+        "expectedFailure": "Platform readiness premature"
+      }
+    },
+    {
+      "patternId": "I5",
+      "name": "Target unvalidated",
+      "category": "deploy_release",
+      "badClaim": "Publish target is correct.",
+      "expectedStaxBehavior": "Block until target validation.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Target unvalidated: evidence is separated before action.",
+        "expected": "Block until target validation."
+      },
+      "negativeExample": {
+        "input": "Publish target is correct.",
+        "expectedFailure": "Target unvalidated"
+      }
+    },
+    {
+      "patternId": "I6",
+      "name": "Production from local proof",
+      "category": "deploy_release",
+      "badClaim": "Deploy production from local run.",
+      "expectedStaxBehavior": "Need staging/CI/release gate.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Production from local proof: evidence is separated before action.",
+        "expected": "Need staging/CI/release gate."
+      },
+      "negativeExample": {
+        "input": "Deploy production from local run.",
+        "expectedFailure": "Production from local proof"
+      }
+    },
+    {
+      "patternId": "I7",
+      "name": "Rollback missing",
+      "category": "deploy_release",
+      "badClaim": "Deploy without rollback.",
+      "expectedStaxBehavior": "Deployment incomplete.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Rollback missing: evidence is separated before action.",
+        "expected": "Deployment incomplete."
+      },
+      "negativeExample": {
+        "input": "Deploy without rollback.",
+        "expectedFailure": "Rollback missing"
+      }
+    },
+    {
+      "patternId": "I8",
+      "name": "Secrets unknown",
+      "category": "deploy_release",
+      "badClaim": "Deploy despite unknown env.",
+      "expectedStaxBehavior": "Block deploy.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Secrets unknown: evidence is separated before action.",
+        "expected": "Block deploy."
+      },
+      "negativeExample": {
+        "input": "Deploy despite unknown env.",
+        "expectedFailure": "Secrets unknown"
+      }
+    },
+    {
+      "patternId": "I9",
+      "name": "Migration no rollback",
+      "category": "deploy_release",
+      "badClaim": "Migration deploy ready.",
+      "expectedStaxBehavior": "Block without rollback.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Migration no rollback: evidence is separated before action.",
+        "expected": "Block without rollback."
+      },
+      "negativeExample": {
+        "input": "Migration deploy ready.",
+        "expectedFailure": "Migration no rollback"
+      }
+    },
+    {
+      "patternId": "I10",
+      "name": "External service assumed",
+      "category": "deploy_release",
+      "badClaim": "Service state is ready.",
+      "expectedStaxBehavior": "Unverified.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "External service assumed: evidence is separated before action.",
+        "expected": "Unverified."
+      },
+      "negativeExample": {
+        "input": "Service state is ready.",
+        "expectedFailure": "External service assumed"
+      }
+    }
+  ]
+}

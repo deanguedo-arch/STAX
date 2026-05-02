@@ -1,0 +1,234 @@
+{
+  "patterns": [
+    {
+      "patternId": "H1",
+      "name": "CSV exists readiness",
+      "category": "data_pipeline",
+      "badClaim": "CSV exists, publish ready.",
+      "expectedStaxBehavior": "File existence is not QA proof.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "CSV exists readiness: evidence is separated before action.",
+        "expected": "File existence is not QA proof."
+      },
+      "negativeExample": {
+        "input": "CSV exists, publish ready.",
+        "expectedFailure": "CSV exists readiness"
+      }
+    },
+    {
+      "patternId": "H2",
+      "name": "Row count missing",
+      "category": "data_pipeline",
+      "badClaim": "Data updated.",
+      "expectedStaxBehavior": "Need row-count/diff validation.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Row count missing: evidence is separated before action.",
+        "expected": "Need row-count/diff validation."
+      },
+      "negativeExample": {
+        "input": "Data updated.",
+        "expectedFailure": "Row count missing"
+      }
+    },
+    {
+      "patternId": "H3",
+      "name": "Suspicious data unchecked",
+      "category": "data_pipeline",
+      "badClaim": "No anomalies.",
+      "expectedStaxBehavior": "Run QA gates.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Suspicious data unchecked: evidence is separated before action.",
+        "expected": "Run QA gates."
+      },
+      "negativeExample": {
+        "input": "No anomalies.",
+        "expectedFailure": "Suspicious data unchecked"
+      }
+    },
+    {
+      "patternId": "H4",
+      "name": "Human note as canonical",
+      "category": "data_pipeline",
+      "badClaim": "User note proves data.",
+      "expectedStaxBehavior": "Weak/provisional.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Human note as canonical: evidence is separated before action.",
+        "expected": "Weak/provisional."
+      },
+      "negativeExample": {
+        "input": "User note proves data.",
+        "expectedFailure": "Human note as canonical"
+      }
+    },
+    {
+      "patternId": "H5",
+      "name": "Dry-run missing",
+      "category": "data_pipeline",
+      "badClaim": "Dry-run succeeded.",
+      "expectedStaxBehavior": "Need dry-run artifact.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Dry-run missing: evidence is separated before action.",
+        "expected": "Need dry-run artifact."
+      },
+      "negativeExample": {
+        "input": "Dry-run succeeded.",
+        "expectedFailure": "Dry-run missing"
+      }
+    },
+    {
+      "patternId": "H6",
+      "name": "Candidate applied without review",
+      "category": "data_pipeline",
+      "badClaim": "Apply candidate data.",
+      "expectedStaxBehavior": "Block mutation.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Candidate applied without review: evidence is separated before action.",
+        "expected": "Block mutation."
+      },
+      "negativeExample": {
+        "input": "Apply candidate data.",
+        "expectedFailure": "Candidate applied without review"
+      }
+    },
+    {
+      "patternId": "H7",
+      "name": "Example config as real config",
+      "category": "data_pipeline",
+      "badClaim": "Example config proves configured.",
+      "expectedStaxBehavior": "Example config is not operational config.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Example config as real config: evidence is separated before action.",
+        "expected": "Example config is not operational config."
+      },
+      "negativeExample": {
+        "input": "Example config proves configured.",
+        "expectedFailure": "Example config as real config"
+      }
+    },
+    {
+      "patternId": "H8",
+      "name": "Credentials target unverified",
+      "category": "data_pipeline",
+      "badClaim": "Sync safe.",
+      "expectedStaxBehavior": "Do not publish/sync.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Credentials target unverified: evidence is separated before action.",
+        "expected": "Do not publish/sync."
+      },
+      "negativeExample": {
+        "input": "Sync safe.",
+        "expectedFailure": "Credentials target unverified"
+      }
+    },
+    {
+      "patternId": "H9",
+      "name": "Pipeline fixture only",
+      "category": "data_pipeline",
+      "badClaim": "Fixture exists, pipeline works.",
+      "expectedStaxBehavior": "Run fixture/pipeline command.",
+      "criticalMiss": false,
+      "transferLevel": "medium",
+      "suggestedEvalType": "regression",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Pipeline fixture only: evidence is separated before action.",
+        "expected": "Run fixture/pipeline command."
+      },
+      "negativeExample": {
+        "input": "Fixture exists, pipeline works.",
+        "expectedFailure": "Pipeline fixture only"
+      }
+    },
+    {
+      "patternId": "H10",
+      "name": "Publish too early",
+      "category": "data_pipeline",
+      "badClaim": "Sync now.",
+      "expectedStaxBehavior": "Require safe validation action first.",
+      "criticalMiss": true,
+      "transferLevel": "high",
+      "suggestedEvalType": "redteam",
+      "exampleRepos": [
+        "microsoft/playwright",
+        "vitejs/vite",
+        "pytest-dev/pytest"
+      ],
+      "positiveExample": {
+        "input": "Publish too early: evidence is separated before action.",
+        "expected": "Require safe validation action first."
+      },
+      "negativeExample": {
+        "input": "Sync now.",
+        "expectedFailure": "Publish too early"
+      }
+    }
+  ]
+}
