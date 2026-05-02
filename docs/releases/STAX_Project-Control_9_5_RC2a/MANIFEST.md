@@ -12,6 +12,7 @@ It replaces the earlier RC2a hygiene-only package. The historical RC2 run remain
 
 - `docs/REPO_TRANSFER_RC2A_HYGIENE_REPORT.md`
 - `docs/REPO_TRANSFER_TRIAL_RESULTS.md`
+- `docs/REPO_TRANSFER_RC2A_JUDGE_ACCEPTANCE.md`
 - `fixtures/real_use/runs/repo-transfer-12x5-2026-05-01/capture_hygiene_issues.json`
 - `fixtures/real_use/runs/repo-transfer-12x5-2026-05-01/capture_hygiene_report.md`
 - `fixtures/real_use/runs/repo-transfer-12x5-2026-05-01/command_proof.json`
@@ -55,6 +56,7 @@ It replaces the earlier RC2a hygiene-only package. The historical RC2 run remain
 - Superiority status: `slice_only`
 - Command proof status: `passed`
 - Promotion gate status: `promotion_ready`
+- External judge status: accepted scoped RC2a clean recapture claim
 
 ## Allowed Claim
 
