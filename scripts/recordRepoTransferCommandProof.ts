@@ -14,12 +14,20 @@ type CommandProof = {
   stderrTail: string;
 };
 
-function parseArgs(): { runId: string } {
+type ProofProfile = "hygiene" | "clean";
+
+function parseArgs(): { runId: string; profile: ProofProfile } {
   const runEq = process.argv.find((arg) => arg.startsWith("--run="));
   const runIndex = process.argv.indexOf("--run");
   const runId = runEq?.slice("--run=".length).trim() || (runIndex >= 0 ? process.argv[runIndex + 1]?.trim() : undefined);
   if (!runId) throw new Error("Missing --run=<runId>.");
-  return { runId };
+  const profileEq = process.argv.find((arg) => arg.startsWith("--profile="));
+  const profileIndex = process.argv.indexOf("--profile");
+  const profile = profileEq?.slice("--profile=".length).trim() || (profileIndex >= 0 ? process.argv[profileIndex + 1]?.trim() : "hygiene");
+  if (profile !== "hygiene" && profile !== "clean") {
+    throw new Error("Invalid --profile. Expected hygiene or clean.");
+  }
+  return { runId, profile };
 }
 
 function tail(text: string): string {
@@ -92,14 +100,31 @@ function formatMarkdown(input: { runId: string; proofs: CommandProof[] }): strin
   ].join("\n");
 }
 
-const { runId } = parseArgs();
+const { runId, profile } = parseArgs();
 const cwd = process.cwd();
-const commands = [
+const hygieneCommands = [
   { id: "git_status", command: "git status --short", expectedExitCode: 0, cwd },
   { id: "capture_hygiene", command: `npm run repo-transfer:capture-hygiene -- --run ${runId}`, expectedExitCode: 0, cwd },
   { id: "comparison_integrity_expected_fail", command: `npm run campaign:integrity -- --run ${runId}`, expectedExitCode: 1, cwd },
   { id: "score_run_expected_fail", command: `npm run repo-transfer:score-run -- --run ${runId}`, expectedExitCode: 1, cwd }
 ];
+const cleanCommands = [
+  { id: "git_status", command: "git status --short", expectedExitCode: 0, cwd },
+  { id: "capture_hygiene_clean", command: `npm run repo-transfer:capture-hygiene -- --run ${runId} --expect-clean`, expectedExitCode: 0, cwd },
+  { id: "comparison_integrity", command: `npm run campaign:integrity -- --run ${runId}`, expectedExitCode: 0, cwd },
+  { id: "score_run_write", command: `npm run repo-transfer:score-run -- --run ${runId} --write`, expectedExitCode: 0, cwd },
+  { id: "repo_transfer_integrity", command: "npm run repo-transfer:integrity", expectedExitCode: 0, cwd },
+  { id: "typecheck", command: "npm run typecheck", expectedExitCode: 0, cwd },
+  { id: "test", command: "npm test", expectedExitCode: 0, cwd },
+  { id: "rax_eval", command: "npm run rax -- eval", expectedExitCode: 0, cwd },
+  {
+    id: "fitness_smoke",
+    command: "npm run rax -- run \"Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes.\"",
+    expectedExitCode: 0,
+    cwd
+  }
+];
+const commands = profile === "clean" ? cleanCommands : hygieneCommands;
 const proofs = [];
 for (const command of commands) {
   proofs.push(await runCommand(command));
@@ -109,6 +134,7 @@ const runDir = path.join(cwd, "fixtures", "real_use", "runs", runId);
 const payload = {
   status: proofs.every((proof) => proof.exitCode === proof.expectedExitCode) ? "passed" : "unexpected_exit_code",
   runId,
+  profile,
   recordedAt: new Date().toISOString(),
   proofs
 };

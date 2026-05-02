@@ -87,6 +87,15 @@ Expected status for the fresh run before browser capture:
 - Contaminated capture outputs: `0`
 - Missing capture outputs: `60`
 
+After clean recapture, the proof packet must be generated with:
+
+```bash
+npm run repo-transfer:command-proof -- --run repo-transfer-12x5-rc2a-2026-05-02 --profile clean
+npm run repo-transfer:human-audit:prepare -- --run repo-transfer-12x5-rc2a-2026-05-02 --sample-size 15
+```
+
+The `clean` command-proof profile records the full validation packet, including hygiene, comparison integrity, canonical score writing, repo-transfer integrity, typecheck, tests, `rax eval`, and the STAX fitness smoke run.
+
 ## Next Action
 
 Recapture all 60 ChatGPT baseline rows into `repo-transfer-12x5-rc2a-2026-05-02` using the copy-response path, then regenerate canonical scores and release a clean RC2a proof pack only if the strengthened integrity gate passes.

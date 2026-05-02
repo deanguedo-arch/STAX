@@ -96,3 +96,12 @@ npm run repo-transfer:score-run -- --run <clean-run> --write
 ## Next Action
 
 Complete the fresh all-60 recapture run using the copy-response capture path instead of DOM-region scraping. Only package a scored RC2a proof pack if all strengthened integrity checks pass.
+
+Before any investor-clean claim, the clean run must also produce:
+
+```bash
+npm run repo-transfer:command-proof -- --run repo-transfer-12x5-rc2a-2026-05-02 --profile clean
+npm run repo-transfer:human-audit:prepare -- --run repo-transfer-12x5-rc2a-2026-05-02 --sample-size 15
+```
+
+The human audit ledger is only a pending sample until a reviewer fills the checks after clean recapture.

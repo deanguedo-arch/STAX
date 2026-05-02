@@ -6,12 +6,16 @@ import {
 } from "../src/repoTransfer/RepoTransferRun.js";
 import { isCaptureCorruptionIssue } from "../src/campaign/CaptureValidation.js";
 
-function parseArgs(): { runId: string; write: boolean } {
+function parseArgs(): { runId: string; write: boolean; expectClean: boolean } {
   const runEq = process.argv.find((arg) => arg.startsWith("--run="));
   const runIndex = process.argv.indexOf("--run");
   const runId = runEq?.slice("--run=".length).trim() || (runIndex >= 0 ? process.argv[runIndex + 1]?.trim() : undefined);
   if (!runId) throw new Error("Missing --run=<runId>.");
-  return { runId, write: process.argv.includes("--write") };
+  return {
+    runId,
+    write: process.argv.includes("--write"),
+    expectClean: process.argv.includes("--expect-clean")
+  };
 }
 
 function formatMarkdown(input: {
@@ -48,7 +52,7 @@ function formatMarkdown(input: {
   ].join("\n");
 }
 
-const { runId, write } = parseArgs();
+const { runId, write, expectClean } = parseArgs();
 const runDir = path.join(process.cwd(), "fixtures", "real_use", "runs", runId);
 const captures = await loadRepoTransferCaptures(runDir);
 const issues = validateRepoTransferRunCaptures(captures);
@@ -88,3 +92,4 @@ if (write) {
 }
 
 process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+if (expectClean && issues.length > 0) process.exitCode = 1;

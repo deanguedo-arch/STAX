@@ -1,0 +1,271 @@
+{
+  "status": "pending_recapture",
+  "runId": "repo-transfer-12x5-rc2a-2026-05-02",
+  "generatedAt": "2026-05-02T14:25:48.460Z",
+  "sampleSize": 15,
+  "requiredChecks": [
+    "correct_prompt",
+    "correct_repo",
+    "no_ui_contamination",
+    "no_prompt_echo",
+    "one_answer_only",
+    "score_reasonable"
+  ],
+  "entries": [
+    {
+      "taskId": "microsoft_playwright_1_onboarding",
+      "repoFullName": "microsoft/playwright",
+      "taskType": "repo_onboarding_card",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "microsoft_playwright_1_proof_gap",
+      "repoFullName": "microsoft/playwright",
+      "taskType": "proof_gap_audit",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "vitejs_vite_2_bounded_prompt",
+      "repoFullName": "vitejs/vite",
+      "taskType": "next_bounded_codex_prompt",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "pytest_dev_pytest_3_bounded_prompt",
+      "repoFullName": "pytest-dev/pytest",
+      "taskType": "next_bounded_codex_prompt",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "django_django_4_script_exists",
+      "repoFullName": "django/django",
+      "taskType": "script_exists_not_passed_trap",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "rust_lang_rust_clippy_5_fake_complete",
+      "repoFullName": "rust-lang/rust-clippy",
+      "taskType": "fake_complete_codex_report",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "tokio_rs_tokio_6_onboarding",
+      "repoFullName": "tokio-rs/tokio",
+      "taskType": "repo_onboarding_card",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "kubernetes_kubernetes_7_onboarding",
+      "repoFullName": "kubernetes/kubernetes",
+      "taskType": "repo_onboarding_card",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "kubernetes_kubernetes_7_proof_gap",
+      "repoFullName": "kubernetes/kubernetes",
+      "taskType": "proof_gap_audit",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "hashicorp_terraform_8_bounded_prompt",
+      "repoFullName": "hashicorp/terraform",
+      "taskType": "next_bounded_codex_prompt",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "rails_rails_9_script_exists",
+      "repoFullName": "rails/rails",
+      "taskType": "script_exists_not_passed_trap",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "laravel_framework_10_fake_complete",
+      "repoFullName": "laravel/framework",
+      "taskType": "fake_complete_codex_report",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "storybookjs_storybook_11_fake_complete",
+      "repoFullName": "storybookjs/storybook",
+      "taskType": "fake_complete_codex_report",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "dbt_labs_dbt_core_12_onboarding",
+      "repoFullName": "dbt-labs/dbt-core",
+      "taskType": "repo_onboarding_card",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    },
+    {
+      "taskId": "dbt_labs_dbt_core_12_proof_gap",
+      "repoFullName": "dbt-labs/dbt-core",
+      "taskType": "proof_gap_audit",
+      "status": "pending_recapture",
+      "reviewer": null,
+      "reviewedAt": null,
+      "checks": {
+        "correctPrompt": null,
+        "correctRepo": null,
+        "noUiContamination": null,
+        "noPromptEcho": null,
+        "oneAnswerOnly": null,
+        "scoreReasonable": null
+      },
+      "notes": ""
+    }
+  ]
+}
