@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Validate STAX Core strict release gate
-        run: npm run validate:staxcore:strict
+        run: npm run validate:staxcore:strict:ci
 
       - name: Upload STAX Core release artifacts
         if: always()

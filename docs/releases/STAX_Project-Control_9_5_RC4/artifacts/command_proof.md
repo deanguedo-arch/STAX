@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-03T22:16:13.891Z
+- Recorded at: 2026-05-03T22:51:23.642Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -8,10 +8,10 @@
 - typecheck: exit 0 (expected 0) :: `npm run typecheck`
 - test: exit 0 (expected 0) :: `npm test`
 - validate_all: exit 0 (expected 0) :: `npm run validate:all`
-- promotion_gate: exit 0 (expected 0) :: `npm run campaign:promotion-gate`
 - pr_artifact_integrity: exit 0 (expected 0) :: `npm run pr-artifact:integrity`
 - pr_artifact_score: exit 0 (expected 0) :: `npm run pr-artifact:score`
-- pr_artifact_live_trial: exit 0 (expected 0) :: `npm run pr-artifact:live-trial`
+- pr_artifact_live_trial_refresh: exit 0 (expected 0) :: `npm run pr-artifact:live-trial:refresh`
+- promotion_gate: exit 0 (expected 0) :: `npm run campaign:promotion-gate`
 - ci_failure_score: exit 0 (expected 0) :: `npm run ci-failure:score`
 - pr_review_comment_score: exit 0 (expected 0) :: `npm run pr-review-comment:score`
 - repo_onboarding_score: exit 0 (expected 0) :: `npm run repo-onboarding:score`
@@ -27,8 +27,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:14:56.618Z
-- Finished at: 2026-05-03T22:15:00.541Z
+- Started at: 2026-05-03T22:50:31.972Z
+- Finished at: 2026-05-03T22:50:36.238Z
 
 Stdout tail:
 
@@ -49,8 +49,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:15:00.541Z
-- Finished at: 2026-05-03T22:15:16.448Z
+- Started at: 2026-05-03T22:50:36.238Z
+- Finished at: 2026-05-03T22:50:52.360Z
 
 Stdout tail:
 
@@ -62,10 +62,10 @@ Stdout tail:
  RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX
 
 
- Test Files  157 passed (157)
-      Tests  768 passed (768)
-   Start at  16:15:01
-   Duration  15.35s (transform 10.00s, setup 0ms, import 44.53s, tests 59.37s, environment 34ms)
+ Test Files  159 passed (159)
+      Tests  777 passed (777)
+   Start at  16:50:36
+   Duration  15.58s (transform 9.85s, setup 0ms, import 42.65s, tests 61.57s, environment 24ms)
 ```
 
 Stderr tail:
@@ -80,8 +80,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:15:16.448Z
-- Finished at: 2026-05-03T22:15:37.923Z
+- Started at: 2026-05-03T22:50:52.360Z
+- Finished at: 2026-05-03T22:51:14.490Z
 
 Stdout tail:
 
@@ -101,10 +101,10 @@ Stdout tail:
  RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX
 
 
- Test Files  157 passed (157)
-      Tests  768 passed (768)
-   Start at  16:15:21
-   Duration  15.41s (transform 10.44s, setup 0ms, import 43.07s, tests 59.69s, environment 38ms)
+ Test Files  159 passed (159)
+      Tests  777 passed (777)
+   Start at  16:50:57
+   Duration  15.82s (transform 10.46s, setup 0ms, import 45.74s, tests 60.78s, environment 37ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -129,51 +129,14 @@ Stderr tail:
 (empty)
 ```
 
-### promotion_gate
-
-- CWD: `/Users/deanguedo/Documents/GitHub/STAX`
-- Command: `npm run campaign:promotion-gate`
-- Exit code: 0
-- Expected exit code: 0
-- Started at: 2026-05-03T22:15:37.923Z
-- Finished at: 2026-05-03T22:15:38.530Z
-
-Stdout tail:
-
-```text
-> rax@0.1.0 campaign:promotion-gate
-> tsx scripts/promotionGate95.ts
-
-{
-  "cleanRunsPassed": 3,
-  "requiredCleanRuns": 3,
-  "baselineStatus": "baseline_ready",
-  "dogfoodRoundCStatus": "round_c_passed",
-  "failureLedgerStatus": "tracked",
-  "workflowContractStatus": "workflow_contract_passed",
-  "humanJudgmentStatus": "judgment_ready",
-  "operatingWindowStatus": "operating_window_passed",
-  "ciFailureTriageStatus": "passed",
-  "prReviewCommentStatus": "passed",
-  "status": "promotion_ready",
-  "blockers": []
-}
-```
-
-Stderr tail:
-
-```text
-(empty)
-```
-
 ### pr_artifact_integrity
 
 - CWD: `/Users/deanguedo/Documents/GitHub/STAX`
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:15:38.530Z
-- Finished at: 2026-05-03T22:15:39.358Z
+- Started at: 2026-05-03T22:51:14.490Z
+- Finished at: 2026-05-03T22:51:15.362Z
 
 Stdout tail:
 
@@ -211,8 +174,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:15:39.358Z
-- Finished at: 2026-05-03T22:15:40.683Z
+- Started at: 2026-05-03T22:51:15.362Z
+- Finished at: 2026-05-03T22:51:16.693Z
 
 Stdout tail:
 
@@ -244,411 +207,77 @@ Stderr tail:
 (empty)
 ```
 
-### pr_artifact_live_trial
+### pr_artifact_live_trial_refresh
 
 - CWD: `/Users/deanguedo/Documents/GitHub/STAX`
-- Command: `npm run pr-artifact:live-trial`
+- Command: `npm run pr-artifact:live-trial:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:15:40.683Z
-- Finished at: 2026-05-03T22:16:09.272Z
+- Started at: 2026-05-03T22:51:16.693Z
+- Finished at: 2026-05-03T22:51:17.477Z
 
 Stdout tail:
 
 ```text
-> rax@0.1.0 pr-artifact:live-trial
-> tsx scripts/prArtifactLiveTrial.ts --limit 25 --min-live 5
+> rax@0.1.0 pr-artifact:live-trial:refresh
+> tsx scripts/prArtifactLiveTrialRefresh.ts
 
 {
-  "fixtureSet": "real_pr_artifact_trial_v1",
-  "selectedCaseCount": 25,
-  "requestedCaseCount": 25,
-  "liveSourceCount": 25,
-  "fallbackSourceCount": 0,
-  "falseAccepts": 0,
-  "falseBlocks": 0,
-  "falseBlockRatePct": 0,
-  "usefulNextActionRate": 100,
-  "ciProofClassificationSurfaceRate": 100,
-  "status": "passed",
-  "blockers": [],
-  "cases": [
-    {
-      "caseId": "nextjs_93417_case_01",
-      "snapshotId": "nextjs_93417",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93417,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93417_case_02",
-      "snapshotId": "nextjs_93417",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93417,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93417_case_03",
-      "snapshotId": "nextjs_93417",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93417,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93417_case_04",
-      "snapshotId": "nextjs_93417",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93417,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93417_case_05",
-      "snapshotId": "nextjs_93417",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93417,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "storybook_34681_case_01",
-      "snapshotId": "storybook_34681",
-      "repoFullName": "storybookjs/storybook",
-      "prNumber": 34681,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "storybook_34681_case_02",
-      "snapshotId": "storybook_34681",
-      "repoFullName": "storybookjs/storybook",
-      "prNumber": 34681,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "storybook_34681_case_03",
-      "snapshotId": "storybook_34681",
-      "repoFullName": "storybookjs/storybook",
-      "prNumber": 34681,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "storybook_34681_case_04",
-      "snapshotId": "storybook_34681",
-      "repoFullName": "storybookjs/storybook",
-      "prNumber": 34681,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "storybook_34681_case_05",
-      "snapshotId": "storybook_34681",
-      "repoFullName": "storybookjs/storybook",
-      "prNumber": 34681,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "vitest_10231_case_01",
-      "snapshotId": "vitest_10231",
-      "repoFullName": "vitest-dev/vitest",
-      "prNumber": 10231,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "vitest_10231_case_02",
-      "snapshotId": "vitest_10231",
-      "repoFullName": "vitest-dev/vitest",
-      "prNumber": 10231,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "vitest_10231_case_03",
-      "snapshotId": "vitest_10231",
-      "repoFullName": "vitest-dev/vitest",
-      "prNumber": 10231,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "vitest_10231_case_04",
-      "snapshotId": "vitest_10231",
-      "repoFullName": "vitest-dev/vitest",
-      "prNumber": 10231,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "vitest_10231_case_05",
-      "snapshotId": "vitest_10231",
-      "repoFullName": "vitest-dev/vitest",
-      "prNumber": 10231,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93410_case_01",
-      "snapshotId": "nextjs_93410",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93410_case_02",
-      "snapshotId": "nextjs_93410",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93410_case_03",
-      "snapshotId": "nextjs_93410",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93410_case_04",
-      "snapshotId": "nextjs_93410",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93410_case_05",
-      "snapshotId": "nextjs_93410",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93400_case_01",
-      "snapshotId": "nextjs_93400",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
-      "source": "live_github_api",
-      "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93400_case_02",
-      "snapshotId": "nextjs_93400",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
-      "source": "live_github_api",
-      "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93400_case_03",
-      "snapshotId": "nextjs_93400",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
-      "source": "live_github_api",
-      "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93400_case_04",
-      "snapshotId": "nextjs_93400",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
-      "source": "live_github_api",
-      "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93400_case_05",
-      "snapshotId": "nextjs_93400",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
-      "source": "live_github_api",
-      "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    }
-  ]
+  "status": "live_trial_refresh_skipped_cached_pass_fresh",
+  "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
+  "cachedRecordedAt": "2026-05-03T22:30:46.492Z",
+  "cachedAgeHours": 0.34,
+  "maxCacheHours": 24,
+  "gateSummary": {
+    "selectedCaseCount": 25,
+    "liveSourceCount": 25,
+    "fallbackSourceCount": 0,
+    "falseAccepts": 0,
+    "falseBlocks": 0,
+    "falseBlockRatePct": 0,
+    "usefulNextActionRate": 100,
+    "ciProofClassificationSurfaceRate": 100,
+    "status": "passed",
+    "blockers": []
+  }
+}
+```
+
+Stderr tail:
+
+```text
+(empty)
+```
+
+### promotion_gate
+
+- CWD: `/Users/deanguedo/Documents/GitHub/STAX`
+- Command: `npm run campaign:promotion-gate`
+- Exit code: 0
+- Expected exit code: 0
+- Started at: 2026-05-03T22:51:17.477Z
+- Finished at: 2026-05-03T22:51:18.311Z
+
+Stdout tail:
+
+```text
+> rax@0.1.0 campaign:promotion-gate
+> tsx scripts/promotionGate95.ts
+
+{
+  "cleanRunsPassed": 3,
+  "requiredCleanRuns": 3,
+  "baselineStatus": "baseline_ready",
+  "dogfoodRoundCStatus": "round_c_passed",
+  "failureLedgerStatus": "tracked",
+  "workflowContractStatus": "workflow_contract_passed",
+  "humanJudgmentStatus": "judgment_ready",
+  "operatingWindowStatus": "operating_window_passed",
+  "ciFailureTriageStatus": "passed",
+  "prReviewCommentStatus": "passed",
+  "livePrArtifactTrialStatus": "passed",
+  "status": "promotion_ready",
+  "blockers": []
 }
 ```
 
@@ -664,8 +293,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:09.272Z
-- Finished at: 2026-05-03T22:16:09.794Z
+- Started at: 2026-05-03T22:51:18.311Z
+- Finished at: 2026-05-03T22:51:18.846Z
 
 Stdout tail:
 
@@ -696,8 +325,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:09.794Z
-- Finished at: 2026-05-03T22:16:10.315Z
+- Started at: 2026-05-03T22:51:18.846Z
+- Finished at: 2026-05-03T22:51:19.401Z
 
 Stdout tail:
 
@@ -726,8 +355,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:10.315Z
-- Finished at: 2026-05-03T22:16:10.824Z
+- Started at: 2026-05-03T22:51:19.401Z
+- Finished at: 2026-05-03T22:51:19.947Z
 
 Stdout tail:
 
@@ -764,8 +393,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:10.825Z
-- Finished at: 2026-05-03T22:16:12.493Z
+- Started at: 2026-05-03T22:51:19.947Z
+- Finished at: 2026-05-03T22:51:21.706Z
 
 Stdout tail:
 
@@ -801,8 +430,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:12.493Z
-- Finished at: 2026-05-03T22:16:12.945Z
+- Started at: 2026-05-03T22:51:21.706Z
+- Finished at: 2026-05-03T22:51:22.177Z
 
 Stdout tail:
 
@@ -858,8 +487,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:12.945Z
-- Finished at: 2026-05-03T22:16:13.346Z
+- Started at: 2026-05-03T22:51:22.177Z
+- Finished at: 2026-05-03T22:51:22.671Z
 
 Stdout tail:
 
@@ -981,8 +610,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:16:13.346Z
-- Finished at: 2026-05-03T22:16:13.891Z
+- Started at: 2026-05-03T22:51:22.671Z
+- Finished at: 2026-05-03T22:51:23.642Z
 
 Stdout tail:
 
@@ -1004,6 +633,7 @@ Status Checks
 - operating window: operating_window_passed
 - ci failure triage: passed
 - pr review comment: passed
+- live PR artifact trial: passed
 
 Key Metrics
 - baseline mean cleanup prompts: 1.4
@@ -1018,6 +648,10 @@ Key Metrics
 - operating-window meaningful catches: 21
 - ci failure triage cases / passing: 24/24 (100%)
 - pr review comment cases / passing: 15/15 (100%)
+- live PR trial cases / live-source: 25/25
+- live PR trial false accepts / false blocks: 0/0
+- live PR trial useful next-action rate: 100%
+- live PR trial CI proof surface rate: 100%
 - human-judgment followups / blocked-too-hard: 0/0
 - eval candidates: 9
 

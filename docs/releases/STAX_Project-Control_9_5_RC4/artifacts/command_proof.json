@@ -1,6 +1,6 @@
 {
   "release": "STAX_Project-Control_9_5_RC4",
-  "recordedAt": "2026-05-03T22:16:13.891Z",
+  "recordedAt": "2026-05-03T22:51:23.642Z",
   "status": "passed",
   "rootDir": "/Users/deanguedo/Documents/GitHub/STAX",
   "commands": [
@@ -10,8 +10,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:14:56.618Z",
-      "finishedAt": "2026-05-03T22:15:00.541Z",
+      "startedAt": "2026-05-03T22:50:31.972Z",
+      "finishedAt": "2026-05-03T22:50:36.238Z",
       "stdoutTail": "\n> rax@0.1.0 typecheck\n> tsc --noEmit\n\n",
       "stderrTail": ""
     },
@@ -21,9 +21,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:15:00.541Z",
-      "finishedAt": "2026-05-03T22:15:16.448Z",
-      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  157 passed (157)\n      Tests  768 passed (768)\n   Start at  16:15:01\n   Duration  15.35s (transform 10.00s, setup 0ms, import 44.53s, tests 59.37s, environment 34ms)\n\n",
+      "startedAt": "2026-05-03T22:50:36.238Z",
+      "finishedAt": "2026-05-03T22:50:52.360Z",
+      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  159 passed (159)\n      Tests  777 passed (777)\n   Start at  16:50:36\n   Duration  15.58s (transform 9.85s, setup 0ms, import 42.65s, tests 61.57s, environment 24ms)\n\n",
       "stderrTail": ""
     },
     {
@@ -32,20 +32,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:15:16.448Z",
-      "finishedAt": "2026-05-03T22:15:37.923Z",
-      "stdoutTail": "\n> rax@0.1.0 validate:all\n> npm run typecheck && npm run test && npm run audit:doctrine && npm run audit:boundaries && npm run audit:security\n\n\n> rax@0.1.0 typecheck\n> tsc --noEmit\n\n\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  157 passed (157)\n      Tests  768 passed (768)\n   Start at  16:15:21\n   Duration  15.41s (transform 10.44s, setup 0ms, import 43.07s, tests 59.69s, environment 38ms)\n\n\n> rax@0.1.0 audit:doctrine\n> tsx scripts/auditDoctrine.ts\n\nDoctrine audit passed.\n\n> rax@0.1.0 audit:boundaries\n> tsx scripts/auditBoundaries.ts\n\nBoundary audit passed.\n\n> rax@0.1.0 audit:security\n> tsx scripts/auditSecurity.ts\n\nSecurity audit passed.\n",
-      "stderrTail": ""
-    },
-    {
-      "id": "promotion_gate",
-      "command": "npm run campaign:promotion-gate",
-      "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
-      "expectedExitCode": 0,
-      "exitCode": 0,
-      "startedAt": "2026-05-03T22:15:37.923Z",
-      "finishedAt": "2026-05-03T22:15:38.530Z",
-      "stdoutTail": "\n> rax@0.1.0 campaign:promotion-gate\n> tsx scripts/promotionGate95.ts\n\n{\n  \"cleanRunsPassed\": 3,\n  \"requiredCleanRuns\": 3,\n  \"baselineStatus\": \"baseline_ready\",\n  \"dogfoodRoundCStatus\": \"round_c_passed\",\n  \"failureLedgerStatus\": \"tracked\",\n  \"workflowContractStatus\": \"workflow_contract_passed\",\n  \"humanJudgmentStatus\": \"judgment_ready\",\n  \"operatingWindowStatus\": \"operating_window_passed\",\n  \"ciFailureTriageStatus\": \"passed\",\n  \"prReviewCommentStatus\": \"passed\",\n  \"status\": \"promotion_ready\",\n  \"blockers\": []\n}\n",
+      "startedAt": "2026-05-03T22:50:52.360Z",
+      "finishedAt": "2026-05-03T22:51:14.490Z",
+      "stdoutTail": "\n> rax@0.1.0 validate:all\n> npm run typecheck && npm run test && npm run audit:doctrine && npm run audit:boundaries && npm run audit:security\n\n\n> rax@0.1.0 typecheck\n> tsc --noEmit\n\n\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  159 passed (159)\n      Tests  777 passed (777)\n   Start at  16:50:57\n   Duration  15.82s (transform 10.46s, setup 0ms, import 45.74s, tests 60.78s, environment 37ms)\n\n\n> rax@0.1.0 audit:doctrine\n> tsx scripts/auditDoctrine.ts\n\nDoctrine audit passed.\n\n> rax@0.1.0 audit:boundaries\n> tsx scripts/auditBoundaries.ts\n\nBoundary audit passed.\n\n> rax@0.1.0 audit:security\n> tsx scripts/auditSecurity.ts\n\nSecurity audit passed.\n",
       "stderrTail": ""
     },
     {
@@ -54,8 +43,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:15:38.530Z",
-      "finishedAt": "2026-05-03T22:15:39.358Z",
+      "startedAt": "2026-05-03T22:51:14.490Z",
+      "finishedAt": "2026-05-03T22:51:15.362Z",
       "stdoutTail": "\n> rax@0.1.0 pr-artifact:integrity\n> tsx scripts/prArtifactTrialIntegrity.ts\n\n{\n  \"fixtureSet\": \"real_pr_artifact_trial_v1\",\n  \"snapshotCount\": 10,\n  \"caseCount\": 50,\n  \"categoryCounts\": {\n    \"passing_ci\": 10,\n    \"failing_ci\": 10,\n    \"docs_config_only\": 10,\n    \"tests_fixtures_goldens\": 10,\n    \"ui_data_deploy_security\": 10\n  },\n  \"snapshotCoverageValid\": true,\n  \"caseShapeValid\": true,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -65,20 +54,31 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:15:39.358Z",
-      "finishedAt": "2026-05-03T22:15:40.683Z",
+      "startedAt": "2026-05-03T22:51:15.362Z",
+      "finishedAt": "2026-05-03T22:51:16.693Z",
       "stdoutTail": "\n> rax@0.1.0 pr-artifact:score\n> tsx scripts/prArtifactTrialScore.ts\n\n{\n  \"fixtureSet\": \"real_pr_artifact_trial_v1\",\n  \"snapshotCount\": 10,\n  \"caseCount\": 50,\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"falseBlockRatePct\": 0,\n  \"usefulNextActions\": 50,\n  \"usefulNextActionRate\": 100,\n  \"ciProofClassificationAccuracy\": 100,\n  \"criticalMisses\": 0,\n  \"evalCandidatesCreated\": 0,\n  \"misses\": [],\n  \"status\": \"passed\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
     {
-      "id": "pr_artifact_live_trial",
-      "command": "npm run pr-artifact:live-trial",
+      "id": "pr_artifact_live_trial_refresh",
+      "command": "npm run pr-artifact:live-trial:refresh",
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:15:40.683Z",
-      "finishedAt": "2026-05-03T22:16:09.272Z",
-      "stdoutTail": "\n> rax@0.1.0 pr-artifact:live-trial\n> tsx scripts/prArtifactLiveTrial.ts --limit 25 --min-live 5\n\n{\n  \"fixtureSet\": \"real_pr_artifact_trial_v1\",\n  \"selectedCaseCount\": 25,\n  \"requestedCaseCount\": 25,\n  \"liveSourceCount\": 25,\n  \"fallbackSourceCount\": 0,\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"falseBlockRatePct\": 0,\n  \"usefulNextActionRate\": 100,\n  \"ciProofClassificationSurfaceRate\": 100,\n  \"status\": \"passed\",\n  \"blockers\": [],\n  \"cases\": [\n    {\n      \"caseId\": \"nextjs_93417_case_01\",\n      \"snapshotId\": \"nextjs_93417\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93417,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93417_case_02\",\n      \"snapshotId\": \"nextjs_93417\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93417,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93417_case_03\",\n      \"snapshotId\": \"nextjs_93417\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93417,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93417_case_04\",\n      \"snapshotId\": \"nextjs_93417\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93417,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93417_case_05\",\n      \"snapshotId\": \"nextjs_93417\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93417,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"storybook_34681_case_01\",\n      \"snapshotId\": \"storybook_34681\",\n      \"repoFullName\": \"storybookjs/storybook\",\n      \"prNumber\": 34681,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"storybook_34681_case_02\",\n      \"snapshotId\": \"storybook_34681\",\n      \"repoFullName\": \"storybookjs/storybook\",\n      \"prNumber\": 34681,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"storybook_34681_case_03\",\n      \"snapshotId\": \"storybook_34681\",\n      \"repoFullName\": \"storybookjs/storybook\",\n      \"prNumber\": 34681,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"storybook_34681_case_04\",\n      \"snapshotId\": \"storybook_34681\",\n      \"repoFullName\": \"storybookjs/storybook\",\n      \"prNumber\": 34681,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"storybook_34681_case_05\",\n      \"snapshotId\": \"storybook_34681\",\n      \"repoFullName\": \"storybookjs/storybook\",\n      \"prNumber\": 34681,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"vitest_10231_case_01\",\n      \"snapshotId\": \"vitest_10231\",\n      \"repoFullName\": \"vitest-dev/vitest\",\n      \"prNumber\": 10231,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"vitest_10231_case_02\",\n      \"snapshotId\": \"vitest_10231\",\n      \"repoFullName\": \"vitest-dev/vitest\",\n      \"prNumber\": 10231,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"vitest_10231_case_03\",\n      \"snapshotId\": \"vitest_10231\",\n      \"repoFullName\": \"vitest-dev/vitest\",\n      \"prNumber\": 10231,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"vitest_10231_case_04\",\n      \"snapshotId\": \"vitest_10231\",\n      \"repoFullName\": \"vitest-dev/vitest\",\n      \"prNumber\": 10231,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"vitest_10231_case_05\",\n      \"snapshotId\": \"vitest_10231\",\n      \"repoFullName\": \"vitest-dev/vitest\",\n      \"prNumber\": 10231,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93410_case_01\",\n      \"snapshotId\": \"nextjs_93410\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93410,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93410_case_02\",\n      \"snapshotId\": \"nextjs_93410\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93410,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93410_case_03\",\n      \"snapshotId\": \"nextjs_93410\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93410,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93410_case_04\",\n      \"snapshotId\": \"nextjs_93410\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93410,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93410_case_05\",\n      \"snapshotId\": \"nextjs_93410\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93410,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Provisional\",\n      \"actualStatus\": \"Provisional\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93400_case_01\",\n      \"snapshotId\": \"nextjs_93400\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93400,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Accept\",\n      \"actualStatus\": \"Accept\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93400_case_02\",\n      \"snapshotId\": \"nextjs_93400\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93400,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Accept\",\n      \"actualStatus\": \"Accept\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93400_case_03\",\n      \"snapshotId\": \"nextjs_93400\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93400,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Accept\",\n      \"actualStatus\": \"Accept\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93400_case_04\",\n      \"snapshotId\": \"nextjs_93400\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93400,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Accept\",\n      \"actualStatus\": \"Accept\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    },\n    {\n      \"caseId\": \"nextjs_93400_case_05\",\n      \"snapshotId\": \"nextjs_93400\",\n      \"repoFullName\": \"vercel/next.js\",\n      \"prNumber\": 93400,\n      \"source\": \"live_github_api\",\n      \"expectedStatus\": \"Accept\",\n      \"actualStatus\": \"Accept\",\n      \"usefulNextAction\": true,\n      \"ciProofSurfaced\": true,\n      \"falseAccept\": false,\n      \"falseBlock\": false,\n      \"warnings\": [],\n      \"issues\": []\n    }\n  ]\n}\n",
+      "startedAt": "2026-05-03T22:51:16.693Z",
+      "finishedAt": "2026-05-03T22:51:17.477Z",
+      "stdoutTail": "\n> rax@0.1.0 pr-artifact:live-trial:refresh\n> tsx scripts/prArtifactLiveTrialRefresh.ts\n\n{\n  \"status\": \"live_trial_refresh_skipped_cached_pass_fresh\",\n  \"reason\": \"Cached live PR artifact trial is already passing and fresh; skipping live API refresh.\",\n  \"cachedRecordedAt\": \"2026-05-03T22:30:46.492Z\",\n  \"cachedAgeHours\": 0.34,\n  \"maxCacheHours\": 24,\n  \"gateSummary\": {\n    \"selectedCaseCount\": 25,\n    \"liveSourceCount\": 25,\n    \"fallbackSourceCount\": 0,\n    \"falseAccepts\": 0,\n    \"falseBlocks\": 0,\n    \"falseBlockRatePct\": 0,\n    \"usefulNextActionRate\": 100,\n    \"ciProofClassificationSurfaceRate\": 100,\n    \"status\": \"passed\",\n    \"blockers\": []\n  }\n}\n",
+      "stderrTail": ""
+    },
+    {
+      "id": "promotion_gate",
+      "command": "npm run campaign:promotion-gate",
+      "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
+      "expectedExitCode": 0,
+      "exitCode": 0,
+      "startedAt": "2026-05-03T22:51:17.477Z",
+      "finishedAt": "2026-05-03T22:51:18.311Z",
+      "stdoutTail": "\n> rax@0.1.0 campaign:promotion-gate\n> tsx scripts/promotionGate95.ts\n\n{\n  \"cleanRunsPassed\": 3,\n  \"requiredCleanRuns\": 3,\n  \"baselineStatus\": \"baseline_ready\",\n  \"dogfoodRoundCStatus\": \"round_c_passed\",\n  \"failureLedgerStatus\": \"tracked\",\n  \"workflowContractStatus\": \"workflow_contract_passed\",\n  \"humanJudgmentStatus\": \"judgment_ready\",\n  \"operatingWindowStatus\": \"operating_window_passed\",\n  \"ciFailureTriageStatus\": \"passed\",\n  \"prReviewCommentStatus\": \"passed\",\n  \"livePrArtifactTrialStatus\": \"passed\",\n  \"status\": \"promotion_ready\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
     {
@@ -87,8 +87,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:09.272Z",
-      "finishedAt": "2026-05-03T22:16:09.794Z",
+      "startedAt": "2026-05-03T22:51:18.311Z",
+      "finishedAt": "2026-05-03T22:51:18.846Z",
       "stdoutTail": "\n> rax@0.1.0 ci-failure:score\n> tsx scripts/ciFailureTriageScore.ts\n\n{\n  \"caseCount\": 24,\n  \"passingCount\": 24,\n  \"likelyCauseAccuracyPct\": 100,\n  \"proofStrengthAccuracyPct\": 100,\n  \"nextActionAccuracyPct\": 100,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -98,8 +98,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:09.794Z",
-      "finishedAt": "2026-05-03T22:16:10.315Z",
+      "startedAt": "2026-05-03T22:51:18.846Z",
+      "finishedAt": "2026-05-03T22:51:19.401Z",
       "stdoutTail": "\n> rax@0.1.0 pr-review-comment:score\n> tsx scripts/prReviewCommentScore.ts\n\n{\n  \"caseCount\": 15,\n  \"passedCount\": 15,\n  \"usefulCommentRate\": 100,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -109,8 +109,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:10.315Z",
-      "finishedAt": "2026-05-03T22:16:10.824Z",
+      "startedAt": "2026-05-03T22:51:19.401Z",
+      "finishedAt": "2026-05-03T22:51:19.947Z",
       "stdoutTail": "\n> rax@0.1.0 repo-onboarding:score\n> tsx scripts/repoOnboardingScore.ts\n\n{\n  \"caseCount\": 26,\n  \"packageManagerChecks\": 14,\n  \"packageManagerHits\": 14,\n  \"archetypeChecks\": 22,\n  \"archetypeHits\": 22,\n  \"visualChecks\": 14,\n  \"visualHits\": 14,\n  \"proofGateChecks\": 14,\n  \"proofGateHits\": 14,\n  \"dangerousActionChecks\": 8,\n  \"dangerousActionHits\": 8,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -120,8 +120,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:10.825Z",
-      "finishedAt": "2026-05-03T22:16:12.493Z",
+      "startedAt": "2026-05-03T22:51:19.947Z",
+      "finishedAt": "2026-05-03T22:51:21.706Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:overblock\n> tsx scripts/overblockCalibration.ts\n\n{\n  \"taskCount\": 100,\n  \"sufficientProofCases\": 50,\n  \"insufficientProofCases\": 50,\n  \"verifiedAccepts\": 50,\n  \"falseAccepts\": 0,\n  \"falseRejects\": 0,\n  \"falseRejectRatePct\": 0,\n  \"provisionalCount\": 5,\n  \"humanReviewCount\": 0,\n  \"cleanFailureCount\": 0,\n  \"status\": \"calibration_passed\",\n  \"blockerReasons\": []\n}\n",
       "stderrTail": ""
     },
@@ -131,8 +131,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:12.493Z",
-      "finishedAt": "2026-05-03T22:16:12.945Z",
+      "startedAt": "2026-05-03T22:51:21.706Z",
+      "finishedAt": "2026-05-03T22:51:22.177Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:closed-loop\n> tsx scripts/closedLoopCodexCampaign.ts\n\n{\n  \"ledgerPath\": \"fixtures/real_use/closed_loop_20_tasks.json\",\n  \"baselineLedgerPath\": \"fixtures/real_use/baseline_cleanup_tasks.json\",\n  \"campaignId\": \"closed_loop_20_tasks\",\n  \"taskCount\": 20,\n  \"reposRepresented\": 4,\n  \"stateCoverageValid\": true,\n  \"evidenceReplayValid\": true,\n  \"evidenceReplayDeterministic\": true,\n  \"evidenceReplayChainValid\": true,\n  \"evidenceReplayIssues\": [],\n  \"auditTraceCount\": 20,\n  \"doctrineVersion\": \"core-v1\",\n  \"runtimeVersion\": \"0.1.0\",\n  \"failureRoutingValid\": true,\n  \"autoRoutedFailureCount\": 3,\n  \"failureRoutingIssues\": [],\n  \"evalGenerationValid\": true,\n  \"generatedEvalCandidateCount\": 1,\n  \"evalGenerationIssues\": [],\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"usefulBlocks\": 12,\n  \"verifiedAccepts\": 11,\n  \"usefulInitialPrompts\": 20,\n  \"usefulInitialPromptRate\": 100,\n  \"verifiedNextStateRate\": 80,\n  \"cleanupPromptsMean\": 0,\n  \"baselineMeanCleanupPrompts\": 1.4,\n  \"cleanupReductionPct\": 100,\n  \"evalConversionRate\": 100,\n  \"status\": \"closed_loop_passed\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
@@ -142,8 +142,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:12.945Z",
-      "finishedAt": "2026-05-03T22:16:13.346Z",
+      "startedAt": "2026-05-03T22:51:22.177Z",
+      "finishedAt": "2026-05-03T22:51:22.671Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:closed-loop:workflow\n> tsx scripts/liveCodexWorkflowContract.ts\n\n{\n  \"campaignId\": \"live_codex_workflow_v1\",\n  \"taskCount\": 10,\n  \"promptStrongCount\": 10,\n  \"promptUsableCount\": 10,\n  \"promptUsableRate\": 100,\n  \"reportWellFormedCount\": 9,\n  \"reportUsableCount\": 10,\n  \"reportUsableRate\": 100,\n  \"nextActionCoverage\": 100,\n  \"verifiedOutcomeReportCoverage\": 100,\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"taskSummaries\": [\n    {\n      \"taskId\": \"workflow_001\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_002\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_003\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_004\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_005\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_006\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_007\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_008\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"partial\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": [\n        \"report contract: pass claims mention no command-output details\"\n      ]\n    },\n    {\n      \"taskId\": \"workflow_009\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_010\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    }\n  ],\n  \"status\": \"workflow_contract_passed\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
@@ -153,9 +153,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-03T22:16:13.346Z",
-      "finishedAt": "2026-05-03T22:16:13.891Z",
-      "stdoutTail": "\n> rax@0.1.0 stax:ops-dashboard\n> tsx scripts/opsDashboard.ts\n\nSTAX Ops Dashboard\n- snapshot: 2026-05-03\n- status: ops_healthy\n\nStatus Checks\n- baseline: baseline_ready\n- dogfood round c: round_c_passed\n- closed loop: closed_loop_passed\n- workflow contract: workflow_contract_passed\n- human judgment: judgment_ready\n- failure ledger: tracked\n- operating window: operating_window_passed\n- ci failure triage: passed\n- pr review comment: passed\n\nKey Metrics\n- baseline mean cleanup prompts: 1.4\n- dogfood cleanup reduction: 100%\n- closed-loop verified next-state rate: 80%\n- closed-loop false accepts / false blocks: 0/0\n- workflow prompt usable rate: 100%\n- workflow report usable rate: 100%\n- operating-window cleanup reduction: 100%\n- operating-window accepted decisions: 100%\n- operating-window useful initial prompts: 100%\n- operating-window meaningful catches: 21\n- ci failure triage cases / passing: 24/24 (100%)\n- pr review comment cases / passing: 15/15 (100%)\n- human-judgment followups / blocked-too-hard: 0/0\n- eval candidates: 9\n\nTrendlines\n- Cleanup reduction moved from baseline to Dogfood Round C: 100%.\n- Useful prompt rate from Dogfood Round C to Operating Window: flat 0.\n- Live Codex workflow prompt/report usability: 100%/100%.\n- Accepted decision rate from Dogfood Round C to Operating Window: flat 0.\n- Closed-loop false accepts / false blocks: 0/0.\n\nRepo Hotspots\n- ADMISSION-APP: 3\n- brightspacequizexporter: 3\n- canvas-helper: 2\n\nFailure Hotspots\n- brightspace_context_leak: 1\n- cross_repo_context_leak: 1\n- repeated_audit_loop: 1\n\nNext Recommended Hardening Task\n- Patch the top recurring failure pattern: brightspace_context_leak.\n\nBlockers\n- none\n",
+      "startedAt": "2026-05-03T22:51:22.671Z",
+      "finishedAt": "2026-05-03T22:51:23.642Z",
+      "stdoutTail": "\n> rax@0.1.0 stax:ops-dashboard\n> tsx scripts/opsDashboard.ts\n\nSTAX Ops Dashboard\n- snapshot: 2026-05-03\n- status: ops_healthy\n\nStatus Checks\n- baseline: baseline_ready\n- dogfood round c: round_c_passed\n- closed loop: closed_loop_passed\n- workflow contract: workflow_contract_passed\n- human judgment: judgment_ready\n- failure ledger: tracked\n- operating window: operating_window_passed\n- ci failure triage: passed\n- pr review comment: passed\n- live PR artifact trial: passed\n\nKey Metrics\n- baseline mean cleanup prompts: 1.4\n- dogfood cleanup reduction: 100%\n- closed-loop verified next-state rate: 80%\n- closed-loop false accepts / false blocks: 0/0\n- workflow prompt usable rate: 100%\n- workflow report usable rate: 100%\n- operating-window cleanup reduction: 100%\n- operating-window accepted decisions: 100%\n- operating-window useful initial prompts: 100%\n- operating-window meaningful catches: 21\n- ci failure triage cases / passing: 24/24 (100%)\n- pr review comment cases / passing: 15/15 (100%)\n- live PR trial cases / live-source: 25/25\n- live PR trial false accepts / false blocks: 0/0\n- live PR trial useful next-action rate: 100%\n- live PR trial CI proof surface rate: 100%\n- human-judgment followups / blocked-too-hard: 0/0\n- eval candidates: 9\n\nTrendlines\n- Cleanup reduction moved from baseline to Dogfood Round C: 100%.\n- Useful prompt rate from Dogfood Round C to Operating Window: flat 0.\n- Live Codex workflow prompt/report usability: 100%/100%.\n- Accepted decision rate from Dogfood Round C to Operating Window: flat 0.\n- Closed-loop false accepts / false blocks: 0/0.\n\nRepo Hotspots\n- ADMISSION-APP: 3\n- brightspacequizexporter: 3\n- canvas-helper: 2\n\nFailure Hotspots\n- brightspace_context_leak: 1\n- cross_repo_context_leak: 1\n- repeated_audit_loop: 1\n\nNext Recommended Hardening Task\n- Patch the top recurring failure pattern: brightspace_context_leak.\n\nBlockers\n- none\n",
       "stderrTail": ""
     }
   ]
