@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-03T22:56:20.052Z
+- Recorded at: 2026-05-03T23:12:27.261Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -27,8 +27,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:55:26.754Z
-- Finished at: 2026-05-03T22:55:31.140Z
+- Started at: 2026-05-03T23:11:33.570Z
+- Finished at: 2026-05-03T23:11:37.882Z
 
 Stdout tail:
 
@@ -49,8 +49,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:55:31.141Z
-- Finished at: 2026-05-03T22:55:47.827Z
+- Started at: 2026-05-03T23:11:37.883Z
+- Finished at: 2026-05-03T23:11:54.325Z
 
 Stdout tail:
 
@@ -63,9 +63,9 @@ Stdout tail:
 
 
  Test Files  159 passed (159)
-      Tests  777 passed (777)
-   Start at  16:55:31
-   Duration  16.09s (transform 9.97s, setup 0ms, import 44.59s, tests 63.06s, environment 37ms)
+      Tests  779 passed (779)
+   Start at  17:11:38
+   Duration  15.85s (transform 9.40s, setup 0ms, import 47.38s, tests 60.80s, environment 26ms)
 ```
 
 Stderr tail:
@@ -80,8 +80,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:55:47.827Z
-- Finished at: 2026-05-03T22:56:11.377Z
+- Started at: 2026-05-03T23:11:54.325Z
+- Finished at: 2026-05-03T23:12:17.631Z
 
 Stdout tail:
 
@@ -102,9 +102,9 @@ Stdout tail:
 
 
  Test Files  159 passed (159)
-      Tests  777 passed (777)
-   Start at  16:55:52
-   Duration  17.00s (transform 11.32s, setup 0ms, import 45.86s, tests 69.86s, environment 25ms)
+      Tests  779 passed (779)
+   Start at  17:11:59
+   Duration  16.70s (transform 10.09s, setup 0ms, import 47.54s, tests 66.46s, environment 53ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -135,8 +135,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:11.377Z
-- Finished at: 2026-05-03T22:56:12.160Z
+- Started at: 2026-05-03T23:12:17.631Z
+- Finished at: 2026-05-03T23:12:18.467Z
 
 Stdout tail:
 
@@ -174,8 +174,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:12.160Z
-- Finished at: 2026-05-03T22:56:13.520Z
+- Started at: 2026-05-03T23:12:18.467Z
+- Finished at: 2026-05-03T23:12:19.989Z
 
 Stdout tail:
 
@@ -213,8 +213,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:13.520Z
-- Finished at: 2026-05-03T22:56:14.305Z
+- Started at: 2026-05-03T23:12:19.989Z
+- Finished at: 2026-05-03T23:12:20.890Z
 
 Stdout tail:
 
@@ -226,7 +226,7 @@ Stdout tail:
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
   "cachedRecordedAt": "2026-05-03T22:30:46.492Z",
-  "cachedAgeHours": 0.42,
+  "cachedAgeHours": 0.69,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 25,
@@ -255,8 +255,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:14.306Z
-- Finished at: 2026-05-03T22:56:15.131Z
+- Started at: 2026-05-03T23:12:20.890Z
+- Finished at: 2026-05-03T23:12:21.835Z
 
 Stdout tail:
 
@@ -276,6 +276,7 @@ Stdout tail:
   "ciFailureTriageStatus": "passed",
   "prReviewCommentStatus": "passed",
   "livePrArtifactTrialStatus": "passed",
+  "livePrArtifactTrialFullStatus": "passed",
   "status": "promotion_ready",
   "blockers": []
 }
@@ -293,8 +294,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:15.131Z
-- Finished at: 2026-05-03T22:56:15.696Z
+- Started at: 2026-05-03T23:12:21.836Z
+- Finished at: 2026-05-03T23:12:22.434Z
 
 Stdout tail:
 
@@ -325,8 +326,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:15.696Z
-- Finished at: 2026-05-03T22:56:16.264Z
+- Started at: 2026-05-03T23:12:22.434Z
+- Finished at: 2026-05-03T23:12:23.066Z
 
 Stdout tail:
 
@@ -355,8 +356,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:16.265Z
-- Finished at: 2026-05-03T22:56:16.780Z
+- Started at: 2026-05-03T23:12:23.066Z
+- Finished at: 2026-05-03T23:12:23.624Z
 
 Stdout tail:
 
@@ -393,8 +394,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:16.780Z
-- Finished at: 2026-05-03T22:56:18.382Z
+- Started at: 2026-05-03T23:12:23.624Z
+- Finished at: 2026-05-03T23:12:25.365Z
 
 Stdout tail:
 
@@ -430,8 +431,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:18.382Z
-- Finished at: 2026-05-03T22:56:18.828Z
+- Started at: 2026-05-03T23:12:25.365Z
+- Finished at: 2026-05-03T23:12:25.861Z
 
 Stdout tail:
 
@@ -487,8 +488,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:18.828Z
-- Finished at: 2026-05-03T22:56:19.266Z
+- Started at: 2026-05-03T23:12:25.861Z
+- Finished at: 2026-05-03T23:12:26.337Z
 
 Stdout tail:
 
@@ -610,8 +611,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T22:56:19.266Z
-- Finished at: 2026-05-03T22:56:20.052Z
+- Started at: 2026-05-03T23:12:26.337Z
+- Finished at: 2026-05-03T23:12:27.260Z
 
 Stdout tail:
 
@@ -634,6 +635,7 @@ Status Checks
 - ci failure triage: passed
 - pr review comment: passed
 - live PR artifact trial: passed
+- live PR artifact trial full: passed
 
 Key Metrics
 - baseline mean cleanup prompts: 1.4
@@ -652,6 +654,10 @@ Key Metrics
 - live PR trial false accepts / false blocks: 0/0
 - live PR trial useful next-action rate: 100%
 - live PR trial CI proof surface rate: 100%
+- live PR trial full cases / live-source: 50/30
+- live PR trial full false accepts / false blocks: 0/0
+- live PR trial full useful next-action rate: 100%
+- live PR trial full CI proof surface rate: 100%
 - human-judgment followups / blocked-too-hard: 0/0
 - eval candidates: 9
 
