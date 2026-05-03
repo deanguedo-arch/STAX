@@ -17,6 +17,19 @@ type RefreshArgs = {
   allowFallback: boolean;
 };
 
+function artifactKeyForLimit(limit: number): "default" | "full" {
+  return limit >= 50 ? "full" : "default";
+}
+
+function artifactPathForKey(key: "default" | "full"): string {
+  return path.join(
+    process.cwd(),
+    "fixtures",
+    "real_use",
+    key === "full" ? "live_pr_artifact_trial_full_latest.json" : "live_pr_artifact_trial_latest.json"
+  );
+}
+
 function run(command: string): Promise<CommandResult> {
   return new Promise((resolve) => {
     const child = spawn(command, {
@@ -41,13 +54,16 @@ function run(command: string): Promise<CommandResult> {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
+  const artifactKey = artifactKeyForLimit(args.limit);
+  const artifactPath = artifactPathForKey(artifactKey);
   if (!args.force) {
-    const cached = await loadCachedLiveTrial();
+    const cached = await loadCachedLiveTrial(artifactPath);
     if (cached) {
       const gateSummary = await validateLivePrArtifactTrialGate({
         requestedCaseCount: args.limit,
         minimumLiveSourceCount: args.minLive,
-        allowFallbackSource: args.allowFallback
+        allowFallbackSource: args.allowFallback,
+        artifactPath
       });
       const ageHours = ageInHours(cached.recordedAt);
       if (gateSummary.status === "passed" && ageHours <= args.maxCacheHours) {
@@ -76,6 +92,7 @@ async function main(): Promise<void> {
     `--limit ${args.limit}`,
     `--min-live ${args.minLive}`,
     args.allowFallback ? "" : "--disallow-fallback",
+    `--artifact-key ${artifactKey}`,
     "--skip-artifacts-on-failure"
   ]
     .filter(Boolean)
@@ -89,11 +106,31 @@ async function main(): Promise<void> {
     return;
   }
 
-  const gateSummary = await validateLivePrArtifactTrialGate({
-    requestedCaseCount: args.limit,
-    minimumLiveSourceCount: args.minLive,
-    allowFallbackSource: args.allowFallback
-  });
+  let gateSummary;
+  try {
+    gateSummary = await validateLivePrArtifactTrialGate({
+      requestedCaseCount: args.limit,
+      minimumLiveSourceCount: args.minLive,
+      allowFallbackSource: args.allowFallback,
+      artifactPath
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    process.stderr.write(
+      `${JSON.stringify(
+        {
+          status: "live_trial_refresh_failed",
+          reason: "Live trial refresh failed and no usable canonical artifact was available.",
+          artifactPath,
+          error: message
+        },
+        null,
+        2
+      )}\n`
+    );
+    process.exitCode = 1;
+    return;
+  }
   if (gateSummary.status === "passed") {
     process.stdout.write(
       `${JSON.stringify(
@@ -168,8 +205,7 @@ function parseArgs(argv: string[]): RefreshArgs {
   return args;
 }
 
-async function loadCachedLiveTrial(): Promise<{ recordedAt: string } | undefined> {
-  const artifactPath = path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_latest.json");
+async function loadCachedLiveTrial(artifactPath: string): Promise<{ recordedAt: string } | undefined> {
   try {
     const raw = JSON.parse(await fs.readFile(artifactPath, "utf8")) as { recordedAt?: unknown };
     if (typeof raw.recordedAt !== "string") return undefined;

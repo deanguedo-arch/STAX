@@ -11,6 +11,7 @@ type CliArgs = {
   allowFallback: boolean;
   release: string;
   skipArtifactsOnFailure: boolean;
+  artifactKey: "default" | "full";
 };
 
 async function main(): Promise<void> {
@@ -32,13 +33,17 @@ async function main(): Promise<void> {
     process.cwd(),
     "fixtures",
     "real_use",
-    "live_pr_artifact_trial_latest.json"
+    args.artifactKey === "full"
+      ? "live_pr_artifact_trial_full_latest.json"
+      : "live_pr_artifact_trial_latest.json"
   );
   const failedAttemptPath = path.join(
     process.cwd(),
     "fixtures",
     "real_use",
-    "live_pr_artifact_trial_last_attempt_failed.json"
+    args.artifactKey === "full"
+      ? "live_pr_artifact_trial_full_last_attempt_failed.json"
+      : "live_pr_artifact_trial_last_attempt_failed.json"
   );
   const shouldWriteReleaseArtifacts = summary.status === "passed" || !args.skipArtifactsOnFailure;
   if (shouldWriteReleaseArtifacts) {
@@ -73,7 +78,8 @@ function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {
     allowFallback: true,
     release: "STAX_Project-Control_9_5_RC4",
-    skipArtifactsOnFailure: false
+    skipArtifactsOnFailure: false,
+    artifactKey: "default"
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -100,6 +106,11 @@ function parseArgs(argv: string[]): CliArgs {
     }
     if (token === "--skip-artifacts-on-failure") {
       args.skipArtifactsOnFailure = true;
+      continue;
+    }
+    if (token === "--artifact-key" && next && (next === "default" || next === "full")) {
+      args.artifactKey = next;
+      index += 1;
       continue;
     }
   }
