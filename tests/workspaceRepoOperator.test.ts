@@ -147,6 +147,10 @@ describe("workspace repo operator evidence pack", () => {
     expect(spacedAlias.workspace).toBe("canvas-helper");
     expect(classifier.classify("issue triage #142 in this repo?", { knownWorkspaces: ["canvas-helper"], currentWorkspace: "canvas-helper" }).intent).toBe("issue_triage");
     expect(classifier.classify("triage issue #142 in canvas-helper", { knownWorkspaces: ["canvas-helper"] }).intent).toBe("issue_triage");
+    expect(classifier.classify("triage issue #142 in this repo?", { knownWorkspaces: ["canvas-helper"], currentWorkspace: "canvas-helper" }).reasonCodes).toContain("issue_triage_numbered");
+    expect(classifier.classify("triage github issue 901 in canvas-helper", { knownWorkspaces: ["canvas-helper"] }).reasonCodes).toContain("issue_triage_numbered");
+    expect(classifier.classify("triage ticket 901", { knownWorkspaces: ["canvas-helper"] }).reasonCodes).toContain("issue_triage_numbered");
+    expect(classifier.classify("triage https://github.com/acme/repo/issues/902", { knownWorkspaces: ["canvas-helper"] }).reasonCodes).toContain("issue_triage_numbered");
     expect(classifier.classify("triage this bug with #901 and propose next step", { knownWorkspaces: ["canvas-helper"], currentWorkspace: "canvas-helper" }).reasonCodes).toContain("issue_triage_numbered");
     const unnumberedIssue = classifier.classify("triage issue", { knownWorkspaces: ["canvas-helper"] });
     expect(unnumberedIssue.intent).toBe("issue_triage");

@@ -369,17 +369,22 @@ export class ChatIntentClassifier {
   }
 
   private extractIssueTriage(input: string, context: ChatIntentContext): { workspace?: string; objective: string; reasonCode: string } | undefined {
-    if (!/\btriage\b/.test(input) || !/\b(issue|bug|ticket)\b/.test(input)) {
+    if (!/\btriage\b/.test(input) || !(/\b(issue|bug|ticket)\b/.test(input) || /issues\s+[a-z0-9-]+/.test(input) || /issues\d+/.test(input))) {
       return undefined;
     }
 
     const workspace = this.findMentionedWorkspace(input, context) ?? (/\b(this|current|active) repo\b/.test(input) ? context.currentWorkspace : undefined);
-    const issueMatch = input.match(/(?:issue|ticket|bug)\s*(?:#\s*)?([a-z0-9-]+)/);
+    const issueMatch = input.match(/(?:issue|ticket|bug)\s*(?:#\s*)?([a-z0-9-]+)/)
+      ?? input.match(/\/issues\/([a-z0-9-]+)/)
+      ?? input.match(/issues\s+([a-z0-9-]+)/)
+      ?? input.match(/issues([a-z0-9-]+)\b/)
+      ?? input.match(/\b([a-z]+-?\d+)\b/);
     const issueLabel = issueMatch?.[1] ? `#${issueMatch[1]}` : "this issue";
+    const isNumberedIssue = /\b#\s*[a-z0-9-]+/.test(input) || /\/issues\/[a-z0-9-]+/.test(input) || /issues\s+[a-z0-9-]+/.test(input) || /\b(issue|ticket|bug)\s*[a-z0-9-]+\b/.test(input);
     return {
       workspace,
       objective: `Triage issue ${issueLabel} using read-only evidence and propose the next proof action.`,
-      reasonCode: issueMatch ? "issue_triage_numbered" : "issue_triage_request"
+      reasonCode: isNumberedIssue ? "issue_triage_numbered" : "issue_triage_request"
     };
   }
 

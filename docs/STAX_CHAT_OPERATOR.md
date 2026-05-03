@@ -18,6 +18,7 @@ normal language
 
 - `audit_workspace`
 - `workspace_repo_audit`
+- `issue_triage`
 - `judgment_digest`
 - `audit_last_proof`
 - `unknown_fallback`
@@ -32,6 +33,8 @@ what is risky in canvas-helper?
 fix this repo
 what needs my judgment?
 what did the last run prove?
+triage issue #901 in canvas-helper
+triage bug 901 in this repo
 ```
 
 ## Boundaries

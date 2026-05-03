@@ -86,6 +86,8 @@ audit this repo
 audit canvas-helper
 what needs my judgment?
 what did the last run prove?
+triage issue #901
+triage bug #901 in canvas-helper
 ```
 
 These requests go through the Chat Operator: `OperationPlan` -> `OperationRiskGate` -> allowlisted backend operation -> proof-backed response.
