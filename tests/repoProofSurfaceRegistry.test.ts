@@ -34,6 +34,8 @@ describe("RepoProofSurfaceRegistry", () => {
     expect(surface.commands.forbiddenSeedGold).toBe("npm run ingest:seed-gold");
     expect(surface.blockedLiveActions).toContain("npm run ingest:seed-gold");
     expect(surface.notes.join(" ")).toContain("dependency/install changes are separate");
+    expect(surface.notes.join(" ")).toContain("ADMISSION/TestFlight/Sheets context is out of lane");
+    expect(surface.stopConditions.join(" ")).toContain("ADMISSION/TestFlight/Sheets context contaminates the Brightspace lane");
   });
 
   it("matches known repo aliases", () => {

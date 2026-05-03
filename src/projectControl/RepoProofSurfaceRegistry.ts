@@ -79,10 +79,12 @@ const SURFACES: RepoProofSurface[] = RepoProofSurfaceRegistrySchema.parse([
     proofArtifacts: ["build output", "ingest:ci output"],
     stopConditions: [
       "stop if parser/source/fixture/gold scope appears in dependency repair",
+      "stop if ADMISSION/TestFlight/Sheets context contaminates the Brightspace lane",
       "stop on first failed proof command"
     ],
     notes: [
       "dependency/install changes are separate from parser/source/fixture/gold changes",
+      "ADMISSION/TestFlight/Sheets context is out of lane for Brightspace dependency/build/ingest proof",
       "ingest:seed-gold is forbidden as proof"
     ]
   }

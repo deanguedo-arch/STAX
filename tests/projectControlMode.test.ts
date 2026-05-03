@@ -802,6 +802,31 @@ describe("project_control mode", () => {
     expect(output.output).not.toContain("Sheets sync");
   });
 
+  it("flags Brightspace scope contamination when ADMISSION/TestFlight context is mixed in", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      [
+        "Audit brightspacequizexporter dependency/build/ingest readiness and choose one bounded next proof step.",
+        "",
+        "Context:",
+        "- Repo/workspace: brightspacequizexporter at /Users/deanguedo/Documents/GitHub/brightspacequizexporter.",
+        "- Prior note (unrelated lane): ADMISSION-APP TestFlight release readiness and SYNC_ALL safety checklist.",
+        "- No local brightspace command output yet."
+      ].join("\n"),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Invalid scope mix");
+    expect(output.output).toContain("Brightspace-only proof lane.");
+    expect(output.output).toContain("Ignore ADMISSION-APP/TestFlight/Sheets/App Store context");
+    expect(output.output).toContain("npm ls @rollup/rollup-darwin-arm64 rollup vite");
+    expect(output.output).not.toContain("validate-sync-surface.ps1");
+    expect(output.output).not.toContain("PUBLISH_DATA_TO_SHEETS");
+  });
+
   it("routes Brightspace build-gate tasks to npm run build instead of dependency inspection", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(

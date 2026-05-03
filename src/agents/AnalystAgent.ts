@@ -755,6 +755,7 @@ type ProjectControlSignals = {
   uiHumanPastedNoScreenshotRequest: boolean;
   sheetsDocsOnlyReadinessRequest: boolean;
   brightspaceSeedGoldNoCiRequest: boolean;
+  brightspaceContextLeakTrap: boolean;
   crossRepoEvidenceTrap: boolean;
   wrongRootValidationRequest: boolean;
   crossRepoZipEvidenceTrap: boolean;
@@ -947,6 +948,10 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     uiHumanPastedNoScreenshotRequest: /UI-fix claim with no screenshot|human-pasted command text/i.test(packet.task),
     sheetsDocsOnlyReadinessRequest: /Sheets sync readiness.*preflight output is missing|docs claim readiness/i.test(packet.task),
     brightspaceSeedGoldNoCiRequest: /Brightspace claim: ingest fixed after seed-gold run|no build\/ingest:ci output/i.test(packet.task),
+    brightspaceContextLeakTrap:
+      explicitBrightspaceTask &&
+      !hasPassingCommandEvidence &&
+      /ADMISSION-APP|app-admissions|TestFlight|App Store|IOS_RELEASE_GATE|mobile\/ios-wrapper|SYNC_ALL|SYNC_PROGRAMS|PUBLISH_DATA_TO_SHEETS|Google Sheets|sheets_sync/i.test(combined),
     crossRepoEvidenceTrap: /captured from canvas-helper.*Brightspace proof|canvas-helper.*Brightspace proof/i.test(packet.task),
     wrongRootValidationRequest: /ADMISSION-APP validation from STAX root/i.test(packet.task),
     crossRepoZipEvidenceTrap: /ADMISSION-APP zip.*canvas-helper UI readiness/i.test(packet.task),
@@ -1031,6 +1036,9 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   }
   if (signals.crossRepoEvidenceTrap) {
     verified.push("The task states command evidence came from canvas-helper while the proof claim targets Brightspace.");
+  }
+  if (signals.brightspaceContextLeakTrap) {
+    verified.push("The packet mixes ADMISSION/TestFlight/Sheets context into a Brightspace-scoped proof task.");
   }
   if (signals.wrongRootValidationRequest) {
     verified.push("The task states ADMISSION-APP validation was proposed from the STAX root.");
@@ -1221,6 +1229,10 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (signals.crossRepoEvidenceTrap) {
     unverified.push("Brightspace proof remains unverified because canvas-helper command evidence cannot validate brightspacequizexporter.");
     risks.push("Cross-repo evidence laundering risk: one repo's command output can be mistaken for another repo's proof.");
+  }
+  if (signals.brightspaceContextLeakTrap) {
+    unverified.push("Brightspace readiness remains unverified because ADMISSION/TestFlight/Sheets context contaminated the proof lane.");
+    risks.push("Cross-lane scope leakage risk: non-Brightspace release/publish context can misroute the next action.");
   }
   if (signals.wrongRootValidationRequest) {
     unverified.push("ADMISSION-APP validation remains unverified until it runs from the ADMISSION-APP repo root.");
@@ -1416,6 +1428,9 @@ function projectControlVerdict(input: ProjectControlSignals): string {
   ) {
     return "Not commit-ready as proven until the STAX worktree has local validation evidence and the current diff is reviewed.";
   }
+  if (input.brightspaceContextLeakTrap) {
+    return "Invalid scope mix; Brightspace proof is contaminated by ADMISSION/TestFlight/Sheets context and must be rerun in Brightspace-only mode.";
+  }
   if (input.explicitBrightspaceTask && input.brightspaceIngestGateRequest) {
     return `Brightspace ingest readiness is not proven until ${BRIGHTSPACE_SURFACE.commands.ingestGate} passes locally and its build step clears.`;
   }
@@ -1604,6 +1619,9 @@ function projectControlNextAction(input: ProjectControlSignals): string {
   }
   if (input.brightspaceSeedGoldNoCiRequest) {
     return "Run npm run build and npm run ingest:ci from the Brightspace repo root and ignore seed-gold as proof of the ingest fix.";
+  }
+  if (input.brightspaceContextLeakTrap) {
+    return "Drop ADMISSION/TestFlight/Sheets context, then in /Users/deanguedo/Documents/GitHub/brightspacequizexporter run npm ls @rollup/rollup-darwin-arm64 rollup vite and report only Brightspace proof output.";
   }
   if (input.crossRepoEvidenceTrap) {
     return "Rerun the Brightspace proof from /Users/deanguedo/Documents/GitHub/brightspacequizexporter and ignore the canvas-helper command evidence.";
@@ -1973,6 +1991,18 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "- npm test",
       "- npm run rax -- eval",
       "Report changed files, exact command output, any report/ledger inconsistency, and the first remaining blocker before saying commit-ready.",
+      "```"
+    ].join("\n");
+  }
+  if (input.brightspaceContextLeakTrap) {
+    return [
+      "```txt",
+      "Brightspace-only proof lane.",
+      "Ignore ADMISSION-APP/TestFlight/Sheets/App Store context from prior tasks.",
+      "Work only in /Users/deanguedo/Documents/GitHub/brightspacequizexporter.",
+      "Do not edit parser/source/tests/fixtures/gold and do not run ingest:seed-gold.",
+      "Run exactly: npm ls @rollup/rollup-darwin-arm64 rollup vite",
+      "Return cwd, exact command, exit code, output, and whether the next bounded gate is npm run build followed by npm run ingest:ci.",
       "```"
     ].join("\n");
   }
