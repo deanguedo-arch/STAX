@@ -706,6 +706,8 @@ type ProjectControlSignals = {
   targetRepoPath?: string;
   repoPathWithheld: boolean;
   wrongRepoEvidencePaths: string[];
+  hasCommandOutput: boolean;
+  hasPassingCommandEvidence: boolean;
   codexReportAuditRequest: boolean;
   brightspace: boolean;
   rollupPresent: boolean;
@@ -843,8 +845,33 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const codexClaimsTestsPassed = /\b(all checks passed|all tests passed|tests passed|npm test passed|test suite passed)\b/i.test(codexClaimSurface);
   const codexClaimsComplete = /\b(fixed|implemented|complete|completed|finished|ready|verified)\b/i.test(codexClaimSurface);
   const evidenceText = packet.commandEvidence + "\n" + packet.repoEvidence;
+  const hasStructuredCommandOutput =
+    packet.structured?.commandEvidence?.some((entry) => {
+      const hasExecutionShape =
+        Boolean(entry.command?.trim()) &&
+        (entry.exitCode !== undefined ||
+          Boolean(entry.stdout?.trim()) ||
+          Boolean(entry.stderr?.trim()));
+      if (!hasExecutionShape) return false;
+      if (targetRepoPath && entry.cwd && entry.cwd !== targetRepoPath) return false;
+      return entry.source !== "non_execution_evidence";
+    }) ?? false;
+  const hasStructuredPassingCommandEvidence =
+    packet.structured?.commandEvidence?.some((entry) => {
+      if (targetRepoPath && entry.cwd && entry.cwd !== targetRepoPath) return false;
+      return entry.source !== "non_execution_evidence" && entry.exitCode === 0;
+    }) ?? false;
   const negatesCommandEvidence = /\b(no local .*command evidence|no local command output|command evidence:\s*none|none supplied|not supplied)\b/i.test(evidenceText);
-  const hasCommandOutput = !hasWrongRepoEvidence && !negatesCommandEvidence && /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText);
+  const hasCommandOutput =
+    hasStructuredCommandOutput ||
+    (!hasWrongRepoEvidence &&
+      !negatesCommandEvidence &&
+      /\b(exit code 0|local STAX command evidence|npm ls|run-\d{4}|runs\/\d{4}|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText));
+  const hasPassingCommandEvidence =
+    hasStructuredPassingCommandEvidence ||
+    (!hasWrongRepoEvidence &&
+      !negatesCommandEvidence &&
+      /\b(exit code 0|local STAX command evidence|passed, \d+\/\d+|Test Files\s+\d+ passed)\b/i.test(evidenceText));
   const staxValidationEvidence = !hasWrongRepoEvidence && !negatesCommandEvidence && /npm run typecheck passed/i.test(evidenceText) && /npm test passed/i.test(evidenceText) && /npm run rax -- eval passed/i.test(evidenceText);
   const inventedPathRisk = /src\/not-real|not-real-provider-router/i.test(combined);
   const explicitBrightspaceTask =
@@ -871,6 +898,8 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     targetRepoPath,
     repoPathWithheld,
     wrongRepoEvidencePaths,
+    hasCommandOutput,
+    hasPassingCommandEvidence,
     codexReportAuditRequest: /audit this codex report/i.test(packet.task),
     brightspace,
     rollupPresent,
@@ -1518,6 +1547,12 @@ function projectControlVerdict(input: ProjectControlSignals): string {
   if (input.inventedPathRisk) {
     return "Not proven; the claimed file path is unsupported by supplied repo evidence.";
   }
+  if (input.codexClaimsTestsPassed && input.hasPassingCommandEvidence && !input.wrongRepoEvidencePaths.length) {
+    if (input.codexReportAuditRequest) {
+      return "Locally proven for the supplied slice; the Codex report includes matching passing command evidence, but broader claims stay bounded to the supplied diff and command.";
+    }
+    return "Locally proven for the supplied slice; the tests-passed claim includes matching passing command evidence.";
+  }
   if (input.codexClaimsTestsPassed) {
     if (input.codexReportAuditRequest) {
       return "Not proven; the Codex report claims tests/completion without local command evidence.";
@@ -1771,6 +1806,9 @@ function projectControlNextAction(input: ProjectControlSignals): string {
   }
   if (input.inventedPathRisk) {
     return "Ask Codex to prove the claimed file exists with a file listing or diff before accepting any test-pass or implementation claim.";
+  }
+  if (input.codexClaimsTestsPassed && input.hasPassingCommandEvidence && !input.wrongRepoEvidencePaths.length) {
+    return "Record the current slice as verified to the supplied diff and passing command evidence, then stop unless a broader claim needs more proof.";
   }
   if (input.codexClaimsTestsPassed) {
     if (input.codexReportAuditRequest && input.explicitBrightspaceTask) {
@@ -2527,6 +2565,16 @@ function projectControlPrompt(input: ProjectControlSignals): string {
       "Prove the claimed file path before claiming implementation or test success.",
       "Return the exact diff or file listing for the claimed path, then provide local command output for the relevant test.",
       "If the path does not exist, say so and give the corrected file path.",
+      "```"
+    ].join("\n");
+  }
+
+  if (input.codexClaimsTestsPassed && input.hasPassingCommandEvidence && !input.wrongRepoEvidencePaths.length) {
+    return [
+      "```txt",
+      "Stop after a bounded proof handoff for this slice.",
+      "Do not edit files, rerun commands, or widen scope.",
+      "Return exactly: the files changed, the local passing command already captured, and one sentence stating that broader claims remain out of scope unless new proof is requested.",
       "```"
     ].join("\n");
   }
