@@ -6,6 +6,7 @@ import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { classifyCommandEvidence } from "../evidence/CommandEvidenceIntelligence.js";
 import type { CommandEvidenceClaimType, CommandEvidenceSource } from "../evidence/CommandEvidenceIntelligenceSchemas.js";
 import { analyzeDataPipelineProof } from "../evidence/DataPipelineProofAnalyzer.js";
+import { analyzeReleaseGate } from "../evidence/ReleaseGateAnalyzer.js";
 import { analyzeTestQuality } from "../evidence/TestQualityAnalyzer.js";
 import { analyzeVisualProof } from "../evidence/VisualProofAnalyzer.js";
 import type {
@@ -13,6 +14,7 @@ import type {
   ProjectControlCommandEvidenceEntry,
   ProjectControlDataProofArtifact,
   ProjectControlHumanApproval,
+  ProjectControlReleaseProofArtifact,
   ProjectControlVisualEvidence,
   PullRequestArtifactPacket
 } from "./ProjectControlEvidencePacket.js";
@@ -28,6 +30,7 @@ export type ProjectControlProofStackInput = {
   commandEvidenceEntries?: ProjectControlCommandEvidenceEntry[];
   visualEvidence?: ProjectControlVisualEvidence[];
   dataProofArtifacts?: ProjectControlDataProofArtifact[];
+  releaseProofArtifacts?: ProjectControlReleaseProofArtifact[];
   humanApproval?: ProjectControlHumanApproval[];
   pullRequestArtifact?: PullRequestArtifactPacket;
   targetRepoPath?: string;
@@ -159,6 +162,7 @@ export function buildProjectControlProofStack(
       input.changedFiles,
       input.visualEvidence,
       input.dataProofArtifacts,
+      input.releaseProofArtifacts,
       commandInsight,
       combined
     );
@@ -295,6 +299,7 @@ function deriveProofItems(
   sourceChangedFiles: ProjectControlChangedFile[] | undefined,
   visualEvidence: ProjectControlVisualEvidence[] | undefined,
   dataProofArtifacts: ProjectControlDataProofArtifact[] | undefined,
+  releaseProofArtifacts: ProjectControlReleaseProofArtifact[] | undefined,
   commandInsight: CommandInsight | undefined,
   combined: string
 ): ClaimProofItem[] {
@@ -309,6 +314,7 @@ function deriveProofItems(
   const testQuality = evaluateTestQuality(sourceChangedFiles, claim.claimType);
   const visualQuality = evaluateVisualProof(visualEvidence, files, claim.claimType);
   const dataQuality = evaluateDataProof(dataProofArtifacts, claim.claimType, combined);
+  const releaseQuality = evaluateReleaseProof(releaseProofArtifacts, claim.claimType, combined);
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -456,10 +462,60 @@ function deriveProofItems(
       );
       break;
     case "release_deploy":
-      push("build_proof", /\bbuild\b/i.test(combined) && strongCommand ? "strong" : /\bbuild\b/i.test(combined) ? "weak" : "missing", /\bbuild\b/i.test(combined) ? "Build-related evidence mentioned." : "No build proof detected.");
+      push(
+        "build_proof",
+        releaseQuality
+          ? releaseQuality.supportsReleaseClaim || releaseQuality.findings.some((finding) => finding.id === "build_proof_present")
+            ? releaseQuality.verdict === "accept"
+              ? "strong"
+              : "weak"
+            : "missing"
+          : /\bbuild\b/i.test(combined) && strongCommand
+            ? "strong"
+            : /\bbuild\b/i.test(combined)
+              ? "weak"
+              : "missing",
+        releaseQuality
+          ? renderReleaseQualityDescription(releaseQuality)
+          : /\bbuild\b/i.test(combined)
+            ? "Build-related evidence mentioned."
+            : "No build proof detected."
+      );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
-      push("target_environment_proof", /\btarget sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json\b/i.test(combined) ? "weak" : "missing", /\btarget sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json\b/i.test(combined) ? "Target environment mentioned but not fully proven." : "No target environment proof detected.");
-      push("rollback_plan", /\brollback\b|\brevert\b/i.test(combined) ? "strong" : "missing", /\brollback\b|\brevert\b/i.test(combined) ? "Rollback/revert plan mentioned." : "No rollback plan detected.");
+      push(
+        "target_environment_proof",
+        releaseQuality
+          ? releaseQuality.supportsReleaseClaim || releaseQuality.findings.some((finding) => finding.id === "target_environment_present")
+            ? releaseQuality.verdict === "accept"
+              ? "strong"
+              : "weak"
+            : "missing"
+          : /\btarget sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json\b/i.test(combined)
+            ? "weak"
+            : "missing",
+        releaseQuality
+          ? renderReleaseQualityDescription(releaseQuality)
+          : /\btarget sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json\b/i.test(combined)
+            ? "Target environment mentioned but not fully proven."
+            : "No target environment proof detected."
+      );
+      push(
+        "rollback_plan",
+        releaseQuality
+          ? releaseQuality.supportsReleaseClaim || releaseQuality.findings.some((finding) => finding.id === "rollback_plan_present")
+            ? releaseQuality.verdict === "accept"
+              ? "strong"
+              : "weak"
+            : "missing"
+          : /\brollback\b|\brevert\b/i.test(combined)
+            ? "strong"
+            : "missing",
+        releaseQuality
+          ? renderReleaseQualityDescription(releaseQuality)
+          : /\brollback\b|\brevert\b/i.test(combined)
+            ? "Rollback/revert plan mentioned."
+            : "No rollback plan detected."
+      );
       break;
     case "memory_promotion":
       push("human_approval", /\bapprovedBy|approvalReason|approved project memory|pending review\b/i.test(combined) ? "weak" : "missing", /\bapprovedBy|approvalReason|approved project memory|pending review\b/i.test(combined) ? "Approval lane mentioned but not proven." : "No human approval proof detected.");
@@ -574,6 +630,25 @@ function evaluateDataProof(
 function renderDataQualityDescription(result: ReturnType<typeof analyzeDataPipelineProof>): string {
   const topFindings = result.findings.slice(0, 2).map((finding) => finding.id).join(", ");
   return `Data proof quality is ${result.verdict} (${topFindings}).`;
+}
+
+function evaluateReleaseProof(
+  releaseProofArtifacts: ProjectControlReleaseProofArtifact[] | undefined,
+  claimType: ClaimProofClaimType,
+  combined: string
+) {
+  if (claimType !== "release_deploy") return undefined;
+  const primary = releaseProofArtifacts?.[0];
+  if (!primary) return undefined;
+  return analyzeReleaseGate({
+    task: combined,
+    ...primary
+  });
+}
+
+function renderReleaseQualityDescription(result: ReturnType<typeof analyzeReleaseGate>): string {
+  const topFindings = result.findings.slice(0, 2).map((finding) => finding.id).join(", ");
+  return `Release proof quality is ${result.verdict} (${topFindings}).`;
 }
 
 function extractChecklistItems(text: string): string[] {

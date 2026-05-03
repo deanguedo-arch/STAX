@@ -15,6 +15,7 @@ function structuredPacket(overrides: Partial<StructuredProjectControlEvidencePac
     codexReport: "",
     visualEvidence: [],
     dataProofArtifacts: [],
+    releaseProofArtifacts: [],
     humanApproval: [],
     ...overrides
   });
@@ -365,6 +366,49 @@ describe("project control evidence packet", () => {
 
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("Claim-to-proof: release_deploy claim is unsupported");
+  });
+
+  it("accepts structured release claims with build, target, rollback, staging, and signing proof", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether deployment readiness is proven.",
+        targetRepoPath: "/Users/deanguedo/Documents/GitHub/STAX",
+        changedFiles: [{ path: "scripts/release-smoke.ts", changeType: "modified", fileRole: "script" }],
+        commandEvidence: [
+          {
+            command: "npm run release:dry-run",
+            cwd: "/Users/deanguedo/Documents/GitHub/STAX",
+            repo: "/Users/deanguedo/Documents/GitHub/STAX",
+            branch: "main",
+            commitSha: "3333333",
+            exitCode: 0,
+            stdout: "release dry run ok",
+            stderr: "",
+            source: "local_stax_command_output"
+          }
+        ],
+        releaseProofArtifacts: [
+          {
+            description: "Release build passed, production target validated, rollback tested, staging validated, signing ready.",
+            source: "build_log",
+            buildPassed: true,
+            targetEnvironment: "production",
+            targetValidated: true,
+            rollbackPlan: "Revert the release bundle and restore the prior artifact.",
+            rollbackValidated: true,
+            stagingValidated: true,
+            authSigningReady: true
+          }
+        ],
+        codexReport: "Codex says the deployment flow is ready for production release with rollback."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Claim-to-proof: release_deploy claim is fully supported.");
   });
 
   it("rejects structured memory promotion claims missing approval", async () => {

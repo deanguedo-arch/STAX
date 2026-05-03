@@ -76,6 +76,20 @@ export const ProjectControlDataProofArtifactSchema = z.object({
   configKind: z.enum(["live", "example"]).optional()
 });
 
+export const ProjectControlReleaseProofArtifactSchema = z.object({
+  description: z.string().min(1),
+  source: z.enum(["build_log", "release_checklist", "environment_validation", "rollback_plan", "signing_check"]).default("build_log"),
+  capturedAt: z.string().datetime().optional(),
+  buildPassed: z.boolean().optional(),
+  targetEnvironment: z.string().optional(),
+  targetValidated: z.boolean().optional(),
+  rollbackPlan: z.string().optional(),
+  rollbackValidated: z.boolean().optional(),
+  stagingValidated: z.boolean().optional(),
+  authSigningReady: z.boolean().optional(),
+  checklistOnly: z.boolean().optional()
+});
+
 export const StructuredProjectControlEvidencePacketSchema = z.object({
   task: z.string().min(1),
   repo: z.string().optional(),
@@ -90,6 +104,7 @@ export const StructuredProjectControlEvidencePacketSchema = z.object({
   codexReport: z.string().default(""),
   visualEvidence: z.array(ProjectControlVisualEvidenceSchema).default([]),
   dataProofArtifacts: z.array(ProjectControlDataProofArtifactSchema).default([]),
+  releaseProofArtifacts: z.array(ProjectControlReleaseProofArtifactSchema).default([]),
   humanApproval: z.array(ProjectControlHumanApprovalSchema).default([]),
   pullRequestArtifact: PullRequestArtifactPacketSchema.optional()
 });
@@ -99,6 +114,7 @@ export type ProjectControlChangedFile = z.infer<typeof ProjectControlChangedFile
 export type ProjectControlCommandEvidenceEntry = z.infer<typeof ProjectControlCommandEvidenceEntrySchema>;
 export type ProjectControlVisualEvidence = z.infer<typeof ProjectControlVisualEvidenceSchema>;
 export type ProjectControlDataProofArtifact = z.infer<typeof ProjectControlDataProofArtifactSchema>;
+export type ProjectControlReleaseProofArtifact = z.infer<typeof ProjectControlReleaseProofArtifactSchema>;
 export type ProjectControlHumanApproval = z.infer<typeof ProjectControlHumanApprovalSchema>;
 export type { PullRequestArtifactPacket };
 
@@ -212,6 +228,27 @@ function renderStructuredRepoEvidence(packet: StructuredProjectControlEvidencePa
               item.configPath ? `configPath=${item.configPath}` : "",
               item.configKind ? `configKind=${item.configKind}` : "",
               item.blankRateNotes ?? ""
+            ].filter(Boolean).join(" | ")}`
+          )
+          .join("\n")
+    );
+  }
+  if (packet.releaseProofArtifacts.length > 0) {
+    lines.push(
+      "Release proof artifacts:\n" +
+        packet.releaseProofArtifacts
+          .map((item) =>
+            `- ${item.source}: ${[
+              item.description,
+              item.capturedAt,
+              item.buildPassed !== undefined ? `buildPassed=${item.buildPassed}` : "",
+              item.targetEnvironment ? `targetEnvironment=${item.targetEnvironment}` : "",
+              item.targetValidated !== undefined ? `targetValidated=${item.targetValidated}` : "",
+              item.rollbackPlan ? `rollbackPlan=${item.rollbackPlan}` : "",
+              item.rollbackValidated !== undefined ? `rollbackValidated=${item.rollbackValidated}` : "",
+              item.stagingValidated !== undefined ? `stagingValidated=${item.stagingValidated}` : "",
+              item.authSigningReady !== undefined ? `authSigningReady=${item.authSigningReady}` : "",
+              item.checklistOnly !== undefined ? `checklistOnly=${item.checklistOnly}` : ""
             ].filter(Boolean).join(" | ")}`
           )
           .join("\n")
