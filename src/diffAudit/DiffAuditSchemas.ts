@@ -42,6 +42,10 @@ export const DiffAuditFindingIdSchema = z.enum([
   "docs_only_implementation_claim",
   "tests_only_behavior_claim",
   "source_only_no_test_claim",
+  "public_api_change_without_tests",
+  "dependency_change_without_runtime_proof",
+  "migration_without_rollback_proof",
+  "security_sensitive_change_without_security_proof",
   "fixture_golden_laundering",
   "forbidden_config_change",
   "generated_file_only_claim",
@@ -59,7 +63,12 @@ export const DiffChangedFileInputSchema = z.object({
   riskLevel: DiffRiskLevelSchema.optional(),
   inScope: z.boolean().optional(),
   forbidden: z.boolean().optional(),
-  reason: z.string().optional()
+  reason: z.string().optional(),
+  oldPath: z.string().optional(),
+  newPath: z.string().optional(),
+  patch: z.string().optional(),
+  addedLines: z.number().int().nonnegative().optional(),
+  deletedLines: z.number().int().nonnegative().optional()
 });
 
 export const DiffAuditClaimSchema = z.object({
@@ -72,6 +81,9 @@ export const DiffAuditProofEvidenceSchema = z.object({
   commandEvidenceAfterDiff: z.boolean().default(false),
   behaviorTestEvidence: z.boolean().default(false),
   visualProofProvided: z.boolean().default(false),
+  dependencyProofProvided: z.boolean().default(false),
+  rollbackProofProvided: z.boolean().default(false),
+  securityProofProvided: z.boolean().default(false),
   humanApprovalForForbidden: z.boolean().default(false),
   taskScopePaths: z.array(z.string().min(1)).default([]),
   forbiddenPaths: z.array(z.string().min(1)).default([])
@@ -79,6 +91,9 @@ export const DiffAuditProofEvidenceSchema = z.object({
   commandEvidenceAfterDiff: false,
   behaviorTestEvidence: false,
   visualProofProvided: false,
+  dependencyProofProvided: false,
+  rollbackProofProvided: false,
+  securityProofProvided: false,
   humanApprovalForForbidden: false,
   taskScopePaths: [],
   forbiddenPaths: []

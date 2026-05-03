@@ -73,4 +73,80 @@ describe("diff audit layer", () => {
     expect(result.findings[0]?.id).toBe("docs_only_implementation_claim");
     expect(result.nextAction).toContain("Block acceptance");
   });
+
+  it("flags public API changes without tests as provisional proof", () => {
+    const result = auditDiffEvidence({
+      repo: "STAX",
+      branch: "main",
+      baseSha: "base-local",
+      headSha: "head-local",
+      objective: "Implement a new parser API.",
+      changedFiles: [{
+        path: "src/parser.ts",
+        changeType: "modified",
+        patch: "@@ -1 +1 @@\n-export function parse() {}\n+export function parse(input: string) {}"
+      }],
+      claims: [{ claimType: "implementation", text: "Parser API updated.", hardClaim: true }],
+      evidence: {}
+    });
+
+    expect(result.verdict).toBe("provisional");
+    expect(result.findings.map((finding) => finding.id)).toContain("public_api_change_without_tests");
+  });
+
+  it("flags dependency changes without fresh runtime proof", () => {
+    const result = auditDiffEvidence({
+      repo: "STAX",
+      branch: "main",
+      baseSha: "base-local",
+      headSha: "head-local",
+      objective: "Upgrade runtime dependencies.",
+      changedFiles: [{
+        path: "package.json",
+        changeType: "modified",
+        patch: "@@ -1 +1 @@\n-\"dependencies\": {}\n+\"dependencies\": {\"zod\": \"^4.0.0\"}"
+      }],
+      claims: [{ claimType: "implementation", text: "Dependency upgrade is ready.", hardClaim: true }],
+      evidence: {}
+    });
+
+    expect(result.verdict).toBe("provisional");
+    expect(result.findings.map((finding) => finding.id)).toContain("dependency_change_without_runtime_proof");
+  });
+
+  it("flags migrations without rollback proof", () => {
+    const result = auditDiffEvidence({
+      repo: "STAX",
+      branch: "main",
+      baseSha: "base-local",
+      headSha: "head-local",
+      objective: "Add schema migration.",
+      changedFiles: [{ path: "db/migrate/20260503_add_users.ts", changeType: "added" }],
+      claims: [{ claimType: "implementation", text: "Migration is ready.", hardClaim: true }],
+      evidence: {}
+    });
+
+    expect(result.verdict).toBe("provisional");
+    expect(result.findings.map((finding) => finding.id)).toContain("migration_without_rollback_proof");
+  });
+
+  it("flags security-sensitive changes without security proof", () => {
+    const result = auditDiffEvidence({
+      repo: "STAX",
+      branch: "main",
+      baseSha: "base-local",
+      headSha: "head-local",
+      objective: "Adjust auth middleware.",
+      changedFiles: [{
+        path: "src/security/authMiddleware.ts",
+        changeType: "modified",
+        patch: "@@ -1 +1 @@\n-if (!token) throw new Error('missing token')\n+if (!apiKey) throw new Error('missing api key')"
+      }],
+      claims: [{ claimType: "security", text: "Auth middleware updated safely.", hardClaim: true }],
+      evidence: {}
+    });
+
+    expect(result.verdict).toBe("provisional");
+    expect(result.findings.map((finding) => finding.id)).toContain("security_sensitive_change_without_security_proof");
+  });
 });

@@ -63,6 +63,11 @@ export function auditPullRequestArtifact(args: {
         path: file.path,
         changeType: file.changeType,
         fileRole: file.fileRole,
+        oldPath: file.oldPath,
+        newPath: file.newPath,
+        patch: file.patch,
+        addedLines: file.addedLines,
+        deletedLines: file.deletedLines,
         reason: "Parsed from PR unified diff."
       })),
       claims: [
@@ -80,6 +85,9 @@ export function auditPullRequestArtifact(args: {
         behaviorTestEvidence: packet.changedFiles.some((file) => file.startsWith("tests/")),
         commandEvidenceAfterDiff: packet.ciStatuses.some((status) => status.status === "success"),
         visualProofProvided: /\b(screenshot|visual checklist|rendered preview|playwright)\b/i.test(packet.body),
+        dependencyProofProvided: packet.ciStatuses.some((status) => status.status === "success") && parsedDiff.some((file) => /(^|\/)(package\.json|requirements(\.txt)?|pyproject\.toml|cargo\.toml|go\.mod|composer\.json|gemfile)$/i.test(file.path)),
+        rollbackProofProvided: /\brollback|revert|downgrade\b/i.test(packet.body),
+        securityProofProvided: /\bsecurity test|secret scan|vulnerability|prompt injection\b/i.test(packet.body),
         humanApprovalForForbidden: false,
         taskScopePaths: packet.changedFiles,
         forbiddenPaths: []
@@ -100,6 +108,7 @@ export function auditPullRequestArtifact(args: {
     const insight = classifyCiLogEvidence({
       workflow: status.workflow,
       jobName: status.jobName,
+      provider: status.provider,
       branch: status.branch ?? packet.branch,
       commitSha: status.commitSha ?? packet.commitSha,
       conclusion: status.status,
@@ -107,6 +116,10 @@ export function auditPullRequestArtifact(args: {
       log: status.log ?? "",
       startedAt: status.startedAt,
       finishedAt: status.finishedAt,
+      runId: status.runId,
+      runUrl: status.runUrl,
+      attempt: status.attempt,
+      eventName: status.eventName,
       expectedBranch: args.expectedBranch ?? packet.branch,
       expectedCommitSha: args.expectedCommitSha ?? packet.commitSha,
       claimType: /\brelease|deploy|publish\b/i.test(lowerTask) ? "release_ready" : "behavior",

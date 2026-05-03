@@ -68,6 +68,33 @@ type GitHubCheckRunsResponse = {
   }>;
 };
 
+type GitHubWorkflowRunsResponse = {
+  workflow_runs?: Array<{
+    id: number;
+    name?: string;
+    status?: string;
+    conclusion?: string | null;
+    html_url?: string | null;
+    head_branch?: string | null;
+    head_sha?: string | null;
+    event?: string | null;
+    run_attempt?: number | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+  }>;
+};
+
+type GitHubWorkflowJobsResponse = {
+  jobs?: Array<{
+    id: number;
+    name?: string;
+    status?: string;
+    conclusion?: string | null;
+    started_at?: string | null;
+    completed_at?: string | null;
+  }>;
+};
+
 export async function fetchGitHubPullRequestArtifactPacket(
   ref: GitHubPrRef,
   options: {
@@ -128,6 +155,13 @@ async function fetchLivePacket(
   ).catch(() => []);
   const issueLinks = extractIssueLinks(pull.body ?? "");
   const unifiedDiff = await fetchPatch(fetchImpl, ref);
+  const workflowRuns = pull.head?.sha
+    ? await fetchJson<GitHubWorkflowRunsResponse>(
+        fetchImpl,
+        `https://api.github.com/repos/${ref.repoFullName}/actions/runs?head_sha=${pull.head.sha}&event=pull_request&per_page=20`,
+        headers
+      ).catch(() => ({ workflow_runs: [] }))
+    : { workflow_runs: [] };
   const checkRuns = pull.head?.sha
     ? await fetchJson<GitHubCheckRunsResponse>(
         fetchImpl,
@@ -135,6 +169,29 @@ async function fetchLivePacket(
         headers
       ).catch(() => ({ check_runs: [] }))
     : { check_runs: [] };
+  const workflowRunStatuses = pull.head?.sha
+    ? await buildWorkflowRunStatuses(fetchImpl, headers, ref.repoFullName, workflowRuns.workflow_runs ?? [], pull.head.ref, pull.head.sha)
+    : [];
+  const ciStatuses = workflowRunStatuses.length > 0
+    ? workflowRunStatuses
+    : (checkRuns.check_runs ?? []).map((checkRun) => {
+        const status = normalizeCheckRunStatus(checkRun.status, checkRun.conclusion);
+        return {
+          workflow: checkRun.name ?? "check-run",
+          provider: "github_checks" as const,
+          jobName: checkRun.name ?? undefined,
+          status,
+          branch: pull.head?.ref,
+          commitSha: checkRun.head_sha ?? pull.head?.sha,
+          startedAt: checkRun.started_at ?? undefined,
+          finishedAt: checkRun.completed_at ?? undefined,
+          runUrl: checkRun.details_url ?? undefined,
+          summary: [checkRun.output?.title, checkRun.output?.summary, checkRun.details_url].filter(Boolean).join(" | ") || status,
+          failedJobCount: status === "failure" ? 1 : 0,
+          cancelledJobCount: status === "cancelled" ? 1 : 0,
+          skippedJobCount: status === "skipped" ? 1 : 0
+        };
+      });
 
   return PullRequestArtifactPacketSchema.parse({
     prNumber: pull.number,
@@ -146,22 +203,7 @@ async function fetchLivePacket(
     commitSha: pull.head?.sha,
     changedFiles: files.map((file) => file.filename),
     unifiedDiff,
-    ciStatuses: (checkRuns.check_runs ?? []).map((checkRun) => {
-      const status = normalizeCheckRunStatus(checkRun.status, checkRun.conclusion);
-      return {
-        workflow: checkRun.name ?? "check-run",
-        jobName: checkRun.name ?? undefined,
-        status,
-        branch: pull.head?.ref,
-        commitSha: checkRun.head_sha ?? pull.head?.sha,
-        startedAt: checkRun.started_at ?? undefined,
-        finishedAt: checkRun.completed_at ?? undefined,
-        summary: [checkRun.output?.title, checkRun.output?.summary, checkRun.details_url].filter(Boolean).join(" | ") || status,
-        failedJobCount: status === "failure" ? 1 : 0,
-        cancelledJobCount: status === "cancelled" ? 1 : 0,
-        skippedJobCount: status === "skipped" ? 1 : 0
-      };
-    }),
+    ciStatuses,
     reviewComments: reviewComments.map((comment) => ({
       author: comment.user?.login,
       path: comment.path,
@@ -171,6 +213,62 @@ async function fetchLivePacket(
     issueLinks,
     labels: (pull.labels ?? []).map((label) => label.name).filter(Boolean)
   });
+}
+
+async function buildWorkflowRunStatuses(
+  fetchImpl: FetchLike,
+  headers: Record<string, string>,
+  repoFullName: string,
+  runs: NonNullable<GitHubWorkflowRunsResponse["workflow_runs"]>,
+  branch: string | undefined,
+  commitSha: string | undefined
+): Promise<Array<PullRequestArtifactPacket["ciStatuses"][number]>> {
+  const statuses: Array<PullRequestArtifactPacket["ciStatuses"][number]> = [];
+  for (const run of runs) {
+    const jobs = await fetchJson<GitHubWorkflowJobsResponse>(
+      fetchImpl,
+      `https://api.github.com/repos/${repoFullName}/actions/runs/${run.id}/jobs?per_page=100`,
+      headers
+    ).catch(() => ({ jobs: [] }));
+    const jobItems = jobs.jobs ?? [];
+    const completedJobCount = jobItems.filter((job) => job.status === "completed" && job.conclusion === "success").length;
+    const failedJobCount = jobItems.filter((job) => job.conclusion === "failure" || job.conclusion === "timed_out" || job.conclusion === "action_required").length;
+    const cancelledJobCount = jobItems.filter((job) => job.conclusion === "cancelled").length;
+    const skippedJobCount = jobItems.filter((job) => job.conclusion === "skipped").length;
+    const status = normalizeCheckRunStatus(run.status, run.conclusion);
+    const failingJobNames = jobItems
+      .filter((job) => job.conclusion === "failure" || job.conclusion === "timed_out" || job.conclusion === "action_required")
+      .slice(0, 3)
+      .map((job) => job.name)
+      .filter(Boolean);
+    statuses.push({
+      workflow: run.name ?? `workflow-${run.id}`,
+      provider: "github_actions",
+      status,
+      branch: run.head_branch ?? branch,
+      commitSha: run.head_sha ?? commitSha,
+      startedAt: run.created_at ?? undefined,
+      finishedAt: run.updated_at ?? undefined,
+      runId: run.id,
+      runUrl: run.html_url ?? undefined,
+      attempt: run.run_attempt ?? undefined,
+      eventName: run.event ?? undefined,
+      expectedJobCount: jobItems.length || undefined,
+      completedJobCount,
+      failedJobCount,
+      cancelledJobCount,
+      skippedJobCount,
+      summary: [
+        `${jobItems.length} job(s)`,
+        failingJobNames.length > 0 ? `failing: ${failingJobNames.join(", ")}` : undefined,
+        run.html_url ?? undefined
+      ].filter(Boolean).join(" | "),
+      log: jobItems
+        .map((job) => `${job.name ?? "job"}: ${job.conclusion ?? job.status ?? "unknown"}`)
+        .join("\n") || undefined
+    });
+  }
+  return statuses;
 }
 
 async function fetchPatch(fetchImpl: FetchLike, ref: GitHubPrRef): Promise<string | undefined> {

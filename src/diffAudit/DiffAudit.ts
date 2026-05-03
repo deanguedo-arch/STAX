@@ -118,6 +118,8 @@ function collectFindings(parsed: ParsedDiffAuditInput, files: ClassifiedDiffFile
   const hasHardImplementationClaim = hardClaimTypes.has("implementation");
   const hasHardBehaviorClaim = hardClaimTypes.has("behavior");
   const hasHardVisualClaim = hardClaimTypes.has("visual");
+  const hasHardReleaseClaim = hardClaimTypes.has("release");
+  const hasHardDataClaim = hardClaimTypes.has("data");
   const hasImplementationOrBehaviorClaim = hasHardImplementationClaim || hasHardBehaviorClaim;
 
   const allDocs = allFilesHaveRoles(roles, ["docs"]);
@@ -128,6 +130,10 @@ function collectFindings(parsed: ParsedDiffAuditInput, files: ClassifiedDiffFile
   const hasTest = roles.has("test");
   const hasFixture = roles.has("fixture");
   const hasVisualStyle = roles.has("visual_style");
+  const publicApiFiles = files.filter((file) => file.fileRole === "source" && looksLikePublicApiChange(file));
+  const dependencyFiles = files.filter((file) => looksLikeDependencyChange(file));
+  const migrationFiles = files.filter((file) => file.fileRole === "migration");
+  const securitySensitiveFiles = files.filter((file) => looksLikeSecuritySensitiveChange(file));
   const hasForbiddenConfig = files.some((file) =>
     file.scopeStatus === "forbidden" ||
     (file.fileRole === "config" && file.forbidden && !parsed.evidence.humanApprovalForForbidden)
@@ -162,6 +168,46 @@ function collectFindings(parsed: ParsedDiffAuditInput, files: ClassifiedDiffFile
       "major",
       "Source changed without test or behavior evidence; implementation remains provisional.",
       files.filter((file) => file.fileRole === "source").map((file) => file.path),
+      false
+    ));
+  }
+
+  if (hasImplementationOrBehaviorClaim && publicApiFiles.length > 0 && !hasTest && !parsed.evidence.behaviorTestEvidence) {
+    findings.push(finding(
+      "public_api_change_without_tests",
+      "major",
+      "Public API or exported surface changed without test or behavior proof.",
+      publicApiFiles.map((file) => file.path),
+      false
+    ));
+  }
+
+  if (dependencyFiles.length > 0 && !parsed.evidence.commandEvidenceAfterDiff && !parsed.evidence.dependencyProofProvided) {
+    findings.push(finding(
+      "dependency_change_without_runtime_proof",
+      "major",
+      "Dependency-related changes need fresh install/build/test proof after the diff.",
+      dependencyFiles.map((file) => file.path),
+      false
+    ));
+  }
+
+  if ((hasImplementationOrBehaviorClaim || hasHardReleaseClaim || hasHardDataClaim) && migrationFiles.length > 0 && !parsed.evidence.rollbackProofProvided) {
+    findings.push(finding(
+      "migration_without_rollback_proof",
+      "major",
+      "Migration changes need rollback or downgrade proof before acceptance.",
+      migrationFiles.map((file) => file.path),
+      false
+    ));
+  }
+
+  if (securitySensitiveFiles.length > 0 && !parsed.evidence.securityProofProvided) {
+    findings.push(finding(
+      "security_sensitive_change_without_security_proof",
+      "major",
+      "Security-sensitive changes need security or secret-scan proof before acceptance.",
+      securitySensitiveFiles.map((file) => file.path),
       false
     ));
   }
@@ -360,4 +406,23 @@ function isDocsPath(filePath: string): boolean {
 
 function isConfigPath(filePath: string, basename: string): boolean {
   return CONFIG_NAMES.has(basename) || /(^|\/)(config|\.github\/workflows)(\/|$)/.test(filePath) || /\.config\.[cm]?[jt]s$/.test(filePath);
+}
+
+function looksLikePublicApiChange(file: ClassifiedDiffFile): boolean {
+  if (file.fileRole !== "source" || !file.patch) return false;
+  return /\b(export\s+(async\s+)?(function|class|const|let|var|type|interface)|public\s+(class|interface|enum|fun|fn)|pub\s+(fn|mod|struct|enum)|func\s+[A-Z][A-Za-z0-9_]*)\b/m.test(file.patch);
+}
+
+function looksLikeDependencyChange(file: ClassifiedDiffFile): boolean {
+  if (!/(^|\/)(package\.json|requirements(\.txt)?|pyproject\.toml|poetry\.lock|cargo\.toml|go\.mod|composer\.json|gemfile)$/i.test(file.path)) {
+    return false;
+  }
+  if (!file.patch) return false;
+  return /\b(dependencies|devDependencies|peerDependencies|optionalDependencies|resolutions|workspace|packages)\b/i.test(file.patch);
+}
+
+function looksLikeSecuritySensitiveChange(file: ClassifiedDiffFile): boolean {
+  if (/(^|\/)(auth|security|secrets?|permissions?|middleware|oauth|csrf|acl|rbac)(\/|$)/i.test(file.path)) return true;
+  if (!file.patch) return false;
+  return /\b(secret|token|apikey|api_key|password|oauth|csrf|permission|authorize|authn|authz|prompt injection)\b/i.test(file.patch);
 }

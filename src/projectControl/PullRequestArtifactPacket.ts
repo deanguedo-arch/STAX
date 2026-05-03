@@ -3,6 +3,7 @@ import { z } from "zod";
 export const PullRequestArtifactCiStatusSchema = z.object({
   workflow: z.string().min(1),
   status: z.enum(["success", "failure", "cancelled", "skipped", "pending", "unknown"]),
+  provider: z.enum(["github_actions", "github_checks", "unknown"]).default("unknown"),
   branch: z.string().optional(),
   commitSha: z.string().optional(),
   jobName: z.string().optional(),
@@ -10,6 +11,10 @@ export const PullRequestArtifactCiStatusSchema = z.object({
   startedAt: z.string().datetime().optional(),
   finishedAt: z.string().datetime().optional(),
   summary: z.string().optional(),
+  runId: z.number().int().positive().optional(),
+  runUrl: z.string().url().optional(),
+  attempt: z.number().int().positive().optional(),
+  eventName: z.string().optional(),
   expectedJobCount: z.number().int().nonnegative().optional(),
   completedJobCount: z.number().int().nonnegative().optional(),
   failedJobCount: z.number().int().nonnegative().default(0),

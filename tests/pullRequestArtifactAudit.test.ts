@@ -47,6 +47,7 @@ describe("pull request artifact audit", () => {
         ciStatuses: [
           {
             workflow: "test",
+            provider: "github_checks",
             status: "success",
             branch: "main",
             commitSha: "old1234",
@@ -80,6 +81,7 @@ describe("pull request artifact audit", () => {
         ciStatuses: [
           {
             workflow: "test",
+            provider: "github_checks",
             status: "success",
             branch: "main",
             commitSha: "new1234",
@@ -121,5 +123,54 @@ describe("pull request artifact audit", () => {
 
     expect(result.verdict).toBe("human_review");
     expect(result.weak.join("\n")).toContain("review comment remains open");
+  });
+
+  it("surfaces workflow-run matrix evidence and retry risk from PR packets", () => {
+    const result = auditPullRequestArtifact({
+      task: "Audit whether this behavior fix is proven.",
+      expectedCommitSha: "new1234",
+      packet: {
+        prNumber: 72,
+        title: "Fix behavior path",
+        body: "Behavior fix.",
+        repo: "/Users/deanguedo/Documents/GitHub/STAX",
+        branch: "main",
+        commitSha: "new1234",
+        changedFiles: ["src/agents/AnalystAgent.ts", "tests/projectControlMode.test.ts"],
+        unifiedDiff: [
+          "diff --git a/src/agents/AnalystAgent.ts b/src/agents/AnalystAgent.ts",
+          "--- a/src/agents/AnalystAgent.ts",
+          "+++ b/src/agents/AnalystAgent.ts",
+          "@@ -1 +1 @@",
+          "-export function oldHandler() {}",
+          "+export function newHandler() {}"
+        ].join("\n"),
+        ciStatuses: [
+          {
+            workflow: "CI",
+            provider: "github_actions",
+            status: "success",
+            branch: "main",
+            commitSha: "new1234",
+            runId: 77,
+            runUrl: "https://github.com/example/repo/actions/runs/77",
+            attempt: 2,
+            eventName: "pull_request",
+            summary: "2 job(s) | https://github.com/example/repo/actions/runs/77",
+            expectedJobCount: 2,
+            completedJobCount: 2,
+            failedJobCount: 0,
+            cancelledJobCount: 0,
+            skippedJobCount: 0
+          }
+        ],
+        reviewComments: [],
+        issueLinks: [],
+        labels: []
+      }
+    });
+
+    expect(result.weak.join("\n")).toContain("ci_proof");
+    expect(result.risk.join("\n")).not.toContain("partially complete");
   });
 });

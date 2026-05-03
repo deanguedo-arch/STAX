@@ -68,8 +68,9 @@ describe("project control evidence packet", () => {
           changedFiles: ["src/projectControl/ProjectControlEvidencePacket.ts"],
           ciStatuses: [
             {
-              workflow: "test",
-              status: "success",
+            workflow: "test",
+            provider: "github_checks",
+            status: "success",
               branch: "feature/pr-audit",
               commitSha: "abc7777",
               summary: "workflow completed successfully",
@@ -483,8 +484,9 @@ describe("project control evidence packet", () => {
           ].join("\n"),
           ciStatuses: [
             {
-              workflow: "test",
-              status: "success",
+            workflow: "test",
+            provider: "github_checks",
+            status: "success",
               branch: "main",
               commitSha: "old1234",
               summary: "workflow completed successfully",
@@ -527,8 +529,9 @@ describe("project control evidence packet", () => {
           changedFiles: ["src/agents/AnalystAgent.ts", "tests/projectControlMode.test.ts"],
           ciStatuses: [
             {
-              workflow: "test",
-              status: "success",
+            workflow: "test",
+            provider: "github_checks",
+            status: "success",
               branch: "main",
               commitSha: "new1234",
               summary: "workflow completed successfully",

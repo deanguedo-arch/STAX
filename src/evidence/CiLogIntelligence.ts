@@ -79,6 +79,10 @@ export function classifyCiLogEvidence(input: CiLogIntelligenceInput): CiLogIntel
     if (countRegex(logText, /\bwarning\b/g) > 0) {
       warnings.push(`workflow output reported ${countRegex(logText, /\bwarning\b/g)} warning lines`);
     }
+    if (parsed.attempt !== undefined && parsed.attempt > 1) {
+      warnings.push(`workflow succeeded on rerun attempt ${parsed.attempt}`);
+      flags.push("retried_success");
+    }
     if (/\b(retry passed|retried and passed|re-run succeeded)\b/.test(logText)) {
       warnings.push("workflow required a retry before succeeding");
       flags.push("retried_success");
@@ -132,6 +136,10 @@ function deriveConclusionSignal(parsed: ParsedCiLogIntelligenceInput, logText: s
 
   if (parsed.failedJobCount > 0 || /\b(failure|failed|error|errors|exit code 1)\b/.test(logText)) {
     flags.push("job_failed");
+    return { conclusion: explicit === "success" ? "success" : "failure", flags };
+  }
+  if (/\b(timed out|timed_out|timeout)\b/.test(logText)) {
+    flags.push("job_timed_out");
     return { conclusion: explicit === "success" ? "success" : "failure", flags };
   }
   if (parsed.cancelledJobCount > 0 || /\b(cancelled|canceled|aborted)\b/.test(logText)) {

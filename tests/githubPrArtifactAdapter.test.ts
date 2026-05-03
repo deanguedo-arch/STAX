@@ -44,6 +44,49 @@ describe("GitHub PR artifact adapter", () => {
         })
       ],
       [
+        "https://api.github.com/repos/example/repo/actions/runs?head_sha=abc1234&event=pull_request&per_page=20",
+        jsonResponse({
+          workflow_runs: [
+            {
+              id: 77,
+              name: "CI",
+              status: "completed",
+              conclusion: "success",
+              html_url: "https://github.com/example/repo/actions/runs/77",
+              head_branch: "fix/parser-edge",
+              head_sha: "abc1234",
+              event: "pull_request",
+              run_attempt: 2,
+              created_at: "2026-05-03T00:00:00Z",
+              updated_at: "2026-05-03T00:05:00Z"
+            }
+          ]
+        })
+      ],
+      [
+        "https://api.github.com/repos/example/repo/actions/runs/77/jobs?per_page=100",
+        jsonResponse({
+          jobs: [
+            {
+              id: 1,
+              name: "unit",
+              status: "completed",
+              conclusion: "success",
+              started_at: "2026-05-03T00:00:00Z",
+              completed_at: "2026-05-03T00:02:00Z"
+            },
+            {
+              id: 2,
+              name: "lint",
+              status: "completed",
+              conclusion: "success",
+              started_at: "2026-05-03T00:00:00Z",
+              completed_at: "2026-05-03T00:03:00Z"
+            }
+          ]
+        })
+      ],
+      [
         "https://patch-diff.githubusercontent.com/raw/example/repo/pull/12.patch",
         textResponse("diff --git a/src/parser.ts b/src/parser.ts\n--- a/src/parser.ts\n+++ b/src/parser.ts\n@@ -1 +1 @@\n-old\n+new")
       ]
@@ -59,6 +102,9 @@ describe("GitHub PR artifact adapter", () => {
     expect(result.packet.branch).toBe("fix/parser-edge");
     expect(result.packet.changedFiles).toEqual(["src/parser.ts"]);
     expect(result.packet.ciStatuses[0]?.status).toBe("success");
+    expect(result.packet.ciStatuses[0]?.provider).toBe("github_actions");
+    expect(result.packet.ciStatuses[0]?.expectedJobCount).toBe(2);
+    expect(result.packet.ciStatuses[0]?.attempt).toBe(2);
     expect(result.packet.reviewComments[0]?.author).toBe("reviewer");
     expect(result.packet.issueLinks[0]?.issueId).toBe("44");
     expect(result.packet.unifiedDiff).toContain("diff --git");

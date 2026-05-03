@@ -63,4 +63,22 @@ describe("ci log intelligence", () => {
     expect(result.proofStrength).toBe("stale_proof");
     expect(result.flags).toContain("wrong_commit");
   });
+
+  it("warns when CI proof only succeeded on a rerun attempt", () => {
+    const result = classifyCiLogEvidence({
+      workflow: "ci",
+      provider: "github_actions",
+      branch: "main",
+      commitSha: "abc1234",
+      conclusion: "success",
+      summary: "workflow completed successfully",
+      attempt: 3,
+      expectedBranch: "main",
+      expectedCommitSha: "abc1234"
+    });
+
+    expect(result.proofStrength).toBe("ci_proof");
+    expect(result.flags).toContain("retried_success");
+    expect(result.warnings.join("\n")).toContain("rerun attempt 3");
+  });
 });

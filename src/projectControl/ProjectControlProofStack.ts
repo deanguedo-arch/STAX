@@ -109,6 +109,9 @@ export function buildProjectControlProofStack(
           input.visualEvidence !== undefined
             ? input.visualEvidence.length > 0
             : /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined),
+        dependencyProofProvided: /\bnpm ls\b|\bpnpm list\b|\byarn why\b|\bpip show\b|\bcargo tree\b|\bcomposer show\b|\bbundle info\b/i.test(combined),
+        rollbackProofProvided: /\brollback\b|\brevert\b|\bdowngrade\b/i.test(combined),
+        securityProofProvided: /\bsecurity test\b|\bsecret scan\b|\bvulnerability scan\b|\bprompt injection\b/i.test(combined),
         humanApprovalForForbidden:
           input.humanApproval !== undefined
             ? input.humanApproval.length > 0
@@ -240,6 +243,11 @@ function resolveChangedFiles(input: ProjectControlProofStackInput, combined: str
         path: file.path,
         changeType: file.changeType,
         fileRole: file.fileRole,
+        oldPath: file.oldPath,
+        newPath: file.newPath,
+        patch: file.patch,
+        addedLines: file.addedLines,
+        deletedLines: file.deletedLines,
         reason: file.modeChanged
           ? "Parsed from unified diff with mode change."
           : file.isBinary
