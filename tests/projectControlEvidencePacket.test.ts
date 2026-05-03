@@ -52,6 +52,39 @@ describe("project control evidence packet", () => {
     expect(packet.commandEvidence).toContain("commitSha=2222222");
   });
 
+  it("parses structured PR artifact packets and renders them into repo evidence", () => {
+    const packet = parseProjectControlPacket(
+      structuredPacket({
+        repo: "STAX",
+        pullRequestArtifact: {
+          prNumber: 77,
+          title: "Fix project-control proof packet handling",
+          body: "Adds CI and review evidence.",
+          repo: "/Users/deanguedo/Documents/GitHub/STAX",
+          branch: "feature/pr-audit",
+          commitSha: "abc7777",
+          changedFiles: ["src/projectControl/ProjectControlEvidencePacket.ts"],
+          ciStatuses: [
+            {
+              workflow: "test",
+              status: "success",
+              branch: "feature/pr-audit",
+              commitSha: "abc7777",
+              summary: "workflow completed successfully"
+            }
+          ],
+          reviewComments: [],
+          issueLinks: [],
+          labels: ["project-control"]
+        }
+      })
+    );
+
+    expect(packet.structured?.pullRequestArtifact?.prNumber).toBe(77);
+    expect(packet.repoEvidence).toContain("Pull request artifact: #77");
+    expect(packet.repoEvidence).toContain("PR branch: feature/pr-audit");
+  });
+
   it("still parses the legacy labeled text packet format", () => {
     const packet = parseProjectControlPacket([
       "Task: Audit whether tests are proven.",
@@ -314,5 +347,54 @@ describe("project control evidence packet", () => {
 
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("Claim-to-proof: memory_promotion claim is unsupported because human_approval, source_run_reference");
+  });
+
+  it("surfaces PR artifact CI and diff risks inside project-control audits", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether this implementation PR is proven.",
+        targetRepoPath: "/Users/deanguedo/Documents/GitHub/STAX",
+        branch: "main",
+        headSha: "new1234",
+        codexReport: "Codex says the implementation is complete.",
+        pullRequestArtifact: {
+          prNumber: 88,
+          title: "Document implementation completion",
+          body: "Docs refresh only.",
+          repo: "/Users/deanguedo/Documents/GitHub/STAX",
+          branch: "main",
+          commitSha: "new1234",
+          changedFiles: ["docs/STAX_9_5_PROMOTION_REPORT.md"],
+          unifiedDiff: [
+            "diff --git a/docs/STAX_9_5_PROMOTION_REPORT.md b/docs/STAX_9_5_PROMOTION_REPORT.md",
+            "--- a/docs/STAX_9_5_PROMOTION_REPORT.md",
+            "+++ b/docs/STAX_9_5_PROMOTION_REPORT.md",
+            "@@ -1 +1 @@",
+            "-old",
+            "+new"
+          ].join("\n"),
+          ciStatuses: [
+            {
+              workflow: "test",
+              status: "success",
+              branch: "main",
+              commitSha: "old1234",
+              summary: "workflow completed successfully"
+            }
+          ],
+          reviewComments: [],
+          issueLinks: [],
+          labels: []
+        }
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("PR artifact audit: PR #88 artifact packet supplied.");
+    expect(output.output).toContain("PR artifact audit: PR CI test: stale_proof.");
+    expect(output.output).toContain("PR artifact audit: PR diff audit rejects the implementation claim");
   });
 });

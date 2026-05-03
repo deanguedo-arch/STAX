@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PullRequestArtifactPacketSchema, type PullRequestArtifactPacket } from "./PullRequestArtifactPacket.js";
 
 const EvidenceChangeTypeSchema = z.enum(["added", "modified", "deleted", "renamed"]);
 const EvidenceFileRoleSchema = z.enum([
@@ -73,7 +74,8 @@ export const StructuredProjectControlEvidencePacketSchema = z.object({
   commandEvidence: z.array(ProjectControlCommandEvidenceEntrySchema).default([]),
   codexReport: z.string().default(""),
   visualEvidence: z.array(ProjectControlVisualEvidenceSchema).default([]),
-  humanApproval: z.array(ProjectControlHumanApprovalSchema).default([])
+  humanApproval: z.array(ProjectControlHumanApprovalSchema).default([]),
+  pullRequestArtifact: PullRequestArtifactPacketSchema.optional()
 });
 
 export type StructuredProjectControlEvidencePacket = z.infer<typeof StructuredProjectControlEvidencePacketSchema>;
@@ -81,6 +83,7 @@ export type ProjectControlChangedFile = z.infer<typeof ProjectControlChangedFile
 export type ProjectControlCommandEvidenceEntry = z.infer<typeof ProjectControlCommandEvidenceEntrySchema>;
 export type ProjectControlVisualEvidence = z.infer<typeof ProjectControlVisualEvidenceSchema>;
 export type ProjectControlHumanApproval = z.infer<typeof ProjectControlHumanApprovalSchema>;
+export type { PullRequestArtifactPacket };
 
 export type ProjectControlPacket = {
   task: string;
@@ -185,6 +188,25 @@ function renderStructuredRepoEvidence(packet: StructuredProjectControlEvidencePa
             `${item.approvedAt ? ` | approvedAt=${item.approvedAt}` : ""}`
           )
           .join("\n")
+    );
+  }
+  if (packet.pullRequestArtifact) {
+    lines.push(
+      [
+        `Pull request artifact: #${packet.pullRequestArtifact.prNumber} | ${packet.pullRequestArtifact.title}`,
+        packet.pullRequestArtifact.branch ? `PR branch: ${packet.pullRequestArtifact.branch}` : "",
+        packet.pullRequestArtifact.commitSha ? `PR commit: ${packet.pullRequestArtifact.commitSha}` : "",
+        packet.pullRequestArtifact.changedFiles.length > 0
+          ? `PR changed files:\n${packet.pullRequestArtifact.changedFiles.map((file) => `- ${file}`).join("\n")}`
+          : "",
+        packet.pullRequestArtifact.ciStatuses.length > 0
+          ? `PR CI statuses:\n${packet.pullRequestArtifact.ciStatuses
+              .map((status) => `- ${status.workflow} | ${status.status}${status.commitSha ? ` | ${status.commitSha}` : ""}`)
+              .join("\n")}`
+          : ""
+      ]
+        .filter(Boolean)
+        .join("\n")
     );
   }
   return lines.join("\n");

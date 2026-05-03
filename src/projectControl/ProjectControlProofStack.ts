@@ -9,8 +9,10 @@ import type {
   ProjectControlChangedFile,
   ProjectControlCommandEvidenceEntry,
   ProjectControlHumanApproval,
-  ProjectControlVisualEvidence
+  ProjectControlVisualEvidence,
+  PullRequestArtifactPacket
 } from "./ProjectControlEvidencePacket.js";
+import { auditPullRequestArtifact } from "./PullRequestArtifactAudit.js";
 
 export type ProjectControlProofStackInput = {
   task: string;
@@ -22,6 +24,7 @@ export type ProjectControlProofStackInput = {
   commandEvidenceEntries?: ProjectControlCommandEvidenceEntry[];
   visualEvidence?: ProjectControlVisualEvidence[];
   humanApproval?: ProjectControlHumanApproval[];
+  pullRequestArtifact?: PullRequestArtifactPacket;
   targetRepoPath?: string;
   expectedRepo?: string;
   expectedBranch?: string;
@@ -53,6 +56,22 @@ export function buildProjectControlProofStack(
   const unverified: string[] = [];
   const risk: string[] = [];
   const combined = [input.task, input.repoEvidence, input.commandEvidence, input.codexReport].join("\n");
+
+  if (input.pullRequestArtifact) {
+    const prAudit = auditPullRequestArtifact({
+      packet: input.pullRequestArtifact,
+      task: input.task,
+      expectedBranch: input.expectedBranch,
+      expectedCommitSha: input.expectedCommitSha
+    });
+    verified.push(...prAudit.verified.map((line) => `PR artifact audit: ${line}`));
+    weak.push(...prAudit.weak.map((line) => `PR artifact audit: ${line}`));
+    unverified.push(...prAudit.unverified.map((line) => `PR artifact audit: ${line}`));
+    risk.push(...prAudit.risk.map((line) => `PR artifact audit: ${line}`));
+    if (prAudit.verdict === "human_review") {
+      weak.push("PR artifact audit requires human review before approval.");
+    }
+  }
 
   const derivedClaims = deriveClaims(combined);
   const changedFiles = resolveChangedFiles(input, combined);

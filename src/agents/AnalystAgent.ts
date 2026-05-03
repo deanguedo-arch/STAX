@@ -937,6 +937,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     commandEvidenceEntries: packet.structured?.commandEvidence,
     visualEvidence: packet.structured?.visualEvidence,
     humanApproval: packet.structured?.humanApproval,
+    pullRequestArtifact: packet.structured?.pullRequestArtifact,
     targetRepoPath,
     expectedRepo: targetRepoPath,
     expectedBranch,
