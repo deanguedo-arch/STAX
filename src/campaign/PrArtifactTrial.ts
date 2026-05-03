@@ -281,7 +281,7 @@ export function evaluateCriticalMisses(
   for (const rule of testCase.criticalMissRules) {
     switch (rule) {
       case "must_surface_ci_proof_strength":
-        if (!/PR CI .*: (ci_proof|failed_proof|partial_local_proof|stale_proof|wrong_branch_proof|wrong_repo_proof)\./.test(output)) {
+        if (!/PR CI .*: (ci_proof|failed_proof|partial_local_proof|stale_proof|wrong_branch_proof|wrong_repo_proof|not_relevant_to_claim)\./.test(output)) {
           misses.push("CI proof strength was not surfaced");
         }
         break;

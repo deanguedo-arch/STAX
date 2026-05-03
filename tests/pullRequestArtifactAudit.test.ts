@@ -125,6 +125,28 @@ describe("pull request artifact audit", () => {
     expect(result.weak.join("\n")).toContain("review comment remains open");
   });
 
+  it("surfaces explicit CI proof strength when CI artifacts are missing", () => {
+    const result = auditPullRequestArtifact({
+      task: "Audit whether this implementation fix is proven.",
+      packet: {
+        prNumber: 63,
+        title: "Fix parser edge case",
+        body: "Implements behavior fix without attached CI output.",
+        repo: "/Users/deanguedo/Documents/GitHub/STAX",
+        branch: "main",
+        commitSha: "abc0001",
+        changedFiles: ["src/agents/AnalystAgent.ts", "tests/projectControlMode.test.ts"],
+        ciStatuses: [],
+        reviewComments: [],
+        issueLinks: [],
+        labels: []
+      }
+    });
+
+    expect(result.weak.join("\n")).toContain("PR CI unavailable: partial_local_proof.");
+    expect(result.risk.join("\n")).toContain("no workflow or command-status artifact");
+  });
+
   it("surfaces workflow-run matrix evidence and retry risk from PR packets", () => {
     const result = auditPullRequestArtifact({
       task: "Audit whether this behavior fix is proven.",

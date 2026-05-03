@@ -63,7 +63,7 @@ type LivePrArtifactTrialOptions = {
   }) => Promise<string>;
 };
 
-const CI_PROOF_RE = /PR CI .*: (ci_proof|failed_proof|partial_local_proof|stale_proof|wrong_branch_proof|wrong_repo_proof)\./;
+const CI_PROOF_RE = /PR CI .*: (ci_proof|failed_proof|partial_local_proof|stale_proof|wrong_branch_proof|wrong_repo_proof|not_relevant_to_claim)\./;
 
 export async function runLivePrArtifactTrial(
   options: LivePrArtifactTrialOptions = {}

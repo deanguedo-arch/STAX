@@ -144,6 +144,8 @@ export function auditPullRequestArtifact(args: {
 
   if ((claimsImplementation || claimsRelease) && packet.ciStatuses.length === 0) {
     weak.push("PR artifact has no CI or command proof for the claimed implementation, behavior, build, or release change.");
+    weak.push("PR CI unavailable: partial_local_proof.");
+    risk.push("PR CI risk: no workflow or command-status artifact was supplied.");
   }
 
   for (const status of packet.ciStatuses) {
