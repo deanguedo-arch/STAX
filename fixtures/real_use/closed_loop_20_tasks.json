@@ -19,7 +19,42 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_002",
@@ -38,7 +73,42 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_003",
@@ -57,7 +127,42 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_004",
@@ -76,7 +181,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_005",
@@ -95,7 +235,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_006",
@@ -114,7 +289,42 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_007",
@@ -133,7 +343,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_008",
@@ -152,7 +397,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_009",
@@ -171,7 +451,49 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "rejected_fake_complete",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "rejected_fake_complete",
+          "note": "fake-complete claim rejected"
+        }
+      ],
+      "nextAction": "Reject the fake-complete claim and request the first real proof artifact.",
+      "failurePatterns": [
+        "fake_complete_boundary"
+      ],
+      "evalCandidates": [
+        "eval_fake_complete_boundary"
+      ]
     },
     {
       "taskId": "closed_loop_010",
@@ -190,7 +512,42 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_011",
@@ -209,7 +566,43 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "blocked_pending_evidence",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "blocked_pending_evidence",
+          "note": "final state recorded"
+        }
+      ],
+      "nextAction": "Collect the next missing proof artifact before retrying the claim."
     },
     {
       "taskId": "closed_loop_012",
@@ -228,7 +621,42 @@
       "usefulBlock": true,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_013",
@@ -247,7 +675,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_014",
@@ -266,7 +729,42 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "closed",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "closed",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_015",
@@ -285,7 +783,42 @@
       "usefulBlock": true,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_016",
@@ -304,7 +837,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_017",
@@ -323,7 +891,43 @@
       "usefulBlock": true,
       "verifiedAccept": false,
       "staxInitialPromptUseful": true,
-      "evalCandidate": true
+      "evalCandidate": true,
+      "state": "clean_failure",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "clean_failure",
+          "note": "final state recorded"
+        }
+      ],
+      "nextAction": "Record the blocker and capture the first missing proof step before retrying."
     },
     {
       "taskId": "closed_loop_018",
@@ -342,7 +946,42 @@
       "usefulBlock": true,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_next_state",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_next_state",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_019",
@@ -361,7 +1000,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_complete",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_complete",
+          "note": "final state recorded"
+        }
+      ]
     },
     {
       "taskId": "closed_loop_020",
@@ -380,7 +1054,42 @@
       "usefulBlock": false,
       "verifiedAccept": true,
       "staxInitialPromptUseful": true,
-      "evalCandidate": false
+      "evalCandidate": false,
+      "state": "verified_complete",
+      "stateHistory": [
+        {
+          "state": "created",
+          "note": "task recorded in closed-loop ledger"
+        },
+        {
+          "state": "scoped",
+          "note": "repo and objective scoped"
+        },
+        {
+          "state": "prompt_generated",
+          "note": "bounded Codex prompt prepared"
+        },
+        {
+          "state": "codex_report_received",
+          "note": "Codex report recorded"
+        },
+        {
+          "state": "diff_collected",
+          "note": "diff evidence recorded"
+        },
+        {
+          "state": "command_evidence_collected",
+          "note": "command evidence recorded"
+        },
+        {
+          "state": "audited",
+          "note": "STAX post-Codex audit recorded"
+        },
+        {
+          "state": "verified_complete",
+          "note": "final state recorded"
+        }
+      ]
     }
   ]
 }

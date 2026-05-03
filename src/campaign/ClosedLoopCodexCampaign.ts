@@ -11,9 +11,34 @@ export type ClosedLoopFinalOutcome =
   | "human_review_required"
   | "bounded_stop";
 
+export type ClosedLoopTaskState =
+  | "created"
+  | "scoped"
+  | "prompt_generated"
+  | "codex_report_received"
+  | "diff_collected"
+  | "command_evidence_collected"
+  | "audited"
+  | "needs_cleanup"
+  | "verified_next_state"
+  | "verified_complete"
+  | "blocked_pending_evidence"
+  | "rejected_fake_complete"
+  | "clean_failure"
+  | "human_review_required"
+  | "regression_created"
+  | "closed";
+
+export type ClosedLoopStateTransition = {
+  state: ClosedLoopTaskState;
+  note: string;
+};
+
 export type ClosedLoopCodexTask = {
   taskId: string;
   repo: string;
+  state: ClosedLoopTaskState;
+  stateHistory: ClosedLoopStateTransition[];
   objective: string;
   staxInitialAudit: string;
   staxCodexPrompt: string;
@@ -21,6 +46,9 @@ export type ClosedLoopCodexTask = {
   diffEvidence: string;
   commandEvidence: string;
   staxPostCodexAudit: string;
+  nextAction?: string;
+  failurePatterns?: string[];
+  evalCandidates?: string[];
   cleanupPromptsAfterCodex: number;
   finalOutcome: ClosedLoopFinalOutcome;
   falseAccept: boolean;
@@ -41,6 +69,7 @@ export type ClosedLoopCodexSummary = {
   campaignId: string;
   taskCount: number;
   reposRepresented: number;
+  stateCoverageValid: boolean;
   falseAccepts: number;
   falseBlocks: number;
   usefulBlocks: number;
@@ -70,11 +99,66 @@ function isVerifiedNextState(outcome: ClosedLoopFinalOutcome): boolean {
   return outcome === "verified_complete" || outcome === "verified_next_state";
 }
 
+function requiredStatesForOutcome(outcome: ClosedLoopFinalOutcome): ClosedLoopTaskState[] {
+  const base: ClosedLoopTaskState[] = [
+    "created",
+    "scoped",
+    "prompt_generated",
+    "codex_report_received",
+    "audited"
+  ];
+  switch (outcome) {
+    case "verified_complete":
+    case "verified_next_state":
+      return [...base, "diff_collected", "command_evidence_collected", outcome];
+    case "blocked_pending_evidence":
+      return [...base, "blocked_pending_evidence"];
+    case "clean_failure":
+      return [...base, "clean_failure"];
+    case "human_review_required":
+      return [...base, "human_review_required"];
+    case "rejected_fake_complete":
+      return [...base, "diff_collected", "rejected_fake_complete"];
+    case "bounded_stop":
+      return [...base];
+  }
+}
+
+function validateTaskState(task: ClosedLoopCodexTask): string[] {
+  const issues: string[] = [];
+  const states = task.stateHistory.map((item) => item.state);
+  const required = requiredStatesForOutcome(task.finalOutcome);
+
+  if (states[0] !== "created") issues.push(`${task.taskId}: state history must start at created`);
+  if (task.state !== states[states.length - 1]) issues.push(`${task.taskId}: final state must match the last recorded state`);
+  for (const state of required) {
+    if (!states.includes(state)) issues.push(`${task.taskId}: missing required task state ${state}`);
+  }
+  if (isVerifiedNextState(task.finalOutcome)) {
+    if (!task.diffEvidence.trim()) issues.push(`${task.taskId}: verified state requires diff evidence`);
+    if (!task.commandEvidence.trim()) issues.push(`${task.taskId}: verified state requires command evidence`);
+    if (!task.staxPostCodexAudit.trim()) issues.push(`${task.taskId}: verified state requires a post-Codex audit`);
+  }
+  if (
+    task.finalOutcome === "blocked_pending_evidence" ||
+    task.finalOutcome === "clean_failure" ||
+    task.finalOutcome === "human_review_required"
+  ) {
+    if (!task.nextAction?.trim()) issues.push(`${task.taskId}: blocked/failure states require one next action`);
+  }
+  if (task.falseAccept || task.falseBlock || task.finalOutcome === "rejected_fake_complete") {
+    if (!task.failurePatterns?.length) issues.push(`${task.taskId}: failures require at least one failure pattern`);
+    if (!task.evalCandidates?.length) issues.push(`${task.taskId}: failures require at least one eval candidate`);
+  }
+  return issues;
+}
+
 export function summarizeClosedLoopCodexCampaign(args: {
   ledger: ClosedLoopCodexLedger;
   baselineLedger?: BaselineCleanupLedger;
 }): ClosedLoopCodexSummary {
   const blockers: string[] = [];
+  const stateIssues = args.ledger.tasks.flatMap(validateTaskState);
   const reposRepresented = new Set(args.ledger.tasks.map((task) => task.repo)).size;
   const falseAccepts = args.ledger.tasks.filter((task) => task.falseAccept).length;
   const falseBlocks = args.ledger.tasks.filter((task) => task.falseBlock).length;
@@ -99,6 +183,7 @@ export function summarizeClosedLoopCodexCampaign(args: {
 
   if (args.ledger.tasks.length < 20) blockers.push("fewer than 20 closed-loop tasks recorded");
   if (reposRepresented < 3) blockers.push("fewer than 3 repos represented in closed-loop ledger");
+  if (stateIssues.length > 0) blockers.push("closed-loop task state machine has invalid transitions or missing evidence");
   if (falseAccepts > 0) blockers.push("false accept recorded in closed-loop campaign");
   if (verifiedNextStateRate < 80) blockers.push("verified next-state rate is below 80 percent");
   if (cleanupReductionPct == null) blockers.push("cleanup reduction versus baseline cannot be computed yet");
@@ -118,6 +203,7 @@ export function summarizeClosedLoopCodexCampaign(args: {
     campaignId: args.ledger.campaignId,
     taskCount: args.ledger.tasks.length,
     reposRepresented,
+    stateCoverageValid: stateIssues.length === 0,
     falseAccepts,
     falseBlocks,
     usefulBlocks,
@@ -130,7 +216,7 @@ export function summarizeClosedLoopCodexCampaign(args: {
     cleanupReductionPct,
     evalConversionRate,
     status,
-    blockers
+    blockers: [...blockers, ...stateIssues]
   };
 }
 
