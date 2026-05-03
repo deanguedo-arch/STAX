@@ -12,6 +12,7 @@
     "rax": "tsx src/cli.ts",
     "chat": "tsx src/cli.ts chat",
     "run": "tsx src/cli.ts run",
+    "smoke:stax": "tsx src/cli.ts run --mode planning \"STAX system improvement plan\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",

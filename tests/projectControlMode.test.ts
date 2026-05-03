@@ -866,7 +866,7 @@ describe("project_control mode", () => {
       [
         "Task: Audit the STAX dogfood campaign state before calling it complete.",
         "Repo Evidence: fixtures/real_use/dogfood_10_tasks_2026-04-30.json records 9/10 real tasks across ADMISSION-APP, brightspacequizexporter, canvas-helper, and STAX.",
-        "Command Evidence: npm run typecheck passed. npm test passed with 113 files and 561 tests. npm run rax -- eval passed 16/16. npm run rax -- run fitness smoke passed.",
+        "Command Evidence: npm run typecheck passed. npm test passed with 113 files and 561 tests. npm run rax -- eval passed 16/16. npm run smoke:stax passed.",
         "Codex Report: The campaign has strong proof and zero STAX critical misses so far, but only 9 of 10 dogfood tasks are recorded."
       ].join("\n"),
       [],

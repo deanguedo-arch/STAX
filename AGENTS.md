@@ -39,7 +39,7 @@ npm test
 Also smoke relevant CLI behavior:
 
 ```bash
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
+npm run smoke:stax
 npm run rax -- eval
 ```
 

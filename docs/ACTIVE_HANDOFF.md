@@ -65,7 +65,7 @@ npm run rax -- eval --regression
 npm run rax -- eval --redteam
 9/9 passed
 
-npm run rax -- run "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
+npm run smoke:stax
 smoke passed
 ```
 

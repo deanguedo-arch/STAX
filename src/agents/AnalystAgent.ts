@@ -1865,7 +1865,7 @@ function projectControlPrompt(input: ProjectControlSignals): string {
         "Work only in /Users/deanguedo/Documents/GitHub/STAX.",
         "Record the 10th real dogfood task in fixtures/real_use/dogfood_10_tasks_2026-04-30.json.",
         "Update docs/RAX_REAL_USE_CAMPAIGN_REPORT.md to 10/10.",
-        "Include the supplied validation evidence: npm run typecheck, npm test, npm run rax -- eval, and the fitness smoke passed.",
+        "Include the supplied validation evidence: npm run typecheck, npm test, npm run rax -- eval, and the neutral STAX smoke passed.",
         "Do not claim STAX is 9+ or generally better than ChatGPT; say this is usage-proof evidence with zero STAX critical misses in this loop.",
         "Report changed files and any remaining unverified limits.",
         "```"
