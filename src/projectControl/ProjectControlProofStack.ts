@@ -13,6 +13,7 @@ export type ProjectControlProofStackInput = {
   targetRepoPath?: string;
   expectedRepo?: string;
   expectedBranch?: string;
+  expectedCommitSha?: string;
   expectedCwd?: string;
 };
 
@@ -152,6 +153,7 @@ function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsi
       expectedRepo: input.expectedRepo ?? input.targetRepoPath,
       expectedCwd: input.expectedCwd ?? input.targetRepoPath,
       expectedBranch: input.expectedBranch,
+      expectedCommitSha: input.expectedCommitSha,
       claimType: detectCommandClaimType([input.task, input.codexReport].join("\n"))
     }),
     command
@@ -309,7 +311,7 @@ function detectBranch(text: string): string | undefined {
 }
 
 function detectCommit(text: string): string | undefined {
-  return text.match(/\b(?:commit|sha)[=:]?\s*([a-f0-9]{7,40})/i)?.[1]?.trim();
+  return text.match(/\b(?:commit(?:sha)?|sha)[=:]?\s*([a-f0-9]{7,40})/i)?.[1]?.trim();
 }
 
 function detectExitCode(text: string): number | null | undefined {

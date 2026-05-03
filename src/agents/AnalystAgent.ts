@@ -786,6 +786,14 @@ function extractTargetRepoPath(repoEvidence: string): string | undefined {
   return undefined;
 }
 
+function extractExpectedBranch(repoEvidence: string): string | undefined {
+  return repoEvidence.match(/\b(?:Target|Expected) branch:\s*([A-Za-z0-9_./-]+)/i)?.[1]?.trim();
+}
+
+function extractExpectedCommitSha(repoEvidence: string): string | undefined {
+  return repoEvidence.match(/\b(?:Target|Expected) commit(?: sha)?:\s*([a-f0-9]{7,40})/i)?.[1]?.trim();
+}
+
 function extractRepoPaths(text: string): string[] {
   return Array.from(text.matchAll(/\/Users\/deanguedo\/Documents\/GitHub\/[A-Za-z0-9_.-]+/g))
     .map((match) => match[0].replace(/[.,;)]$/, ""))
@@ -815,6 +823,8 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
   const lower = combined.toLowerCase();
   const targetRepoPath = extractTargetRepoPath(packet.repoEvidence);
+  const expectedBranch = extractExpectedBranch(packet.repoEvidence);
+  const expectedCommitSha = extractExpectedCommitSha(packet.repoEvidence);
   const repoPathWithheld = !targetRepoPath && /\b(repo path|repo root|target repo)\b[\s\S]{0,60}\b(withheld|not supplied|missing|intentionally withheld)\b/i.test(combined);
   const wrongRepoEvidencePaths = targetRepoPath ? extractWrongRepoEvidencePaths(packet, targetRepoPath) : [];
   const hasWrongRepoEvidence = wrongRepoEvidencePaths.length > 0;
@@ -953,6 +963,8 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     codexReport: packet.codexReport,
     targetRepoPath,
     expectedRepo: targetRepoPath,
+    expectedBranch,
+    expectedCommitSha,
     expectedCwd: targetRepoPath
   });
 
