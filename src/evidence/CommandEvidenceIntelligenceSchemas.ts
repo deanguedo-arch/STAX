@@ -36,6 +36,7 @@ export const CommandEvidenceStatusSchema = z.enum(["passed", "failed", "partial"
 
 export const CommandProofStrengthSchema = z.enum([
   "strong_local_proof",
+  "ci_proof",
   "partial_local_proof",
   "weak_human_pasted_proof",
   "weak_codex_reported_proof",
@@ -74,6 +75,7 @@ export const CommandEvidenceIntelligenceResultSchema = z.object({
   commandFamily: CommandEvidenceFamilySchema,
   status: CommandEvidenceStatusSchema,
   proofStrength: CommandProofStrengthSchema,
+  toolchain: z.string().min(1).optional(),
   limitations: z.array(z.string()),
   warnings: z.array(z.string())
 });
@@ -82,6 +84,8 @@ export const CommandEvidenceFixtureCaseSchema = CommandEvidenceIntelligenceInput
   caseId: z.string().min(1),
   description: z.string().min(1),
   expectedProofStrength: CommandProofStrengthSchema,
+  expectedStatus: CommandEvidenceStatusSchema.optional(),
+  expectedFamily: CommandEvidenceFamilySchema.optional(),
   shouldBeStrong: z.boolean()
 });
 

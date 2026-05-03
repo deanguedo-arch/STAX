@@ -103,6 +103,7 @@ export function buildProjectControlProofStack(
     if (commandInsight.proofStrength === "strong_local_proof") {
       verified.push(label);
     } else if (
+      commandInsight.proofStrength === "ci_proof" ||
       commandInsight.proofStrength === "weak_human_pasted_proof" ||
       commandInsight.proofStrength === "weak_codex_reported_proof" ||
       commandInsight.proofStrength === "partial_local_proof"
