@@ -1,6 +1,6 @@
 # STAX/RAX - Rule-Aware Adaptive Runtime
 
-STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used. `stax_fitness` is one explicit optional domain mode, not the product identity.
+STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used.
 
 It processes input through:
 
@@ -193,11 +193,3 @@ runs/YYYY-MM-DD/<run-id>/
 ```
 
 `trace.json` includes routing, boundary, risk, agent sequence, validation, model-call metadata, and retry count.
-
-## Domain Compatibility
-
-`stax_fitness` remains available only as an explicit domain mode:
-
-```bash
-npm run dev -- run --mode stax_fitness "Extract this as STAX fitness signals: Dean trained jiu jitsu Saturday for 90 minutes."
-```

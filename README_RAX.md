@@ -2,7 +2,7 @@
 
 STAX/RAX is a local assistant behavior factory. It is not a ChatGPT clone and does not expose or bypass hidden model policies.
 
-STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used. `stax_fitness` is one explicit optional domain mode, not the product identity.
+STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used.
 
 It approximates high-quality assistant behavior with explicit local pieces:
 
@@ -48,7 +48,6 @@ OpenAI is optional and is required only when `RAX_PROVIDER=openai`.
 npm run rax -- eval
 npm run rax -- eval --redteam
 npm run rax -- eval --regression
-npm run rax -- eval --mode stax_fitness
 ```
 
 ## Replay
@@ -86,14 +85,6 @@ npm run rax -- train export --sft
 npm run rax -- train export --preference
 npm run rax -- train export --all
 ```
-
-## STAX Fitness Example
-
-```bash
-npm run rax -- run --mode stax_fitness --file examples/stax_input.txt
-```
-
-This is domain compatibility only; the word `STAX` alone is not a fitness trigger.
 
 ## Safety And Tool Limits
 
