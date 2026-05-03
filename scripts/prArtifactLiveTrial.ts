@@ -45,16 +45,18 @@ async function main(): Promise<void> {
       ? "live_pr_artifact_trial_full_last_attempt_failed.json"
       : "live_pr_artifact_trial_last_attempt_failed.json"
   );
+  const releaseArtifactBaseName =
+    args.artifactKey === "full" ? "pr_artifact_live_trial_full" : "pr_artifact_live_trial";
   const shouldWriteReleaseArtifacts = summary.status === "passed" || !args.skipArtifactsOnFailure;
   if (shouldWriteReleaseArtifacts) {
     await fs.mkdir(artifactsDir, { recursive: true });
     await fs.writeFile(
-      path.join(artifactsDir, "pr_artifact_live_trial.json"),
+      path.join(artifactsDir, `${releaseArtifactBaseName}.json`),
       JSON.stringify(summary, null, 2),
       "utf8"
     );
     await fs.writeFile(
-      path.join(artifactsDir, "pr_artifact_live_trial.md"),
+      path.join(artifactsDir, `${releaseArtifactBaseName}.md`),
       `${formatLivePrArtifactTrial(summary)}\n`,
       "utf8"
     );
@@ -66,7 +68,7 @@ async function main(): Promise<void> {
   } else {
     await fs.writeFile(failedAttemptPath, JSON.stringify(summary, null, 2), "utf8");
     process.stderr.write(
-      "Live PR trial did not pass; keeping existing live_pr_artifact_trial_latest.json unchanged.\n"
+      `Live PR trial did not pass; keeping existing ${path.basename(fixtureSummaryPath)} unchanged.\n`
     );
   }
 

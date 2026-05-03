@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { validateLivePrArtifactTrialGate } from "../src/campaign/LivePrArtifactTrialGate.js";
+import { formatLivePrArtifactTrial, type LivePrArtifactTrialSummary } from "../src/campaign/LivePrArtifactTrial.js";
 
 type CommandResult = {
   exitCode: number | null;
@@ -15,6 +16,7 @@ type RefreshArgs = {
   limit: number;
   minLive: number;
   allowFallback: boolean;
+  release: string;
 };
 
 function artifactKeyForLimit(limit: number): "default" | "full" {
@@ -67,6 +69,11 @@ async function main(): Promise<void> {
       });
       const ageHours = ageInHours(cached.recordedAt);
       if (gateSummary.status === "passed" && ageHours <= args.maxCacheHours) {
+        await syncReleaseArtifacts({
+          summary: cached,
+          release: args.release,
+          artifactKey
+        });
         process.stdout.write(
           `${JSON.stringify(
             {
@@ -168,7 +175,8 @@ function parseArgs(argv: string[]): RefreshArgs {
     maxCacheHours: 24,
     limit: 25,
     minLive: 5,
-    allowFallback: true
+    allowFallback: true,
+    release: "STAX_Project-Control_9_5_RC4"
   };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
@@ -201,18 +209,61 @@ function parseArgs(argv: string[]): RefreshArgs {
       args.allowFallback = false;
       continue;
     }
+    if (token === "--release" && next) {
+      args.release = next;
+      index += 1;
+      continue;
+    }
   }
   return args;
 }
 
-async function loadCachedLiveTrial(artifactPath: string): Promise<{ recordedAt: string } | undefined> {
+async function loadCachedLiveTrial(artifactPath: string): Promise<LivePrArtifactTrialSummary | undefined> {
   try {
-    const raw = JSON.parse(await fs.readFile(artifactPath, "utf8")) as { recordedAt?: unknown };
+    const raw = JSON.parse(await fs.readFile(artifactPath, "utf8")) as Partial<LivePrArtifactTrialSummary>;
     if (typeof raw.recordedAt !== "string") return undefined;
-    return { recordedAt: raw.recordedAt };
+    if (typeof raw.fixtureSet !== "string") return undefined;
+    if (!Array.isArray(raw.blockers)) return undefined;
+    if (!Array.isArray(raw.cases)) return undefined;
+    if (
+      typeof raw.selectedCaseCount !== "number" ||
+      typeof raw.requestedCaseCount !== "number" ||
+      typeof raw.liveSourceCount !== "number" ||
+      typeof raw.fallbackSourceCount !== "number" ||
+      typeof raw.falseAccepts !== "number" ||
+      typeof raw.falseBlocks !== "number" ||
+      typeof raw.falseBlockRatePct !== "number" ||
+      typeof raw.usefulNextActionRate !== "number" ||
+      typeof raw.ciProofClassificationSurfaceRate !== "number" ||
+      (raw.status !== "passed" && raw.status !== "failed")
+    ) {
+      return undefined;
+    }
+    return raw as LivePrArtifactTrialSummary;
   } catch {
     return undefined;
   }
+}
+
+async function syncReleaseArtifacts(input: {
+  summary: LivePrArtifactTrialSummary;
+  release: string;
+  artifactKey: "default" | "full";
+}): Promise<void> {
+  const artifactBaseName =
+    input.artifactKey === "full" ? "pr_artifact_live_trial_full" : "pr_artifact_live_trial";
+  const artifactDir = path.join(process.cwd(), "docs", "releases", input.release, "artifacts");
+  await fs.mkdir(artifactDir, { recursive: true });
+  await fs.writeFile(
+    path.join(artifactDir, `${artifactBaseName}.json`),
+    JSON.stringify(input.summary, null, 2),
+    "utf8"
+  );
+  await fs.writeFile(
+    path.join(artifactDir, `${artifactBaseName}.md`),
+    `${formatLivePrArtifactTrial(input.summary)}\n`,
+    "utf8"
+  );
 }
 
 function ageInHours(isoTime: string): number {

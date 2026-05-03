@@ -21,6 +21,7 @@ npm run validate:all
 npm run pr-artifact:integrity
 npm run pr-artifact:score
 npm run pr-artifact:live-trial:refresh
+npm run pr-artifact:live-trial:full:refresh
 npm run campaign:promotion-gate
 npm run ci-failure:score
 npm run pr-review-comment:score
@@ -37,6 +38,8 @@ Included artifacts:
 - `artifacts/command_proof.md`
 - `artifacts/pr_artifact_live_trial.json`
 - `artifacts/pr_artifact_live_trial.md`
+- `artifacts/pr_artifact_live_trial_full.json`
+- `artifacts/pr_artifact_live_trial_full.md`
 
 Scope of allowed claim:
 
