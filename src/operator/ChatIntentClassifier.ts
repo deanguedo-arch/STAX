@@ -129,6 +129,33 @@ export class ChatIntentClassifier {
       });
     }
 
+    const issueTriage = this.extractIssueTriage(normalized, context);
+    if (issueTriage !== undefined) {
+      return this.plan({
+        intent: "issue_triage",
+        originalInput,
+        workspace: issueTriage.workspace,
+        objective: issueTriage.objective,
+        riskLevel: "low",
+        executionClass: "low_risk_artifact_creating",
+        operationsToRun: ["WorkspaceContext.resolve", "collectLocalEvidence", "RepoEvidencePack.build", "RaxRuntime.run codex_audit"],
+        evidenceRequired: [
+          "workspace registry or current repo",
+          "repo evidence pack",
+          "local evidence",
+          "Codex-like issue context in the user request"
+        ],
+        outputContract: [
+          "issue triage summary",
+          "evidence checked",
+          "provenance of any risk signal",
+          "next proof action"
+        ],
+        reasonCodes: [issueTriage.reasonCode],
+        confidence: "high"
+      });
+    }
+
     if (this.isAuditThisRepo(normalized)) {
       return this.plan({
         intent: "audit_workspace",
@@ -339,6 +366,21 @@ export class ChatIntentClassifier {
       return undefined;
     }
     return this.findMentionedWorkspace(input, context) ?? context.currentWorkspace;
+  }
+
+  private extractIssueTriage(input: string, context: ChatIntentContext): { workspace?: string; objective: string; reasonCode: string } | undefined {
+    if (!/\btriage\b/.test(input) || !/\b(issue|bug|ticket)\b/.test(input)) {
+      return undefined;
+    }
+
+    const workspace = this.findMentionedWorkspace(input, context) ?? (/\b(this|current|active) repo\b/.test(input) ? context.currentWorkspace : undefined);
+    const issueMatch = input.match(/(?:issue|ticket|bug)\s*(?:#\s*)?([a-z0-9-]+)/);
+    const issueLabel = issueMatch?.[1] ? `#${issueMatch[1]}` : "this issue";
+    return {
+      workspace,
+      objective: `Triage issue ${issueLabel} using read-only evidence and propose the next proof action.`,
+      reasonCode: issueMatch ? "issue_triage_numbered" : "issue_triage_request"
+    };
   }
 
   private extractBoundedPromptWorkspace(input: string, context: ChatIntentContext): string | undefined {

@@ -145,5 +145,11 @@ describe("workspace repo operator evidence pack", () => {
     const spacedAlias = classifier.classify("Canvas helper evidence says sportswellness needs rendered preview proof. What is the next move after current proof evidence?", { knownWorkspaces: ["canvas-helper"] });
     expect(spacedAlias.intent).toBe("workspace_repo_audit");
     expect(spacedAlias.workspace).toBe("canvas-helper");
+    expect(classifier.classify("issue triage #142 in this repo?", { knownWorkspaces: ["canvas-helper"], currentWorkspace: "canvas-helper" }).intent).toBe("issue_triage");
+    expect(classifier.classify("triage issue #142 in canvas-helper", { knownWorkspaces: ["canvas-helper"] }).intent).toBe("issue_triage");
+    expect(classifier.classify("triage this bug with #901 and propose next step", { knownWorkspaces: ["canvas-helper"], currentWorkspace: "canvas-helper" }).reasonCodes).toContain("issue_triage_numbered");
+    const unnumberedIssue = classifier.classify("triage issue", { knownWorkspaces: ["canvas-helper"] });
+    expect(unnumberedIssue.intent).toBe("issue_triage");
+    expect(unnumberedIssue.reasonCodes).toContain("issue_triage_request");
   });
 });

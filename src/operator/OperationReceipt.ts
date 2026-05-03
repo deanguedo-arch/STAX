@@ -285,7 +285,10 @@ function findEvidence(result: OperationExecutionResult, pattern: RegExp): string
 }
 
 function isRepoInspectionIntent(plan: OperationPlan): boolean {
-  return plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit" || plan.intent === "codex_report_audit";
+  return plan.intent === "audit_workspace" ||
+    plan.intent === "workspace_repo_audit" ||
+    plan.intent === "issue_triage" ||
+    plan.intent === "codex_report_audit";
 }
 
 function dedupeClaims(claims: OperationReceiptClaim[]): OperationReceiptClaim[] {

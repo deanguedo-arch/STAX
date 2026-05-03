@@ -85,7 +85,10 @@ export class DirectAnswerBuilder {
     if (isOperatingStateQuestion(plan)) {
       return operatingStateAnswer(result, foundTestsOrScripts);
     }
-    if ((suppliedCommandEvidence.length || storedCommandEvidence.length) && (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit")) {
+    if (
+      (suppliedCommandEvidence.length || storedCommandEvidence.length) &&
+      (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit" || plan.intent === "issue_triage")
+    ) {
       const sourceLabel = suppliedCommandEvidence.length ? "User-supplied command evidence" : "Stored command evidence";
       const statements = suppliedCommandEvidence.length ? suppliedCommandEvidence : storedCommandEvidence;
       return [
@@ -99,7 +102,7 @@ export class DirectAnswerBuilder {
       const tests = testFiles(result);
       return `STAX found ${scripts.length ? `test/script evidence (${scripts.join(", ")})` : "no package test scripts"} and ${tests.length ? `${tests.length} test file(s)` : "no test files"} by read-only inspection, but it did not run tests; pass/fail is unknown.`;
     }
-    if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
+    if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit" || plan.intent === "issue_triage") {
       return "STAX performed a read-only audit of the target workspace/repo. No source files were modified, and proof remains partial until the relevant commands or runtime checks are run.";
     }
     return "STAX handled this recognized operator request without approving, promoting, training, merging, or mutating durable system state.";

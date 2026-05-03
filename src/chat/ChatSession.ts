@@ -557,6 +557,7 @@ export class ChatSession {
     const result = await new OperationExecutor().execute(plan, {
       auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       workspaceRepoAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      issueTriage: (operationPlan) => this.executeIssueTriageOperation(operationPlan),
       codexReportAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       judgmentDigest: (operationPlan) => this.executeJudgmentDigestOperation(operationPlan),
       auditLastProof: (operationPlan) => this.executeAuditLastProofOperation(operationPlan)
@@ -580,11 +581,19 @@ export class ChatSession {
     const result = await new OperationExecutor().execute(plan, {
       auditWorkspace: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       workspaceRepoAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
+      issueTriage: (operationPlan) => this.executeIssueTriageOperation(operationPlan),
       codexReportAudit: (operationPlan) => this.executeAuditWorkspaceOperation(operationPlan),
       judgmentDigest: (operationPlan) => this.executeJudgmentDigestOperation(operationPlan),
       auditLastProof: (operationPlan) => this.executeAuditLastProofOperation(operationPlan)
     });
     return { output: new OperationFormatter().format(plan, result) };
+  }
+
+  private async executeIssueTriageOperation(plan: OperationPlan): Promise<OperationExecutionResult> {
+    return this.executeAuditWorkspaceOperation({
+      ...plan,
+      reasonCodes: plan.reasonCodes.length ? plan.reasonCodes : ["issue_triage_request"]
+    });
   }
 
   private async executeAuditWorkspaceOperation(plan: OperationPlan): Promise<OperationExecutionResult> {

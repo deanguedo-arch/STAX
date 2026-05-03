@@ -538,6 +538,31 @@ describe("Chat Operator v1B", () => {
     expect(after.sort()).toEqual(before.sort());
   });
 
+  it("triages issue-like requests with read-only evidence and no source mutation", async () => {
+    const rootDir = await tempRoot();
+    const linkedRepo = path.join(rootDir, "linked-canvas");
+    await fs.mkdir(path.join(linkedRepo, "src"), { recursive: true });
+    await fs.writeFile(path.join(linkedRepo, "package.json"), JSON.stringify({ scripts: { test: "vitest run", lint: "eslint ." } }), "utf8");
+    await fs.writeFile(path.join(linkedRepo, "README.md"), "# Canvas Helper\n", "utf8");
+    await fs.writeFile(path.join(linkedRepo, "src", "index.ts"), "export const value = 1;\n", "utf8");
+    const before = await fs.readdir(linkedRepo, { recursive: true });
+    await new WorkspaceStore(rootDir).create({ workspace: "canvas-helper", repoPath: "linked-canvas", use: true });
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("triage issue #142 in canvas-helper");
+
+    expect(result.output).toContain("Operation: issue_triage");
+    expect(result.output).toContain("Triage issue #142");
+    expect(result.output).toContain("No source files were modified.");
+    expect(result.output).toContain("Workspace: canvas-helper");
+    expect(result.output).toContain("Run `npm test`");
+    expect(result.output).toContain("paste back the full output");
+    expect(result.output).toContain("Operation: issue_triage");
+    const after = await fs.readdir(linkedRepo, { recursive: true });
+    expect(after.sort()).toEqual(before.sort());
+  });
+
   it("does not audit the wrong repo when a named workspace is missing", async () => {
     const rootDir = await tempRoot();
     const runtime = await createDefaultRuntime({ rootDir });

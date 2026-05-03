@@ -93,7 +93,7 @@ export class NextStepBuilder {
     if (plan.intent === "audit_last_proof") {
       return "Run the exact verification command named in the audit's Required Next Proof section and paste back the command output.";
     }
-    if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit") {
+    if (plan.intent === "audit_workspace" || plan.intent === "workspace_repo_audit" || plan.intent === "issue_triage") {
       return "Use the audit's Required Next Proof as the next task, then paste back the resulting command output or Codex final report.";
     }
     return evidenceRequestFor(plan, result).pasteBackInstructions;

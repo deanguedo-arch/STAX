@@ -20,6 +20,11 @@ export class OperationRegistry {
         autoExecutable: true
       },
       {
+        intent: "issue_triage",
+        description: "Triage a named issue or issue-like problem using read-only evidence and propose the next proof action.",
+        autoExecutable: true
+      },
+      {
         intent: "codex_report_audit",
         description: "Audit a supplied Codex report against read-only repo evidence and proof requirements.",
         autoExecutable: true
