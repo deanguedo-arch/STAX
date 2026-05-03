@@ -46,6 +46,7 @@
     "campaign:operating-window": "tsx scripts/operatingWindow.ts",
     "campaign:promotion-gate": "tsx scripts/promotionGate95.ts",
     "campaign:overblock": "tsx scripts/overblockCalibration.ts",
+    "stax:ops-dashboard": "tsx scripts/opsDashboard.ts",
     "repo-transfer:integrity": "tsx scripts/repoTransferIntegrity.ts",
     "repo-transfer:score": "tsx scripts/repoTransferScore.ts",
     "repo-transfer:prepare": "tsx scripts/prepareRepoTransferRun.ts",
