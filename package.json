@@ -39,6 +39,8 @@
     "campaign:judgments": "tsx scripts/humanJudgmentConsole.ts",
     "repo-onboarding:card": "tsx scripts/repoOnboardingAutopilot.ts",
     "repo-onboarding:score": "tsx scripts/repoOnboardingScore.ts",
+    "ci-failure:score": "tsx scripts/ciFailureTriageScore.ts",
+    "pr-review-comment:score": "tsx scripts/prReviewCommentScore.ts",
     "pr-artifact:integrity": "tsx scripts/prArtifactTrialIntegrity.ts",
     "pr-artifact:score": "tsx scripts/prArtifactTrialScore.ts",
     "pr-artifact:audit": "tsx scripts/auditLivePrArtifact.ts",

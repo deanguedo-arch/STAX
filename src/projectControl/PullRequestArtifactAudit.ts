@@ -17,14 +17,44 @@ export function suggestPullRequestComment(args: {
 }): string {
   const firstUnverified = args.audit.unverified[0] ?? "proof remains incomplete";
   const firstRisk = args.audit.risk[0] ?? "the proof boundary is still weak";
+  const packet = args.packet;
+  const expectedSha = packet.commitSha ?? "the current PR head SHA";
+  const openReview = packet.reviewComments.some((comment) => comment.state !== "resolved");
+  const ciSummary = packet.ciStatuses[0];
+  const firstWorkflow = ciSummary?.workflow ?? "the relevant workflow";
+  const lowerUnverified = args.audit.unverified.join("\n").toLowerCase();
+  const lowerWeak = args.audit.weak.join("\n").toLowerCase();
+  const lowerRisk = args.audit.risk.join("\n").toLowerCase();
+
   if (args.audit.verdict === "accept") {
-    return `This public PR artifact looks bounded and internally consistent, but it still needs human approval and repo-local proof before any merge or release claim.`;
+    return `This public PR artifact looks bounded and internally consistent, but it still needs human approval and repo-local proof before any merge or release claim. Please keep this artifact packet attached for the final human decision.`;
   }
   if (args.audit.verdict === "human_review") {
-    return `This needs human review before approval because open review discussion remains and ${firstRisk.toLowerCase()}. Please resolve the open thread(s), then return with the updated artifact state.`;
+    if (openReview) {
+      return `This needs human review before approval because at least one review thread is still open. Please resolve the open thread(s), keep the artifact packet aligned to ${expectedSha}, and return with the updated review state.`;
+    }
+    return `This needs human review before approval because ${stripPrefix(firstRisk).toLowerCase()}. Please return with the smallest updated artifact packet after the review concern is resolved.`;
   }
   if (args.audit.verdict === "reject") {
+    if (/wrong_commit|stale_proof|wrong_branch/.test(lowerUnverified)) {
+      return `This is not ready to accept because the CI proof is not aligned to ${expectedSha}. Please rerun ${firstWorkflow} on ${expectedSha} and return the job output plus branch, commit, and completion state.`;
+    }
+    if (/docs_only_implementation_claim/.test(lowerUnverified)) {
+      return `This is not ready to accept because the diff is docs-only and does not prove the implementation claim. Please return with the source diff and the smallest test or command proof packet for the claimed behavior.`;
+    }
+    if (/visual claim remains unverified/.test(lowerUnverified)) {
+      return `This is not ready to accept because the visual claim has no rendered proof. Please attach the relevant screenshot or visual checklist for the changed state and return with the bounded artifact packet.`;
+    }
+    if (/release\/deploy claim remains unverified/.test(lowerUnverified) || /rollback/.test(lowerRisk)) {
+      return `This is not ready to accept because the release proof is incomplete. Please return with the build result, target environment proof, and rollback or revert evidence for this PR state.`;
+    }
+    if (/fixture|golden/.test(lowerRisk)) {
+      return `This is not ready to accept because fixture or golden-file changes can hide behavior drift. Please return with the smallest behavior test proof and explain what changed in the fixture artifact.`;
+    }
     return `This is not ready to accept because ${stripPrefix(firstUnverified)}. Please return with the smallest missing proof packet instead of a completion claim.`;
+  }
+  if (/ci_proof|not_relevant_to_claim/.test(lowerUnverified) || /ci_proof|not_relevant_to_claim/.test(lowerWeak) || /ci_proof/.test(lowerRisk)) {
+    return `This should stay provisional because the available CI proof is not yet strong enough for the claim. Please add the smallest local or claim-relevant proof artifact before asking for approval.`;
   }
   return `This should stay provisional because ${stripPrefix(firstUnverified)}. Please add the smallest missing proof artifact before asking for approval.`;
 }
@@ -45,6 +75,9 @@ export function auditPullRequestArtifact(args: {
   const unverified: string[] = [];
   const risk: string[] = [];
   const lowerTask = `${args.task}\n${packet.title}\n${packet.body}`.toLowerCase();
+  const claimsImplementation = /\bimplement|implementation|fix|behavior|build\b/i.test(lowerTask);
+  const claimsRelease = /\brelease|deploy|publish|sync\b/i.test(lowerTask);
+  const claimsVisual = /\bvisual|layout|ui\b/i.test(lowerTask);
 
   verified.push(`PR #${packet.prNumber} artifact packet supplied.`);
   if (packet.branch) verified.push(`PR branch is ${packet.branch}.`);
@@ -72,9 +105,9 @@ export function auditPullRequestArtifact(args: {
       })),
       claims: [
         {
-          claimType: /\bvisual|layout|ui\b/i.test(lowerTask)
+          claimType: claimsVisual
             ? "visual"
-            : /\bimplement|fix|complete\b/i.test(lowerTask)
+            : /\bimplement|fix|complete|build\b/i.test(lowerTask)
               ? "implementation"
               : "behavior",
           text: packet.title,
@@ -102,6 +135,15 @@ export function auditPullRequestArtifact(args: {
       unverified.push(`PR diff audit rejects the implementation claim due to ${diffAudit.findings.map((f) => f.id).join(", ") || "unsupported diff evidence"}.`);
       risk.push(...diffAudit.findings.slice(0, 2).map((finding) => `PR diff risk: ${finding.message}`));
     }
+  }
+
+  if (claimsImplementation && parsedDiff.length === 0) {
+    unverified.push("PR artifact lacks unified diff evidence for the claimed implementation or behavior change.");
+    risk.push("PR diff risk: changed-file names alone do not prove the claimed implementation path.");
+  }
+
+  if ((claimsImplementation || claimsRelease) && packet.ciStatuses.length === 0) {
+    weak.push("PR artifact has no CI or command proof for the claimed implementation, behavior, build, or release change.");
   }
 
   for (const status of packet.ciStatuses) {
@@ -150,12 +192,12 @@ export function auditPullRequestArtifact(args: {
     verified.push(`PR links ${packet.issueLinks.length} issue artifact(s).`);
   }
 
-  if (/\bvisual|layout|ui\b/i.test(lowerTask) && !/\b(screenshot|visual checklist|rendered preview|playwright)\b/i.test(packet.body)) {
+  if (claimsVisual && !/\b(screenshot|visual checklist|rendered preview|playwright)\b/i.test(packet.body)) {
     unverified.push("PR visual claim remains unverified because no visual artifact is attached.");
     risk.push("PR visual risk: changed CSS or UI files do not prove rendered behavior.");
   }
 
-  if (/\brelease|deploy|publish|sync\b/i.test(lowerTask) && !/\brollback|revert\b/i.test(packet.body)) {
+  if (claimsRelease && !/\brollback|revert\b/i.test(packet.body)) {
     unverified.push("PR release/deploy claim remains unverified because rollback or revert proof is absent.");
     risk.push("PR release risk: readiness claim lacks rollback language or evidence.");
   }
@@ -163,7 +205,7 @@ export function auditPullRequestArtifact(args: {
   const hasReject = unverified.length > 0 && risk.length > 0;
   const hasReview = packet.reviewComments.some((comment) => comment.state !== "resolved");
   const verdict: PullRequestArtifactAuditResult["verdict"] =
-    hasReject ? "reject" : hasReview ? "human_review" : weak.length > 0 ? "provisional" : "accept";
+    hasReview ? "human_review" : hasReject ? "reject" : weak.length > 0 ? "provisional" : "accept";
 
   return {
     verdict,

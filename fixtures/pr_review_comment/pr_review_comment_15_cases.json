@@ -1,0 +1,350 @@
+[
+  {
+    "caseId": "pr_comment_wrong_commit",
+    "task": "Audit whether this behavior fix is proven.",
+    "expectedCommitSha": "head1234",
+    "packet": {
+      "prNumber": 101,
+      "title": "Fix behavior path",
+      "body": "Behavior fix.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "head1234",
+      "changedFiles": ["src/agents/AnalystAgent.ts", "tests/projectControlMode.test.ts"],
+      "ciStatuses": [
+        {
+          "workflow": "CI",
+          "provider": "github_actions",
+          "status": "success",
+          "branch": "main",
+          "commitSha": "old5678",
+          "summary": "workflow completed successfully"
+        }
+      ],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["rerun ci", "head1234", "job output"]
+    }
+  },
+  {
+    "caseId": "pr_comment_docs_only",
+    "task": "Audit whether this implementation fix is proven.",
+    "packet": {
+      "prNumber": 102,
+      "title": "Document rollout",
+      "body": "Docs refresh only.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "docs1234",
+      "changedFiles": ["docs/NOTE.md"],
+      "unifiedDiff": "diff --git a/docs/NOTE.md b/docs/NOTE.md\n--- a/docs/NOTE.md\n+++ b/docs/NOTE.md\n@@ -1 +1 @@\n-old\n+new",
+      "ciStatuses": [],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["docs-only", "source diff", "test or command proof"]
+    }
+  },
+  {
+    "caseId": "pr_comment_visual_missing",
+    "task": "Audit whether this UI fix is proven.",
+    "packet": {
+      "prNumber": 103,
+      "title": "Tighten layout spacing",
+      "body": "UI tweak only.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "ui1234",
+      "changedFiles": ["projects/sportswellness/workspace/styles.css"],
+      "ciStatuses": [],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["visual claim", "screenshot", "artifact packet"]
+    }
+  },
+  {
+    "caseId": "pr_comment_release_missing",
+    "task": "Audit whether this deploy change is ready to release.",
+    "packet": {
+      "prNumber": 104,
+      "title": "Prepare deploy path",
+      "body": "Deploy follow-up.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "rel1234",
+      "changedFiles": ["scripts/deploy.ts"],
+      "ciStatuses": [],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["build result", "target environment proof", "rollback or revert evidence"]
+    }
+  },
+  {
+    "caseId": "pr_comment_fixture_risk",
+    "task": "Audit whether this behavior fix is proven.",
+    "packet": {
+      "prNumber": 105,
+      "title": "Refresh golden output",
+      "body": "Fixture update.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "fix1234",
+      "changedFiles": ["fixtures/sample.golden.json"],
+      "unifiedDiff": "diff --git a/fixtures/sample.golden.json b/fixtures/sample.golden.json\n--- a/fixtures/sample.golden.json\n+++ b/fixtures/sample.golden.json\n@@ -1 +1 @@\n-old\n+new",
+      "ciStatuses": [],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["fixture or golden-file", "behavior test proof", "fixture artifact"]
+    }
+  },
+  {
+    "caseId": "pr_comment_human_review",
+    "task": "Audit whether this implementation fix is proven.",
+    "packet": {
+      "prNumber": 106,
+      "title": "Tighten validator",
+      "body": "Includes tests and proof notes.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "rev1234",
+      "changedFiles": ["src/validators/ProjectControlValidator.ts"],
+      "ciStatuses": [],
+      "reviewComments": [
+        { "body": "Please verify the edge case.", "state": "open" }
+      ],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["review thread", "rev1234", "updated review state"]
+    }
+  },
+  {
+    "caseId": "pr_comment_provisional_ci",
+    "task": "Audit whether this behavior fix is proven.",
+    "packet": {
+      "prNumber": 107,
+      "title": "Fix behavior path",
+      "body": "Behavior fix.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "prov1234",
+      "changedFiles": ["src/agents/AnalystAgent.ts"],
+      "ciStatuses": [
+        {
+          "workflow": "CI",
+          "provider": "github_actions",
+          "status": "success",
+          "branch": "main",
+          "commitSha": "prov1234",
+          "summary": "workflow completed successfully"
+        }
+      ],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["not ready to accept", "missing proof packet"]
+    }
+  },
+  {
+    "caseId": "pr_comment_accept",
+    "task": "Audit whether this public PR artifact is internally consistent.",
+    "packet": {
+      "prNumber": 108,
+      "title": "Bounded internal consistency check",
+      "body": "Includes screenshot and rollback note.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "ok1234",
+      "changedFiles": ["src/projectControl/ControlCard.ts", "tests/projectControlMode.test.ts"],
+      "unifiedDiff": "diff --git a/src/projectControl/ControlCard.ts b/src/projectControl/ControlCard.ts\n--- a/src/projectControl/ControlCard.ts\n+++ b/src/projectControl/ControlCard.ts\n@@ -1 +1 @@\n-old\n+new",
+      "ciStatuses": [],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["human approval", "repo-local proof", "merge or release claim"]
+    }
+  },
+  {
+    "caseId": "pr_comment_wrong_branch",
+    "task": "Audit whether this behavior fix is proven.",
+    "expectedBranch": "main",
+    "packet": {
+      "prNumber": 109,
+      "title": "Fix behavior path",
+      "body": "Behavior fix.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "feature/demo",
+      "commitSha": "branch1234",
+      "changedFiles": ["src/agents/AnalystAgent.ts"],
+      "ciStatuses": [
+        {
+          "workflow": "CI",
+          "provider": "github_actions",
+          "status": "success",
+          "branch": "feature/demo",
+          "commitSha": "branch1234",
+          "summary": "workflow completed successfully"
+        }
+      ],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": []
+    },
+    "expectation": {
+      "mustInclude": ["rerun ci", "branch1234"]
+    }
+  },
+  {
+    "caseId": "pr_comment_release_wording_from_risk",
+    "task": "Audit whether this publish change is ready.",
+    "packet": {
+      "prNumber": 110,
+      "title": "Prepare publish path",
+      "body": "Publish notes only.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "pub1234",
+      "changedFiles": ["scripts/publish.ts"],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": [],
+      "ciStatuses": []
+    },
+    "expectation": {
+      "mustInclude": ["release proof is incomplete", "rollback or revert evidence"]
+    }
+  },
+  {
+    "caseId": "pr_comment_open_review_with_risk",
+    "task": "Audit whether this behavior fix is proven.",
+    "packet": {
+      "prNumber": 111,
+      "title": "Fix behavior path",
+      "body": "Behavior fix.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "hr1234",
+      "changedFiles": ["src/agents/AnalystAgent.ts"],
+      "reviewComments": [
+        { "body": "Still missing the failure path.", "state": "open" }
+      ],
+      "issueLinks": [],
+      "labels": [],
+      "ciStatuses": []
+    },
+    "expectation": {
+      "mustInclude": ["human review", "resolve the open thread"]
+    }
+  },
+  {
+    "caseId": "pr_comment_visual_and_review",
+    "task": "Audit whether this layout fix is proven.",
+    "packet": {
+      "prNumber": 112,
+      "title": "Adjust card spacing",
+      "body": "Layout tweak only.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "ui5678",
+      "changedFiles": ["projects/sportswellness/workspace/styles.css"],
+      "reviewComments": [
+        { "body": "Need screenshot.", "state": "open" }
+      ],
+      "issueLinks": [],
+      "labels": [],
+      "ciStatuses": []
+    },
+    "expectation": {
+      "mustInclude": ["review thread", "ui5678"]
+    }
+  },
+  {
+    "caseId": "pr_comment_build_claim_fallback",
+    "task": "Audit whether this build fix is proven.",
+    "packet": {
+      "prNumber": 113,
+      "title": "Fix build path",
+      "body": "Build fix.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "bld1234",
+      "changedFiles": ["src/core/RaxRuntime.ts"],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": [],
+      "ciStatuses": []
+    },
+    "expectation": {
+      "mustInclude": ["not ready to accept", "missing proof packet"]
+    }
+  },
+  {
+    "caseId": "pr_comment_ci_not_relevant",
+    "task": "Audit whether this release change is ready.",
+    "packet": {
+      "prNumber": 114,
+      "title": "Prepare release path",
+      "body": "Release prep.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "irre1234",
+      "changedFiles": ["scripts/release.ts"],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": [],
+      "ciStatuses": [
+        {
+          "workflow": "Unrelated docs workflow",
+          "provider": "github_actions",
+          "status": "success",
+          "branch": "main",
+          "commitSha": "irre1234",
+          "summary": "docs only"
+        }
+      ]
+    },
+    "expectation": {
+      "mustInclude": ["release proof is incomplete", "rollback or revert evidence"]
+    }
+  },
+  {
+    "caseId": "pr_comment_no_broad_language",
+    "task": "Audit whether this implementation fix is proven.",
+    "packet": {
+      "prNumber": 115,
+      "title": "Tighten implementation path",
+      "body": "Implementation fix.",
+      "repo": "/Users/deanguedo/Documents/GitHub/STAX",
+      "branch": "main",
+      "commitSha": "broad1234",
+      "changedFiles": ["src/projectControl/ProjectControlProofStack.ts"],
+      "reviewComments": [],
+      "issueLinks": [],
+      "labels": [],
+      "ciStatuses": []
+    },
+    "expectation": {
+      "mustInclude": ["not ready to accept"],
+      "forbiddenPhrases": ["fix everything", "ship it", "lgtm", "approve this"]
+    }
+  }
+]
