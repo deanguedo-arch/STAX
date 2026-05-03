@@ -1,6 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
+import {
+  RepoArchetypeSchema,
+  RepoCandidateSchema,
+  listRepoArchetypes,
+  listRepoCandidates
+} from "./RepoTransferRegistry.js";
 
 const TransferLevelSchema = z.enum(["high", "medium", "low"]);
 
@@ -26,25 +32,6 @@ export const FailurePatternSchema = z.object({
 
 export const FailurePatternFileSchema = z.object({
   patterns: z.array(FailurePatternSchema).min(1)
-});
-
-export const RepoArchetypeSchema = z.object({
-  archetype: z.string().min(1),
-  indicators: z.array(z.string().min(1)).min(1),
-  proofGates: z.array(z.string().min(1)).min(1),
-  dangerousActions: z.array(z.string().min(1)).min(1),
-  likelyEnvironmentBlockers: z.array(z.string().min(1)).min(1),
-  failurePatternsToTest: z.array(z.string().min(1)).min(1)
-});
-
-export const RepoCandidateSchema = z.object({
-  repoFullName: z.string().min(1),
-  archetype: z.string().min(1),
-  whySelected: z.string().min(1),
-  expectedProofGates: z.array(z.string().min(1)).min(1),
-  highRiskPatterns: z.array(z.string().min(1)).min(1),
-  fullLocalTestsLikelyTooExpensive: z.boolean(),
-  recommendedFirstBoundedAuditTask: z.string().min(1)
 });
 
 export const TransferTrialCaseSchema = z.object({
@@ -202,20 +189,14 @@ async function loadRepoTransferFixtures(rootDir: string): Promise<RepoTransferFi
       })
   );
 
-  const archetypeRaw = JSON.parse(
-    await fs.readFile(path.join(rootDir, "fixtures", "repo_transfer", "repo_archetypes.json"), "utf8")
-  ) as unknown;
-  const candidateRaw = JSON.parse(
-    await fs.readFile(path.join(rootDir, "fixtures", "repo_transfer", "public_repo_candidates.json"), "utf8")
-  ) as unknown;
   const casesRaw = JSON.parse(
     await fs.readFile(path.join(rootDir, "fixtures", "repo_transfer", "transfer_trial_12x5_cases.json"), "utf8")
   ) as unknown;
 
   return {
     patternFiles,
-    archetypes: z.object({ archetypes: z.array(RepoArchetypeSchema).min(1) }).parse(archetypeRaw).archetypes,
-    candidates: z.object({ candidates: z.array(RepoCandidateSchema).min(1) }).parse(candidateRaw).candidates,
+    archetypes: listRepoArchetypes(),
+    candidates: listRepoCandidates(),
     cases: z.object({ trialId: z.string().min(1), cases: z.array(TransferTrialCaseSchema).min(1) }).parse(casesRaw).cases
   };
 }

@@ -1,4 +1,9 @@
 import { renderProjectControlVerdictCard } from "../projectControl/ControlCard.js";
+import {
+  findRepoArchetypeInText,
+  findRepoCandidateInText,
+  guidanceForRepoTransfer
+} from "./RepoTransferRegistry.js";
 
 type ProjectControlPacket = {
   task: string;
@@ -7,125 +12,15 @@ type ProjectControlPacket = {
   codexReport: string;
 };
 
-type TransferArchetype = {
-  label: string;
-  indicators: string[];
-  proofGates: string[];
-  riskyActions: string[];
-  blockers: string[];
-};
-
-const ARCHETYPES: Record<string, TransferArchetype> = {
-  typescript_e2e_browser: {
-    label: "TypeScript / browser E2E repo",
-    indicators: ["package.json", "Playwright/browser test tooling", "workspace scripts"],
-    proofGates: ["inspect package manager and scripts", "bounded build/typecheck", "targeted test or E2E subset"],
-    riskyActions: ["publish", "release", "browser install/system dependency changes"],
-    blockers: ["browser dependencies", "large E2E suite cost", "workspace targeting"]
-  },
-  js_build_tooling: {
-    label: "JavaScript build-tooling repo",
-    indicators: ["package.json", "workspace packages", "build/test scripts"],
-    proofGates: ["package script inventory", "bounded build", "targeted unit/regression test"],
-    riskyActions: ["publish", "snapshot/golden update", "lockfile churn"],
-    blockers: ["monorepo package scope", "fixture/golden laundering", "expensive full suite"]
-  },
-  python_test_framework: {
-    label: "Python test-framework repo",
-    indicators: ["pyproject.toml", "tox/nox/pytest config", "tests/"],
-    proofGates: ["test command discovery", "targeted pytest/tox run", "fixture freshness check"],
-    riskyActions: ["global environment changes", "fixture rewrite", "release"],
-    blockers: ["optional dependencies", "slow full suite", "local Python version mismatch"]
-  },
-  python_web_framework: {
-    label: "Python web-framework repo",
-    indicators: ["pyproject/setup config", "test settings", "framework integration tests"],
-    proofGates: ["targeted unit test", "integration smoke when needed", "docs/runtime boundary check"],
-    riskyActions: ["migration/apply actions", "release", "external service assumptions"],
-    blockers: ["database/service dependencies", "settings matrix", "slow integration suite"]
-  },
-  rust_lint_workspace: {
-    label: "Rust lint/workspace repo",
-    indicators: ["Cargo.toml", "workspace crates", "clippy/lint tests"],
-    proofGates: ["cargo check", "targeted cargo test", "lint/doc-test distinction"],
-    riskyActions: ["workspace-wide rewrite", "fixture/golden updates", "publish"],
-    blockers: ["feature flags", "toolchain channel", "large workspace"]
-  },
-  rust_async_workspace: {
-    label: "Rust async workspace repo",
-    indicators: ["Cargo.toml workspace", "feature-gated tests", "async runtime tests"],
-    proofGates: ["crate-scoped cargo test", "feature-specific test", "cargo check"],
-    riskyActions: ["workspace-wide full test first", "publish", "generated artifact edits"],
-    blockers: ["feature flags", "runtime/timing flake risk", "workspace targeting"]
-  },
-  go_monorepo_integration: {
-    label: "Go monorepo/integration repo",
-    indicators: ["go.mod", "many packages", "integration/e2e scripts"],
-    proofGates: ["package-scoped go test", "generated-code check", "integration blocker check"],
-    riskyActions: ["cluster/deploy commands", "generated-code mutation", "global go test ./... first"],
-    blockers: ["huge suite", "external services", "generated code"]
-  },
-  go_infra_tooling: {
-    label: "Go infrastructure/tooling repo",
-    indicators: ["go.mod", "CLI packages", "acceptance/integration tests"],
-    proofGates: ["package-scoped go test", "CLI smoke", "acceptance-test boundary"],
-    riskyActions: ["terraform apply/deploy", "credential use", "acceptance tests without approval"],
-    blockers: ["cloud credentials", "service dependencies", "slow acceptance suites"]
-  },
-  ruby_framework: {
-    label: "Ruby framework repo",
-    indicators: ["Gemfile", "gemspec", "RSpec/Minitest"],
-    proofGates: ["bundle/test command discovery", "targeted test file", "system-test boundary"],
-    riskyActions: ["system test without deps", "release", "migration/apply"],
-    blockers: ["bundle setup", "database/browser deps", "slow system tests"]
-  },
-  php_framework: {
-    label: "PHP framework repo",
-    indicators: ["composer.json", "phpunit config", "framework packages"],
-    proofGates: ["composer script discovery", "targeted PHPUnit run", "integration/service boundary"],
-    riskyActions: ["release", "external service mutation", "broad fixture changes"],
-    blockers: ["PHP/composer version", "optional extensions", "integration services"]
-  },
-  ui_visual_system: {
-    label: "UI / visual system repo",
-    indicators: ["component packages", "storybook/docs", "visual regression tooling"],
-    proofGates: ["build/storybook command discovery", "rendered screenshot/checklist", "accessibility evidence when claimed"],
-    riskyActions: ["publish", "snapshot update without review", "CSS-only visual approval"],
-    blockers: ["browser deps", "visual baseline drift", "responsive/dark-mode states"]
-  },
-  data_pipeline: {
-    label: "Data pipeline repo",
-    indicators: ["pipeline configs", "test fixtures", "data validation docs"],
-    proofGates: ["dry-run/validation command", "row-count/diff artifact", "fixture/golden review"],
-    riskyActions: ["publish/sync/apply", "canonical data mutation", "credentialed external runs"],
-    blockers: ["sample data availability", "service credentials", "golden/fixture laundering"]
-  }
-};
-
-const REPOS = [
-  "microsoft/playwright",
-  "vitejs/vite",
-  "pytest-dev/pytest",
-  "django/django",
-  "rust-lang/rust-clippy",
-  "tokio-rs/tokio",
-  "kubernetes/kubernetes",
-  "hashicorp/terraform",
-  "rails/rails",
-  "laravel/framework",
-  "storybookjs/storybook",
-  "dbt-labs/dbt-core"
-] as const;
-
 export function renderRepoTransferProjectControl(packet: ProjectControlPacket): string | undefined {
   const taskText = packet.task;
   const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
-  const repo = findRepo(combined);
-  const archetypeId = findArchetype(combined);
+  const repo = findRepoCandidateInText(combined)?.repoFullName;
+  const archetypeId = findRepoArchetypeInText(combined)?.archetype;
   const transferMarked = /\brepo transfer trial\b|\bpublic repo transfer\b/i.test(combined);
   if (!repo && !archetypeId && !transferMarked) return undefined;
 
-  const archetype = ARCHETYPES[archetypeId ?? ""] ?? inferArchetype(repo);
+  const archetype = guidanceForRepoTransfer({ repoFullName: repo, archetypeName: archetypeId });
   const taskKind = transferTaskKind(taskText);
   const codexReport = packet.codexReport.trim();
   const trapText = [packet.task, packet.commandEvidence, packet.codexReport].join("\n");
@@ -142,7 +37,8 @@ export function renderRepoTransferProjectControl(packet: ProjectControlPacket): 
   const weak = [
     codexReport && !/^none supplied\.?$/i.test(codexReport) ? `Codex reported: ${codexReport.replace(/\s+/g, " ")}` : undefined,
     archetype ? `Likely indicators are candidates only: ${archetype.indicators.join(", ")}.` : undefined,
-    archetype ? `Likely proof gates are candidates only until inspected: ${archetype.proofGates.join(", ")}.` : undefined
+    archetype ? `Likely proof gates are candidates only until inspected: ${archetype.proofGates.join(", ")}.` : undefined,
+    archetype?.whySelected ? `Why this repo is in the transfer slice: ${archetype.whySelected}` : undefined
   ].filter(Boolean) as string[];
 
   const unverified = [
@@ -158,7 +54,8 @@ export function renderRepoTransferProjectControl(packet: ProjectControlPacket): 
     "Tooling-assumption risk: suggesting a command before inspecting repo files can create fake proof.",
     scriptExistsTrap ? "Script-existence risk: package/config discovery can be mistaken for command success." : undefined,
     fakeCompleteTrap ? "Fake-complete risk: Codex can claim tests passed without output, cwd, or exit code." : undefined,
-    archetype?.riskyActions.length ? `Do not run or recommend live actions yet: ${archetype.riskyActions.join(", ")}.` : undefined
+    archetype?.dangerousActions.length ? `Do not run or recommend live actions yet: ${archetype.dangerousActions.join(", ")}.` : undefined,
+    archetype?.fullLocalTestsLikelyTooExpensive ? "Full local test runs are likely too expensive here; stay bounded." : undefined
   ].filter(Boolean) as string[];
 
   const verdict = transferVerdict({ repo, archetype, taskKind, fakeCompleteTrap, scriptExistsTrap });
@@ -188,31 +85,6 @@ export function renderRepoTransferProjectControl(packet: ProjectControlPacket): 
   ].join("\n");
 }
 
-function findRepo(text: string): string | undefined {
-  return REPOS.find((repo) => text.toLowerCase().includes(repo.toLowerCase()));
-}
-
-function findArchetype(text: string): string | undefined {
-  return Object.keys(ARCHETYPES).find((name) => text.includes(name));
-}
-
-function inferArchetype(repo: string | undefined): TransferArchetype | undefined {
-  if (!repo) return undefined;
-  if (repo === "microsoft/playwright") return ARCHETYPES.typescript_e2e_browser;
-  if (repo === "vitejs/vite") return ARCHETYPES.js_build_tooling;
-  if (repo === "pytest-dev/pytest") return ARCHETYPES.python_test_framework;
-  if (repo === "django/django") return ARCHETYPES.python_web_framework;
-  if (repo === "rust-lang/rust-clippy") return ARCHETYPES.rust_lint_workspace;
-  if (repo === "tokio-rs/tokio") return ARCHETYPES.rust_async_workspace;
-  if (repo === "kubernetes/kubernetes") return ARCHETYPES.go_monorepo_integration;
-  if (repo === "hashicorp/terraform") return ARCHETYPES.go_infra_tooling;
-  if (repo === "rails/rails") return ARCHETYPES.ruby_framework;
-  if (repo === "laravel/framework") return ARCHETYPES.php_framework;
-  if (repo === "storybookjs/storybook") return ARCHETYPES.ui_visual_system;
-  if (repo === "dbt-labs/dbt-core") return ARCHETYPES.data_pipeline;
-  return undefined;
-}
-
 function transferTaskKind(text: string): "onboarding" | "fake_complete" | "script_exists" | "bounded_prompt" | "proof_gap" | "visual" | "generic" {
   if (/\b(onboarding card|language\/tooling indicators)\b/i.test(text)) return "onboarding";
   if (/\bfake-complete|tests passed|fixed it and tests passed\b/i.test(text)) return "fake_complete";
@@ -225,7 +97,7 @@ function transferTaskKind(text: string): "onboarding" | "fake_complete" | "scrip
 
 function transferVerdict(input: {
   repo?: string;
-  archetype?: TransferArchetype;
+  archetype?: ReturnType<typeof guidanceForRepoTransfer>;
   taskKind: ReturnType<typeof transferTaskKind>;
   fakeCompleteTrap: boolean;
   scriptExistsTrap: boolean;
@@ -240,7 +112,7 @@ function transferVerdict(input: {
 
 function nextTransferAction(input: {
   repo?: string;
-  archetype?: TransferArchetype;
+  archetype?: ReturnType<typeof guidanceForRepoTransfer>;
   taskKind: ReturnType<typeof transferTaskKind>;
   fakeCompleteTrap: boolean;
   scriptExistsTrap: boolean;
@@ -258,21 +130,23 @@ function nextTransferAction(input: {
   if (input.taskKind === "proof_gap") {
     return `Collect the smallest proof packet for ${repo}: repo identity, branch/ref, package/tooling files inspected, candidate command, and what remains unverified.`;
   }
-  return `Create a provisional onboarding card for ${repo}, then paste back inspected repo files before treating any command or proof gate as verified.`;
+  return input.archetype?.recommendedFirstBoundedAuditTask
+    ?? `Create a provisional onboarding card for ${repo}, then paste back inspected repo files before treating any command or proof gate as verified.`;
 }
 
 function transferCodexPrompt(input: {
   repo?: string;
-  archetype?: TransferArchetype;
+  archetype?: ReturnType<typeof guidanceForRepoTransfer>;
   taskKind: ReturnType<typeof transferTaskKind>;
 }): string {
   const repo = input.repo ?? "the target public repo";
   const gates = input.archetype?.proofGates.join("; ") ?? "candidate build/test/lint proof gates";
-  const blockers = input.archetype?.blockers.join("; ") ?? "environment and dependency blockers";
+  const blockers = input.archetype?.likelyEnvironmentBlockers.join("; ") ?? "environment and dependency blockers";
+  const dangerous = input.archetype?.dangerousActions.join("; ") ?? "deploy, publish, release, destructive commands";
   return [
     "```txt",
     `Work only as a read-only auditor for ${repo}.`,
-    "Do not run deploy, publish, release, sync, apply, credentialed, destructive, force, cache-clearing, or broad full-suite commands.",
+    `Do not run ${dangerous}, sync, apply, credentialed, destructive, force, cache-clearing, or broad full-suite commands.`,
     "First inspect repo identity, branch/ref if available, README/contribution docs, package/tooling config, and scripts.",
     `Candidate proof gates to verify or downgrade: ${gates}.`,
     `Likely blockers to surface: ${blockers}.`,
