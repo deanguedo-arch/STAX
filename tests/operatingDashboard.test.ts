@@ -119,14 +119,33 @@ describe("Operating dashboard", () => {
           evalCandidate: true
         }))
       },
+      workflowContractSummary: {
+        campaignId: "workflow_contract",
+        taskCount: 10,
+        promptStrongCount: 8,
+        promptUsableCount: 10,
+        promptUsableRate: 100,
+        reportWellFormedCount: 8,
+        reportUsableCount: 10,
+        reportUsableRate: 100,
+        nextActionCoverage: 100,
+        verifiedOutcomeReportCoverage: 100,
+        falseAccepts: 0,
+        falseBlocks: 0,
+        taskSummaries: [],
+        status: "workflow_contract_passed",
+        blockers: []
+      },
       snapshotDate: "2026-05-03"
     });
 
     expect(summary.status).toBe("ops_healthy");
     expect(summary.metrics.operatingWindowCleanupReductionPct).toBe(60);
     expect(summary.metrics.closedLoopFalseAccepts).toBe(0);
+    expect(summary.metrics.workflowPromptUsableRate).toBe(100);
     expect(summary.failureHotspots[0]?.failureType).toBe("wrong_repo_lane");
     expect(formatOperatingDashboard(summary)).toContain("STAX Ops Dashboard");
     expect(formatOperatingDashboard(summary)).toContain("snapshot: 2026-05-03");
+    expect(formatOperatingDashboard(summary)).toContain("workflow contract: workflow_contract_passed");
   });
 });

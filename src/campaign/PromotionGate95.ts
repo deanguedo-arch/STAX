@@ -5,6 +5,7 @@ import { validateBaselineCleanupLedger } from "./BaselineCleanup.js";
 import { validateDogfoodRoundC } from "./DogfoodRoundC.js";
 import { validateFailureLedger } from "./FailureLedger.js";
 import { validateHumanJudgmentLedger } from "./HumanJudgmentConsole.js";
+import { validateLiveCodexWorkflowContract } from "./LiveCodexWorkflowContract.js";
 import { validateOperatingWindow } from "./OperatingWindow.js";
 
 export type PromotionGate95Summary = {
@@ -13,6 +14,7 @@ export type PromotionGate95Summary = {
   baselineStatus: string;
   dogfoodRoundCStatus: string;
   failureLedgerStatus: string;
+  workflowContractStatus: string;
   humanJudgmentStatus: string;
   operatingWindowStatus: string;
   status: "promotion_ready" | "promotion_blocked";
@@ -49,6 +51,7 @@ export async function evaluatePromotionGate95(input: {
   const baseline = await validateBaselineCleanupLedger();
   const failureLedger = await validateFailureLedger();
   const dogfood = await validateDogfoodRoundC();
+  const workflowContract = await validateLiveCodexWorkflowContract();
   const humanJudgment = await validateHumanJudgmentLedger();
   const operatingWindow = await validateOperatingWindow();
 
@@ -57,6 +60,7 @@ export async function evaluatePromotionGate95(input: {
   if (baseline.summary.status !== "baseline_ready") blockers.push("baseline cleanup ledger is not ready");
   if (failureLedger.summary.status !== "tracked") blockers.push("failure ledger is not fully tracked");
   if (dogfood.summary.status !== "round_c_passed") blockers.push("fresh dogfood Round C has not passed");
+  if (workflowContract.status !== "workflow_contract_passed") blockers.push("live Codex workflow contract campaign has not passed");
   if (humanJudgment.summary.status !== "judgment_ready") blockers.push("human judgment ledger is not fully recorded");
   if (operatingWindow.summary.status !== "operating_window_passed") blockers.push("30-task operating window has not passed");
 
@@ -66,6 +70,7 @@ export async function evaluatePromotionGate95(input: {
     baselineStatus: baseline.summary.status,
     dogfoodRoundCStatus: dogfood.summary.status,
     failureLedgerStatus: failureLedger.summary.status,
+    workflowContractStatus: workflowContract.status,
     humanJudgmentStatus: humanJudgment.summary.status,
     operatingWindowStatus: operatingWindow.summary.status,
     status: blockers.length === 0 ? "promotion_ready" : "promotion_blocked",

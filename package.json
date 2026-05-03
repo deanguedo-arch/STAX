@@ -35,6 +35,7 @@
     "campaign:closed-loop": "tsx scripts/closedLoopCodexCampaign.ts",
     "campaign:closed-loop:evals": "tsx scripts/closedLoopEvalCandidates.ts",
     "campaign:closed-loop:runner": "tsx scripts/liveCodexLoopRunner.ts",
+    "campaign:closed-loop:workflow": "tsx scripts/liveCodexWorkflowContract.ts",
     "campaign:judgments": "tsx scripts/humanJudgmentConsole.ts",
     "pr-artifact:integrity": "tsx scripts/prArtifactTrialIntegrity.ts",
     "pr-artifact:score": "tsx scripts/prArtifactTrialScore.ts",

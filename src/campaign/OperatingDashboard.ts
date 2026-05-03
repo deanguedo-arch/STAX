@@ -10,6 +10,10 @@ import {
   validateFailureLedger
 } from "./FailureLedger.js";
 import { summarizeHumanJudgmentLedger, type HumanJudgmentLedger } from "./HumanJudgmentConsole.js";
+import {
+  summarizeLiveCodexWorkflowContract,
+  type LiveCodexWorkflowContractSummary
+} from "./LiveCodexWorkflowContract.js";
 import { summarizeOperatingWindow, type OperatingWindowLedger } from "./OperatingWindow.js";
 
 export type OperatingDashboardSummary = {
@@ -18,6 +22,7 @@ export type OperatingDashboardSummary = {
     baseline: string;
     dogfoodRoundC: string;
     closedLoop: string;
+    workflowContract: string;
     humanJudgment: string;
     failureLedger: string;
     operatingWindow: string;
@@ -28,6 +33,8 @@ export type OperatingDashboardSummary = {
     closedLoopVerifiedNextStateRate: number;
     closedLoopFalseAccepts: number;
     closedLoopFalseBlocks: number;
+    workflowPromptUsableRate: number;
+    workflowReportUsableRate: number;
     operatingWindowCleanupReductionPct: number | null;
     operatingWindowAcceptedDecisionRate: number;
     operatingWindowUsefulInitialPromptRate: number;
@@ -70,6 +77,7 @@ export async function summarizeOperatingDashboard(args: {
   humanJudgmentLedger: HumanJudgmentLedger;
   operatingWindowLedger: OperatingWindowLedger;
   failureSummary?: FailureLedgerSummary;
+  workflowContractSummary?: LiveCodexWorkflowContractSummary;
   snapshotDate?: string;
 }): Promise<OperatingDashboardSummary> {
   const baseline = summarizeBaselineCleanup(args.baselineLedger);
@@ -89,6 +97,8 @@ export async function summarizeOperatingDashboard(args: {
     ledger: args.closedLoopLedger,
     baselineLedger: args.baselineLedger
   });
+  const workflowContract =
+    args.workflowContractSummary ?? summarizeLiveCodexWorkflowContract({ ledger: args.closedLoopLedger });
   const humanJudgment = summarizeHumanJudgmentLedger({
     ledger: args.humanJudgmentLedger,
     closedLoopLedger: args.closedLoopLedger
@@ -112,6 +122,7 @@ export async function summarizeOperatingDashboard(args: {
       Number(((dogfood.usefulInitialPrompts / Math.max(dogfood.taskCount, 1)) * 100).toFixed(2)),
       operatingWindow.usefulInitialPromptRate
     )}.`,
+    `Live Codex workflow prompt/report usability: ${workflowContract.promptUsableRate}%/${workflowContract.reportUsableRate}%.`,
     `Accepted decision rate from Dogfood Round C to Operating Window: ${pctDelta(
       Number(((dogfood.acceptedHumanDecisions / Math.max(dogfood.taskCount, 1)) * 100).toFixed(2)),
       operatingWindow.acceptedDecisionRate
@@ -123,6 +134,7 @@ export async function summarizeOperatingDashboard(args: {
     ...baseline.blockers,
     ...dogfood.blockers,
     ...closedLoop.blockers,
+    ...workflowContract.blockers,
     ...humanJudgment.blockers,
     ...failure.blockers,
     ...operatingWindow.blockers
@@ -145,6 +157,7 @@ export async function summarizeOperatingDashboard(args: {
       baseline: baseline.status,
       dogfoodRoundC: dogfood.status,
       closedLoop: closedLoop.status,
+      workflowContract: workflowContract.status,
       humanJudgment: humanJudgment.status,
       failureLedger: failure.status,
       operatingWindow: operatingWindow.status
@@ -155,6 +168,8 @@ export async function summarizeOperatingDashboard(args: {
       closedLoopVerifiedNextStateRate: closedLoop.verifiedNextStateRate,
       closedLoopFalseAccepts: closedLoop.falseAccepts,
       closedLoopFalseBlocks: closedLoop.falseBlocks,
+      workflowPromptUsableRate: workflowContract.promptUsableRate,
+      workflowReportUsableRate: workflowContract.reportUsableRate,
       operatingWindowCleanupReductionPct: operatingWindow.cleanupReductionPct,
       operatingWindowAcceptedDecisionRate: operatingWindow.acceptedDecisionRate,
       operatingWindowUsefulInitialPromptRate: operatingWindow.usefulInitialPromptRate,
@@ -182,6 +197,7 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- baseline: ${summary.statuses.baseline}`,
     `- dogfood round c: ${summary.statuses.dogfoodRoundC}`,
     `- closed loop: ${summary.statuses.closedLoop}`,
+    `- workflow contract: ${summary.statuses.workflowContract}`,
     `- human judgment: ${summary.statuses.humanJudgment}`,
     `- failure ledger: ${summary.statuses.failureLedger}`,
     `- operating window: ${summary.statuses.operatingWindow}`,
@@ -191,6 +207,8 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- dogfood cleanup reduction: ${summary.metrics.dogfoodCleanupReductionPct ?? "n/a"}%`,
     `- closed-loop verified next-state rate: ${summary.metrics.closedLoopVerifiedNextStateRate}%`,
     `- closed-loop false accepts / false blocks: ${summary.metrics.closedLoopFalseAccepts}/${summary.metrics.closedLoopFalseBlocks}`,
+    `- workflow prompt usable rate: ${summary.metrics.workflowPromptUsableRate}%`,
+    `- workflow report usable rate: ${summary.metrics.workflowReportUsableRate}%`,
     `- operating-window cleanup reduction: ${summary.metrics.operatingWindowCleanupReductionPct ?? "n/a"}%`,
     `- operating-window accepted decisions: ${summary.metrics.operatingWindowAcceptedDecisionRate}%`,
     `- operating-window useful initial prompts: ${summary.metrics.operatingWindowUsefulInitialPromptRate}%`,
@@ -231,6 +249,8 @@ export async function validateOperatingDashboard(input: {
     input.humanJudgmentLedgerPath ?? path.join(process.cwd(), "fixtures", "real_use", "human_judgment_ledger.json");
   const operatingWindowLedgerPath =
     input.operatingWindowLedgerPath ?? path.join(process.cwd(), "fixtures", "real_use", "operating_window_30_tasks.json");
+  const workflowLedgerPath =
+    path.join(process.cwd(), "fixtures", "real_use", "live_codex_workflow_10_tasks.json");
 
   const [
     baselineLedger,
@@ -239,7 +259,8 @@ export async function validateOperatingDashboard(input: {
     closedLoopLedger,
     humanJudgmentLedger,
     operatingWindowLedger,
-    failureValidation
+    failureValidation,
+    workflowLedger
   ] = await Promise.all([
     fs.readFile(baselineLedgerPath, "utf8").then((raw) => JSON.parse(raw) as BaselineCleanupLedger),
     fs.readFile(dogfoodLedgerPath, "utf8").then((raw) => JSON.parse(raw) as DogfoodRoundCLedger),
@@ -247,7 +268,8 @@ export async function validateOperatingDashboard(input: {
     fs.readFile(closedLoopLedgerPath, "utf8").then((raw) => JSON.parse(raw) as ClosedLoopCodexLedger),
     fs.readFile(humanJudgmentLedgerPath, "utf8").then((raw) => JSON.parse(raw) as HumanJudgmentLedger),
     fs.readFile(operatingWindowLedgerPath, "utf8").then((raw) => JSON.parse(raw) as OperatingWindowLedger),
-    validateFailureLedger()
+    validateFailureLedger(),
+    fs.readFile(workflowLedgerPath, "utf8").then((raw) => JSON.parse(raw) as ClosedLoopCodexLedger)
   ]);
 
   return summarizeOperatingDashboard({
@@ -257,6 +279,7 @@ export async function validateOperatingDashboard(input: {
     closedLoopLedger,
     humanJudgmentLedger,
     operatingWindowLedger,
-    failureSummary: failureValidation.summary
+    failureSummary: failureValidation.summary,
+    workflowContractSummary: summarizeLiveCodexWorkflowContract({ ledger: workflowLedger })
   });
 }

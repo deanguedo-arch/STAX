@@ -4,6 +4,8 @@ import {
   initializeLiveCodexLoopTask,
   recordLiveCodexLoopTurn
 } from "../src/campaign/LiveCodexLoopRunner.js";
+import { summarizeLiveCodexWorkflowContract } from "../src/campaign/LiveCodexWorkflowContract.js";
+import type { ClosedLoopCodexLedger } from "../src/campaign/ClosedLoopCodexCampaign.js";
 import type { StructuredProjectControlEvidencePacket } from "../src/projectControl/ProjectControlEvidencePacket.js";
 
 type CliArgs =
@@ -23,6 +25,10 @@ type CliArgs =
       diffPath: string;
       commandPath: string;
       packetPath?: string;
+    }
+  | {
+      mode: "score";
+      ledger: string;
     };
 
 async function main(): Promise<void> {
@@ -37,6 +43,14 @@ async function main(): Promise<void> {
       packet
     });
     process.stdout.write(`${JSON.stringify({ ledgerPath: path.relative(process.cwd(), args.ledger), task: result.task }, null, 2)}\n`);
+    return;
+  }
+
+  if (args.mode === "score") {
+    const ledger = JSON.parse(await fs.readFile(args.ledger, "utf8")) as ClosedLoopCodexLedger;
+    const summary = summarizeLiveCodexWorkflowContract({ ledger });
+    process.stdout.write(`${JSON.stringify({ ledgerPath: path.relative(process.cwd(), args.ledger), summary }, null, 2)}\n`);
+    if (summary.status !== "workflow_contract_passed") process.exitCode = 1;
     return;
   }
 
@@ -86,7 +100,14 @@ function parseArgs(argv: string[]): CliArgs {
     }
     return { mode, ledger, taskId, codexReportPath, diffPath, commandPath, packetPath };
   }
-  throw new Error("Expected subcommand: init | record");
+  if (mode === "score") {
+    const ledger = get("--ledger");
+    if (!ledger) {
+      throw new Error("Usage: tsx scripts/liveCodexLoopRunner.ts score --ledger <path>");
+    }
+    return { mode, ledger };
+  }
+  throw new Error("Expected subcommand: init | record | score");
 }
 
 main().catch((error) => {
