@@ -26,6 +26,16 @@ describe("project_control proof stack integration", () => {
     const runtime = await createDefaultRuntime();
     const cases = [
       {
+        name: "malformed_codex_report",
+        prompt: packet({
+          task: "Audit whether this implementation fix is proven.",
+          repoEvidence: "Target repo path: /Users/deanguedo/Documents/GitHub/STAX",
+          codexReport: "I fixed it and tests passed."
+        }),
+        expected: ["Codex report contract is malformed because missing sections"],
+        shouldAccept: false
+      },
+      {
         name: "docs_only_implementation_claim",
         prompt: packet({
           task: "Audit whether this implementation fix is proven.",
@@ -238,7 +248,7 @@ describe("project_control proof stack integration", () => {
       }
     ] as const;
 
-    expect(cases).toHaveLength(20);
+    expect(cases).toHaveLength(21);
 
     let falseAccepts = 0;
     let falseBlocks = 0;

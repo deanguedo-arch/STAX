@@ -69,6 +69,24 @@ describe("project_control mode", () => {
     expect(output.output).toContain("local command evidence");
   });
 
+  it("calls out malformed Codex reports before laundering them into proof", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit this Codex report and tell me if the work is proven.",
+        repoEvidence: "Repo: STAX. No diff, file evidence, or local command evidence supplied.",
+        commandEvidence: "No local STAX command evidence supplied.",
+        codexReport: "I fixed it and tests passed."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Codex report contract is malformed");
+    expect(output.output).toContain("Files changed");
+    expect(output.output).toContain("Commands run");
+  });
+
   it("moves Brightspace from dependency repair to build and ingest proof when Rollup is present", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(

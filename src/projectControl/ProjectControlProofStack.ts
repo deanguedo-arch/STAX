@@ -18,6 +18,7 @@ import type {
   ProjectControlVisualEvidence,
   PullRequestArtifactPacket
 } from "./ProjectControlEvidencePacket.js";
+import { analyzeCodexReportContract } from "./CodexReportContract.js";
 import { auditPullRequestArtifact } from "./PullRequestArtifactAudit.js";
 
 export type ProjectControlProofStackInput = {
@@ -64,6 +65,16 @@ export function buildProjectControlProofStack(
   const unverified: string[] = [];
   const risk: string[] = [];
   const combined = [input.task, input.repoEvidence, input.commandEvidence, input.codexReport].join("\n");
+  const codexReportContract = analyzeCodexReportContract(input.codexReport);
+
+  if (codexReportContract.status === "well_formed") {
+    verified.push("Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.");
+  } else if (codexReportContract.status === "partial") {
+    weak.push(`Codex report contract is partial because ${codexReportContract.issues[0] ?? "some required sections are missing"}.`);
+  } else if (codexReportContract.status === "malformed") {
+    unverified.push(`Codex report contract is malformed because ${codexReportContract.issues[0] ?? "required sections are missing"}.`);
+    risk.push("Malformed Codex report risk: fake-complete language can outrun the proof stack when files, commands, and residual unknowns are omitted.");
+  }
 
   if (input.pullRequestArtifact) {
     const prAudit = auditPullRequestArtifact({
