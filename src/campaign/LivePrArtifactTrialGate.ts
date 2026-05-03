@@ -5,6 +5,7 @@ import { runLivePrArtifactTrial } from "./LivePrArtifactTrial.js";
 
 const LivePrArtifactTrialSummarySchema = z.object({
   fixtureSet: z.string().min(1),
+  recordedAt: z.string().datetime(),
   selectedCaseCount: z.number().int().nonnegative(),
   requestedCaseCount: z.number().int().nonnegative(),
   liveSourceCount: z.number().int().nonnegative(),
@@ -40,6 +41,7 @@ type LivePrArtifactTrialGateInput = {
   allowFallbackSource?: boolean;
   source?: "artifact" | "live";
   artifactPath?: string;
+  maxAgeHours?: number;
 };
 
 export async function validateLivePrArtifactTrialGate(
@@ -49,6 +51,7 @@ export async function validateLivePrArtifactTrialGate(
   const requestedCaseCount = input.requestedCaseCount ?? 25;
   const minimumLiveSourceCount = input.minimumLiveSourceCount ?? 5;
   const allowFallbackSource = input.allowFallbackSource ?? false;
+  const maxAgeHours = input.maxAgeHours ?? 72;
   const source = input.source ?? "artifact";
 
   const summary =
@@ -65,6 +68,10 @@ export async function validateLivePrArtifactTrialGate(
         });
 
   const blockers = [...summary.blockers];
+  const freshnessHours = ageHours(summary.recordedAt);
+  if (freshnessHours > maxAgeHours) {
+    blockers.push(`live PR trial artifact is stale at ${freshnessHours}h (max ${maxAgeHours}h)`);
+  }
   if (summary.selectedCaseCount < requestedCaseCount) {
     blockers.push(`live PR trial selected case count is below ${requestedCaseCount}`);
   }
@@ -103,4 +110,11 @@ async function loadRecordedLivePrArtifactTrialSummary(input: {
     path.join(input.rootDir, "fixtures", "real_use", "live_pr_artifact_trial_latest.json");
   const raw = await fs.readFile(artifactPath, "utf8");
   return LivePrArtifactTrialSummarySchema.parse(JSON.parse(raw));
+}
+
+function ageHours(isoTime: string): number {
+  const nowMs = Date.now();
+  const thenMs = new Date(isoTime).getTime();
+  if (Number.isNaN(thenMs) || thenMs > nowMs) return 0;
+  return Number((((nowMs - thenMs) / (1000 * 60 * 60))).toFixed(2));
 }

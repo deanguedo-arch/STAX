@@ -16,6 +16,7 @@ afterEach(async () => {
 });
 
 async function writeGateSummary(args: {
+  recordedAt?: string;
   selectedCaseCount: number;
   liveSourceCount: number;
   fallbackSourceCount: number;
@@ -34,6 +35,7 @@ async function writeGateSummary(args: {
     JSON.stringify(
       {
         fixtureSet: "real_pr_artifact_trial_v1",
+        recordedAt: args.recordedAt ?? new Date().toISOString(),
         requestedCaseCount: 25,
         status: "passed",
         blockers: [],
@@ -82,5 +84,24 @@ describe("Live PR artifact trial gate", () => {
     expect(summary.status).toBe("failed");
     expect(summary.blockers).toContain("fallback snapshot source used in 25 case(s)");
     expect(summary.blockers).toContain("false accepts were recorded during the live PR trial");
+  });
+
+  it("blocks when the recorded artifact is stale", async () => {
+    const staleTime = new Date(Date.now() - 1000 * 60 * 60 * 80).toISOString();
+    const rootDir = await writeGateSummary({
+      recordedAt: staleTime,
+      selectedCaseCount: 25,
+      liveSourceCount: 25,
+      fallbackSourceCount: 0,
+      falseAccepts: 0,
+      falseBlocks: 0,
+      falseBlockRatePct: 0,
+      usefulNextActionRate: 100,
+      ciProofClassificationSurfaceRate: 100
+    });
+
+    const summary = await validateLivePrArtifactTrialGate({ rootDir, maxAgeHours: 72 });
+    expect(summary.status).toBe("failed");
+    expect(summary.blockers.some((item) => item.includes("artifact is stale"))).toBe(true);
   });
 });

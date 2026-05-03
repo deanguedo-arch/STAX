@@ -35,6 +35,7 @@ export type LivePrArtifactTrialCaseResult = {
 
 export type LivePrArtifactTrialSummary = {
   fixtureSet: string;
+  recordedAt: string;
   selectedCaseCount: number;
   requestedCaseCount: number;
   liveSourceCount: number;
@@ -192,6 +193,7 @@ export async function runLivePrArtifactTrial(
 
   return {
     fixtureSet: fixture.fixtureSet,
+    recordedAt: new Date().toISOString(),
     selectedCaseCount: selectedCases.length,
     requestedCaseCount,
     liveSourceCount,
@@ -211,6 +213,7 @@ export function formatLivePrArtifactTrial(summary: LivePrArtifactTrialSummary): 
   return [
     "Live PR Artifact Trial",
     `- fixture set: ${summary.fixtureSet}`,
+    `- recorded at: ${summary.recordedAt}`,
     `- selected/requested cases: ${summary.selectedCaseCount}/${summary.requestedCaseCount}`,
     `- live source cases: ${summary.liveSourceCount}`,
     `- fallback source cases: ${summary.fallbackSourceCount}`,
