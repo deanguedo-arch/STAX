@@ -7,6 +7,10 @@ import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
 import { BehaviorMiner } from "../compare/BehaviorMiner.js";
 import { BehaviorRequirementTriage } from "../compare/BehaviorRequirementTriage.js";
+import {
+  formatHumanJudgmentDigest,
+  validateHumanJudgmentLedger
+} from "../campaign/HumanJudgmentConsole.js";
 import { CommandEvidenceStore, type CommandEvidence } from "../evidence/CommandEvidenceStore.js";
 import { parsePastedCommandEvidence } from "../evidence/CommandOutputParser.js";
 import { collectLocalEvidence, formatLocalEvidence } from "../evidence/LocalEvidenceCollector.js";
@@ -798,6 +802,7 @@ export class ChatSession {
     const records = await queue.list();
     const dispositionCounts = this.countReviewRecords(records, "disposition");
     const formatted = queue.formatInbox(records, "Judgment Digest");
+    const ledgerDigest = await this.safeHumanJudgmentDigest();
     return {
       executed: true,
       blocked: false,
@@ -813,12 +818,25 @@ export class ChatSession {
         `- human_review: ${dispositionCounts.human_review ?? 0}`,
         `- hard_block: ${dispositionCounts.hard_block ?? 0}`,
         `- batch_review: ${dispositionCounts.batch_review ?? 0}`,
+        ...(ledgerDigest ? ["", ledgerDigest] : []),
         "",
         "This read the current persisted review queue only. It did not refresh, apply, approve, reject, archive, or promote anything."
       ].join("\n"),
       risks: records.length ? [] : ["No persisted judgment items were found. A dry-run refresh may reveal new candidate review items."],
       nextAllowedActions: ["Use /review digest for a dry-run discovery, or CLI `rax review inbox` to refresh persisted review metadata."]
     };
+  }
+
+  private async safeHumanJudgmentDigest(): Promise<string | undefined> {
+    try {
+      const result = await validateHumanJudgmentLedger({
+        ledgerPath: path.join(this.rootDir, "fixtures", "real_use", "human_judgment_ledger.json"),
+        closedLoopLedgerPath: path.join(this.rootDir, "fixtures", "real_use", "closed_loop_20_tasks.json")
+      });
+      return formatHumanJudgmentDigest(result.summary);
+    } catch {
+      return undefined;
+    }
   }
 
   private async executeAuditLastProofOperation(_plan: OperationPlan): Promise<OperationExecutionResult> {

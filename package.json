@@ -34,6 +34,7 @@
     "campaign:failures": "tsx scripts/failureLedger.ts",
     "campaign:closed-loop": "tsx scripts/closedLoopCodexCampaign.ts",
     "campaign:closed-loop:evals": "tsx scripts/closedLoopEvalCandidates.ts",
+    "campaign:judgments": "tsx scripts/humanJudgmentConsole.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
     "campaign:phaseB:capture": "tsx scripts/phaseBCaptureClipboard.ts",

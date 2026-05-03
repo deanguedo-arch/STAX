@@ -135,6 +135,74 @@ describe("ChatSession", () => {
     expect(evidence[0]?.commandFamily).toBe("eval");
   });
 
+  it("shows human judgment digest details when a judgment ledger exists", async () => {
+    const rootDir = await tempRoot();
+    await fs.mkdir(path.join(rootDir, "fixtures", "real_use"), { recursive: true });
+    await fs.writeFile(
+      path.join(rootDir, "fixtures", "real_use", "closed_loop_20_tasks.json"),
+      JSON.stringify({
+        campaignId: "closed_loop_sample",
+        tasks: [
+          {
+            taskId: "closed_loop_001",
+            repo: "STAX",
+            state: "verified_next_state",
+            stateHistory: [{ state: "created", note: "created" }, { state: "verified_next_state", note: "done" }],
+            objective: "Objective",
+            staxInitialAudit: "audit",
+            staxCodexPrompt: "prompt",
+            codexReport: "report",
+            diffEvidence: "diff",
+            commandEvidence: "command",
+            staxPostCodexAudit: "post",
+            cleanupPromptsAfterCodex: 0,
+            finalOutcome: "verified_next_state",
+            falseAccept: false,
+            falseBlock: false,
+            usefulBlock: true,
+            verifiedAccept: false,
+            staxInitialPromptUseful: true,
+            evalCandidate: true
+          }
+        ]
+      }, null, 2),
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(rootDir, "fixtures", "real_use", "human_judgment_ledger.json"),
+      JSON.stringify({
+        campaignId: "judgment_sample",
+        sourceLedger: "fixtures/real_use/closed_loop_20_tasks.json",
+        entries: [
+          {
+            judgmentId: "judgment_001",
+            sourceTaskId: "closed_loop_001",
+            repo: "STAX",
+            humanDecision: "accepted",
+            reason: "Useful next action.",
+            cleanupPromptsObserved: 0,
+            usefulNextAction: true,
+            missingProofCaught: true,
+            blockedUnnecessarily: false,
+            evalCandidate: true,
+            promotedLesson: true,
+            promotionTarget: "repo_memory:proof_gate"
+          }
+        ]
+      }, null, 2),
+      "utf8"
+    );
+    const runtime = await createDefaultRuntime({ rootDir });
+    const session = new ChatSession(runtime, new MemoryStore(rootDir), rootDir);
+
+    const result = await session.handleLine("what needs my judgment?");
+
+    expect(result.output).toContain("Judgment Digest");
+    expect(result.output).toContain("Human Judgment Digest");
+    expect(result.output).toContain("recorded judgments: 1");
+    expect(result.output).toContain("status: judgment_ready");
+  });
+
   it("routes common project-state chat questions to Project Brain without leaking workspace into mode detection", async () => {
     const rootDir = await tempRoot();
     const runtime = await createDefaultRuntime({ rootDir });
