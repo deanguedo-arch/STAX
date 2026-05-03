@@ -801,8 +801,10 @@ function extractWrongRepoEvidencePaths(packet: ProjectControlPacket, targetRepoP
 }
 
 function renderProjectControl(packet: ProjectControlPacket): string {
-  const transferOutput = renderRepoTransferProjectControl(packet);
-  if (transferOutput) return transferOutput;
+  if (!packet.structured?.pullRequestArtifact) {
+    const transferOutput = renderRepoTransferProjectControl(packet);
+    if (transferOutput) return transferOutput;
+  }
 
   const combined = [packet.task, packet.repoEvidence, packet.commandEvidence, packet.codexReport].join("\n");
   const lower = combined.toLowerCase();
