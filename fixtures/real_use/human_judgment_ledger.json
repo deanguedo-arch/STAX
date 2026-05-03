@@ -230,8 +230,8 @@
       "judgmentId": "judgment_017",
       "sourceTaskId": "closed_loop_017",
       "repo": "STAX",
-      "humanDecision": "needs_followup",
-      "reason": "The run surfaced a bounded failure pattern that still needs followup.",
+      "humanDecision": "accepted_after_patch",
+      "reason": "Followup resolved: promotion-gate blocker taxonomy and eval target are now explicit and bounded.",
       "cleanupPromptsObserved": 0,
       "usefulNextAction": true,
       "missingProofCaught": true,
@@ -239,7 +239,7 @@
       "evalCandidate": true,
       "promotedLesson": true,
       "promotionTarget": "eval:closed_loop_017",
-      "disagreementNote": "The failure path was useful, but it still needs a followup patch or narrower prompt."
+      "disagreementNote": "Followup closed with promotion-gate blocker routing and eval coverage."
     },
     {
       "judgmentId": "judgment_018",

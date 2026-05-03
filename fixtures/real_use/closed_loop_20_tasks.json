@@ -928,7 +928,13 @@
           "note": "final state recorded"
         }
       ],
-      "nextAction": "Record the blocker and capture the first missing proof step before retrying."
+      "nextAction": "Record the blocker and capture the first missing proof step before retrying.",
+      "failurePatterns": [
+        "E4"
+      ],
+      "evalCandidates": [
+        "eval_e4_closed_loop_017"
+      ]
     },
     {
       "taskId": "closed_loop_018",

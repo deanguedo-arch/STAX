@@ -83,6 +83,13 @@ export function routeClosedLoopFailurePatterns(task: ClosedLoopCodexTask): Failu
     add("I5", "live action stays blocked because the target or release proof is incomplete");
   }
 
+  if (
+    includesAny(haystack, ["promotion gate", "promotion-gate"]) &&
+    includesAny(haystack, ["blocked", "missing clean run count", "operating window", "clean evidence runs"])
+  ) {
+    add("E4", "promotion gate blocker must stay hard-blocking until required evidence lanes are green");
+  }
+
   if (task.falseBlock && !includesAny((task.nextAction ?? "").toLowerCase(), ["run ", "capture ", "request ", "inspect "])) {
     add("Q2", "blocked state lacks a concrete proof command or bounded next action");
   }

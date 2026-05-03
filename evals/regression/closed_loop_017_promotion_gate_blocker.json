@@ -1,0 +1,22 @@
+{
+  "id": "closed_loop_017_promotion_gate_blocker",
+  "mode": "project_control",
+  "input": "Task: Audit promotion-gate blockers honestly for STAX.\n\nRepo Evidence: Promotion gate run is blocked on missing clean run count and operating window proof.\n\nCommand Evidence: `npm run campaign:promotion-gate` output captured and marked blocked.\n\nCodex Report: \"promotion gate blocked on missing clean run count and operating window.\"",
+  "expectedProperties": ["bounded_prompt"],
+  "forbiddenPatterns": [
+    "promotion_ready",
+    "approve",
+    "complete"
+  ],
+  "requiredSections": [
+    "## Verdict",
+    "## Verified",
+    "## Weak / Provisional",
+    "## Unverified",
+    "## Risk",
+    "## One Next Action",
+    "## Codex Prompt if needed"
+  ],
+  "critical": true,
+  "tags": ["project_control", "promotion_gate", "blocked_proof", "closed_loop_017"]
+}

@@ -56,4 +56,20 @@ describe("routeClosedLoopFailurePatterns", () => {
 
     expect(result.routedPatterns.map((pattern) => pattern.patternId)).toEqual(expect.arrayContaining(["B1", "B5"]));
   });
+
+  it("routes promotion-gate blocker misses into command-selection taxonomy", () => {
+    const result = routeClosedLoopFailurePatterns({
+      ...baseTask(),
+      taskId: "closed_loop_017",
+      objective: "Audit promotion-gate blockers honestly.",
+      codexReport: "promotion gate blocked on missing clean run count and operating window.",
+      diffEvidence: "No repo mutation.",
+      commandEvidence: "promotion gate output captured.",
+      staxPostCodexAudit: "9.5 claim blocked cleanly until gate is green.",
+      nextAction: "Record the blocker and capture the first missing proof step before retrying."
+    });
+
+    expect(result.routedPatterns.map((pattern) => pattern.patternId)).toContain("E4");
+    expect(result.evalCandidateIds).toContain("eval_e4_closed_loop_017");
+  });
 });
