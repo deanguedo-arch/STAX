@@ -130,4 +130,33 @@ describe("Live PR artifact trial", () => {
     const firstCase: LivePrArtifactTrialCaseResult | undefined = summary.cases[0];
     expect(firstCase?.issues).toContain("CI proof-strength line not surfaced in output");
   });
+
+  it("surfaces retry timing when live coverage fails due rate limits", async () => {
+    const fixture = await loadPrArtifactTrialFixture();
+    const snapshots = new Map(
+      fixture.snapshots.map((snapshot) => [`${snapshot.repoFullName}#${snapshot.packet.prNumber}`, snapshot.packet])
+    );
+
+    const summary = await runLivePrArtifactTrial({
+      requestedCaseCount: 2,
+      minimumLiveSourceCount: 1,
+      allowFallbackSource: true,
+      fetchPacket: async (ref) => {
+        const packet = snapshots.get(`${ref.repoFullName}#${ref.prNumber}`);
+        if (!packet) throw new Error("missing packet");
+        return {
+          source: "recorded_snapshot_fallback",
+          packet,
+          warnings: [
+            "GitHub API request failed: 403 Forbidden; rate limit exceeded (resource=core, reset_at=2026-05-04T00:30:00.000Z)"
+          ]
+        };
+      },
+      runAudit: async ({ testCase }) => renderProjectControlCard(testCase.expectedStatus)
+    });
+
+    expect(summary.status).toBe("failed");
+    expect(summary.blockers).toContain("live-source coverage too low: 0/2 (minimum 1)");
+    expect(summary.blockers).toContain("live GitHub API likely rate limited; retry after 2026-05-04T00:30:00.000Z");
+  });
 });

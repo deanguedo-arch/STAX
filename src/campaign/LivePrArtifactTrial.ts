@@ -182,6 +182,10 @@ export async function runLivePrArtifactTrial(
   }
   if (liveSourceCount < minimumLiveSourceCount) {
     blockers.push(`live-source coverage too low: ${liveSourceCount}/${selectedCases.length} (minimum ${minimumLiveSourceCount})`);
+    const retryAfter = findRateLimitRetryAfter(results);
+    if (retryAfter) {
+      blockers.push(`live GitHub API likely rate limited; retry after ${retryAfter}`);
+    }
   }
   if (!allowFallbackSource && fallbackSourceCount > 0) {
     blockers.push(`fallback snapshot source used in ${fallbackSourceCount} case(s)`);
@@ -230,4 +234,19 @@ export function formatLivePrArtifactTrial(summary: LivePrArtifactTrialSummary): 
 function pct(part: number, total: number): number {
   if (total === 0) return 0;
   return Number(((part / total) * 100).toFixed(2));
+}
+
+function findRateLimitRetryAfter(cases: LivePrArtifactTrialCaseResult[]): string | undefined {
+  const resets: number[] = [];
+  for (const item of cases) {
+    for (const warning of item.warnings) {
+      if (!/rate limit exceeded/i.test(warning)) continue;
+      const match = warning.match(/reset_at=([0-9TZ:\-.]+Z)/i);
+      if (!match) continue;
+      const unixMs = Date.parse(match[1]);
+      if (Number.isFinite(unixMs) && unixMs > 0) resets.push(unixMs);
+    }
+  }
+  if (resets.length === 0) return undefined;
+  return new Date(Math.max(...resets)).toISOString();
 }
