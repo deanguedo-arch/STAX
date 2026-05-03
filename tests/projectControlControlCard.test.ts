@@ -48,8 +48,8 @@ describe("project control control card", () => {
     expect(projectControlStatusFromWhy("Validated and proven with local command evidence.")).toBe("Accept");
   });
 
-  it("validates a 30-case control-card fixture matrix", () => {
-    const validCases = Array.from({ length: 25 }, (_, index) =>
+  it("validates a 50-case control-card fixture matrix", () => {
+    const validCases = Array.from({ length: 41 }, (_, index) =>
       validCard({
         why: [
           "Not proven; no local command evidence was supplied.",
@@ -74,17 +74,47 @@ describe("project control control card", () => {
       validCard({ why: "Not proven; no local command evidence was supplied." }).replace("- Status: Reject", "- Status: Unknown"),
       validCard({ why: "Not proven; no local command evidence was supplied." }).replace("## One Next Action\n- ", "## One Next Action\n- Run one bounded proof command.\n- "),
       validCard({ why: "Too short." }),
-      validCard({ why: "Not proven; no local command evidence was supplied.", action: "Think about it." })
+      validCard({ why: "Not proven; no local command evidence was supplied.", action: "Think about it." }),
+      validCard({ why: "Not proven; no local command evidence was supplied." }).replace("## Verified\n- ", "## Verified\n"),
+      validCard({ why: "Not proven; no local command evidence was supplied.", prompt: "Nope." }),
+      validCard({ why: "Not proven; no local command evidence was supplied.", prompt: "Fix everything in the repo." }),
+      [
+        "## Verdict",
+        "- Status: Reject",
+        "- Why: Not proven; no local command evidence was supplied.",
+        "",
+        "## Verified",
+        "- Target repo path supplied.",
+        "",
+        "## Weak / Provisional",
+        "- Codex report only.",
+        "",
+        "## Unverified",
+        "- None.",
+        "",
+        "## Risk",
+        "- Fake-complete risk.",
+        "",
+        "## One Next Action",
+        "- Run npm test and capture output.",
+        "",
+        "## Codex Prompt if needed",
+        "Run npm test and report output."
+      ].join("\n")
     ];
 
     const allCases = [...validCases, ...invalidCases];
-    expect(allCases).toHaveLength(30);
+    expect(allCases).toHaveLength(50);
 
     for (const [index, output] of allCases.entries()) {
-      const issues = validateProjectControlCardShape(output);
       if (index < validCases.length) {
+        const issues = validateProjectControlCardShape(output);
         expect(issues, `valid control-card case ${index + 1}`).toEqual([]);
       } else {
+        const validator = new ProjectControlValidator();
+        const issues = index === allCases.length - 1
+          ? validator.validate(output).issues
+          : validateProjectControlCardShape(output);
         expect(issues.length, `invalid control-card case ${index + 1}`).toBeGreaterThan(0);
       }
     }
@@ -123,5 +153,27 @@ describe("project control control card", () => {
     expect(invalid.valid).toBe(false);
     expect(invalid.issues).toContain("Project control output must include a Verdict status line.");
     expect(invalid.issues).toContain("Project control output must include a Verdict why line.");
+  });
+
+  it("rejects unbounded or empty Codex prompts in validator output", () => {
+    const validator = new ProjectControlValidator();
+
+    const emptyPrompt = validator.validate(
+      validCard({
+        why: "Not proven; no local command evidence was supplied.",
+        prompt: "Too short."
+      })
+    );
+    expect(emptyPrompt.valid).toBe(false);
+    expect(emptyPrompt.issues).toContain("Project control Codex prompt must be present and copy-pasteable when needed.");
+
+    const broadPrompt = validator.validate(
+      validCard({
+        why: "Not proven; no local command evidence was supplied.",
+        prompt: "Fix everything in the repo and tell me when it's done."
+      })
+    );
+    expect(broadPrompt.valid).toBe(false);
+    expect(broadPrompt.issues).toContain("Project control Codex prompt must stay bounded and must not ask Codex to fix everything.");
   });
 });

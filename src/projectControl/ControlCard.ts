@@ -66,5 +66,23 @@ export function validateProjectControlCardShape(output: string): string[] {
     issues.push("Project control next action must be concrete enough to act on.");
   }
 
+  for (const heading of ["## Verified", "## Weak / Provisional", "## Unverified", "## Risk"]) {
+    const contentLines = sectionLines(output, heading).filter((line) => /^[-*]/.test(line.trim()));
+    if (contentLines.length === 0) {
+      issues.push(`Project control output must include at least one bullet under ${heading}.`);
+    }
+  }
+
+  const codexPrompt = sectionContent(output, "## Codex Prompt if needed").trim();
+  if (codexPrompt.length < 20) {
+    issues.push("Project control Codex prompt must be present and copy-pasteable when needed.");
+  }
+  if (/\bfix everything\b/i.test(codexPrompt)) {
+    issues.push("Project control Codex prompt must stay bounded and must not ask Codex to fix everything.");
+  }
+  if (!/\b(run|inspect|capture|report|stop|collect|validate|compare|paste|return|audit)\b/i.test(codexPrompt)) {
+    issues.push("Project control Codex prompt must give Codex a concrete bounded instruction.");
+  }
+
   return issues;
 }

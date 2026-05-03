@@ -16,6 +16,11 @@ export class ProjectControlValidator {
       issues.push("Verified runtime claims require local command evidence.");
     }
 
+    const unverified = sectionContent(output, "## Unverified");
+    if (/\bnone\b/i.test(unverified) && /\bReject\b|\bProvisional\b|\bClean failure\b/i.test(sectionContent(output, "## Verdict"))) {
+      issues.push("Reject, Provisional, and Clean failure verdicts must name what remains unverified.");
+    }
+
     if (/\bfix everything\b/i.test(output)) {
       issues.push("Project control output must not use broad fix-everything language.");
     }
