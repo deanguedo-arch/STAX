@@ -3,6 +3,10 @@ import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
 import { renderProjectControlVerdictCard } from "../projectControl/ControlCard.js";
+import {
+  parseProjectControlPacket,
+  type ProjectControlPacket
+} from "../projectControl/ProjectControlEvidencePacket.js";
 import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
 import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
 import { renderRepoTransferProjectControl } from "../repoTransfer/RepoTransferProjectControl.js";
@@ -679,13 +683,6 @@ export class AnalystAgent implements Agent {
   }
 }
 
-type ProjectControlPacket = {
-  task: string;
-  repoEvidence: string;
-  commandEvidence: string;
-  codexReport: string;
-};
-
 const ADMISSION_SURFACE = getRepoProofSurface("admission_app");
 const CANVAS_SURFACE = getRepoProofSurface("canvas_helper");
 const BRIGHTSPACE_SURFACE = getRepoProofSurface("brightspacequizexporter");
@@ -763,21 +760,6 @@ type ProjectControlSignals = {
   pwshMissingBlocker: boolean;
 };
 
-function parseProjectControlPacket(input: string): ProjectControlPacket {
-  const task = extractLabeledBlock(input, "Task", ["Repo Evidence", "Command Evidence", "Codex Report", "Return"]) || input.trim();
-  let codexReport = extractLabeledBlock(input, "Codex Report", ["Return"]);
-  if (!codexReport) {
-    const inlineCodexReport = task.match(/audit this codex report[^:]*:\s*([\s\S]+)/i)?.[1];
-    if (inlineCodexReport) codexReport = inlineCodexReport.trim();
-  }
-  return {
-    task,
-    repoEvidence: extractLabeledBlock(input, "Repo Evidence", ["Command Evidence", "Codex Report", "Return"]),
-    commandEvidence: extractLabeledBlock(input, "Command Evidence", ["Codex Report", "Return"]),
-    codexReport
-  };
-}
-
 function extractTargetRepoPath(repoEvidence: string): string | undefined {
   const explicit = repoEvidence.match(/\bTarget repo path:\s*(\/Users\/deanguedo\/Documents\/GitHub\/[^\s]+)/i)?.[1];
   if (explicit) return explicit.trim().replace(/[.,;)]$/, "");
@@ -803,17 +785,6 @@ function extractRepoPaths(text: string): string[] {
 function extractWrongRepoEvidencePaths(packet: ProjectControlPacket, targetRepoPath: string): string[] {
   const evidencePaths = extractRepoPaths([packet.commandEvidence, packet.codexReport].join("\n"));
   return Array.from(new Set(evidencePaths.filter((repoPath) => repoPath !== targetRepoPath)));
-}
-
-function extractLabeledBlock(input: string, label: string, followingLabels: string[]): string {
-  const start = input.search(new RegExp(`^${escapeRegExp(label)}:\\s*`, "im"));
-  if (start === -1) return "";
-  const afterLabel = input.slice(start).replace(new RegExp(`^${escapeRegExp(label)}:\\s*`, "i"), "");
-  const nextPositions = followingLabels
-    .map((next) => afterLabel.search(new RegExp(`\\n${escapeRegExp(next)}:\\s*`, "i")))
-    .filter((index) => index >= 0);
-  const end = nextPositions.length ? Math.min(...nextPositions) : afterLabel.length;
-  return afterLabel.slice(0, end).trim();
 }
 
 function renderProjectControl(packet: ProjectControlPacket): string {
@@ -2643,10 +2614,6 @@ function projectControlPrompt(input: ProjectControlSignals): string {
     "Do not claim completion without local proof.",
     "```"
   ].join("\n");
-}
-
-function escapeRegExp(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function strategicQuestionFrom(input: string): string {
