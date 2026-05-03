@@ -6,6 +6,8 @@ import { validateDogfoodRoundC } from "./DogfoodRoundC.js";
 import { validateFailureLedger } from "./FailureLedger.js";
 import { validateHumanJudgmentLedger } from "./HumanJudgmentConsole.js";
 import { validateLiveCodexWorkflowContract } from "./LiveCodexWorkflowContract.js";
+import { validateCiFailureTriageGate } from "./CiFailureTriageGate.js";
+import { validatePrReviewCommentGate } from "./PrReviewCommentGate.js";
 import { validateOperatingWindow } from "./OperatingWindow.js";
 
 export type PromotionGate95Summary = {
@@ -17,6 +19,8 @@ export type PromotionGate95Summary = {
   workflowContractStatus: string;
   humanJudgmentStatus: string;
   operatingWindowStatus: string;
+  ciFailureTriageStatus: string;
+  prReviewCommentStatus: string;
   status: "promotion_ready" | "promotion_blocked";
   blockers: string[];
 };
@@ -24,11 +28,15 @@ export type PromotionGate95Summary = {
 type PromotionConfig = {
   requiredCleanRuns: number;
   comparisonRunIds: string[];
+  requireCiFailureTriage?: boolean;
+  requirePrReviewCommentScore?: boolean;
 };
 
 const DEFAULT_CONFIG: PromotionConfig = {
   requiredCleanRuns: 3,
-  comparisonRunIds: ["phase12-stateful-2026-04-30", "phaseB-stateful-20-2026-04-30"]
+  comparisonRunIds: ["phase12-stateful-2026-04-30", "phaseB-stateful-20-2026-04-30"],
+  requireCiFailureTriage: true,
+  requirePrReviewCommentScore: true
 };
 
 export async function evaluatePromotionGate95(input: {
@@ -40,7 +48,9 @@ export async function evaluatePromotionGate95(input: {
     const raw = JSON.parse(await fs.readFile(configPath, "utf8")) as Partial<PromotionConfig>;
     config = {
       requiredCleanRuns: raw.requiredCleanRuns ?? DEFAULT_CONFIG.requiredCleanRuns,
-      comparisonRunIds: raw.comparisonRunIds ?? DEFAULT_CONFIG.comparisonRunIds
+      comparisonRunIds: raw.comparisonRunIds ?? DEFAULT_CONFIG.comparisonRunIds,
+      requireCiFailureTriage: raw.requireCiFailureTriage ?? DEFAULT_CONFIG.requireCiFailureTriage,
+      requirePrReviewCommentScore: raw.requirePrReviewCommentScore ?? DEFAULT_CONFIG.requirePrReviewCommentScore
     };
   } catch {
     config = DEFAULT_CONFIG;
@@ -54,6 +64,8 @@ export async function evaluatePromotionGate95(input: {
   const workflowContract = await validateLiveCodexWorkflowContract();
   const humanJudgment = await validateHumanJudgmentLedger();
   const operatingWindow = await validateOperatingWindow();
+  const ciFailureTriage = config.requireCiFailureTriage === false ? undefined : await validateCiFailureTriageGate();
+  const prReviewComment = config.requirePrReviewCommentScore === false ? undefined : await validatePrReviewCommentGate();
 
   const blockers: string[] = [];
   if (cleanRunsPassed < config.requiredCleanRuns) blockers.push(`fewer than ${config.requiredCleanRuns} clean evidence runs are recorded`);
@@ -63,6 +75,8 @@ export async function evaluatePromotionGate95(input: {
   if (workflowContract.status !== "workflow_contract_passed") blockers.push("live Codex workflow contract campaign has not passed");
   if (humanJudgment.summary.status !== "judgment_ready") blockers.push("human judgment ledger is not fully recorded");
   if (operatingWindow.summary.status !== "operating_window_passed") blockers.push("30-task operating window has not passed");
+  if (ciFailureTriage?.status !== "passed") blockers.push("CI failure triage score is not fully passed");
+  if (prReviewComment?.status !== "passed") blockers.push("PR review comment score is not fully passed");
 
   return {
     cleanRunsPassed,
@@ -73,6 +87,8 @@ export async function evaluatePromotionGate95(input: {
     workflowContractStatus: workflowContract.status,
     humanJudgmentStatus: humanJudgment.summary.status,
     operatingWindowStatus: operatingWindow.summary.status,
+    ciFailureTriageStatus: ciFailureTriage?.status ?? "not_required",
+    prReviewCommentStatus: prReviewComment?.status ?? "not_required",
     status: blockers.length === 0 ? "promotion_ready" : "promotion_blocked",
     blockers
   };

@@ -1,35 +1,27 @@
-import { loadCiFailureFixtureCases, triageCiFailure } from "../src/projectControl/CiFailureTriage.js";
+import { validateCiFailureTriageGate } from "../src/campaign/CiFailureTriageGate.js";
 
 async function main(): Promise<void> {
-  const cases = await loadCiFailureFixtureCases();
-  let likelyCauseHits = 0;
-  let proofStrengthHits = 0;
-  let nextActionHits = 0;
-  const issues: string[] = [];
+  const summary = await validateCiFailureTriageGate();
 
-  for (const testCase of cases) {
-    const result = triageCiFailure(testCase);
-    if (result.likelyCause === testCase.expectedLikelyCause) likelyCauseHits += 1;
-    else issues.push(`${testCase.caseId}: likely cause ${result.likelyCause} != ${testCase.expectedLikelyCause}`);
+  process.stdout.write(
+    `${JSON.stringify(
+      {
+        caseCount: summary.caseCount,
+        passingCount: summary.passingCount,
+        likelyCauseAccuracyPct: summary.likelyCauseAccuracyPct,
+        proofStrengthAccuracyPct: summary.proofStrengthAccuracyPct,
+        nextActionAccuracyPct: summary.nextActionAccuracyPct,
+        status: summary.status,
+        issues: summary.issues
+      },
+      null,
+      2
+    )}\n`
+  );
 
-    if (result.proofStrength === testCase.expectedProofStrength) proofStrengthHits += 1;
-    else issues.push(`${testCase.caseId}: proof strength ${result.proofStrength} != ${testCase.expectedProofStrength}`);
-
-    if (result.nextAction.includes(testCase.expectedNextActionContains)) nextActionHits += 1;
-    else issues.push(`${testCase.caseId}: next action missing '${testCase.expectedNextActionContains}'`);
+  if (summary.status !== "passed") {
+    process.exitCode = 1;
   }
-
-  const summary = {
-    caseCount: cases.length,
-    likelyCauseHits,
-    proofStrengthHits,
-    nextActionHits,
-    status: issues.length === 0 ? "passed" : "blocked",
-    issues
-  };
-
-  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
-  if (issues.length > 0) process.exitCode = 1;
 }
 
 main().catch((error) => {

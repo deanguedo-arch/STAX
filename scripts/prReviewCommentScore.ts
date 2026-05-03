@@ -1,21 +1,28 @@
-import { loadPullRequestReviewCommentCases, scorePullRequestReviewComment } from "../src/projectControl/PullRequestReviewComment.js";
+import { validatePrReviewCommentGate } from "../src/campaign/PrReviewCommentGate.js";
 
-const cases = loadPullRequestReviewCommentCases();
-const results = cases.map((input) => scorePullRequestReviewComment(input));
+async function main(): Promise<void> {
+  const summary = await validatePrReviewCommentGate();
+  console.log(
+    JSON.stringify(
+      {
+        caseCount: summary.caseCount,
+        passedCount: summary.passingCount,
+        usefulCommentRate: summary.usefulCommentRate,
+        status: summary.status,
+        issues: summary.issues
+      },
+      null,
+      2
+    )
+  );
 
-const summary = {
-  caseCount: results.length,
-  passedCount: results.filter((result) => result.passed).length,
-  usefulCommentRate: results.length === 0 ? 0 : Math.round((results.filter((result) => result.passed).length / results.length) * 100),
-  status: results.every((result) => result.passed) ? "passed" : "blocked",
-  issues: results.filter((result) => !result.passed).map((result) => ({
-    caseId: result.caseId,
-    issues: result.issues
-  }))
-};
-
-console.log(JSON.stringify(summary, null, 2));
-
-if (summary.status !== "passed") {
-  process.exitCode = 1;
+  if (summary.status !== "passed") {
+    process.exitCode = 1;
+  }
 }
+
+main().catch((error) => {
+  const message = error instanceof Error ? error.stack ?? error.message : String(error);
+  process.stderr.write(`${message}\n`);
+  process.exitCode = 1;
+});
