@@ -14,7 +14,7 @@ export function projectControlStatusFromWhy(why: string): ProjectControlCardStat
   const lower = why.toLowerCase();
   if (lower.startsWith("clean failure")) return "Clean failure";
   if (
-    /\bnot proven\b|\breject\b|\bblocked\b|\bunsafe\b|\bwrong repo\b|\bunverified\b|\bfake-complete\b/.test(lower)
+    /\bnot proven\b|\bnot visually proven\b|\bnot commit-ready\b|\bneeds local command evidence\b|\bneeds rendered visual evidence\b|\breject\b|\bblocked\b|\bunsafe\b|\bwrong repo\b|\bunverified\b|\bfake-complete\b/.test(lower)
   ) {
     return "Reject";
   }
