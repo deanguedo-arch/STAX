@@ -90,6 +90,35 @@ describe("project control evidence packet", () => {
     expect(packet.repoEvidence).toContain("PR branch: feature/pr-audit");
   });
 
+  it("adds a suggested PR comment when auditing a structured PR artifact packet", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether this implementation fix is proven.",
+        repo: "STAX",
+        pullRequestArtifact: {
+          prNumber: 61,
+          title: "Tighten project-control validator",
+          body: "Includes tests and proof notes.",
+          repo: "/Users/deanguedo/Documents/GitHub/STAX",
+          branch: "feature/pr-audit",
+          commitSha: "abc9876",
+          changedFiles: ["src/validators/ProjectControlValidator.ts", "tests/projectControlMode.test.ts"],
+          ciStatuses: [],
+          reviewComments: [{ body: "Please verify the edge case.", state: "open" }],
+          issueLinks: [],
+          labels: ["project-control"]
+        }
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("## Suggested PR Comment");
+    expect(output.output).toContain("This needs human review before approval");
+  });
+
   it("still parses the legacy labeled text packet format", () => {
     const packet = parseProjectControlPacket([
       "Task: Audit whether tests are proven.",

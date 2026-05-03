@@ -11,6 +11,24 @@ export type PullRequestArtifactAuditResult = {
   risk: string[];
 };
 
+export function suggestPullRequestComment(args: {
+  packet: PullRequestArtifactPacket;
+  audit: PullRequestArtifactAuditResult;
+}): string {
+  const firstUnverified = args.audit.unverified[0] ?? "proof remains incomplete";
+  const firstRisk = args.audit.risk[0] ?? "the proof boundary is still weak";
+  if (args.audit.verdict === "accept") {
+    return `This public PR artifact looks bounded and internally consistent, but it still needs human approval and repo-local proof before any merge or release claim.`;
+  }
+  if (args.audit.verdict === "human_review") {
+    return `This needs human review before approval because open review discussion remains and ${firstRisk.toLowerCase()}. Please resolve the open thread(s), then return with the updated artifact state.`;
+  }
+  if (args.audit.verdict === "reject") {
+    return `This is not ready to accept because ${stripPrefix(firstUnverified)}. Please return with the smallest missing proof packet instead of a completion claim.`;
+  }
+  return `This should stay provisional because ${stripPrefix(firstUnverified)}. Please add the smallest missing proof artifact before asking for approval.`;
+}
+
 function dedupe(items: string[]): string[] {
   return Array.from(new Set(items.map((item) => item.trim()).filter(Boolean)));
 }
@@ -141,4 +159,8 @@ export function auditPullRequestArtifact(args: {
     unverified: dedupe(unverified),
     risk: dedupe(risk)
   };
+}
+
+function stripPrefix(text: string): string {
+  return text.replace(/^PR artifact audit:\s*/i, "").replace(/\.$/, "");
 }

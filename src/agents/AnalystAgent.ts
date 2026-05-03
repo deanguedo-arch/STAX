@@ -8,6 +8,7 @@ import {
   type ProjectControlPacket
 } from "../projectControl/ProjectControlEvidencePacket.js";
 import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
+import { auditPullRequestArtifact, suggestPullRequestComment } from "../projectControl/PullRequestArtifactAudit.js";
 import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
 import { renderRepoTransferProjectControl } from "../repoTransfer/RepoTransferProjectControl.js";
 import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
@@ -1275,6 +1276,18 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const verdict = projectControlVerdict(signals);
   const nextAction = projectControlNextAction(signals);
   const prompt = projectControlPrompt(signals);
+  const prComment =
+    packet.structured?.pullRequestArtifact
+      ? suggestPullRequestComment({
+          packet: packet.structured.pullRequestArtifact,
+          audit: auditPullRequestArtifact({
+            packet: packet.structured.pullRequestArtifact,
+            task: packet.task,
+            expectedBranch,
+            expectedCommitSha
+          })
+        })
+      : undefined;
 
   return [
     ...renderProjectControlVerdictCard(verdict),
@@ -1293,6 +1306,13 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     "",
     "## One Next Action",
     `- ${nextAction}`,
+    ...(prComment
+      ? [
+          "",
+          "## Suggested PR Comment",
+          prComment
+        ]
+      : []),
     "",
     "## Codex Prompt if needed",
     prompt
