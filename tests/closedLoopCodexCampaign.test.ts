@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  summarizeClosedLoopCodexCampaign,
-  type ClosedLoopCodexTask
-} from "../src/campaign/ClosedLoopCodexCampaign.js";
+import { summarizeClosedLoopCodexCampaign, type ClosedLoopCodexTask } from "../src/campaign/ClosedLoopCodexCampaign.js";
 
 function task(index: number): ClosedLoopCodexTask {
   const outcome = index < 18 ? "verified_next_state" : "clean_failure";
@@ -42,8 +39,8 @@ function task(index: number): ClosedLoopCodexTask {
 }
 
 describe("summarizeClosedLoopCodexCampaign", () => {
-  it("passes when the 20-task closed-loop gate is met", () => {
-    const summary = summarizeClosedLoopCodexCampaign({
+  it("passes when the 20-task closed-loop gate is met", async () => {
+    const summary = await summarizeClosedLoopCodexCampaign({
       ledger: {
         campaignId: "closed_loop",
         tasks: Array.from({ length: 20 }, (_, index) => task(index))
@@ -68,13 +65,14 @@ describe("summarizeClosedLoopCodexCampaign", () => {
     expect(summary.evidenceReplayChainValid).toBe(true);
     expect(summary.auditTraceCount).toBe(20);
     expect(summary.failureRoutingValid).toBe(true);
+    expect(summary.evalGenerationValid).toBe(true);
   });
 
-  it("blocks if any false accept appears", () => {
+  it("blocks if any false accept appears", async () => {
     const tasks = Array.from({ length: 20 }, (_, index) => ({ ...task(index) }));
     tasks[0] = { ...tasks[0], falseAccept: true, evalCandidate: true };
 
-    const summary = summarizeClosedLoopCodexCampaign({
+    const summary = await summarizeClosedLoopCodexCampaign({
       ledger: {
         campaignId: "closed_loop",
         tasks
@@ -93,7 +91,7 @@ describe("summarizeClosedLoopCodexCampaign", () => {
     expect(summary.blockers).toContain("false accept recorded in closed-loop campaign");
   });
 
-  it("blocks when task-state transitions skip required evidence stages", () => {
+  it("blocks when task-state transitions skip required evidence stages", async () => {
     const tasks = Array.from({ length: 20 }, (_, index) => ({ ...task(index) }));
     tasks[0] = {
       ...tasks[0],
@@ -105,7 +103,7 @@ describe("summarizeClosedLoopCodexCampaign", () => {
       ]
     };
 
-    const summary = summarizeClosedLoopCodexCampaign({
+    const summary = await summarizeClosedLoopCodexCampaign({
       ledger: {
         campaignId: "closed_loop",
         tasks
@@ -125,7 +123,7 @@ describe("summarizeClosedLoopCodexCampaign", () => {
     expect(summary.blockers).toContain("closed-loop task state machine has invalid transitions or missing evidence");
   });
 
-  it("blocks when recorded failure patterns do not match the routed taxonomy", () => {
+  it("blocks when recorded failure patterns do not match the routed taxonomy", async () => {
     const tasks = Array.from({ length: 20 }, (_, index) => ({ ...task(index) }));
     tasks[0] = {
       ...tasks[0],
@@ -139,7 +137,7 @@ describe("summarizeClosedLoopCodexCampaign", () => {
       staxPostCodexAudit: "Fake-complete claim rejected."
     };
 
-    const summary = summarizeClosedLoopCodexCampaign({
+    const summary = await summarizeClosedLoopCodexCampaign({
       ledger: {
         campaignId: "closed_loop",
         tasks

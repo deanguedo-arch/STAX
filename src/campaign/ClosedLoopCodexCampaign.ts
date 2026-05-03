@@ -5,6 +5,7 @@ import {
   replayClosedLoopEvidenceLedger,
   type ClosedLoopEvidenceReplaySummary
 } from "./ClosedLoopEvidenceLedger.js";
+import { summarizeClosedLoopEvalGeneration } from "./ClosedLoopEvalGenerator.js";
 import { routeClosedLoopFailurePatterns } from "./FailurePatternRouter.js";
 
 export type ClosedLoopFinalOutcome =
@@ -85,6 +86,9 @@ export type ClosedLoopCodexSummary = {
   failureRoutingValid: boolean;
   autoRoutedFailureCount: number;
   failureRoutingIssues: string[];
+  evalGenerationValid: boolean;
+  generatedEvalCandidateCount: number;
+  evalGenerationIssues: string[];
   falseAccepts: number;
   falseBlocks: number;
   usefulBlocks: number;
@@ -195,14 +199,17 @@ function validateFailureRouting(task: ClosedLoopCodexTask): string[] {
   return issues;
 }
 
-export function summarizeClosedLoopCodexCampaign(args: {
+export async function summarizeClosedLoopCodexCampaign(args: {
   ledger: ClosedLoopCodexLedger;
   baselineLedger?: BaselineCleanupLedger;
-}): ClosedLoopCodexSummary {
+}): Promise<ClosedLoopCodexSummary> {
   const blockers: string[] = [];
   const stateIssues = args.ledger.tasks.flatMap(validateTaskState);
   const failureRoutingIssues = args.ledger.tasks.flatMap(validateFailureRouting);
   const replaySummary: ClosedLoopEvidenceReplaySummary = replayClosedLoopEvidenceLedger({
+    ledger: args.ledger
+  });
+  const evalGenerationSummary = await summarizeClosedLoopEvalGeneration({
     ledger: args.ledger
   });
   const autoRoutedFailureCount = args.ledger.tasks
@@ -234,6 +241,7 @@ export function summarizeClosedLoopCodexCampaign(args: {
   if (reposRepresented < 3) blockers.push("fewer than 3 repos represented in closed-loop ledger");
   if (stateIssues.length > 0) blockers.push("closed-loop task state machine has invalid transitions or missing evidence");
   if (failureRoutingIssues.length > 0) blockers.push("closed-loop failure routing is incomplete or mismatched");
+  if (!evalGenerationSummary.coverageValid) blockers.push("closed-loop eval candidate generation is incomplete");
   if (!replaySummary.replayValid) blockers.push("closed-loop evidence replay is not deterministic and chain-valid");
   if (falseAccepts > 0) blockers.push("false accept recorded in closed-loop campaign");
   if (verifiedNextStateRate < 80) blockers.push("verified next-state rate is below 80 percent");
@@ -265,6 +273,9 @@ export function summarizeClosedLoopCodexCampaign(args: {
     failureRoutingValid: failureRoutingIssues.length === 0,
     autoRoutedFailureCount,
     failureRoutingIssues,
+    evalGenerationValid: evalGenerationSummary.coverageValid,
+    generatedEvalCandidateCount: evalGenerationSummary.generatedCandidates,
+    evalGenerationIssues: evalGenerationSummary.issues,
     falseAccepts,
     falseBlocks,
     usefulBlocks,
@@ -277,7 +288,7 @@ export function summarizeClosedLoopCodexCampaign(args: {
     cleanupReductionPct,
     evalConversionRate,
     status,
-    blockers: [...blockers, ...stateIssues, ...failureRoutingIssues, ...replaySummary.issues]
+    blockers: [...blockers, ...stateIssues, ...failureRoutingIssues, ...evalGenerationSummary.issues, ...replaySummary.issues]
   };
 }
 
@@ -294,7 +305,7 @@ export async function validateClosedLoopCodexCampaign(input: {
   return {
     ledgerPath,
     baselineLedgerPath,
-    summary: summarizeClosedLoopCodexCampaign({
+    summary: await summarizeClosedLoopCodexCampaign({
       ledger,
       baselineLedger
     })
