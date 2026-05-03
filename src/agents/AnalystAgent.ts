@@ -9,6 +9,7 @@ import {
 } from "../projectControl/ProjectControlEvidencePacket.js";
 import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
 import { auditPullRequestArtifact, suggestPullRequestComment } from "../projectControl/PullRequestArtifactAudit.js";
+import { analyzeProjectControlCodexPrompt } from "../projectControl/CodexPromptQuality.js";
 import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
 import { renderRepoTransferProjectControl } from "../repoTransfer/RepoTransferProjectControl.js";
 import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
@@ -1276,6 +1277,23 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const verdict = projectControlVerdict(signals);
   const nextAction = projectControlNextAction(signals);
   const prompt = projectControlPrompt(signals);
+  const promptQuality = analyzeProjectControlCodexPrompt({
+    prompt,
+    requiresRiskGuardrails:
+      signals.explicitPublishSyncTask ||
+      signals.repoRiskRequest ||
+      signals.brightspace ||
+      signals.canvasHelper ||
+      signals.admissionApp
+  });
+  if (promptQuality.status === "strong") {
+    verified.push("Codex prompt quality is bounded, proof-seeking, and repo-anchored.");
+  } else if (promptQuality.status === "partial") {
+    weak.push(`Codex prompt quality is partial because ${promptQuality.issues[0] ?? "some boundedness requirements are weak"}.`);
+  } else {
+    unverified.push(`Codex prompt quality is weak because ${promptQuality.issues[0] ?? "it is not safely bounded"}.`);
+    risks.push(...promptQuality.issues.slice(0, 2).map((issue) => `Codex prompt risk: ${issue}.`));
+  }
   const prComment =
     packet.structured?.pullRequestArtifact
       ? suggestPullRequestComment({

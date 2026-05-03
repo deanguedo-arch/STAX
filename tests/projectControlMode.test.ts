@@ -87,6 +87,25 @@ describe("project_control mode", () => {
     expect(output.output).toContain("Commands run");
   });
 
+  it("surfaces Codex prompt quality when the generated prompt is bounded and proof-seeking", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      benchmarkPrompt({
+        task: "Audit whether a Brightspace Rollup dependency repair was proven. Beware: command output came from a different repo.",
+        repoEvidence: [
+          "Target repo path: /Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+          "Relevant scripts: build, ingest:promotion-check, ingest:ci."
+        ].join("\n"),
+        commandEvidence: "cwd=/Users/deanguedo/Documents/GitHub/canvas-helper\nnpm ls @rollup/rollup-darwin-arm64 rollup vite exited 0.",
+        codexReport: "Codex says: Brightspace dependency repair is proven because npm ls passed in canvas-helper."
+      })
+    );
+
+    expect(output.taskMode).toBe("project_control");
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Codex prompt quality is bounded, proof-seeking, and repo-anchored.");
+  });
+
   it("moves Brightspace from dependency repair to build and ingest proof when Rollup is present", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(
