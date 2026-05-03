@@ -9,6 +9,7 @@ import { validateLiveCodexWorkflowContract } from "./LiveCodexWorkflowContract.j
 import { validateCiFailureTriageGate } from "./CiFailureTriageGate.js";
 import { validatePrReviewCommentGate } from "./PrReviewCommentGate.js";
 import { validateOperatingWindow } from "./OperatingWindow.js";
+import { validateLivePrArtifactTrialGate } from "./LivePrArtifactTrialGate.js";
 
 export type PromotionGate95Summary = {
   cleanRunsPassed: number;
@@ -21,6 +22,7 @@ export type PromotionGate95Summary = {
   operatingWindowStatus: string;
   ciFailureTriageStatus: string;
   prReviewCommentStatus: string;
+  livePrArtifactTrialStatus: string;
   status: "promotion_ready" | "promotion_blocked";
   blockers: string[];
 };
@@ -30,13 +32,15 @@ type PromotionConfig = {
   comparisonRunIds: string[];
   requireCiFailureTriage?: boolean;
   requirePrReviewCommentScore?: boolean;
+  requireLivePrArtifactTrial?: boolean;
 };
 
 const DEFAULT_CONFIG: PromotionConfig = {
   requiredCleanRuns: 3,
   comparisonRunIds: ["phase12-stateful-2026-04-30", "phaseB-stateful-20-2026-04-30"],
   requireCiFailureTriage: true,
-  requirePrReviewCommentScore: true
+  requirePrReviewCommentScore: true,
+  requireLivePrArtifactTrial: true
 };
 
 export async function evaluatePromotionGate95(input: {
@@ -50,7 +54,8 @@ export async function evaluatePromotionGate95(input: {
       requiredCleanRuns: raw.requiredCleanRuns ?? DEFAULT_CONFIG.requiredCleanRuns,
       comparisonRunIds: raw.comparisonRunIds ?? DEFAULT_CONFIG.comparisonRunIds,
       requireCiFailureTriage: raw.requireCiFailureTriage ?? DEFAULT_CONFIG.requireCiFailureTriage,
-      requirePrReviewCommentScore: raw.requirePrReviewCommentScore ?? DEFAULT_CONFIG.requirePrReviewCommentScore
+      requirePrReviewCommentScore: raw.requirePrReviewCommentScore ?? DEFAULT_CONFIG.requirePrReviewCommentScore,
+      requireLivePrArtifactTrial: raw.requireLivePrArtifactTrial ?? DEFAULT_CONFIG.requireLivePrArtifactTrial
     };
   } catch {
     config = DEFAULT_CONFIG;
@@ -66,6 +71,8 @@ export async function evaluatePromotionGate95(input: {
   const operatingWindow = await validateOperatingWindow();
   const ciFailureTriage = config.requireCiFailureTriage === false ? undefined : await validateCiFailureTriageGate();
   const prReviewComment = config.requirePrReviewCommentScore === false ? undefined : await validatePrReviewCommentGate();
+  const livePrArtifactTrial =
+    config.requireLivePrArtifactTrial === false ? undefined : await validateLivePrArtifactTrialGate();
 
   const blockers: string[] = [];
   if (cleanRunsPassed < config.requiredCleanRuns) blockers.push(`fewer than ${config.requiredCleanRuns} clean evidence runs are recorded`);
@@ -77,6 +84,7 @@ export async function evaluatePromotionGate95(input: {
   if (operatingWindow.summary.status !== "operating_window_passed") blockers.push("30-task operating window has not passed");
   if (ciFailureTriage?.status !== "passed") blockers.push("CI failure triage score is not fully passed");
   if (prReviewComment?.status !== "passed") blockers.push("PR review comment score is not fully passed");
+  if (livePrArtifactTrial?.status !== "passed") blockers.push("live PR artifact trial has not passed");
 
   return {
     cleanRunsPassed,
@@ -89,6 +97,7 @@ export async function evaluatePromotionGate95(input: {
     operatingWindowStatus: operatingWindow.summary.status,
     ciFailureTriageStatus: ciFailureTriage?.status ?? "not_required",
     prReviewCommentStatus: prReviewComment?.status ?? "not_required",
+    livePrArtifactTrialStatus: livePrArtifactTrial?.status ?? "not_required",
     status: blockers.length === 0 ? "promotion_ready" : "promotion_blocked",
     blockers
   };

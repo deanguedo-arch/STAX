@@ -19,6 +19,8 @@ import { validateCiFailureTriageGate } from "./CiFailureTriageGate.js";
 import type { PrReviewCommentGateSummary } from "./PrReviewCommentGate.js";
 import { validatePrReviewCommentGate } from "./PrReviewCommentGate.js";
 import { summarizeOperatingWindow, type OperatingWindowLedger } from "./OperatingWindow.js";
+import type { LivePrArtifactTrialGateSummary } from "./LivePrArtifactTrialGate.js";
+import { validateLivePrArtifactTrialGate } from "./LivePrArtifactTrialGate.js";
 
 export type OperatingDashboardSummary = {
   snapshotDate: string;
@@ -32,6 +34,7 @@ export type OperatingDashboardSummary = {
     operatingWindow: string;
     ciFailureTriage: string;
     prReviewComment: string;
+    livePrArtifactTrial: string;
   };
   metrics: {
     baselineMeanCleanupPrompts: number | null;
@@ -54,6 +57,12 @@ export type OperatingDashboardSummary = {
     prReviewCommentCaseCount: number;
     prReviewCommentPassingCount: number;
     prReviewCommentUsefulCommentRate: number;
+    livePrArtifactTrialCaseCount: number;
+    livePrArtifactTrialLiveSourceCount: number;
+    livePrArtifactTrialFalseAccepts: number;
+    livePrArtifactTrialFalseBlocks: number;
+    livePrArtifactTrialUsefulNextActionRate: number;
+    livePrArtifactTrialCiProofSurfaceRate: number;
   };
   trendlines: string[];
   repoHotspots: Array<{ repo: string; count: number }>;
@@ -92,6 +101,7 @@ export async function summarizeOperatingDashboard(args: {
   workflowContractSummary?: LiveCodexWorkflowContractSummary;
   ciFailureTriageSummary?: CiFailureTriageGateSummary;
   prReviewCommentSummary?: PrReviewCommentGateSummary;
+  livePrArtifactTrialSummary?: LivePrArtifactTrialGateSummary;
   snapshotDate?: string;
 }): Promise<OperatingDashboardSummary> {
   const baseline = summarizeBaselineCleanup(args.baselineLedger);
@@ -115,6 +125,7 @@ export async function summarizeOperatingDashboard(args: {
     args.workflowContractSummary ?? summarizeLiveCodexWorkflowContract({ ledger: args.closedLoopLedger });
   const ciFailureTriage = args.ciFailureTriageSummary ?? (await validateCiFailureTriageGate());
   const prReviewComment = args.prReviewCommentSummary ?? (await validatePrReviewCommentGate());
+  const livePrArtifactTrial = args.livePrArtifactTrialSummary ?? (await validateLivePrArtifactTrialGate());
   const humanJudgment = summarizeHumanJudgmentLedger({
     ledger: args.humanJudgmentLedger,
     closedLoopLedger: args.closedLoopLedger
@@ -155,7 +166,8 @@ export async function summarizeOperatingDashboard(args: {
     ...failure.blockers,
     ...operatingWindow.blockers,
     ...(ciFailureTriage.status === "blocked" ? ciFailureTriage.issues : []),
-    ...(prReviewComment.status === "blocked" ? prReviewComment.issues : [])
+    ...(prReviewComment.status === "blocked" ? prReviewComment.issues : []),
+    ...(livePrArtifactTrial.status === "failed" ? livePrArtifactTrial.blockers : [])
   ];
 
   const nextRecommendedHardeningTask =
@@ -180,7 +192,8 @@ export async function summarizeOperatingDashboard(args: {
       failureLedger: failure.status,
       operatingWindow: operatingWindow.status,
       ciFailureTriage: ciFailureTriage.status,
-      prReviewComment: prReviewComment.status
+      prReviewComment: prReviewComment.status,
+      livePrArtifactTrial: livePrArtifactTrial.status
     },
     metrics: {
       baselineMeanCleanupPrompts: baseline.meanCleanupPrompts,
@@ -204,7 +217,13 @@ export async function summarizeOperatingDashboard(args: {
       prReviewCommentCaseCount: prReviewComment.caseCount,
       prReviewCommentPassingCount: prReviewComment.passingCount,
       prReviewCommentUsefulCommentRate:
-        prReviewComment.caseCount === 0 ? 0 : Math.round((prReviewComment.passingCount / prReviewComment.caseCount) * 100)
+        prReviewComment.caseCount === 0 ? 0 : Math.round((prReviewComment.passingCount / prReviewComment.caseCount) * 100),
+      livePrArtifactTrialCaseCount: livePrArtifactTrial.selectedCaseCount,
+      livePrArtifactTrialLiveSourceCount: livePrArtifactTrial.liveSourceCount,
+      livePrArtifactTrialFalseAccepts: livePrArtifactTrial.falseAccepts,
+      livePrArtifactTrialFalseBlocks: livePrArtifactTrial.falseBlocks,
+      livePrArtifactTrialUsefulNextActionRate: livePrArtifactTrial.usefulNextActionRate,
+      livePrArtifactTrialCiProofSurfaceRate: livePrArtifactTrial.ciProofClassificationSurfaceRate
     },
     trendlines,
     repoHotspots,
@@ -231,6 +250,7 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- operating window: ${summary.statuses.operatingWindow}`,
     `- ci failure triage: ${summary.statuses.ciFailureTriage}`,
     `- pr review comment: ${summary.statuses.prReviewComment}`,
+    `- live PR artifact trial: ${summary.statuses.livePrArtifactTrial}`,
     "",
     "Key Metrics",
     `- baseline mean cleanup prompts: ${summary.metrics.baselineMeanCleanupPrompts ?? "n/a"}`,
@@ -245,6 +265,10 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- operating-window meaningful catches: ${summary.metrics.operatingWindowMeaningfulCatches}`,
     `- ci failure triage cases / passing: ${summary.metrics.ciFailureTriageCaseCount}/${summary.metrics.ciFailureTriagePassingCount} (${summary.metrics.ciFailureTriagePassingRate}%)`,
     `- pr review comment cases / passing: ${summary.metrics.prReviewCommentCaseCount}/${summary.metrics.prReviewCommentPassingCount} (${summary.metrics.prReviewCommentUsefulCommentRate}%)`,
+    `- live PR trial cases / live-source: ${summary.metrics.livePrArtifactTrialCaseCount}/${summary.metrics.livePrArtifactTrialLiveSourceCount}`,
+    `- live PR trial false accepts / false blocks: ${summary.metrics.livePrArtifactTrialFalseAccepts}/${summary.metrics.livePrArtifactTrialFalseBlocks}`,
+    `- live PR trial useful next-action rate: ${summary.metrics.livePrArtifactTrialUsefulNextActionRate}%`,
+    `- live PR trial CI proof surface rate: ${summary.metrics.livePrArtifactTrialCiProofSurfaceRate}%`,
     `- human-judgment followups / blocked-too-hard: ${summary.metrics.humanJudgmentFollowupCount}/${summary.metrics.humanJudgmentBlockedTooHardCount}`,
     `- eval candidates: ${summary.metrics.evalCandidateCount}`,
     "",
@@ -294,6 +318,7 @@ export async function validateOperatingDashboard(input: {
     failureValidation,
     ciFailureTriageSummary,
     prReviewCommentSummary,
+    livePrArtifactTrialSummary,
     workflowLedger
   ] = await Promise.all([
     fs.readFile(baselineLedgerPath, "utf8").then((raw) => JSON.parse(raw) as BaselineCleanupLedger),
@@ -305,6 +330,7 @@ export async function validateOperatingDashboard(input: {
     validateFailureLedger(),
     validateCiFailureTriageGate(),
     validatePrReviewCommentGate(),
+    validateLivePrArtifactTrialGate(),
     fs.readFile(workflowLedgerPath, "utf8").then((raw) => JSON.parse(raw) as ClosedLoopCodexLedger)
   ]);
 
@@ -318,6 +344,7 @@ export async function validateOperatingDashboard(input: {
     failureSummary: failureValidation.summary,
     ciFailureTriageSummary,
     prReviewCommentSummary,
+    livePrArtifactTrialSummary,
     workflowContractSummary: summarizeLiveCodexWorkflowContract({ ledger: workflowLedger })
   });
 }

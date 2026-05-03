@@ -27,7 +27,14 @@ async function main(): Promise<void> {
     args.release,
     "artifacts"
   );
+  const fixtureSummaryPath = path.join(
+    process.cwd(),
+    "fixtures",
+    "real_use",
+    "live_pr_artifact_trial_latest.json"
+  );
   await fs.mkdir(artifactsDir, { recursive: true });
+  await fs.mkdir(path.dirname(fixtureSummaryPath), { recursive: true });
   await fs.writeFile(
     path.join(artifactsDir, "pr_artifact_live_trial.json"),
     JSON.stringify(summary, null, 2),
@@ -38,6 +45,7 @@ async function main(): Promise<void> {
     `${formatLivePrArtifactTrial(summary)}\n`,
     "utf8"
   );
+  await fs.writeFile(fixtureSummaryPath, JSON.stringify(summary, null, 2), "utf8");
 
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
   if (summary.status !== "passed") process.exitCode = 1;

@@ -152,6 +152,18 @@ describe("Operating dashboard", () => {
         status: "passed",
         issues: []
       },
+      livePrArtifactTrialSummary: {
+        selectedCaseCount: 25,
+        liveSourceCount: 25,
+        fallbackSourceCount: 0,
+        falseAccepts: 0,
+        falseBlocks: 0,
+        falseBlockRatePct: 0,
+        usefulNextActionRate: 100,
+        ciProofClassificationSurfaceRate: 100,
+        status: "passed",
+        blockers: []
+      },
       snapshotDate: "2026-05-03"
     });
 
@@ -165,7 +177,10 @@ describe("Operating dashboard", () => {
     expect(formatOperatingDashboard(summary)).toContain("workflow contract: workflow_contract_passed");
     expect(formatOperatingDashboard(summary)).toContain("ci failure triage: passed");
     expect(formatOperatingDashboard(summary)).toContain("pr review comment: passed");
+    expect(formatOperatingDashboard(summary)).toContain("live PR artifact trial: passed");
     expect(formatOperatingDashboard(summary)).toContain("ci failure triage cases / passing: 10/10 (100%)");
     expect(formatOperatingDashboard(summary)).toContain("pr review comment cases / passing: 10/10 (100%)");
+    expect(formatOperatingDashboard(summary)).toContain("live PR trial cases / live-source: 25/25");
+    expect(formatOperatingDashboard(summary)).toContain("live PR trial false accepts / false blocks: 0/0");
   });
 });
