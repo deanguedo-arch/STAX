@@ -10,6 +10,7 @@ type CliArgs = {
   minLive?: number;
   allowFallback: boolean;
   release: string;
+  skipArtifactsOnFailure: boolean;
 };
 
 async function main(): Promise<void> {
@@ -39,18 +40,21 @@ async function main(): Promise<void> {
     "real_use",
     "live_pr_artifact_trial_last_attempt_failed.json"
   );
-  await fs.mkdir(artifactsDir, { recursive: true });
+  const shouldWriteReleaseArtifacts = summary.status === "passed" || !args.skipArtifactsOnFailure;
+  if (shouldWriteReleaseArtifacts) {
+    await fs.mkdir(artifactsDir, { recursive: true });
+    await fs.writeFile(
+      path.join(artifactsDir, "pr_artifact_live_trial.json"),
+      JSON.stringify(summary, null, 2),
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(artifactsDir, "pr_artifact_live_trial.md"),
+      `${formatLivePrArtifactTrial(summary)}\n`,
+      "utf8"
+    );
+  }
   await fs.mkdir(path.dirname(fixtureSummaryPath), { recursive: true });
-  await fs.writeFile(
-    path.join(artifactsDir, "pr_artifact_live_trial.json"),
-    JSON.stringify(summary, null, 2),
-    "utf8"
-  );
-  await fs.writeFile(
-    path.join(artifactsDir, "pr_artifact_live_trial.md"),
-    `${formatLivePrArtifactTrial(summary)}\n`,
-    "utf8"
-  );
   if (summary.status === "passed") {
     await fs.writeFile(fixtureSummaryPath, JSON.stringify(summary, null, 2), "utf8");
     await fs.rm(failedAttemptPath, { force: true });
@@ -68,7 +72,8 @@ async function main(): Promise<void> {
 function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {
     allowFallback: true,
-    release: "STAX_Project-Control_9_5_RC4"
+    release: "STAX_Project-Control_9_5_RC4",
+    skipArtifactsOnFailure: false
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -91,6 +96,10 @@ function parseArgs(argv: string[]): CliArgs {
     }
     if (token === "--disallow-fallback") {
       args.allowFallback = false;
+      continue;
+    }
+    if (token === "--skip-artifacts-on-failure") {
+      args.skipArtifactsOnFailure = true;
       continue;
     }
   }

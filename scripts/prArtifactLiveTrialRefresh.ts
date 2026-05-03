@@ -12,6 +12,9 @@ type CommandResult = {
 type RefreshArgs = {
   force: boolean;
   maxCacheHours: number;
+  limit: number;
+  minLive: number;
+  allowFallback: boolean;
 };
 
 function run(command: string): Promise<CommandResult> {
@@ -41,7 +44,11 @@ async function main(): Promise<void> {
   if (!args.force) {
     const cached = await loadCachedLiveTrial();
     if (cached) {
-      const gateSummary = await validateLivePrArtifactTrialGate();
+      const gateSummary = await validateLivePrArtifactTrialGate({
+        requestedCaseCount: args.limit,
+        minimumLiveSourceCount: args.minLive,
+        allowFallbackSource: args.allowFallback
+      });
       const ageHours = ageInHours(cached.recordedAt);
       if (gateSummary.status === "passed" && ageHours <= args.maxCacheHours) {
         process.stdout.write(
@@ -64,7 +71,16 @@ async function main(): Promise<void> {
     }
   }
 
-  const trialResult = await run("npm run pr-artifact:live-trial");
+  const trialCommand = [
+    "tsx scripts/prArtifactLiveTrial.ts",
+    `--limit ${args.limit}`,
+    `--min-live ${args.minLive}`,
+    args.allowFallback ? "" : "--disallow-fallback",
+    "--skip-artifacts-on-failure"
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const trialResult = await run(trialCommand);
   process.stdout.write(trialResult.stdout);
   if (trialResult.stderr.trim()) process.stderr.write(trialResult.stderr);
 
@@ -73,7 +89,11 @@ async function main(): Promise<void> {
     return;
   }
 
-  const gateSummary = await validateLivePrArtifactTrialGate();
+  const gateSummary = await validateLivePrArtifactTrialGate({
+    requestedCaseCount: args.limit,
+    minimumLiveSourceCount: args.minLive,
+    allowFallbackSource: args.allowFallback
+  });
   if (gateSummary.status === "passed") {
     process.stdout.write(
       `${JSON.stringify(
@@ -108,7 +128,10 @@ async function main(): Promise<void> {
 function parseArgs(argv: string[]): RefreshArgs {
   const args: RefreshArgs = {
     force: false,
-    maxCacheHours: 24
+    maxCacheHours: 24,
+    limit: 25,
+    minLive: 5,
+    allowFallback: true
   };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
@@ -123,6 +146,22 @@ function parseArgs(argv: string[]): RefreshArgs {
         args.maxCacheHours = value;
       }
       index += 1;
+      continue;
+    }
+    if (token === "--limit" && next) {
+      const value = Number(next);
+      if (Number.isFinite(value) && value >= 1) args.limit = Math.trunc(value);
+      index += 1;
+      continue;
+    }
+    if (token === "--min-live" && next) {
+      const value = Number(next);
+      if (Number.isFinite(value) && value >= 0) args.minLive = Math.trunc(value);
+      index += 1;
+      continue;
+    }
+    if (token === "--disallow-fallback") {
+      args.allowFallback = false;
       continue;
     }
   }
