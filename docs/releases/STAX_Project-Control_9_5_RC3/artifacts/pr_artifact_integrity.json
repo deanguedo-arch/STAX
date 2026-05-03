@@ -1,0 +1,20 @@
+
+> rax@0.1.0 pr-artifact:integrity
+> tsx scripts/prArtifactTrialIntegrity.ts
+
+{
+  "fixtureSet": "real_pr_artifact_trial_v1",
+  "snapshotCount": 10,
+  "caseCount": 50,
+  "categoryCounts": {
+    "passing_ci": 10,
+    "failing_ci": 10,
+    "docs_config_only": 10,
+    "tests_fixtures_goldens": 10,
+    "ui_data_deploy_security": 10
+  },
+  "snapshotCoverageValid": true,
+  "caseShapeValid": true,
+  "status": "passed",
+  "issues": []
+}

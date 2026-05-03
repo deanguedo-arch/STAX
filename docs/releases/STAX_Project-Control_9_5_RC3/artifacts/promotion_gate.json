@@ -1,0 +1,15 @@
+
+> rax@0.1.0 campaign:promotion-gate
+> tsx scripts/promotionGate95.ts
+
+{
+  "cleanRunsPassed": 3,
+  "requiredCleanRuns": 3,
+  "baselineStatus": "baseline_ready",
+  "dogfoodRoundCStatus": "round_c_passed",
+  "failureLedgerStatus": "tracked",
+  "humanJudgmentStatus": "judgment_ready",
+  "operatingWindowStatus": "operating_window_passed",
+  "status": "promotion_ready",
+  "blockers": []
+}

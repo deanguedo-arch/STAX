@@ -1,0 +1,20 @@
+
+> rax@0.1.0 pr-artifact:score
+> tsx scripts/prArtifactTrialScore.ts
+
+{
+  "fixtureSet": "real_pr_artifact_trial_v1",
+  "snapshotCount": 10,
+  "caseCount": 50,
+  "falseAccepts": 0,
+  "falseBlocks": 0,
+  "falseBlockRatePct": 0,
+  "usefulNextActions": 50,
+  "usefulNextActionRate": 100,
+  "ciProofClassificationAccuracy": 100,
+  "criticalMisses": 0,
+  "evalCandidatesCreated": 0,
+  "misses": [],
+  "status": "passed",
+  "blockers": []
+}

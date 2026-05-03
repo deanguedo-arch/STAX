@@ -1,0 +1,49 @@
+
+> rax@0.1.0 stax:ops-dashboard
+> tsx scripts/opsDashboard.ts
+
+STAX Ops Dashboard
+- snapshot: 2026-05-03
+- status: ops_healthy
+
+Status Checks
+- baseline: baseline_ready
+- dogfood round c: round_c_passed
+- closed loop: closed_loop_passed
+- human judgment: judgment_ready
+- failure ledger: tracked
+- operating window: operating_window_passed
+
+Key Metrics
+- baseline mean cleanup prompts: 1.4
+- dogfood cleanup reduction: 100%
+- closed-loop verified next-state rate: 80%
+- closed-loop false accepts / false blocks: 0/0
+- operating-window cleanup reduction: 100%
+- operating-window accepted decisions: 100%
+- operating-window useful initial prompts: 100%
+- operating-window meaningful catches: 21
+- human-judgment followups / blocked-too-hard: 1/0
+- eval candidates: 9
+
+Trendlines
+- Cleanup reduction moved from baseline to Dogfood Round C: 100%.
+- Useful prompt rate from Dogfood Round C to Operating Window: flat 0.
+- Accepted decision rate from Dogfood Round C to Operating Window: flat 0.
+- Closed-loop false accepts / false blocks: 0/0.
+
+Repo Hotspots
+- ADMISSION-APP: 3
+- brightspacequizexporter: 3
+- canvas-helper: 2
+
+Failure Hotspots
+- brightspace_context_leak: 1
+- cross_repo_context_leak: 1
+- repeated_audit_loop: 1
+
+Next Recommended Hardening Task
+- Resolve the remaining human-judgment followup item and convert its lesson into an approved patch, eval, or repo memory target.
+
+Blockers
+- none
