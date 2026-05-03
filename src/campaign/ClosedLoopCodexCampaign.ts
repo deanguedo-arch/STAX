@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { summarizeBaselineCleanup, type BaselineCleanupLedger } from "./BaselineCleanup.js";
+import {
+  replayClosedLoopEvidenceLedger,
+  type ClosedLoopEvidenceReplaySummary
+} from "./ClosedLoopEvidenceLedger.js";
+import { routeClosedLoopFailurePatterns } from "./FailurePatternRouter.js";
 
 export type ClosedLoopFinalOutcome =
   | "verified_complete"
@@ -70,6 +75,16 @@ export type ClosedLoopCodexSummary = {
   taskCount: number;
   reposRepresented: number;
   stateCoverageValid: boolean;
+  evidenceReplayValid: boolean;
+  evidenceReplayDeterministic: boolean;
+  evidenceReplayChainValid: boolean;
+  evidenceReplayIssues: string[];
+  auditTraceCount: number;
+  doctrineVersion: string;
+  runtimeVersion: string;
+  failureRoutingValid: boolean;
+  autoRoutedFailureCount: number;
+  failureRoutingIssues: string[];
   falseAccepts: number;
   falseBlocks: number;
   usefulBlocks: number;
@@ -153,12 +168,46 @@ function validateTaskState(task: ClosedLoopCodexTask): string[] {
   return issues;
 }
 
+function taskNeedsFailureRouting(task: ClosedLoopCodexTask): boolean {
+  return Boolean(task.falseAccept || task.falseBlock || task.finalOutcome === "rejected_fake_complete" || !task.staxInitialPromptUseful);
+}
+
+function validateFailureRouting(task: ClosedLoopCodexTask): string[] {
+  if (!taskNeedsFailureRouting(task)) return [];
+  const issues: string[] = [];
+  const routed = routeClosedLoopFailurePatterns(task);
+  if (routed.routedPatterns.length === 0) {
+    issues.push(`${task.taskId}: failure router did not classify this miss`);
+    return issues;
+  }
+
+  const recordedPatterns = new Set(task.failurePatterns ?? []);
+  const overlap = routed.routedPatterns.some((pattern) => recordedPatterns.has(pattern.patternId));
+  if (!overlap) {
+    issues.push(
+      `${task.taskId}: recorded failure patterns do not match routed taxonomy (${routed.routedPatterns.map((pattern) => pattern.patternId).join(", ")})`
+    );
+  }
+
+  if (!task.evalCandidates?.length) {
+    issues.push(`${task.taskId}: routed failure requires at least one eval candidate`);
+  }
+  return issues;
+}
+
 export function summarizeClosedLoopCodexCampaign(args: {
   ledger: ClosedLoopCodexLedger;
   baselineLedger?: BaselineCleanupLedger;
 }): ClosedLoopCodexSummary {
   const blockers: string[] = [];
   const stateIssues = args.ledger.tasks.flatMap(validateTaskState);
+  const failureRoutingIssues = args.ledger.tasks.flatMap(validateFailureRouting);
+  const replaySummary: ClosedLoopEvidenceReplaySummary = replayClosedLoopEvidenceLedger({
+    ledger: args.ledger
+  });
+  const autoRoutedFailureCount = args.ledger.tasks
+    .filter(taskNeedsFailureRouting)
+    .reduce((count, task) => count + routeClosedLoopFailurePatterns(task).routedPatterns.length, 0);
   const reposRepresented = new Set(args.ledger.tasks.map((task) => task.repo)).size;
   const falseAccepts = args.ledger.tasks.filter((task) => task.falseAccept).length;
   const falseBlocks = args.ledger.tasks.filter((task) => task.falseBlock).length;
@@ -184,6 +233,8 @@ export function summarizeClosedLoopCodexCampaign(args: {
   if (args.ledger.tasks.length < 20) blockers.push("fewer than 20 closed-loop tasks recorded");
   if (reposRepresented < 3) blockers.push("fewer than 3 repos represented in closed-loop ledger");
   if (stateIssues.length > 0) blockers.push("closed-loop task state machine has invalid transitions or missing evidence");
+  if (failureRoutingIssues.length > 0) blockers.push("closed-loop failure routing is incomplete or mismatched");
+  if (!replaySummary.replayValid) blockers.push("closed-loop evidence replay is not deterministic and chain-valid");
   if (falseAccepts > 0) blockers.push("false accept recorded in closed-loop campaign");
   if (verifiedNextStateRate < 80) blockers.push("verified next-state rate is below 80 percent");
   if (cleanupReductionPct == null) blockers.push("cleanup reduction versus baseline cannot be computed yet");
@@ -204,6 +255,16 @@ export function summarizeClosedLoopCodexCampaign(args: {
     taskCount: args.ledger.tasks.length,
     reposRepresented,
     stateCoverageValid: stateIssues.length === 0,
+    evidenceReplayValid: replaySummary.replayValid,
+    evidenceReplayDeterministic: replaySummary.deterministic,
+    evidenceReplayChainValid: replaySummary.chainValid,
+    evidenceReplayIssues: replaySummary.issues,
+    auditTraceCount: replaySummary.auditTraceIds.length,
+    doctrineVersion: replaySummary.doctrineVersion,
+    runtimeVersion: replaySummary.runtimeVersion,
+    failureRoutingValid: failureRoutingIssues.length === 0,
+    autoRoutedFailureCount,
+    failureRoutingIssues,
     falseAccepts,
     falseBlocks,
     usefulBlocks,
@@ -216,7 +277,7 @@ export function summarizeClosedLoopCodexCampaign(args: {
     cleanupReductionPct,
     evalConversionRate,
     status,
-    blockers: [...blockers, ...stateIssues]
+    blockers: [...blockers, ...stateIssues, ...failureRoutingIssues, ...replaySummary.issues]
   };
 }
 

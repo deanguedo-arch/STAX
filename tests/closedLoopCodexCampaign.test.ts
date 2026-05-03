@@ -28,16 +28,16 @@ function task(index: number): ClosedLoopCodexTask {
     commandEvidence: "command",
     staxPostCodexAudit: "post audit",
     nextAction: outcome === "clean_failure" ? "Capture the first missing proof artifact before retrying." : undefined,
-    failurePatterns: outcome === "clean_failure" ? ["fake_complete_boundary"] : undefined,
-    evalCandidates: outcome === "clean_failure" ? ["eval_fake_complete_boundary"] : undefined,
+    failurePatterns: outcome === "clean_failure" ? ["A1"] : undefined,
+    evalCandidates: outcome === "clean_failure" ? ["eval_a1_closed_loop"] : undefined,
     cleanupPromptsAfterCodex: 0,
     finalOutcome: outcome,
     falseAccept: false,
-    falseBlock: index === 19,
+    falseBlock: false,
     usefulBlock: index < 10,
     verifiedAccept: index < 8,
     staxInitialPromptUseful: true,
-    evalCandidate: index === 19
+    evalCandidate: outcome === "clean_failure"
   };
 }
 
@@ -63,6 +63,11 @@ describe("summarizeClosedLoopCodexCampaign", () => {
     expect(summary.cleanupReductionPct).toBe(100);
     expect(summary.verifiedNextStateRate).toBe(90);
     expect(summary.stateCoverageValid).toBe(true);
+    expect(summary.evidenceReplayValid).toBe(true);
+    expect(summary.evidenceReplayDeterministic).toBe(true);
+    expect(summary.evidenceReplayChainValid).toBe(true);
+    expect(summary.auditTraceCount).toBe(20);
+    expect(summary.failureRoutingValid).toBe(true);
   });
 
   it("blocks if any false accept appears", () => {
@@ -118,5 +123,39 @@ describe("summarizeClosedLoopCodexCampaign", () => {
     expect(summary.status).toBe("closed_loop_blocked");
     expect(summary.stateCoverageValid).toBe(false);
     expect(summary.blockers).toContain("closed-loop task state machine has invalid transitions or missing evidence");
+  });
+
+  it("blocks when recorded failure patterns do not match the routed taxonomy", () => {
+    const tasks = Array.from({ length: 20 }, (_, index) => ({ ...task(index) }));
+    tasks[0] = {
+      ...tasks[0],
+      finalOutcome: "rejected_fake_complete",
+      state: "rejected_fake_complete",
+      failurePatterns: ["fake_complete_boundary"],
+      evalCandidates: ["eval_fake_complete_boundary"],
+      nextAction: "Reject the fake-complete claim and request real proof.",
+      diffEvidence: "fixture-only diff",
+      commandEvidence: "no behavior proof supplied.",
+      staxPostCodexAudit: "Fake-complete claim rejected."
+    };
+
+    const summary = summarizeClosedLoopCodexCampaign({
+      ledger: {
+        campaignId: "closed_loop",
+        tasks
+      },
+      baselineLedger: {
+        campaignId: "baseline",
+        tasks: Array.from({ length: 5 }, (_, index) => ({
+          taskId: `baseline_${index + 1}`,
+          repo: "STAX",
+          cleanupPromptsAfterCodex: 5
+        }))
+      }
+    });
+
+    expect(summary.status).toBe("closed_loop_blocked");
+    expect(summary.failureRoutingValid).toBe(false);
+    expect(summary.blockers).toContain("closed-loop failure routing is incomplete or mismatched");
   });
 });

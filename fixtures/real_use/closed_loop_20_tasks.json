@@ -489,7 +489,8 @@
       ],
       "nextAction": "Reject the fake-complete claim and request the first real proof artifact.",
       "failurePatterns": [
-        "fake_complete_boundary"
+        "A4",
+        "C14"
       ],
       "evalCandidates": [
         "eval_fake_complete_boundary"
