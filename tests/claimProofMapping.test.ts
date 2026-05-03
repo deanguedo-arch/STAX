@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  decomposeClaimsFromReport,
+  loadClaimDecompositionFixtureCases,
   loadClaimProofFixtureCases,
   mapClaimToProof,
   requiredProofForClaim
@@ -12,11 +14,14 @@ describe("claim-to-proof mapping", () => {
     expect(requiredProofForClaim("data")).toEqual(["data_validation", "row_count_diff", "dry_run_artifact"]);
     expect(requiredProofForClaim("release_deploy")).toContain("rollback_plan");
     expect(requiredProofForClaim("memory_promotion")).toEqual(["human_approval", "source_run_reference"]);
+    expect(requiredProofForClaim("eval")).toEqual(["eval_command_evidence"]);
+    expect(requiredProofForClaim("dependency")).toEqual(["dependency_inspection", "dependency_build_proof"]);
+    expect(requiredProofForClaim("migration")).toContain("migration_rollback_proof");
   });
 
-  it("expands fixture templates into 100 claim/proof pairs", async () => {
+  it("expands fixture templates into at least 200 claim/proof pairs", async () => {
     const cases = await loadClaimProofFixtureCases();
-    expect(cases).toHaveLength(100);
+    expect(cases.length).toBeGreaterThanOrEqual(200);
   });
 
   it("maps supported, unsupported, and ambiguous claims to the expected verdict", async () => {
@@ -53,5 +58,13 @@ describe("claim-to-proof mapping", () => {
     expect(result.verdict).toBe("provisional");
     expect(result.unsupportedHardClaim).toBe(false);
     expect(result.missingProof).toContain("behavior_test");
+  });
+
+  it("decomposes multi-claim Codex reports into explicit proof lanes", async () => {
+    const cases = await loadClaimDecompositionFixtureCases();
+    expect(cases).toHaveLength(20);
+    for (const testCase of cases) {
+      expect(decomposeClaimsFromReport(testCase.report), testCase.caseId).toEqual(testCase.expectedClaims);
+    }
   });
 });

@@ -1,4 +1,4 @@
-import { mapClaimToProof, requiredProofForClaim } from "../claims/ClaimProofMapping.js";
+import { decomposeClaimsFromReport, mapClaimToProof, requiredProofForClaim } from "../claims/ClaimProofMapping.js";
 import type { ClaimProofClaimType, ClaimProofItem } from "../claims/ClaimProofMappingSchemas.js";
 import { auditDiffEvidence } from "../diffAudit/DiffAudit.js";
 import type { DiffAuditInput } from "../diffAudit/DiffAuditSchemas.js";
@@ -57,12 +57,17 @@ export function buildProjectControlProofStack(
   const derivedClaims = deriveClaims(combined);
   const changedFiles = resolveChangedFiles(input, combined);
   if (changedFiles.length > 0 && derivedClaims.length > 0) {
-    const diffClaims: DiffAuditClaimInput[] = derivedClaims.map((claim) => ({
-      claimType: claimToDiffClaimType(claim.claimType),
-      text: claim.claim,
-      hardClaim: claim.hardClaim
-    }));
-    const diffAudit = auditDiffEvidence({
+    const diffClaims: DiffAuditClaimInput[] = [];
+    for (const claim of derivedClaims) {
+      const diffClaimType = claimToDiffClaimType(claim.claimType);
+      if (!diffClaimType) continue;
+      diffClaims.push({
+        claimType: diffClaimType,
+        text: claim.claim,
+        hardClaim: claim.hardClaim
+      });
+    }
+    const diffAudit = diffClaims.length > 0 ? auditDiffEvidence({
       repo: repoLabel(input),
       branch: detectBranch(combined) ?? "unknown",
       baseSha: detectSha(combined, "base") ?? "unknown-base",
@@ -84,16 +89,18 @@ export function buildProjectControlProofStack(
         taskScopePaths: deriveScopePaths(changedFiles),
         forbiddenPaths: []
       }
-    });
+    }) : undefined;
 
-    const findingSummary = diffAudit.findings.slice(0, 3).map((finding) => finding.id).join(", ");
-    if (diffAudit.verdict === "accept") {
-      verified.push(`Diff audit: accept${findingSummary ? ` (${findingSummary})` : ""}.`);
-    } else if (diffAudit.verdict === "provisional") {
-      weak.push(`Diff audit: provisional due to ${findingSummary || "missing proof-driving diff support"}.`);
-    } else {
-      unverified.push(`Diff audit: ${diffAudit.verdict} due to ${findingSummary || "unsupported diff claim"}.`);
-      risk.push(...diffAudit.findings.slice(0, 2).map((finding) => `Diff risk: ${finding.message}`));
+    if (diffAudit) {
+      const findingSummary = diffAudit.findings.slice(0, 3).map((finding) => finding.id).join(", ");
+      if (diffAudit.verdict === "accept") {
+        verified.push(`Diff audit: accept${findingSummary ? ` (${findingSummary})` : ""}.`);
+      } else if (diffAudit.verdict === "provisional") {
+        weak.push(`Diff audit: provisional due to ${findingSummary || "missing proof-driving diff support"}.`);
+      } else {
+        unverified.push(`Diff audit: ${diffAudit.verdict} due to ${findingSummary || "unsupported diff claim"}.`);
+        risk.push(...diffAudit.findings.slice(0, 2).map((finding) => `Diff risk: ${finding.message}`));
+      }
     }
   }
 
@@ -210,32 +217,7 @@ function resolveChangedFiles(input: ProjectControlProofStackInput, combined: str
 }
 
 function deriveClaims(text: string): DerivedClaim[] {
-  const claims: DerivedClaim[] = [];
-  if (/\bimplemented\b|\bfixed\b|\bcomplete\b|\bcompleted\b/i.test(text)) {
-    claims.push({ claimType: "implementation", claim: "Implementation is complete.", hardClaim: true });
-  }
-  if (/\btests? passed\b|\bnpm test passed\b|\btest suite passed\b/i.test(text)) {
-    claims.push({ claimType: "test", claim: "Tests passed.", hardClaim: true });
-  }
-  if (/\bworks\b|\bbehavior\b|\bready\b|\bverified\b|\bproof\b/i.test(text)) {
-    claims.push({ claimType: "behavior", claim: "Behavior is proven.", hardClaim: true });
-  }
-  if (/\bvisual\b|\blayout\b|\brendered\b|\bscreenshot\b|\bcss\b/i.test(text)) {
-    claims.push({ claimType: "visual", claim: "Visual/layout claim.", hardClaim: true });
-  }
-  if (/\bdata\b|\bcanonical\b|\bcsv\b|\bdry-run\b|\bdry run\b|\brow-count\b|\brow count\b/i.test(text)) {
-    claims.push({ claimType: "data", claim: "Data correctness or publish readiness claim.", hardClaim: true });
-  }
-  if (/\brelease\b|\bdeploy\b|\bpublish\b|\bsync\b|\bTestFlight\b|\bApp Store\b/i.test(text)) {
-    claims.push({ claimType: "release_deploy", claim: "Release/deploy readiness claim.", hardClaim: true });
-  }
-  if (/\bmemory\b|\bapproved memory\b|\bpromotion\b/i.test(text)) {
-    claims.push({ claimType: "memory_promotion", claim: "Memory promotion or approval claim.", hardClaim: true });
-  }
-  if (/\bsecret\b|\bsecurity\b|\btoken\b|\bprivate key\b/i.test(text)) {
-    claims.push({ claimType: "security", claim: "Security claim.", hardClaim: true });
-  }
-  return dedupeClaims(claims);
+  return dedupeClaims(decomposeClaimsFromReport(text));
 }
 
 function detectChangedFiles(text: string): DiffChangedFileInput[] {
@@ -311,6 +293,9 @@ function deriveProofItems(
     case "visual":
       push("rendered_visual_proof", /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined) ? "strong" : hasVisual ? "weak" : "missing", /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined) ? "Rendered visual proof supplied." : hasVisual ? "Visual/style files detected without rendered proof." : "No rendered visual proof detected.");
       break;
+    case "eval":
+      push("eval_command_evidence", /\beval\b|\bredteam\b|\bregression\b/i.test(combined) && strongCommand ? "strong" : /\beval\b|\bredteam\b|\bregression\b/i.test(combined) ? "weak" : "missing", /\beval\b|\bredteam\b|\bregression\b/i.test(combined) ? "Eval command evidence mentioned." : "No eval command evidence detected.");
+      break;
     case "data":
       push("data_validation", /\bvalidate-dataset|validate-canonical|validation passed\b/i.test(combined) ? "strong" : "missing", /\bvalidate-dataset|validate-canonical|validation passed\b/i.test(combined) ? "Data validation evidence detected." : "No data validation evidence detected.");
       push("row_count_diff", /\brow-count|row count|duplicate|unknown-field|unknown field|blank rates\b/i.test(combined) ? "strong" : "missing", /\brow-count|row count|duplicate|unknown-field|unknown field|blank rates\b/i.test(combined) ? "Row-count or QA diff evidence detected." : "No row-count/diff evidence detected.");
@@ -330,14 +315,46 @@ function deriveProofItems(
       push("security_test", /\bsecurity test|prompt injection|secret scan|vulnerability\b/i.test(combined) ? "weak" : "missing", /\bsecurity test|prompt injection|secret scan|vulnerability\b/i.test(combined) ? "Security language present but not strongly proven." : "No security test detected.");
       push("secret_scan", /\bsecret scan|token scan|private key|secret handling\b/i.test(combined) ? "weak" : "missing", /\bsecret scan|token scan|private key|secret handling\b/i.test(combined) ? "Secret-scan language present but not strongly proven." : "No secret-scan proof detected.");
       break;
+    case "config_policy":
+      push("config_diff", files.some((file) => /config|package\.json|tsconfig|eslint|playwright\.config/i.test(file)) ? "strong" : "missing", files.some((file) => /config|package\.json|tsconfig|eslint|playwright\.config/i.test(file)) ? "Config or policy diff detected." : "No config or policy diff detected.");
+      push("human_policy_approval", /\bapproved by|human approval|policy approval\b/i.test(combined) ? "strong" : "missing", /\bapproved by|human approval|policy approval\b/i.test(combined) ? "Human policy approval detected." : "No human policy approval detected.");
+      break;
+    case "dependency":
+      push("dependency_inspection", /\bnpm ls\b|\bpnpm list\b|\byarn why\b|\bpip show\b|\bcargo tree\b/i.test(combined) ? "strong" : "missing", /\bnpm ls\b|\bpnpm list\b|\byarn why\b|\bpip show\b|\bcargo tree\b/i.test(combined) ? "Dependency inspection evidence detected." : "No dependency inspection evidence detected.");
+      push("dependency_build_proof", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Command evidence after dependency change is present." : weakCommand ? "Only weak dependency command evidence is present." : "No dependency build/test proof detected.");
+      break;
+    case "migration":
+      push("migration_diff", files.some((file) => /migration|schema/i.test(file)) ? "strong" : "missing", files.some((file) => /migration|schema/i.test(file)) ? "Migration diff detected." : "No migration diff detected.");
+      push("migration_apply_proof", /\bmigrate\b|\balembic upgrade\b|\bdb push\b/i.test(combined) && strongCommand ? "strong" : /\bmigrate\b|\balembic upgrade\b|\bdb push\b/i.test(combined) ? "weak" : "missing", /\bmigrate\b|\balembic upgrade\b|\bdb push\b/i.test(combined) ? "Migration apply evidence mentioned." : "No migration apply proof detected.");
+      push("migration_rollback_proof", /\brollback\b|\brevert\b|\bdowngrade\b/i.test(combined) ? "strong" : "missing", /\brollback\b|\brevert\b|\bdowngrade\b/i.test(combined) ? "Migration rollback proof mentioned." : "No migration rollback proof detected.");
+      break;
+    case "performance":
+      push("performance_benchmark", /\bbenchmark\b|\blatency\b|\bms\b|\bops\/s\b/i.test(combined) ? "strong" : "missing", /\bbenchmark\b|\blatency\b|\bms\b|\bops\/s\b/i.test(combined) ? "Performance benchmark evidence detected." : "No performance benchmark evidence detected.");
+      push("performance_baseline", /\bbaseline\b|\bbefore\/after\b|\bbefore after\b/i.test(combined) ? "strong" : "missing", /\bbaseline\b|\bbefore\/after\b|\bbefore after\b/i.test(combined) ? "Performance baseline comparison detected." : "No performance baseline detected.");
+      break;
+    case "accessibility":
+      push("accessibility_audit", /\baxe\b|\ba11y\b|\baccessibility audit\b/i.test(combined) ? "strong" : "missing", /\baxe\b|\ba11y\b|\baccessibility audit\b/i.test(combined) ? "Accessibility audit evidence detected." : "No accessibility audit detected.");
+      push("ui_flow_evidence", /\bscreenshot\b|\bplaywright\b|\bmanual check\b|\bscreen reader\b/i.test(combined) ? "strong" : "missing", /\bscreenshot\b|\bplaywright\b|\bmanual check\b|\bscreen reader\b/i.test(combined) ? "UI flow evidence detected." : "No UI flow evidence detected.");
+      break;
   }
 
   return proof;
 }
 
-function claimToDiffClaimType(claimType: ClaimProofClaimType): DiffAuditClaimInput["claimType"] {
+function claimToDiffClaimType(claimType: ClaimProofClaimType): DiffAuditClaimInput["claimType"] | undefined {
   if (claimType === "release_deploy") return "release";
-  return claimType;
+  if (
+    claimType === "implementation" ||
+    claimType === "test" ||
+    claimType === "behavior" ||
+    claimType === "visual" ||
+    claimType === "data" ||
+    claimType === "memory_promotion" ||
+    claimType === "security"
+  ) {
+    return claimType;
+  }
+  return undefined;
 }
 
 function deriveScopePaths(changedFiles: DiffChangedFileInput[]): string[] {

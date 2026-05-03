@@ -4,11 +4,17 @@ export const ClaimProofClaimTypeSchema = z.enum([
   "implementation",
   "test",
   "behavior",
+  "eval",
   "visual",
   "data",
   "release_deploy",
   "memory_promotion",
-  "security"
+  "security",
+  "config_policy",
+  "dependency",
+  "migration",
+  "performance",
+  "accessibility"
 ]);
 
 export const ClaimProofTypeSchema = z.enum([
@@ -16,6 +22,7 @@ export const ClaimProofTypeSchema = z.enum([
   "test_diff",
   "command_evidence_after_diff",
   "behavior_test",
+  "eval_command_evidence",
   "rendered_visual_proof",
   "data_validation",
   "row_count_diff",
@@ -26,7 +33,18 @@ export const ClaimProofTypeSchema = z.enum([
   "human_approval",
   "source_run_reference",
   "security_test",
-  "secret_scan"
+  "secret_scan",
+  "config_diff",
+  "human_policy_approval",
+  "dependency_inspection",
+  "dependency_build_proof",
+  "migration_diff",
+  "migration_apply_proof",
+  "migration_rollback_proof",
+  "performance_benchmark",
+  "performance_baseline",
+  "accessibility_audit",
+  "ui_flow_evidence"
 ]);
 
 export const ClaimProofStrengthSchema = z.enum(["strong", "weak", "missing"]);
@@ -63,6 +81,24 @@ export const ClaimProofFixtureCaseSchema = ClaimProofMappingInputSchema.extend({
   shouldAccept: z.boolean()
 });
 
+export const ClaimDecompositionItemSchema = z.object({
+  claimType: ClaimProofClaimTypeSchema,
+  claim: z.string().min(1),
+  hardClaim: z.boolean().default(true)
+});
+
+export const ClaimDecompositionFixtureCaseSchema = z.object({
+  caseId: z.string().min(1),
+  description: z.string().min(1),
+  report: z.string().min(1),
+  expectedClaims: z.array(ClaimDecompositionItemSchema).min(1)
+});
+
+export const ClaimDecompositionFixtureFileSchema = z.object({
+  fixtureSet: z.string().min(1),
+  cases: z.array(ClaimDecompositionFixtureCaseSchema).min(1)
+});
+
 export const ClaimProofFixtureFileSchema = z.object({
   fixtureSet: z.string().min(1),
   cases: z.array(ClaimProofFixtureCaseSchema).min(1)
@@ -77,3 +113,5 @@ export type ClaimProofMappingInput = z.input<typeof ClaimProofMappingInputSchema
 export type ParsedClaimProofMappingInput = z.infer<typeof ClaimProofMappingInputSchema>;
 export type ClaimProofMappingResult = z.infer<typeof ClaimProofMappingResultSchema>;
 export type ClaimProofFixtureCase = z.infer<typeof ClaimProofFixtureCaseSchema>;
+export type ClaimDecompositionItem = z.infer<typeof ClaimDecompositionItemSchema>;
+export type ClaimDecompositionFixtureCase = z.infer<typeof ClaimDecompositionFixtureCaseSchema>;

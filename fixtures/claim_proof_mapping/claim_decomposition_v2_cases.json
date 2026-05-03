@@ -1,0 +1,330 @@
+{
+  "fixtureSet": "claim_decomposition_v2_cases",
+  "cases": [
+    {
+      "caseId": "decomp_001",
+      "description": "implementation test behavior",
+      "report": "Implemented the parser, tests passed, and behavior is verified.",
+      "expectedClaims": [
+        {
+          "claimType": "implementation",
+          "claim": "Implementation is complete.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "test",
+          "claim": "Tests passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "behavior",
+          "claim": "Behavior is proven.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_002",
+      "description": "eval claim",
+      "report": "Added tests and evals passed.",
+      "expectedClaims": [
+        {
+          "claimType": "test",
+          "claim": "Tests passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "eval",
+          "claim": "Evals passed.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_003",
+      "description": "visual claim",
+      "report": "The layout is fixed and screenshot proof is attached.",
+      "expectedClaims": [
+        {
+          "claimType": "visual",
+          "claim": "Visual/layout claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_004",
+      "description": "data claim",
+      "report": "CSV row-count and dry-run prove the data is ready.",
+      "expectedClaims": [
+        {
+          "claimType": "data",
+          "claim": "Data correctness or publish readiness claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_005",
+      "description": "release claim",
+      "report": "Publish is ready for TestFlight release.",
+      "expectedClaims": [
+        {
+          "claimType": "release_deploy",
+          "claim": "Release/deploy readiness claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_006",
+      "description": "memory claim",
+      "report": "This should be promoted into approved memory.",
+      "expectedClaims": [
+        {
+          "claimType": "memory_promotion",
+          "claim": "Memory promotion or approval claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_007",
+      "description": "security claim",
+      "report": "Security fix is complete and token handling is safe.",
+      "expectedClaims": [
+        {
+          "claimType": "implementation",
+          "claim": "Implementation is complete.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "security",
+          "claim": "Security claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_008",
+      "description": "config policy claim",
+      "report": "Updated tsconfig and policy approval is recorded.",
+      "expectedClaims": [
+        {
+          "claimType": "config_policy",
+          "claim": "Config/policy claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_009",
+      "description": "dependency claim",
+      "report": "Installed the dependency upgrade and package-lock is updated.",
+      "expectedClaims": [
+        {
+          "claimType": "dependency",
+          "claim": "Dependency claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_010",
+      "description": "migration claim",
+      "report": "Migration applied, rollback tested, schema change verified.",
+      "expectedClaims": [
+        {
+          "claimType": "migration",
+          "claim": "Migration claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_011",
+      "description": "performance claim",
+      "report": "Benchmark shows faster latency than the baseline.",
+      "expectedClaims": [
+        {
+          "claimType": "performance",
+          "claim": "Performance claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_012",
+      "description": "accessibility claim",
+      "report": "Axe and screen reader checks prove accessibility.",
+      "expectedClaims": [
+        {
+          "claimType": "accessibility",
+          "claim": "Accessibility claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_013",
+      "description": "implementation plus eval",
+      "report": "Completed the fix, tests passed, evals passed, and the feature works.",
+      "expectedClaims": [
+        {
+          "claimType": "implementation",
+          "claim": "Implementation is complete.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "test",
+          "claim": "Tests passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "eval",
+          "claim": "Evals passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "behavior",
+          "claim": "Behavior is proven.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_014",
+      "description": "visual and accessibility",
+      "report": "CSS fix, screenshot attached, accessibility audit complete.",
+      "expectedClaims": [
+        {
+          "claimType": "visual",
+          "claim": "Visual/layout claim.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "accessibility",
+          "claim": "Accessibility claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_015",
+      "description": "dependency and build",
+      "report": "Upgraded dependencies and build is verified.",
+      "expectedClaims": [
+        {
+          "claimType": "dependency",
+          "claim": "Dependency claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_016",
+      "description": "release and migration",
+      "report": "Deployment ready after migration rollback check.",
+      "expectedClaims": [
+        {
+          "claimType": "release_deploy",
+          "claim": "Release/deploy readiness claim.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "migration",
+          "claim": "Migration claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_017",
+      "description": "data and publish",
+      "report": "Dry-run candidate diff proves data publish is ready.",
+      "expectedClaims": [
+        {
+          "claimType": "data",
+          "claim": "Data correctness or publish readiness claim.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "release_deploy",
+          "claim": "Release/deploy readiness claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_018",
+      "description": "security and config",
+      "report": "Security policy updated and private key handling is fixed.",
+      "expectedClaims": [
+        {
+          "claimType": "security",
+          "claim": "Security claim.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "config_policy",
+          "claim": "Config/policy claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_019",
+      "description": "performance and eval",
+      "report": "Benchmark improved and evals passed.",
+      "expectedClaims": [
+        {
+          "claimType": "eval",
+          "claim": "Evals passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "performance",
+          "claim": "Performance claim.",
+          "hardClaim": true
+        }
+      ]
+    },
+    {
+      "caseId": "decomp_020",
+      "description": "all lanes mixed",
+      "report": "Implemented the fix, tests passed, evals passed, visual layout is verified, release is ready, accessibility audit passed.",
+      "expectedClaims": [
+        {
+          "claimType": "implementation",
+          "claim": "Implementation is complete.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "test",
+          "claim": "Tests passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "eval",
+          "claim": "Evals passed.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "visual",
+          "claim": "Visual/layout claim.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "release_deploy",
+          "claim": "Release/deploy readiness claim.",
+          "hardClaim": true
+        },
+        {
+          "claimType": "accessibility",
+          "claim": "Accessibility claim.",
+          "hardClaim": true
+        }
+      ]
+    }
+  ]
+}

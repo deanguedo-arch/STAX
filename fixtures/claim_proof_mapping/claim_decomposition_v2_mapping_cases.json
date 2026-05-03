@@ -1,0 +1,238 @@
+{
+  "fixtureSet": "claim_decomposition_v2_mapping_cases",
+  "cases": [
+    {
+      "caseId": "eval_accept",
+      "description": "eval claim fully supported",
+      "claimType": "eval",
+      "claim": "Evals passed.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "eval_command_evidence",
+          "strength": "strong",
+          "description": "rax eval output supplied."
+        }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true,
+      "repeat": 10
+    },
+    {
+      "caseId": "eval_reject",
+      "description": "eval claim missing proof",
+      "claimType": "eval",
+      "claim": "Evals passed.",
+      "hardClaim": true,
+      "suppliedProof": [],
+      "expectedVerdict": "reject",
+      "shouldAccept": false,
+      "repeat": 10
+    },
+    {
+      "caseId": "config_accept",
+      "description": "config claim with approval",
+      "claimType": "config_policy",
+      "claim": "Config changes are approved.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "config_diff",
+          "strength": "strong",
+          "description": "tsconfig diff supplied."
+        },
+        {
+          "proofType": "human_policy_approval",
+          "strength": "strong",
+          "description": "Owner approved policy shift."
+        }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true,
+      "repeat": 10
+    },
+    {
+      "caseId": "config_reject",
+      "description": "config claim missing approval",
+      "claimType": "config_policy",
+      "claim": "Config changes are safe.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "config_diff",
+          "strength": "strong",
+          "description": "tsconfig diff supplied."
+        }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false,
+      "repeat": 10
+    },
+    {
+      "caseId": "dependency_accept",
+      "description": "dependency claim with inspection and build",
+      "claimType": "dependency",
+      "claim": "Dependency upgrade is proven.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "dependency_inspection",
+          "strength": "strong",
+          "description": "npm ls output supplied."
+        },
+        {
+          "proofType": "dependency_build_proof",
+          "strength": "strong",
+          "description": "build command passed after install."
+        }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true,
+      "repeat": 10
+    },
+    {
+      "caseId": "dependency_reject",
+      "description": "dependency claim missing validation",
+      "claimType": "dependency",
+      "claim": "Dependency upgrade is proven.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "dependency_inspection",
+          "strength": "weak",
+          "description": "package-lock diff only."
+        }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false,
+      "repeat": 10
+    },
+    {
+      "caseId": "migration_accept",
+      "description": "migration claim fully proven",
+      "claimType": "migration",
+      "claim": "Migration is safe.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "migration_diff",
+          "strength": "strong",
+          "description": "migration diff supplied."
+        },
+        {
+          "proofType": "migration_apply_proof",
+          "strength": "strong",
+          "description": "apply command passed."
+        },
+        {
+          "proofType": "migration_rollback_proof",
+          "strength": "strong",
+          "description": "rollback tested."
+        }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true,
+      "repeat": 10
+    },
+    {
+      "caseId": "migration_reject",
+      "description": "migration claim missing rollback",
+      "claimType": "migration",
+      "claim": "Migration is safe.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "migration_diff",
+          "strength": "strong",
+          "description": "migration diff supplied."
+        },
+        {
+          "proofType": "migration_apply_proof",
+          "strength": "strong",
+          "description": "apply command passed."
+        }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false,
+      "repeat": 10
+    },
+    {
+      "caseId": "performance_accept",
+      "description": "performance claim with benchmark and baseline",
+      "claimType": "performance",
+      "claim": "Performance improved.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "performance_benchmark",
+          "strength": "strong",
+          "description": "benchmark output supplied."
+        },
+        {
+          "proofType": "performance_baseline",
+          "strength": "strong",
+          "description": "before/after baseline supplied."
+        }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true,
+      "repeat": 10
+    },
+    {
+      "caseId": "performance_provisional",
+      "description": "performance soft claim missing baseline",
+      "claimType": "performance",
+      "claim": "Performance may be improved.",
+      "hardClaim": false,
+      "suppliedProof": [
+        {
+          "proofType": "performance_benchmark",
+          "strength": "strong",
+          "description": "benchmark output supplied."
+        }
+      ],
+      "expectedVerdict": "provisional",
+      "shouldAccept": false,
+      "repeat": 10
+    },
+    {
+      "caseId": "accessibility_accept",
+      "description": "accessibility claim with axe and flow proof",
+      "claimType": "accessibility",
+      "claim": "Accessibility is proven.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "accessibility_audit",
+          "strength": "strong",
+          "description": "axe output supplied."
+        },
+        {
+          "proofType": "ui_flow_evidence",
+          "strength": "strong",
+          "description": "screen-reader flow evidence supplied."
+        }
+      ],
+      "expectedVerdict": "accept",
+      "shouldAccept": true,
+      "repeat": 10
+    },
+    {
+      "caseId": "accessibility_reject",
+      "description": "accessibility claim missing audit",
+      "claimType": "accessibility",
+      "claim": "Accessibility is proven.",
+      "hardClaim": true,
+      "suppliedProof": [
+        {
+          "proofType": "ui_flow_evidence",
+          "strength": "weak",
+          "description": "manual screenshot only."
+        }
+      ],
+      "expectedVerdict": "reject",
+      "shouldAccept": false,
+      "repeat": 10
+    }
+  ]
+}
