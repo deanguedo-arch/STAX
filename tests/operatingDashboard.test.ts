@@ -136,6 +136,22 @@ describe("Operating dashboard", () => {
         status: "workflow_contract_passed",
         blockers: []
       },
+      ciFailureTriageSummary: {
+        caseCount: 10,
+        passingCount: 10,
+        likelyCauseAccuracyPct: 100,
+        proofStrengthAccuracyPct: 100,
+        nextActionAccuracyPct: 100,
+        status: "passed",
+        issues: []
+      },
+      prReviewCommentSummary: {
+        caseCount: 10,
+        passingCount: 10,
+        usefulCommentRate: 100,
+        status: "passed",
+        issues: []
+      },
       snapshotDate: "2026-05-03"
     });
 
@@ -147,5 +163,9 @@ describe("Operating dashboard", () => {
     expect(formatOperatingDashboard(summary)).toContain("STAX Ops Dashboard");
     expect(formatOperatingDashboard(summary)).toContain("snapshot: 2026-05-03");
     expect(formatOperatingDashboard(summary)).toContain("workflow contract: workflow_contract_passed");
+    expect(formatOperatingDashboard(summary)).toContain("ci failure triage: passed");
+    expect(formatOperatingDashboard(summary)).toContain("pr review comment: passed");
+    expect(formatOperatingDashboard(summary)).toContain("ci failure triage cases / passing: 10/10 (100%)");
+    expect(formatOperatingDashboard(summary)).toContain("pr review comment cases / passing: 10/10 (100%)");
   });
 });
