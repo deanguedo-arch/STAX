@@ -283,7 +283,7 @@ async function fetchPatch(fetchImpl: FetchLike, ref: GitHubPrRef): Promise<strin
 async function fetchJson<T>(fetchImpl: FetchLike, url: string, headers: Record<string, string>): Promise<T> {
   const response = await fetchImpl(url, { headers });
   if (!response.ok) {
-    throw new Error(`GitHub API request failed: ${response.status} ${response.statusText} for ${url}`);
+    throw formatGitHubApiError(url, response);
   }
   return (await response.json()) as T;
 }
@@ -294,7 +294,7 @@ async function fetchPaginatedJson<T>(fetchImpl: FetchLike, url: string, headers:
   while (nextUrl) {
     const response = await fetchImpl(nextUrl, { headers });
     if (!response.ok) {
-      throw new Error(`GitHub API request failed: ${response.status} ${response.statusText} for ${nextUrl}`);
+      throw formatGitHubApiError(nextUrl, response);
     }
     const page = (await response.json()) as T[];
     items.push(...page);
@@ -345,4 +345,27 @@ function extractIssueLinks(body: string): Array<{ issueId: string; title?: strin
 function formatAdapterWarning(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
+}
+
+function formatGitHubApiError(url: string, response: Response): Error {
+  const base = `GitHub API request failed: ${response.status} ${response.statusText} for ${url}`;
+  const rateLimitRemaining = response.headers.get("x-ratelimit-remaining");
+  const rateLimitReset = response.headers.get("x-ratelimit-reset");
+  const rateLimitResource = response.headers.get("x-ratelimit-resource");
+  const retryAfter = response.headers.get("retry-after");
+  const likelyRateLimited = response.status === 429 || (response.status === 403 && rateLimitRemaining === "0");
+  if (!likelyRateLimited) return new Error(base);
+  const details: string[] = [];
+  if (rateLimitResource) details.push(`resource=${rateLimitResource}`);
+  if (rateLimitReset) {
+    const resetUnix = Number(rateLimitReset);
+    if (Number.isFinite(resetUnix) && resetUnix > 0) {
+      details.push(`reset_at=${new Date(resetUnix * 1000).toISOString()}`);
+    } else {
+      details.push(`reset=${rateLimitReset}`);
+    }
+  }
+  if (retryAfter) details.push(`retry_after_s=${retryAfter}`);
+  const suffix = details.length ? ` (${details.join(", ")})` : "";
+  return new Error(`${base}; rate limit exceeded${suffix}`);
 }

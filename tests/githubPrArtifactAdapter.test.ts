@@ -126,6 +126,36 @@ describe("GitHub PR artifact adapter", () => {
     expect(result.warnings.join("\n")).toContain("rate limit");
   });
 
+  it("surfaces rate-limit reset context when GitHub headers are present", async () => {
+    const result = await fetchGitHubPullRequestArtifactPacket(
+      { repoFullName: "vercel/next.js", prNumber: 93417 },
+      {
+        rootDir: process.cwd(),
+        fetchImpl: async () =>
+          new Response(
+            JSON.stringify({
+              message: "API rate limit exceeded"
+            }),
+            {
+              status: 403,
+              statusText: "Forbidden",
+              headers: {
+                "x-ratelimit-remaining": "0",
+                "x-ratelimit-reset": "1770000000",
+                "x-ratelimit-resource": "core",
+                "retry-after": "120"
+              }
+            }
+          )
+      }
+    );
+
+    expect(result.source).toBe("recorded_snapshot_fallback");
+    expect(result.warnings.join("\n")).toContain("rate limit exceeded");
+    expect(result.warnings.join("\n")).toContain("reset_at=");
+    expect(result.warnings.join("\n")).toContain("retry_after_s=120");
+  });
+
   it("loads recorded snapshots directly from the PR artifact trial fixture", async () => {
     const packet = await loadRecordedPullRequestArtifactPacket(
       { repoFullName: "vitest-dev/vitest", prNumber: 10231 },
