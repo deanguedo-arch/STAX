@@ -6,6 +6,7 @@ import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { classifyCommandEvidence } from "../evidence/CommandEvidenceIntelligence.js";
 import type { CommandEvidenceClaimType, CommandEvidenceSource } from "../evidence/CommandEvidenceIntelligenceSchemas.js";
 import { analyzeTestQuality } from "../evidence/TestQualityAnalyzer.js";
+import { analyzeVisualProof } from "../evidence/VisualProofAnalyzer.js";
 import type {
   ProjectControlChangedFile,
   ProjectControlCommandEvidenceEntry,
@@ -149,7 +150,14 @@ export function buildProjectControlProofStack(
   }
 
   for (const claim of derivedClaims) {
-    const suppliedProof = deriveProofItems(claim, changedFiles, input.changedFiles, commandInsight, combined);
+    const suppliedProof = deriveProofItems(
+      claim,
+      changedFiles,
+      input.changedFiles,
+      input.visualEvidence,
+      commandInsight,
+      combined
+    );
     const mapped = mapClaimToProof({
       claimType: claim.claimType,
       claim: claim.claim,
@@ -281,6 +289,7 @@ function deriveProofItems(
   claim: DerivedClaim,
   changedFiles: DiffChangedFileInput[],
   sourceChangedFiles: ProjectControlChangedFile[] | undefined,
+  visualEvidence: ProjectControlVisualEvidence[] | undefined,
   commandInsight: CommandInsight | undefined,
   combined: string
 ): ClaimProofItem[] {
@@ -293,6 +302,7 @@ function deriveProofItems(
   const weakCommand = commandInsight && commandInsight.proofStrength !== "strong_local_proof";
   const proof: ClaimProofItem[] = [];
   const testQuality = evaluateTestQuality(sourceChangedFiles, claim.claimType);
+  const visualQuality = evaluateVisualProof(visualEvidence, files, claim.claimType);
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -361,7 +371,27 @@ function deriveProofItems(
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
       break;
     case "visual":
-      push("rendered_visual_proof", /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined) ? "strong" : hasVisual ? "weak" : "missing", /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined) ? "Rendered visual proof supplied." : hasVisual ? "Visual/style files detected without rendered proof." : "No rendered visual proof detected.");
+      push(
+        "rendered_visual_proof",
+        visualQuality
+          ? visualQuality.supportsVisualClaim
+            ? "strong"
+            : visualQuality.verdict === "provisional"
+              ? "weak"
+              : "missing"
+          : /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined)
+            ? "strong"
+            : hasVisual
+              ? "weak"
+              : "missing",
+        visualQuality
+          ? renderVisualQualityDescription(visualQuality)
+          : /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined)
+            ? "Rendered visual proof supplied."
+            : hasVisual
+              ? "Visual/style files detected without rendered proof."
+              : "No rendered visual proof detected."
+      );
       break;
     case "eval":
       push("eval_command_evidence", /\beval\b|\bredteam\b|\bregression\b/i.test(combined) && strongCommand ? "strong" : /\beval\b|\bredteam\b|\bregression\b/i.test(combined) ? "weak" : "missing", /\beval\b|\bredteam\b|\bregression\b/i.test(combined) ? "Eval command evidence mentioned." : "No eval command evidence detected.");
@@ -446,6 +476,41 @@ function evaluateTestQuality(
     patch: testFile.patch,
     intendedClaim: claimType === "test" ? "test" : "behavior"
   });
+}
+
+function evaluateVisualProof(
+  visualEvidence: ProjectControlVisualEvidence[] | undefined,
+  files: string[],
+  claimType: ClaimProofClaimType
+) {
+  if (claimType !== "visual") return undefined;
+  if (!files.some((file) => /\.(css|scss|sass|less|html|tsx|jsx|vue|svelte)$/i.test(file) || file.includes("/workspace/"))) return undefined;
+  const primary = visualEvidence?.[0];
+  if (!primary) return undefined;
+  return analyzeVisualProof({
+    task: primary.description,
+    changedFiles: files,
+    description: primary.description,
+    source: primary.source,
+    capturedAt: primary.capturedAt,
+    expectedPage: /sports wellness/i.test(primary.description) ? "Sports Wellness" : undefined,
+    checklistItems: extractChecklistItems(primary.description)
+  });
+}
+
+function renderVisualQualityDescription(result: ReturnType<typeof analyzeVisualProof>): string {
+  const topFindings = result.findings.slice(0, 2).map((finding) => finding.id).join(", ");
+  return `Visual proof quality is ${result.verdict} (${topFindings}).`;
+}
+
+function extractChecklistItems(text: string): string[] {
+  const items: string[] = [];
+  if (/\btext fit\b/i.test(text)) items.push("text fit");
+  if (/\bsymmetry\b|\bborder symmetry\b/i.test(text)) items.push("symmetry");
+  if (/\bcheckmark containment\b|\bicon containment\b|\bcontainment\b/i.test(text)) items.push("checkmark containment");
+  if (/\bmobile\b|\bresponsive\b/i.test(text)) items.push("mobile responsive");
+  if (/\baccessibility\b|\ba11y\b|\baxe\b/i.test(text)) items.push("accessibility");
+  return items;
 }
 
 function renderTestQualityDescription(

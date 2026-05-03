@@ -1,0 +1,1040 @@
+{
+  "fixtureSet": "visual_proof_core_cases",
+  "cases": [
+    {
+      "caseId": "visual_accept_001",
+      "descriptionLabel": "accepted screenshot case 1",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_002",
+      "descriptionLabel": "accepted screenshot case 2",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_003",
+      "descriptionLabel": "accepted screenshot case 3",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_004",
+      "descriptionLabel": "accepted screenshot case 4",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_005",
+      "descriptionLabel": "accepted screenshot case 5",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_006",
+      "descriptionLabel": "accepted screenshot case 6",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_007",
+      "descriptionLabel": "accepted screenshot case 7",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_008",
+      "descriptionLabel": "accepted screenshot case 8",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_009",
+      "descriptionLabel": "accepted screenshot case 9",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_010",
+      "descriptionLabel": "accepted screenshot case 10",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_011",
+      "descriptionLabel": "accepted screenshot case 11",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_012",
+      "descriptionLabel": "accepted screenshot case 12",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_013",
+      "descriptionLabel": "accepted screenshot case 13",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_014",
+      "descriptionLabel": "accepted screenshot case 14",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_accept_015",
+      "descriptionLabel": "accepted screenshot case 15",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot after fix with mobile responsive and accessibility checklist.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-03T12:00:00.000Z",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "screenshot_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "visual_missing_001",
+      "descriptionLabel": "missing artifact case 1",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_002",
+      "descriptionLabel": "missing artifact case 2",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_003",
+      "descriptionLabel": "missing artifact case 3",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_004",
+      "descriptionLabel": "missing artifact case 4",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_005",
+      "descriptionLabel": "missing artifact case 5",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_006",
+      "descriptionLabel": "missing artifact case 6",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_007",
+      "descriptionLabel": "missing artifact case 7",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_008",
+      "descriptionLabel": "missing artifact case 8",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_009",
+      "descriptionLabel": "missing artifact case 9",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_missing_010",
+      "descriptionLabel": "missing artifact case 10",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "CSS changed only.",
+      "source": "none",
+      "expectedPage": "Sports Wellness",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "missing_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_001",
+      "descriptionLabel": "wrong page case 1",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_002",
+      "descriptionLabel": "wrong page case 2",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_003",
+      "descriptionLabel": "wrong page case 3",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_004",
+      "descriptionLabel": "wrong page case 4",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_005",
+      "descriptionLabel": "wrong page case 5",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_006",
+      "descriptionLabel": "wrong page case 6",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_007",
+      "descriptionLabel": "wrong page case 7",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_008",
+      "descriptionLabel": "wrong page case 8",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_009",
+      "descriptionLabel": "wrong page case 9",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_wrong_page_010",
+      "descriptionLabel": "wrong page case 10",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Landing page screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "wrong_page_or_state"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_001",
+      "descriptionLabel": "stale screenshot case 1",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_002",
+      "descriptionLabel": "stale screenshot case 2",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_003",
+      "descriptionLabel": "stale screenshot case 3",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_004",
+      "descriptionLabel": "stale screenshot case 4",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_005",
+      "descriptionLabel": "stale screenshot case 5",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_006",
+      "descriptionLabel": "stale screenshot case 6",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_007",
+      "descriptionLabel": "stale screenshot case 7",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_008",
+      "descriptionLabel": "stale screenshot case 8",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_009",
+      "descriptionLabel": "stale screenshot case 9",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_stale_010",
+      "descriptionLabel": "stale screenshot case 10",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness screenshot with mobile responsive and accessibility notes.",
+      "source": "rendered_screenshot",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "mobile responsive",
+        "accessibility"
+      ],
+      "capturedAt": "2026-05-02T10:00:00.000Z",
+      "evidenceRequiredAfter": "2026-05-03T10:00:00.000Z",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "screenshot_present",
+        "stale_visual_artifact"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_checklist_only_001",
+      "descriptionLabel": "checklist only case 1",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness visual checklist with text fit and symmetry only.",
+      "source": "manual_visual_checklist",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "symmetry"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "visual_checklist_present",
+        "mobile_responsive_unchecked"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_checklist_only_002",
+      "descriptionLabel": "checklist only case 2",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness visual checklist with text fit and symmetry only.",
+      "source": "manual_visual_checklist",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "symmetry"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "visual_checklist_present",
+        "mobile_responsive_unchecked"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_checklist_only_003",
+      "descriptionLabel": "checklist only case 3",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness visual checklist with text fit and symmetry only.",
+      "source": "manual_visual_checklist",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "symmetry"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "visual_checklist_present",
+        "mobile_responsive_unchecked"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_checklist_only_004",
+      "descriptionLabel": "checklist only case 4",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness visual checklist with text fit and symmetry only.",
+      "source": "manual_visual_checklist",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "symmetry"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "visual_checklist_present",
+        "mobile_responsive_unchecked"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "visual_checklist_only_005",
+      "descriptionLabel": "checklist only case 5",
+      "task": "Audit whether the Sports Wellness layout fix is proven.",
+      "changedFiles": [
+        "projects/sportswellness/workspace/styles.css"
+      ],
+      "description": "Sports Wellness visual checklist with text fit and symmetry only.",
+      "source": "manual_visual_checklist",
+      "expectedPage": "Sports Wellness",
+      "checklistItems": [
+        "text fit",
+        "symmetry"
+      ],
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "visual_checklist_present",
+        "mobile_responsive_unchecked"
+      ],
+      "shouldCountAsStrong": false
+    }
+  ]
+}

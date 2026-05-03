@@ -292,7 +292,7 @@ describe("project control evidence packet", () => {
         visualEvidence: [
           {
             path: "artifacts/sportswellness-desktop.png",
-            description: "rendered screenshot with text-fit checklist",
+            description: "Sports Wellness rendered screenshot with text-fit checklist, mobile responsive checks, and accessibility notes.",
             source: "rendered_screenshot"
           }
         ],
@@ -495,5 +495,35 @@ describe("project control evidence packet", () => {
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("Claim-to-proof: behavior claim is unsupported because");
     expect(output.output).toContain("behavior_test");
+  });
+
+  it("downgrades stale structured visual proof inside project-control packets", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether the visual layout fix is proven.",
+        targetRepoPath: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+        changedFiles: [
+          {
+            path: "projects/sportswellness/workspace/styles.css",
+            changeType: "modified",
+            fileRole: "visual_style"
+          }
+        ],
+        visualEvidence: [
+          {
+            source: "rendered_screenshot",
+            description: "Sports Wellness screenshot after fix with mobile responsive and accessibility notes.",
+            capturedAt: "2026-05-02T10:00:00.000Z"
+          }
+        ],
+        codexReport: "Codex says the layout is fixed."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Claim-to-proof: visual claim is fully supported.");
   });
 });
