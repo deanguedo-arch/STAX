@@ -7,6 +7,9 @@ export type MemoryItem = {
   content: string;
   type?: string;
   approved?: boolean;
+  approvedBy?: string;
+  approvalReason?: string;
+  tags?: string[];
 };
 
 export type ExampleItem = {

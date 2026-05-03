@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { MemoryStore } from "../src/memory/MemoryStore.js";
+import { MemoryStore, repoMemoryTag } from "../src/memory/MemoryStore.js";
 
 describe("Memory approval", () => {
   it("retrieves only approved, non-expired memory", async () => {
@@ -52,5 +52,34 @@ describe("Memory approval", () => {
         neverExpireJustification: "Test fixture memory."
       })
     ).rejects.toThrow("poison scan");
+  });
+
+  it("retrieves approved repo-scoped memory by tag", async () => {
+    const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "rax-memory-approval-"));
+    const store = new MemoryStore(rootDir);
+    await store.add({
+      type: "project",
+      content: "Canonical build command is npm run build:studio.",
+      confidence: "high",
+      approved: true,
+      approvedBy: "test",
+      approvalReason: "Stable repo memory fixture.",
+      neverExpireJustification: "Test fixture memory.",
+      tags: [repoMemoryTag("/Users/deanguedo/Documents/GitHub/canvas-helper"), "repo_memory:canonical_build_command"]
+    });
+    await store.add({
+      type: "project",
+      content: "Generic approved memory.",
+      confidence: "medium",
+      approved: true,
+      approvedBy: "test",
+      approvalReason: "Generic fixture memory.",
+      neverExpireJustification: "Test fixture memory.",
+      tags: ["misc"]
+    });
+
+    const results = await store.searchByTags([repoMemoryTag("/Users/deanguedo/Documents/GitHub/canvas-helper")]);
+
+    expect(results.map((item) => item.content)).toEqual(["Canonical build command is npm run build:studio."]);
   });
 });

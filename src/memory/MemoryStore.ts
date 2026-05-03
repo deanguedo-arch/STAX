@@ -129,6 +129,23 @@ export class MemoryStore {
       });
   }
 
+  async searchByTags(tags: string[]): Promise<MemoryRecord[]> {
+    const required = tags
+      .map((tag) => tag.trim().toLowerCase())
+      .filter(Boolean);
+    const types: MemoryType[] = PROJECT_MEMORY_TYPES;
+    const now = Date.now();
+    const groups = await Promise.all(types.map((type) => this.all(type)));
+    return groups
+      .flat()
+      .filter((record) => record.approved)
+      .filter((record) => !record.expiresAt || Date.parse(record.expiresAt) > now)
+      .filter((record) => {
+        const recordTags = (record.tags ?? []).map((tag) => tag.toLowerCase());
+        return required.every((tag) => recordTags.includes(tag));
+      });
+  }
+
   async approve(id: string, approval: MemoryApprovalInput): Promise<MemoryRecord> {
     return this.setApproval(id, true, approval);
   }
@@ -164,6 +181,14 @@ export class MemoryStore {
     }
     throw new Error(`Memory not found: ${id}`);
   }
+}
+
+export function repoMemoryTag(input: string): string {
+  const normalized = input.trim().replace(/\\/g, "/");
+  if (!normalized) return "repo:unknown";
+  if (!normalized.startsWith("/")) return `repo:${normalized.toLowerCase()}`;
+  const parts = normalized.split("/").filter(Boolean);
+  return `repo:${(parts.at(-1) ?? normalized).toLowerCase()}`;
 }
 
 export const PROJECT_MEMORY_TYPES: MemoryType[] = [

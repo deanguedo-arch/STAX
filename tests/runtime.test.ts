@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
-import { MemoryStore } from "../src/memory/MemoryStore.js";
+import { MemoryStore, repoMemoryTag } from "../src/memory/MemoryStore.js";
 import { MockProvider } from "../src/providers/MockProvider.js";
 
 async function tempRoot(): Promise<string> {
@@ -82,5 +82,34 @@ describe("RaxRuntime", () => {
       await fs.readFile(path.join(runDir, "retrieved_memory.json"), "utf8")
     ) as Array<{ content: string }>;
     expect(retrieved.map((item) => item.content)).toContain("Dean training context");
+  });
+
+  it("retrieves approved repo-scoped memory when a linked repo path is supplied", async () => {
+    const root = await tempRoot();
+    const store = new MemoryStore(root);
+    await store.add({
+      type: "project",
+      content: "STAX canonical proof gate is npm run typecheck && npm test && npm run rax -- eval.",
+      confidence: "high",
+      approved: true,
+      approvedBy: "test",
+      approvalReason: "Stable repo memory for retrieval test.",
+      neverExpireJustification: "Test fixture memory.",
+      tags: [repoMemoryTag("/Users/deanguedo/Documents/GitHub/STAX"), "repo_memory:proof_gate"]
+    });
+    const runtime = await createDefaultRuntime({ rootDir: root });
+
+    const output = await runtime.run("Audit the current repo state.", [], {
+      mode: "project_brain",
+      linkedRepoPath: "/Users/deanguedo/Documents/GitHub/STAX"
+    });
+
+    const runDir = path.join(root, "runs", output.createdAt.slice(0, 10), output.runId);
+    const retrieved = JSON.parse(
+      await fs.readFile(path.join(runDir, "retrieved_memory.json"), "utf8")
+    ) as Array<{ content: string }>;
+    expect(retrieved.map((item) => item.content)).toContain(
+      "STAX canonical proof gate is npm run typecheck && npm test && npm run rax -- eval."
+    );
   });
 });

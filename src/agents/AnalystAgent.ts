@@ -23,6 +23,15 @@ function memoryLines(input: AgentInput, type?: string): string[] {
     .map((item) => `${item.id}: ${item.content}`);
 }
 
+function repoMemoryLines(input: AgentInput): string[] {
+  return (input.memory ?? [])
+    .filter((item) => (item.tags ?? []).some((tag) => tag.startsWith("repo:")))
+    .map((item) => {
+      const repoTag = (item.tags ?? []).find((tag) => tag.startsWith("repo:")) ?? "repo:unknown";
+      return `${repoTag}: ${item.content}`;
+    });
+}
+
 function hasTestEvidence(text: string): boolean {
   return /\b(## Local Evidence|## Proof Packet|ProofPacket:|ClaimSupported:|evidence\/commands\/)\b/i.test(text) &&
     /\b(npm run typecheck|npm test|npm run rax -- eval|passed|passRate|exit code 0|tests?:\s*\d+|✓)\b/i.test(text);
@@ -266,6 +275,7 @@ export class AnalystAgent implements Agent {
       const risks = memoryLines(input, "risk");
       const nextActions = memoryLines(input, "next_action");
       const allMemory = memoryLines(input);
+      const repoMemory = repoMemoryLines(input);
       const localEvidence = projectStateEvidenceLines(input.input);
 
       return {
@@ -303,6 +313,9 @@ export class AnalystAgent implements Agent {
           "",
           "## Recent Changes",
           ...bulletize(decisions, "No approved decision memory was retrieved."),
+          "",
+          "## Repo-Specific Memory",
+          ...bulletize(repoMemory, "No approved repo-specific memory was retrieved."),
           "",
           "## Known Failures",
           ...bulletize(knownFailures, "No approved known-failure memory was retrieved."),

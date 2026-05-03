@@ -4,7 +4,7 @@ import { createAgentSet } from "../agents/agentFactory.js";
 import { DetailLevelController } from "../classifiers/DetailLevelController.js";
 import { IntentClassifier } from "../classifiers/IntentClassifier.js";
 import { ModeDetector } from "../classifiers/ModeDetector.js";
-import { MemoryStore } from "../memory/MemoryStore.js";
+import { MemoryStore, repoMemoryTag } from "../memory/MemoryStore.js";
 import { PolicyCompiler } from "../policy/PolicyCompiler.js";
 import { PolicyLoader } from "../policy/PolicyLoader.js";
 import { PolicySelector } from "../policy/PolicySelector.js";
@@ -85,10 +85,15 @@ export class RaxRuntime {
     let retries = 0;
     const detailLevel =
       options.detailLevel ?? this.detailLevelController.select(effectiveMode, boundary.mode);
-    const retrievedMemory = (await new MemoryStore(this.rootDir).search(input)).slice(
-      0,
-      this.config.memory.maxMemoryResults
-    );
+    const memoryStore = new MemoryStore(this.rootDir);
+    const retrievedMemory = (
+      await this.mergeRetrievedMemory({
+        input,
+        memoryStore,
+        linkedRepoPath: options.linkedRepoPath,
+        mode: effectiveMode
+      })
+    ).slice(0, this.config.memory.maxMemoryResults);
     const policyBundle = await this.policyCompiler.compile({
       mode: effectiveMode,
       risk,
@@ -764,6 +769,29 @@ export class RaxRuntime {
       .slice(0, 8);
     return issues.length ? issues.map((issue) => `Model critic failure: ${issue}`) : ["Model critic failure: output did not pass adversarial critic."];
   }
+
+  private async mergeRetrievedMemory(input: {
+    input: string;
+    memoryStore: MemoryStore;
+    linkedRepoPath?: string;
+    mode: RaxMode;
+  }) {
+    const general = await input.memoryStore.search(input.input);
+    if (!input.linkedRepoPath || !isRepoFacingMode(input.mode)) return general;
+    const repoScoped = await input.memoryStore.searchByTags([repoMemoryTag(input.linkedRepoPath)]);
+    return dedupeMemory([...general, ...repoScoped]);
+  }
+}
+
+function dedupeMemory<T extends { id: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  const output: T[] = [];
+  for (const item of items) {
+    if (seen.has(item.id)) continue;
+    seen.add(item.id);
+    output.push(item);
+  }
+  return output;
 }
 
 function mergeCriticIssues(review: CriticReview, issues: string[]): CriticReview {
