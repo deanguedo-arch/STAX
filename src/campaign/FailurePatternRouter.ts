@@ -53,6 +53,13 @@ export function routeClosedLoopFailurePatterns(task: ClosedLoopCodexTask): Failu
     add("B1", "evidence references the wrong repo lane");
   }
 
+  if (
+    includesAny(haystack, ["brightspace", "brightspacequizexporter"]) &&
+    includesAny(haystack, ["admission-app", "admission app", "canvas-helper", "testflight", "ios release"])
+  ) {
+    add("B7", "repo context from another lane contaminated a brightspace-scoped task");
+  }
+
   if (includesAny(haystack, ["wrong branch", "wrong ref", "unknown branch"])) {
     add("B5", "proof is tied to the wrong branch or unknown ref");
   }

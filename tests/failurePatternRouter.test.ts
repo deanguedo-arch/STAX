@@ -72,4 +72,19 @@ describe("routeClosedLoopFailurePatterns", () => {
     expect(result.routedPatterns.map((pattern) => pattern.patternId)).toContain("E4");
     expect(result.evalCandidateIds).toContain("eval_e4_closed_loop_017");
   });
+
+  it("routes brightspace context contamination into the cross-lane taxonomy", () => {
+    const result = routeClosedLoopFailurePatterns({
+      ...baseTask(),
+      taskId: "closed_loop_brightspace_context_leak",
+      objective: "Audit brightspace dependency readiness only.",
+      codexReport:
+        "Initial answer leaked ADMISSION-APP/TestFlight context into the brightspacequizexporter dependency task.",
+      diffEvidence: "No brightspace parser/source edits.",
+      commandEvidence: "No local brightspace command output was supplied."
+    });
+
+    expect(result.routedPatterns.map((pattern) => pattern.patternId)).toContain("B7");
+    expect(result.evalCandidateIds).toContain("eval_b7_closed_loop_brightspace_context_leak");
+  });
 });
