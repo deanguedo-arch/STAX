@@ -251,7 +251,7 @@ export async function scorePrArtifactTrial(rootDir = process.cwd()): Promise<PrA
   };
 }
 
-function extractStatus(output: string): z.infer<typeof ExpectedStatusSchema> {
+export function extractStatus(output: string): z.infer<typeof ExpectedStatusSchema> {
   const match = output.match(/- Status:\s*(Accept|Reject|Provisional|Human review|Clean failure)/i);
   const value = match?.[1]?.trim();
   if (value === "Accept" || value === "Reject" || value === "Provisional" || value === "Human review" || value === "Clean failure") {
@@ -260,19 +260,19 @@ function extractStatus(output: string): z.infer<typeof ExpectedStatusSchema> {
   return "Reject";
 }
 
-function extractSection(output: string, heading: string): string {
+export function extractSection(output: string, heading: string): string {
   const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const match = output.match(new RegExp(`${escaped}\\n([\\s\\S]*?)(?=\\n## |$)`));
   return match?.[1]?.trim() ?? "";
 }
 
-function isUsefulNextAction(nextAction: string): boolean {
+export function isUsefulNextAction(nextAction: string): boolean {
   if (!nextAction) return false;
   if (/fix everything|do whatever|anything else/i.test(nextAction)) return false;
   return /\b(run|attach|supply|add|review|capture|post|confirm|rerun|compare|collect|inspect|ask)\b/i.test(nextAction);
 }
 
-function evaluateCriticalMisses(
+export function evaluateCriticalMisses(
   testCase: PrArtifactTrialCase,
   output: string,
   actualStatus: z.infer<typeof ExpectedStatusSchema>
