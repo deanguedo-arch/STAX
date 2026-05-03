@@ -155,5 +155,8 @@ describe("workspace repo operator evidence pack", () => {
     const unnumberedIssue = classifier.classify("triage issue", { knownWorkspaces: ["canvas-helper"] });
     expect(unnumberedIssue.intent).toBe("issue_triage");
     expect(unnumberedIssue.reasonCodes).toContain("issue_triage_request");
+    const noNumberIssueVerb = classifier.classify("triage this bug fix in canvas-helper", { knownWorkspaces: ["canvas-helper"] });
+    expect(noNumberIssueVerb.intent).toBe("issue_triage");
+    expect(noNumberIssueVerb.reasonCodes).toContain("issue_triage_request");
   });
 });
