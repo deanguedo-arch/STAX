@@ -1,6 +1,6 @@
 import { auditDiffEvidence } from "../diffAudit/DiffAudit.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
-import { classifyCommandEvidence } from "../evidence/CommandEvidenceIntelligence.js";
+import { classifyCiLogEvidence } from "../evidence/CiLogIntelligence.js";
 import type { PullRequestArtifactPacket } from "./PullRequestArtifactPacket.js";
 
 export type PullRequestArtifactAuditResult = {
@@ -79,30 +79,33 @@ export function auditPullRequestArtifact(args: {
   }
 
   for (const status of packet.ciStatuses) {
-    const insight = classifyCommandEvidence({
-      command: `GitHub Actions workflow ${status.workflow}`,
-      cwd: packet.repo,
-      repo: packet.repo,
+    const insight = classifyCiLogEvidence({
+      workflow: status.workflow,
+      jobName: status.jobName,
       branch: status.branch ?? packet.branch,
       commitSha: status.commitSha ?? packet.commitSha,
-      exitCode:
-        status.status === "success"
-          ? 0
-          : status.status === "failure"
-            ? 1
-            : undefined,
-      output: status.summary ?? status.status,
-      source: "ci_workflow_output",
-      expectedRepo: packet.repo,
+      conclusion: status.status,
+      summary: status.summary ?? status.status,
+      log: status.log ?? "",
+      startedAt: status.startedAt,
+      finishedAt: status.finishedAt,
       expectedBranch: args.expectedBranch ?? packet.branch,
       expectedCommitSha: args.expectedCommitSha ?? packet.commitSha,
-      claimType: /\brelease|deploy|publish\b/i.test(lowerTask) ? "release_ready" : "behavior"
+      claimType: /\brelease|deploy|publish\b/i.test(lowerTask) ? "release_ready" : "behavior",
+      expectedJobCount: status.expectedJobCount,
+      completedJobCount: status.completedJobCount,
+      failedJobCount: status.failedJobCount,
+      cancelledJobCount: status.cancelledJobCount,
+      skippedJobCount: status.skippedJobCount
     });
     const label = `PR CI ${status.workflow}: ${insight.proofStrength}.`;
     if (insight.proofStrength === "ci_proof") weak.push(label);
-    else if (insight.proofStrength === "strong_local_proof") verified.push(label);
+    else if (insight.proofStrength === "not_relevant_to_claim") weak.push(label);
     else unverified.push(label);
-    risk.push(...insight.limitations.slice(0, 1).map((item) => `PR CI risk: ${item}.`));
+    risk.push(...insight.limitations.slice(0, 2).map((item) => `PR CI risk: ${item}.`));
+    if (insight.matrixState === "partial") {
+      risk.push("PR CI risk: matrix or job set is only partially complete.");
+    }
   }
 
   if (packet.reviewComments.length > 0) {

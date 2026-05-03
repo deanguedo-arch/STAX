@@ -70,7 +70,10 @@ describe("project control evidence packet", () => {
               status: "success",
               branch: "feature/pr-audit",
               commitSha: "abc7777",
-              summary: "workflow completed successfully"
+              summary: "workflow completed successfully",
+              failedJobCount: 0,
+              cancelledJobCount: 0,
+              skippedJobCount: 0
             }
           ],
           reviewComments: [],
@@ -380,7 +383,10 @@ describe("project control evidence packet", () => {
               status: "success",
               branch: "main",
               commitSha: "old1234",
-              summary: "workflow completed successfully"
+              summary: "workflow completed successfully",
+              failedJobCount: 0,
+              cancelledJobCount: 0,
+              skippedJobCount: 0
             }
           ],
           reviewComments: [],
@@ -396,5 +402,50 @@ describe("project control evidence packet", () => {
     expect(output.output).toContain("PR artifact audit: PR #88 artifact packet supplied.");
     expect(output.output).toContain("PR artifact audit: PR CI test: stale_proof.");
     expect(output.output).toContain("PR artifact audit: PR diff audit rejects the implementation claim");
+  });
+
+  it("surfaces partial CI matrix risk inside project-control PR audits", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether this implementation PR is proven.",
+        targetRepoPath: "/Users/deanguedo/Documents/GitHub/STAX",
+        branch: "main",
+        headSha: "new1234",
+        codexReport: "Codex says the implementation is complete.",
+        pullRequestArtifact: {
+          prNumber: 89,
+          title: "Tighten implementation behavior",
+          body: "Includes tests.",
+          repo: "/Users/deanguedo/Documents/GitHub/STAX",
+          branch: "main",
+          commitSha: "new1234",
+          changedFiles: ["src/agents/AnalystAgent.ts", "tests/projectControlMode.test.ts"],
+          ciStatuses: [
+            {
+              workflow: "test",
+              status: "success",
+              branch: "main",
+              commitSha: "new1234",
+              summary: "workflow completed successfully",
+              expectedJobCount: 4,
+              completedJobCount: 3,
+              failedJobCount: 1,
+              cancelledJobCount: 0,
+              skippedJobCount: 0
+            }
+          ],
+          reviewComments: [],
+          issueLinks: [],
+          labels: []
+        }
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("PR artifact audit: PR CI test: partial_local_proof.");
+    expect(output.output).toContain("PR artifact audit: PR CI risk: matrix or job set is only partially complete.");
   });
 });

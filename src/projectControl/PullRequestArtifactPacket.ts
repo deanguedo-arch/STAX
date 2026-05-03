@@ -5,8 +5,16 @@ export const PullRequestArtifactCiStatusSchema = z.object({
   status: z.enum(["success", "failure", "cancelled", "skipped", "pending", "unknown"]),
   branch: z.string().optional(),
   commitSha: z.string().optional(),
+  jobName: z.string().optional(),
+  log: z.string().optional(),
+  startedAt: z.string().datetime().optional(),
   finishedAt: z.string().datetime().optional(),
-  summary: z.string().optional()
+  summary: z.string().optional(),
+  expectedJobCount: z.number().int().nonnegative().optional(),
+  completedJobCount: z.number().int().nonnegative().optional(),
+  failedJobCount: z.number().int().nonnegative().default(0),
+  cancelledJobCount: z.number().int().nonnegative().default(0),
+  skippedJobCount: z.number().int().nonnegative().default(0)
 });
 
 export const PullRequestArtifactReviewCommentSchema = z.object({

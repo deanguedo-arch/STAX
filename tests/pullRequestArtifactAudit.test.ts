@@ -50,7 +50,10 @@ describe("pull request artifact audit", () => {
             status: "success",
             branch: "main",
             commitSha: "old1234",
-            summary: "workflow completed successfully"
+            summary: "workflow completed successfully",
+            failedJobCount: 0,
+            cancelledJobCount: 0,
+            skippedJobCount: 0
           }
         ],
         reviewComments: [],
@@ -60,6 +63,42 @@ describe("pull request artifact audit", () => {
     });
 
     expect(result.unverified.join("\n")).toContain("stale_proof");
+  });
+
+  it("marks partial matrix CI as unverified rather than clean proof", () => {
+    const result = auditPullRequestArtifact({
+      task: "Audit whether behavior is proven.",
+      expectedCommitSha: "new1234",
+      packet: {
+        prNumber: 53,
+        title: "Fix behavior path",
+        body: "Behavior fix.",
+        repo: "/Users/deanguedo/Documents/GitHub/STAX",
+        branch: "main",
+        commitSha: "new1234",
+        changedFiles: ["src/agents/AnalystAgent.ts", "tests/projectControlMode.test.ts"],
+        ciStatuses: [
+          {
+            workflow: "test",
+            status: "success",
+            branch: "main",
+            commitSha: "new1234",
+            summary: "workflow completed successfully",
+            expectedJobCount: 4,
+            completedJobCount: 3,
+            failedJobCount: 1,
+            cancelledJobCount: 0,
+            skippedJobCount: 0
+          }
+        ],
+        reviewComments: [],
+        issueLinks: [],
+        labels: []
+      }
+    });
+
+    expect(result.unverified.join("\n")).toContain("partial_local_proof");
+    expect(result.risk.join("\n")).toContain("partially complete");
   });
 
   it("keeps unresolved review comments in human-review lane", () => {
