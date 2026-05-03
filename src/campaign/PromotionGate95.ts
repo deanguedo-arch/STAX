@@ -23,6 +23,7 @@ export type PromotionGate95Summary = {
   ciFailureTriageStatus: string;
   prReviewCommentStatus: string;
   livePrArtifactTrialStatus: string;
+  livePrArtifactTrialFullStatus: string;
   status: "promotion_ready" | "promotion_blocked";
   blockers: string[];
 };
@@ -33,6 +34,7 @@ type PromotionConfig = {
   requireCiFailureTriage?: boolean;
   requirePrReviewCommentScore?: boolean;
   requireLivePrArtifactTrial?: boolean;
+  requireLivePrArtifactTrialFull?: boolean;
 };
 
 const DEFAULT_CONFIG: PromotionConfig = {
@@ -40,7 +42,8 @@ const DEFAULT_CONFIG: PromotionConfig = {
   comparisonRunIds: ["phase12-stateful-2026-04-30", "phaseB-stateful-20-2026-04-30"],
   requireCiFailureTriage: true,
   requirePrReviewCommentScore: true,
-  requireLivePrArtifactTrial: true
+  requireLivePrArtifactTrial: true,
+  requireLivePrArtifactTrialFull: true
 };
 
 export async function evaluatePromotionGate95(input: {
@@ -55,7 +58,9 @@ export async function evaluatePromotionGate95(input: {
       comparisonRunIds: raw.comparisonRunIds ?? DEFAULT_CONFIG.comparisonRunIds,
       requireCiFailureTriage: raw.requireCiFailureTriage ?? DEFAULT_CONFIG.requireCiFailureTriage,
       requirePrReviewCommentScore: raw.requirePrReviewCommentScore ?? DEFAULT_CONFIG.requirePrReviewCommentScore,
-      requireLivePrArtifactTrial: raw.requireLivePrArtifactTrial ?? DEFAULT_CONFIG.requireLivePrArtifactTrial
+      requireLivePrArtifactTrial: raw.requireLivePrArtifactTrial ?? DEFAULT_CONFIG.requireLivePrArtifactTrial,
+      requireLivePrArtifactTrialFull:
+        raw.requireLivePrArtifactTrialFull ?? DEFAULT_CONFIG.requireLivePrArtifactTrialFull
     };
   } catch {
     config = DEFAULT_CONFIG;
@@ -73,6 +78,15 @@ export async function evaluatePromotionGate95(input: {
   const prReviewComment = config.requirePrReviewCommentScore === false ? undefined : await validatePrReviewCommentGate();
   const livePrArtifactTrial =
     config.requireLivePrArtifactTrial === false ? undefined : await validateLivePrArtifactTrialGate();
+  const livePrArtifactTrialFull =
+    config.requireLivePrArtifactTrialFull === false
+      ? undefined
+      : await validateLivePrArtifactTrialGate({
+          artifactPath: path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_full_latest.json"),
+          requestedCaseCount: 50,
+          minimumLiveSourceCount: 10,
+          allowFallbackSource: true
+        });
 
   const blockers: string[] = [];
   if (cleanRunsPassed < config.requiredCleanRuns) blockers.push(`fewer than ${config.requiredCleanRuns} clean evidence runs are recorded`);
@@ -82,9 +96,18 @@ export async function evaluatePromotionGate95(input: {
   if (workflowContract.status !== "workflow_contract_passed") blockers.push("live Codex workflow contract campaign has not passed");
   if (humanJudgment.summary.status !== "judgment_ready") blockers.push("human judgment ledger is not fully recorded");
   if (operatingWindow.summary.status !== "operating_window_passed") blockers.push("30-task operating window has not passed");
-  if (ciFailureTriage?.status !== "passed") blockers.push("CI failure triage score is not fully passed");
-  if (prReviewComment?.status !== "passed") blockers.push("PR review comment score is not fully passed");
-  if (livePrArtifactTrial?.status !== "passed") blockers.push("live PR artifact trial has not passed");
+  if (config.requireCiFailureTriage !== false && ciFailureTriage?.status !== "passed") {
+    blockers.push("CI failure triage score is not fully passed");
+  }
+  if (config.requirePrReviewCommentScore !== false && prReviewComment?.status !== "passed") {
+    blockers.push("PR review comment score is not fully passed");
+  }
+  if (config.requireLivePrArtifactTrial !== false && livePrArtifactTrial?.status !== "passed") {
+    blockers.push("live PR artifact trial has not passed");
+  }
+  if (config.requireLivePrArtifactTrialFull !== false && livePrArtifactTrialFull?.status !== "passed") {
+    blockers.push("full live PR artifact trial has not passed");
+  }
 
   return {
     cleanRunsPassed,
@@ -98,6 +121,7 @@ export async function evaluatePromotionGate95(input: {
     ciFailureTriageStatus: ciFailureTriage?.status ?? "not_required",
     prReviewCommentStatus: prReviewComment?.status ?? "not_required",
     livePrArtifactTrialStatus: livePrArtifactTrial?.status ?? "not_required",
+    livePrArtifactTrialFullStatus: livePrArtifactTrialFull?.status ?? "not_required",
     status: blockers.length === 0 ? "promotion_ready" : "promotion_blocked",
     blockers
   };
