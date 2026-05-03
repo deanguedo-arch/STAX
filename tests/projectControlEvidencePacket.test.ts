@@ -448,4 +448,52 @@ describe("project control evidence packet", () => {
     expect(output.output).toContain("PR artifact audit: PR CI test: partial_local_proof.");
     expect(output.output).toContain("PR artifact audit: PR CI risk: matrix or job set is only partially complete.");
   });
+
+  it("downgrades snapshot-only test diffs inside structured project-control packets", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether this behavior fix is proven.",
+        targetRepoPath: "/Users/deanguedo/Documents/GitHub/STAX",
+        changedFiles: [
+          {
+            path: "src/agents/AnalystAgent.ts",
+            changeType: "modified",
+            fileRole: "source"
+          },
+          {
+            path: "tests/projectControlMode.test.ts",
+            changeType: "modified",
+            fileRole: "test",
+            patch: [
+              "@@",
+              "+it('matches snapshot', () => {",
+              "+  const tree = render(<Card />);",
+              "+  expect(tree).toMatchSnapshot();",
+              "+});"
+            ].join("\n")
+          }
+        ],
+        commandEvidence: [
+          {
+            command: "npm test",
+            cwd: "/Users/deanguedo/Documents/GitHub/STAX",
+            repo: "/Users/deanguedo/Documents/GitHub/STAX",
+            branch: "main",
+            exitCode: 0,
+            stdout: "Tests passed",
+            stderr: "",
+            source: "local_stax_command_output"
+          }
+        ],
+        codexReport: "Codex says the behavior is verified."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Claim-to-proof: behavior claim is unsupported because");
+    expect(output.output).toContain("behavior_test");
+  });
 });

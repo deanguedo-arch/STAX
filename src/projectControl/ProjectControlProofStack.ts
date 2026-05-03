@@ -5,6 +5,7 @@ import type { DiffAuditInput } from "../diffAudit/DiffAuditSchemas.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { classifyCommandEvidence } from "../evidence/CommandEvidenceIntelligence.js";
 import type { CommandEvidenceClaimType, CommandEvidenceSource } from "../evidence/CommandEvidenceIntelligenceSchemas.js";
+import { analyzeTestQuality } from "../evidence/TestQualityAnalyzer.js";
 import type {
   ProjectControlChangedFile,
   ProjectControlCommandEvidenceEntry,
@@ -148,7 +149,7 @@ export function buildProjectControlProofStack(
   }
 
   for (const claim of derivedClaims) {
-    const suppliedProof = deriveProofItems(claim, changedFiles, commandInsight, combined);
+    const suppliedProof = deriveProofItems(claim, changedFiles, input.changedFiles, commandInsight, combined);
     const mapped = mapClaimToProof({
       claimType: claim.claimType,
       claim: claim.claim,
@@ -279,6 +280,7 @@ function detectCommandClaimType(text: string): CommandEvidenceClaimType {
 function deriveProofItems(
   claim: DerivedClaim,
   changedFiles: DiffChangedFileInput[],
+  sourceChangedFiles: ProjectControlChangedFile[] | undefined,
   commandInsight: CommandInsight | undefined,
   combined: string
 ): ClaimProofItem[] {
@@ -290,6 +292,7 @@ function deriveProofItems(
   const strongCommand = commandInsight?.proofStrength === "strong_local_proof";
   const weakCommand = commandInsight && commandInsight.proofStrength !== "strong_local_proof";
   const proof: ClaimProofItem[] = [];
+  const testQuality = evaluateTestQuality(sourceChangedFiles, claim.claimType);
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -298,15 +301,63 @@ function deriveProofItems(
   switch (claim.claimType) {
     case "implementation":
       push("source_diff", hasSource ? "strong" : hasDocs ? "weak" : "missing", hasSource ? "Source files changed." : hasDocs ? "Only docs paths detected." : "No source diff detected.");
-      push("behavior_test", hasTests ? "strong" : "missing", hasTests ? "Test files detected." : "No behavior test evidence detected.");
+      push(
+        "behavior_test",
+        hasTests
+          ? testQuality
+            ? testQuality.supportsBehaviorProof
+              ? "strong"
+              : testQuality.supportsTestClaim
+                ? "weak"
+                : "missing"
+            : "strong"
+          : "missing",
+        hasTests
+          ? testQuality
+            ? renderTestQualityDescription(testQuality, "behavior")
+            : "Test files detected."
+          : "No behavior test evidence detected."
+      );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
       break;
     case "test":
-      push("test_diff", hasTests ? "strong" : "missing", hasTests ? "Test files detected." : "No test diff detected.");
+      push(
+        "test_diff",
+        hasTests
+          ? testQuality
+            ? testQuality.supportsTestClaim
+              ? testQuality.verdict === "accept"
+                ? "strong"
+                : "weak"
+              : "missing"
+            : "strong"
+          : "missing",
+        hasTests
+          ? testQuality
+            ? renderTestQualityDescription(testQuality, "test")
+            : "Test files detected."
+          : "No test diff detected."
+      );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
       break;
     case "behavior":
-      push("behavior_test", hasTests ? "strong" : "missing", hasTests ? "Behavior test evidence detected." : "No behavior test evidence detected.");
+      push(
+        "behavior_test",
+        hasTests
+          ? testQuality
+            ? testQuality.supportsBehaviorProof
+              ? "strong"
+              : testQuality.supportsTestClaim
+                ? "weak"
+                : "missing"
+            : "strong"
+          : "missing",
+        hasTests
+          ? testQuality
+            ? renderTestQualityDescription(testQuality, "behavior")
+            : "Behavior test evidence detected."
+          : "No behavior test evidence detected."
+      );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
       break;
     case "visual":
@@ -381,6 +432,28 @@ function deriveScopePaths(changedFiles: DiffChangedFileInput[]): string[] {
     const parts = file.path.split("/");
     return parts.length > 1 ? `${parts[0]}/${parts[1]}` : file.path;
   }));
+}
+
+function evaluateTestQuality(
+  changedFiles: ProjectControlChangedFile[] | undefined,
+  claimType: ClaimProofClaimType
+) {
+  if (!["implementation", "test", "behavior"].includes(claimType)) return undefined;
+  const testFile = changedFiles?.find((file) => file.path.startsWith("tests/") && typeof file.patch === "string" && file.patch.trim());
+  if (!testFile || typeof testFile.patch !== "string" || !testFile.patch.trim()) return undefined;
+  return analyzeTestQuality({
+    filePath: testFile.path,
+    patch: testFile.patch,
+    intendedClaim: claimType === "test" ? "test" : "behavior"
+  });
+}
+
+function renderTestQualityDescription(
+  result: ReturnType<typeof analyzeTestQuality>,
+  lane: "test" | "behavior"
+): string {
+  const topFindings = result.findings.slice(0, 2).map((finding) => finding.id).join(", ");
+  return `${lane === "test" ? "Test diff" : "Behavior test"} quality is ${result.verdict} (${topFindings}).`;
 }
 
 function detectCwd(text: string): string | undefined {

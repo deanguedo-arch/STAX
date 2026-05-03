@@ -1,0 +1,1305 @@
+{
+  "fixtureSet": "test_quality_core_cases",
+  "cases": [
+    {
+      "caseId": "strong_behavior_001",
+      "description": "meaningful behavior assertion case 1",
+      "filePath": "tests/feature-1.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_002",
+      "description": "meaningful behavior assertion case 2",
+      "filePath": "tests/feature-2.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_003",
+      "description": "meaningful behavior assertion case 3",
+      "filePath": "tests/feature-3.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_004",
+      "description": "meaningful behavior assertion case 4",
+      "filePath": "tests/feature-4.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_005",
+      "description": "meaningful behavior assertion case 5",
+      "filePath": "tests/feature-5.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_006",
+      "description": "meaningful behavior assertion case 6",
+      "filePath": "tests/feature-6.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_007",
+      "description": "meaningful behavior assertion case 7",
+      "filePath": "tests/feature-7.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_008",
+      "description": "meaningful behavior assertion case 8",
+      "filePath": "tests/feature-8.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_009",
+      "description": "meaningful behavior assertion case 9",
+      "filePath": "tests/feature-9.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_010",
+      "description": "meaningful behavior assertion case 10",
+      "filePath": "tests/feature-10.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_011",
+      "description": "meaningful behavior assertion case 11",
+      "filePath": "tests/feature-11.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_012",
+      "description": "meaningful behavior assertion case 12",
+      "filePath": "tests/feature-12.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_013",
+      "description": "meaningful behavior assertion case 13",
+      "filePath": "tests/feature-13.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_014",
+      "description": "meaningful behavior assertion case 14",
+      "filePath": "tests/feature-14.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_015",
+      "description": "meaningful behavior assertion case 15",
+      "filePath": "tests/feature-15.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_016",
+      "description": "meaningful behavior assertion case 16",
+      "filePath": "tests/feature-16.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_017",
+      "description": "meaningful behavior assertion case 17",
+      "filePath": "tests/feature-17.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_018",
+      "description": "meaningful behavior assertion case 18",
+      "filePath": "tests/feature-18.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_019",
+      "description": "meaningful behavior assertion case 19",
+      "filePath": "tests/feature-19.test.ts",
+      "intendedClaim": "test",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "strong_behavior_020",
+      "description": "meaningful behavior assertion case 20",
+      "filePath": "tests/feature-20.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('renders the real state', async () => {\n+  render(<Widget state=\"ready\" />);\n+  expect(screen.getByText('Ready')).toBeVisible();\n+});",
+      "expectedVerdict": "accept",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": true
+    },
+    {
+      "caseId": "no_assertion_001",
+      "description": "no assertion case 1",
+      "filePath": "tests/no-assertion-1.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_002",
+      "description": "no assertion case 2",
+      "filePath": "tests/no-assertion-2.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_003",
+      "description": "no assertion case 3",
+      "filePath": "tests/no-assertion-3.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_004",
+      "description": "no assertion case 4",
+      "filePath": "tests/no-assertion-4.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_005",
+      "description": "no assertion case 5",
+      "filePath": "tests/no-assertion-5.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_006",
+      "description": "no assertion case 6",
+      "filePath": "tests/no-assertion-6.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_007",
+      "description": "no assertion case 7",
+      "filePath": "tests/no-assertion-7.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_008",
+      "description": "no assertion case 8",
+      "filePath": "tests/no-assertion-8.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_009",
+      "description": "no assertion case 9",
+      "filePath": "tests/no-assertion-9.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_010",
+      "description": "no assertion case 10",
+      "filePath": "tests/no-assertion-10.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_011",
+      "description": "no assertion case 11",
+      "filePath": "tests/no-assertion-11.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_012",
+      "description": "no assertion case 12",
+      "filePath": "tests/no-assertion-12.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_013",
+      "description": "no assertion case 13",
+      "filePath": "tests/no-assertion-13.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_014",
+      "description": "no assertion case 14",
+      "filePath": "tests/no-assertion-14.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_015",
+      "description": "no assertion case 15",
+      "filePath": "tests/no-assertion-15.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_016",
+      "description": "no assertion case 16",
+      "filePath": "tests/no-assertion-16.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_017",
+      "description": "no assertion case 17",
+      "filePath": "tests/no-assertion-17.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_018",
+      "description": "no assertion case 18",
+      "filePath": "tests/no-assertion-18.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_019",
+      "description": "no assertion case 19",
+      "filePath": "tests/no-assertion-19.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "no_assertion_020",
+      "description": "no assertion case 20",
+      "filePath": "tests/no-assertion-20.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('logs the state', () => {\n+  const value = buildThing();\n+  console.log(value);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "no_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_001",
+      "description": "skipped test case 1",
+      "filePath": "tests/skipped-1.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_002",
+      "description": "skipped test case 2",
+      "filePath": "tests/skipped-2.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_003",
+      "description": "skipped test case 3",
+      "filePath": "tests/skipped-3.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_004",
+      "description": "skipped test case 4",
+      "filePath": "tests/skipped-4.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_005",
+      "description": "skipped test case 5",
+      "filePath": "tests/skipped-5.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_006",
+      "description": "skipped test case 6",
+      "filePath": "tests/skipped-6.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_007",
+      "description": "skipped test case 7",
+      "filePath": "tests/skipped-7.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_008",
+      "description": "skipped test case 8",
+      "filePath": "tests/skipped-8.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_009",
+      "description": "skipped test case 9",
+      "filePath": "tests/skipped-9.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_010",
+      "description": "skipped test case 10",
+      "filePath": "tests/skipped-10.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_011",
+      "description": "skipped test case 11",
+      "filePath": "tests/skipped-11.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_012",
+      "description": "skipped test case 12",
+      "filePath": "tests/skipped-12.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_013",
+      "description": "skipped test case 13",
+      "filePath": "tests/skipped-13.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_014",
+      "description": "skipped test case 14",
+      "filePath": "tests/skipped-14.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_015",
+      "description": "skipped test case 15",
+      "filePath": "tests/skipped-15.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_016",
+      "description": "skipped test case 16",
+      "filePath": "tests/skipped-16.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_017",
+      "description": "skipped test case 17",
+      "filePath": "tests/skipped-17.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_018",
+      "description": "skipped test case 18",
+      "filePath": "tests/skipped-18.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_019",
+      "description": "skipped test case 19",
+      "filePath": "tests/skipped-19.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "skipped_020",
+      "description": "skipped test case 20",
+      "filePath": "tests/skipped-20.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it.skip('covers the edge case', () => {\n+  expect(true).toBe(true);\n+});",
+      "expectedVerdict": "reject",
+      "expectedFindingIds": [
+        "skipped_test",
+        "meaningful_behavior_assertion"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_001",
+      "description": "snapshot only case 1",
+      "filePath": "tests/snapshot-1.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_002",
+      "description": "snapshot only case 2",
+      "filePath": "tests/snapshot-2.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_003",
+      "description": "snapshot only case 3",
+      "filePath": "tests/snapshot-3.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_004",
+      "description": "snapshot only case 4",
+      "filePath": "tests/snapshot-4.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_005",
+      "description": "snapshot only case 5",
+      "filePath": "tests/snapshot-5.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_006",
+      "description": "snapshot only case 6",
+      "filePath": "tests/snapshot-6.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_007",
+      "description": "snapshot only case 7",
+      "filePath": "tests/snapshot-7.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_008",
+      "description": "snapshot only case 8",
+      "filePath": "tests/snapshot-8.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_009",
+      "description": "snapshot only case 9",
+      "filePath": "tests/snapshot-9.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_010",
+      "description": "snapshot only case 10",
+      "filePath": "tests/snapshot-10.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_011",
+      "description": "snapshot only case 11",
+      "filePath": "tests/snapshot-11.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_012",
+      "description": "snapshot only case 12",
+      "filePath": "tests/snapshot-12.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_013",
+      "description": "snapshot only case 13",
+      "filePath": "tests/snapshot-13.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_014",
+      "description": "snapshot only case 14",
+      "filePath": "tests/snapshot-14.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_015",
+      "description": "snapshot only case 15",
+      "filePath": "tests/snapshot-15.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_016",
+      "description": "snapshot only case 16",
+      "filePath": "tests/snapshot-16.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_017",
+      "description": "snapshot only case 17",
+      "filePath": "tests/snapshot-17.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_018",
+      "description": "snapshot only case 18",
+      "filePath": "tests/snapshot-18.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_019",
+      "description": "snapshot only case 19",
+      "filePath": "tests/snapshot-19.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "snapshot_only_020",
+      "description": "snapshot only case 20",
+      "filePath": "tests/snapshot-20.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('matches snapshot', () => {\n+  const tree = render(<Card />);\n+  expect(tree).toMatchSnapshot();\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "snapshot_only_risk",
+        "integration_evidence_present"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_001",
+      "description": "mock only case 1",
+      "filePath": "tests/mock-only-1.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_002",
+      "description": "mock only case 2",
+      "filePath": "tests/mock-only-2.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_003",
+      "description": "mock only case 3",
+      "filePath": "tests/mock-only-3.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_004",
+      "description": "mock only case 4",
+      "filePath": "tests/mock-only-4.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_005",
+      "description": "mock only case 5",
+      "filePath": "tests/mock-only-5.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_006",
+      "description": "mock only case 6",
+      "filePath": "tests/mock-only-6.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_007",
+      "description": "mock only case 7",
+      "filePath": "tests/mock-only-7.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_008",
+      "description": "mock only case 8",
+      "filePath": "tests/mock-only-8.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_009",
+      "description": "mock only case 9",
+      "filePath": "tests/mock-only-9.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_010",
+      "description": "mock only case 10",
+      "filePath": "tests/mock-only-10.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_011",
+      "description": "mock only case 11",
+      "filePath": "tests/mock-only-11.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_012",
+      "description": "mock only case 12",
+      "filePath": "tests/mock-only-12.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_013",
+      "description": "mock only case 13",
+      "filePath": "tests/mock-only-13.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_014",
+      "description": "mock only case 14",
+      "filePath": "tests/mock-only-14.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_015",
+      "description": "mock only case 15",
+      "filePath": "tests/mock-only-15.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_016",
+      "description": "mock only case 16",
+      "filePath": "tests/mock-only-16.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_017",
+      "description": "mock only case 17",
+      "filePath": "tests/mock-only-17.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_018",
+      "description": "mock only case 18",
+      "filePath": "tests/mock-only-18.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_019",
+      "description": "mock only case 19",
+      "filePath": "tests/mock-only-19.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    },
+    {
+      "caseId": "mock_only_020",
+      "description": "mock only case 20",
+      "filePath": "tests/mock-only-20.test.ts",
+      "intendedClaim": "behavior",
+      "patch": "@@\n+it('returns mocked value', async () => {\n+  vi.mock(api.fetchThing).mockResolvedValue({ ok: true });\n+  expect(await subject()).toEqual({ ok: true });\n+});",
+      "expectedVerdict": "provisional",
+      "expectedFindingIds": [
+        "meaningful_behavior_assertion",
+        "mock_only_coverage"
+      ],
+      "shouldCountAsStrong": false
+    }
+  ]
+}
