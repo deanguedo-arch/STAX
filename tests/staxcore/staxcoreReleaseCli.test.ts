@@ -76,7 +76,7 @@ describe("staxcore release-gate CLI strict profile", () => {
 
     expect(releaseGate.profile).toBe("strict");
     expect(releaseGate.canRelease).toBe(false);
-    expect(releaseGate.failedChecks).toEqual(expect.arrayContaining(["eval", "regressionEval", "redteamEval"]));
+    expect(releaseGate.failedChecks).toEqual(expect.arrayContaining(["evalFixtureAudit", "eval", "regressionEval", "redteamEval"]));
   }, 30000);
 
   it("passes strict dry-run when eval checks are provided", async () => {
@@ -88,6 +88,7 @@ describe("staxcore release-gate CLI strict profile", () => {
       "--dry-run",
       "--typecheck-pass",
       "--tests-pass",
+      "--eval-fixtures-pass",
       "--eval-pass",
       "--eval-regression-pass",
       "--eval-redteam-pass",

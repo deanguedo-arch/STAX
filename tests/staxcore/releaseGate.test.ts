@@ -51,6 +51,7 @@ describe("staxcore release gate", () => {
 
     expect(result.canRelease).toBe(false);
     expect(result.profile).toBe("strict");
+    expect(result.failedChecks).toContain("evalFixtureAudit");
     expect(result.failedChecks).toContain("eval");
     expect(result.failedChecks).toContain("regressionEval");
     expect(result.failedChecks).toContain("redteamEval");

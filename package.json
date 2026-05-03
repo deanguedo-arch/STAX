@@ -19,6 +19,7 @@
     "audit:doctrine": "tsx scripts/auditDoctrine.ts",
     "audit:boundaries": "tsx scripts/auditBoundaries.ts",
     "audit:security": "tsx scripts/auditSecurity.ts",
+    "audit:eval-fixtures": "tsx scripts/auditEvalFixtures.ts",
     "campaign:phase10": "tsx scripts/runPhase10Campaign.ts",
     "campaign:phase11:prepare": "tsx scripts/preparePhase11BrowserCapture.ts",
     "campaign:phase11": "npm run campaign:phase11:subscription",

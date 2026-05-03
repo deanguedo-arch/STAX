@@ -5,6 +5,7 @@ export interface ReleaseGateEvidence {
   boundaryAuditPassed: boolean;
   securityAuditPassed: boolean;
   replayPassed: boolean;
+  evalFixtureAuditPassed?: boolean;
   evalPassed?: boolean;
   regressionEvalPassed?: boolean;
   redteamEvalPassed?: boolean;
@@ -36,6 +37,7 @@ export function evaluateReleaseGate(
   };
 
   if (profile === "strict") {
+    requiredChecks.evalFixtureAudit = evidence.evalFixtureAuditPassed === true;
     requiredChecks.eval = evidence.evalPassed === true;
     requiredChecks.regressionEval = evidence.regressionEvalPassed === true;
     requiredChecks.redteamEval = evidence.redteamEvalPassed === true;

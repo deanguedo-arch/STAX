@@ -1234,6 +1234,7 @@ type StaxCoreCommandCheck = {
   name:
     | "typecheck"
     | "tests"
+    | "evalFixtureAudit"
     | "eval"
     | "regressionEval"
     | "redteamEval"
@@ -1310,6 +1311,7 @@ function parseDryRunEvidence(args: ParsedArgs): ReleaseGateEvidence {
   return {
     typecheckPassed: args.flags["typecheck-pass"] === true,
     testsPassed: args.flags["tests-pass"] === true,
+    evalFixtureAuditPassed: args.flags["eval-fixtures-pass"] === true,
     evalPassed: args.flags["eval-pass"] === true,
     regressionEvalPassed: args.flags["eval-regression-pass"] === true,
     redteamEvalPassed: args.flags["eval-redteam-pass"] === true,
@@ -1352,7 +1354,7 @@ async function staxcoreCommand(args: ParsedArgs): Promise<void> {
 
   if (!["release-gate", "replay", "report"].includes(action)) {
     throw new Error(
-      "Usage: rax staxcore release-gate|report [--strict] [--dry-run --typecheck-pass --tests-pass --eval-pass --eval-regression-pass --eval-redteam-pass --doctrine-pass --boundaries-pass --security-pass --replay-pass --replay-deterministic --replay-chain-valid] [--window 10] [--max-score-drop 0] | replay"
+      "Usage: rax staxcore release-gate|report [--strict] [--dry-run --typecheck-pass --tests-pass --eval-fixtures-pass --eval-pass --eval-regression-pass --eval-redteam-pass --doctrine-pass --boundaries-pass --security-pass --replay-pass --replay-deterministic --replay-chain-valid] [--window 10] [--max-score-drop 0] | replay"
     );
   }
 
@@ -1441,6 +1443,7 @@ async function staxcoreCommand(args: ParsedArgs): Promise<void> {
     ];
   if (releaseProfile === "strict") {
     checkSpecs.splice(2, 0,
+      { name: "evalFixtureAudit", command: ["npm", "run", "audit:eval-fixtures"] },
       { name: "eval", command: ["npm", "run", "rax", "--", "eval"] },
       { name: "regressionEval", command: ["npm", "run", "rax", "--", "eval", "--regression"] },
       { name: "redteamEval", command: ["npm", "run", "rax", "--", "eval", "--redteam"] }
@@ -1459,6 +1462,7 @@ async function staxcoreCommand(args: ParsedArgs): Promise<void> {
     : {
         typecheckPassed: commandChecks.find((check) => check.name === "typecheck")?.passed ?? false,
         testsPassed: commandChecks.find((check) => check.name === "tests")?.passed ?? false,
+        evalFixtureAuditPassed: commandChecks.find((check) => check.name === "evalFixtureAudit")?.passed,
         evalPassed: commandChecks.find((check) => check.name === "eval")?.passed,
         regressionEvalPassed: commandChecks.find((check) => check.name === "regressionEval")?.passed,
         redteamEvalPassed: commandChecks.find((check) => check.name === "redteamEval")?.passed,
@@ -2104,7 +2108,7 @@ function help(): void {
     "  rax compare import-baseline --file external_baseline.json",
     "  rax superiority status|score|campaign|failures|prompt [--fixtures dir|--file fixture.json]",
     "  rax strategy benchmark|score|prompt [--fixtures dir|--file fixture.json]",
-    "  rax staxcore release-gate [--strict] [--dry-run --typecheck-pass --tests-pass --eval-pass --eval-regression-pass --eval-redteam-pass --doctrine-pass --boundaries-pass --security-pass --replay-pass --replay-deterministic --replay-chain-valid] [--window 10 --max-score-drop 0] [--print json]",
+    "  rax staxcore release-gate [--strict] [--dry-run --typecheck-pass --tests-pass --eval-fixtures-pass --eval-pass --eval-regression-pass --eval-redteam-pass --doctrine-pass --boundaries-pass --security-pass --replay-pass --replay-deterministic --replay-chain-valid] [--window 10 --max-score-drop 0] [--print json]",
     "  rax staxcore replay [--print json]",
     "  rax staxcore report [--window 10 --max-score-drop 0] [--print json]",
     "  rax auto-advance sandbox brightspace-rollup --sandbox-path <path> [--approve --create|--verify]",
