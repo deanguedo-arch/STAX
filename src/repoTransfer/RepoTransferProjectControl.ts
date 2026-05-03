@@ -1,4 +1,5 @@
 import { renderProjectControlVerdictCard } from "../projectControl/ControlCard.js";
+import { buildRepoOnboardingCardFromInputs } from "../projectControl/RepoOnboardingAutopilot.js";
 import {
   findRepoArchetypeInText,
   findRepoCandidateInText,
@@ -27,18 +28,25 @@ export function renderRepoTransferProjectControl(packet: ProjectControlPacket): 
   const hasCommandEvidence = /\b(exit code\s*:?\s*0|stdout|stderr|passed|failed|command output|\$ )\b/i.test(packet.commandEvidence);
   const scriptExistsTrap = taskKind === "script_exists" || /\b(script-exists|script exists|script existence|package\.json\s+has|package\.json\s+contains)\b/i.test(trapText);
   const fakeCompleteTrap = taskKind === "fake_complete" || /\btests passed|fixed|complete|done|ready\b/i.test(codexReport);
+  const onboardingCard =
+    taskKind === "onboarding"
+      ? buildRepoOnboardingCardFromInputs({ repoFullName: repo, archetypeName: archetypeId })
+      : undefined;
 
   const verified = [
     repo ? `The target public repo named in the case is ${repo}.` : "The case is a public-repo transfer trial.",
     archetype ? `The supplied archetype is ${archetype.label}.` : undefined,
-    "The supplied evidence does not include local checkout, command output, exit code, or inspected repo files."
+    "The supplied evidence does not include local checkout, command output, exit code, or inspected repo files.",
+    onboardingCard ? `Repo onboarding card package-manager guess is ${onboardingCard.packageManager}.` : undefined,
+    onboardingCard ? `First safe audit command candidate is ${onboardingCard.firstSafeAuditCommand}.` : undefined
   ].filter(Boolean) as string[];
 
   const weak = [
     codexReport && !/^none supplied\.?$/i.test(codexReport) ? `Codex reported: ${codexReport.replace(/\s+/g, " ")}` : undefined,
     archetype ? `Likely indicators are candidates only: ${archetype.indicators.join(", ")}.` : undefined,
     archetype ? `Likely proof gates are candidates only until inspected: ${archetype.proofGates.join(", ")}.` : undefined,
-    archetype?.whySelected ? `Why this repo is in the transfer slice: ${archetype.whySelected}` : undefined
+    archetype?.whySelected ? `Why this repo is in the transfer slice: ${archetype.whySelected}` : undefined,
+    onboardingCard?.visualProofRequired ? "Visual proof is likely required for UI-affecting claims in this repo." : undefined
   ].filter(Boolean) as string[];
 
   const unverified = [
@@ -55,7 +63,8 @@ export function renderRepoTransferProjectControl(packet: ProjectControlPacket): 
     scriptExistsTrap ? "Script-existence risk: package/config discovery can be mistaken for command success." : undefined,
     fakeCompleteTrap ? "Fake-complete risk: Codex can claim tests passed without output, cwd, or exit code." : undefined,
     archetype?.dangerousActions.length ? `Do not run or recommend live actions yet: ${archetype.dangerousActions.join(", ")}.` : undefined,
-    archetype?.fullLocalTestsLikelyTooExpensive ? "Full local test runs are likely too expensive here; stay bounded." : undefined
+    archetype?.fullLocalTestsLikelyTooExpensive ? "Full local test runs are likely too expensive here; stay bounded." : undefined,
+    onboardingCard?.notes[0] ? `Onboarding note: ${onboardingCard.notes[0]}` : undefined
   ].filter(Boolean) as string[];
 
   const verdict = transferVerdict({ repo, archetype, taskKind, fakeCompleteTrap, scriptExistsTrap });

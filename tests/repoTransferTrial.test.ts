@@ -53,6 +53,8 @@ describe("repo transfer trial fixtures", () => {
     expect(result.output).toContain("microsoft/playwright");
     expect(result.output).toContain("Onboarding can be drafted as provisional repo intelligence");
     expect(result.output).toContain("Cross-repo evidence risk");
+    expect(result.output).toContain("package-manager guess");
+    expect(result.output).toContain("First safe audit command candidate");
     expect(result.output).toContain("Inspect microsoft/playwright docs and package/tooling files to identify one bounded proof gate");
     expect(result.output).not.toContain("ADMISSION-APP");
     expect(result.output).not.toContain("build:pages");

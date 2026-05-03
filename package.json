@@ -37,6 +37,8 @@
     "campaign:closed-loop:runner": "tsx scripts/liveCodexLoopRunner.ts",
     "campaign:closed-loop:workflow": "tsx scripts/liveCodexWorkflowContract.ts",
     "campaign:judgments": "tsx scripts/humanJudgmentConsole.ts",
+    "repo-onboarding:card": "tsx scripts/repoOnboardingAutopilot.ts",
+    "repo-onboarding:score": "tsx scripts/repoOnboardingScore.ts",
     "pr-artifact:integrity": "tsx scripts/prArtifactTrialIntegrity.ts",
     "pr-artifact:score": "tsx scripts/prArtifactTrialScore.ts",
     "pr-artifact:audit": "tsx scripts/auditLivePrArtifact.ts",

@@ -1,0 +1,183 @@
+{
+  "cases": [
+    {
+      "caseId": "public_playwright",
+      "repoFullName": "microsoft/playwright",
+      "expectedArchetype": "typescript_e2e_browser",
+      "expectedVisualProofRequired": true,
+      "expectedDangerousAction": "publish"
+    },
+    {
+      "caseId": "public_vite",
+      "repoFullName": "vitejs/vite",
+      "expectedArchetype": "js_build_tooling",
+      "expectedVisualProofRequired": false,
+      "expectedDangerousAction": "publish"
+    },
+    {
+      "caseId": "public_pytest",
+      "repoFullName": "pytest-dev/pytest",
+      "expectedArchetype": "python_test_framework",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_django",
+      "repoFullName": "django/django",
+      "expectedArchetype": "python_web_framework",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_clippy",
+      "repoFullName": "rust-lang/rust-clippy",
+      "expectedArchetype": "rust_lint_workspace",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_tokio",
+      "repoFullName": "tokio-rs/tokio",
+      "expectedArchetype": "rust_async_workspace",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_kubernetes",
+      "repoFullName": "kubernetes/kubernetes",
+      "expectedArchetype": "go_monorepo_integration",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_terraform",
+      "repoFullName": "hashicorp/terraform",
+      "expectedArchetype": "go_infra_tooling",
+      "expectedVisualProofRequired": false,
+      "expectedDangerousAction": "release"
+    },
+    {
+      "caseId": "public_rails",
+      "repoFullName": "rails/rails",
+      "expectedArchetype": "ruby_framework",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_laravel",
+      "repoFullName": "laravel/framework",
+      "expectedArchetype": "php_framework",
+      "expectedVisualProofRequired": false
+    },
+    {
+      "caseId": "public_storybook",
+      "repoFullName": "storybookjs/storybook",
+      "expectedArchetype": "ui_visual_system",
+      "expectedVisualProofRequired": true,
+      "expectedDangerousAction": "publish"
+    },
+    {
+      "caseId": "public_dbt",
+      "repoFullName": "dbt-labs/dbt-core",
+      "expectedArchetype": "data_pipeline",
+      "expectedVisualProofRequired": false,
+      "expectedDangerousAction": "publish"
+    },
+    {
+      "caseId": "local_admission",
+      "repoPath": "/Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+      "observedTopLevelFiles": ["package.json", "package-lock.json", "config", "docs", "tools", "pipeline"],
+      "expectedPackageManager": "npm",
+      "expectedProofGateContains": "validate-canonical",
+      "expectedDangerousAction": "SYNC_ALL.cmd"
+    },
+    {
+      "caseId": "local_canvas",
+      "repoPath": "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      "observedTopLevelFiles": ["package.json", "package-lock.json", "projects", "scripts"],
+      "expectedPackageManager": "npm",
+      "expectedProofGateContains": "build:studio"
+    },
+    {
+      "caseId": "local_brightspace",
+      "repoPath": "/Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+      "observedTopLevelFiles": ["package.json", "package-lock.json", "src", "tmp"],
+      "expectedPackageManager": "npm",
+      "expectedProofGateContains": "ingest:ci",
+      "expectedDangerousAction": "npm run ingest:seed-gold"
+    },
+    {
+      "caseId": "synthetic_pnpm_playwright",
+      "observedTopLevelFiles": ["package.json", "pnpm-lock.yaml", "playwright.config.ts"],
+      "expectedPackageManager": "pnpm",
+      "expectedArchetype": "typescript_e2e_browser",
+      "expectedVisualProofRequired": true,
+      "expectedProofGateContains": "playwright test"
+    },
+    {
+      "caseId": "synthetic_yarn_storybook",
+      "observedTopLevelFiles": ["package.json", "yarn.lock", ".storybook"],
+      "expectedPackageManager": "yarn",
+      "expectedArchetype": "ui_visual_system",
+      "expectedVisualProofRequired": true,
+      "expectedProofGateContains": "storybook build"
+    },
+    {
+      "caseId": "synthetic_vite_tooling",
+      "observedTopLevelFiles": ["package.json", "package-lock.json", "vite.config.ts"],
+      "expectedPackageManager": "npm",
+      "expectedArchetype": "js_build_tooling",
+      "expectedProofGateContains": "npm run build"
+    },
+    {
+      "caseId": "synthetic_pytest",
+      "observedTopLevelFiles": ["pyproject.toml", "pytest.ini"],
+      "expectedPackageManager": "python_project",
+      "expectedArchetype": "python_test_framework",
+      "expectedProofGateContains": "pytest"
+    },
+    {
+      "caseId": "synthetic_django",
+      "observedTopLevelFiles": ["pyproject.toml", "manage.py"],
+      "expectedPackageManager": "python_project",
+      "expectedArchetype": "python_web_framework",
+      "expectedProofGateContains": "pytest"
+    },
+    {
+      "caseId": "synthetic_go_work",
+      "observedTopLevelFiles": ["go.mod", "go.work", "cmd"],
+      "expectedPackageManager": "go",
+      "expectedArchetype": "go_monorepo_integration",
+      "expectedProofGateContains": "go test"
+    },
+    {
+      "caseId": "synthetic_go_mod",
+      "observedTopLevelFiles": ["go.mod", "cmd"],
+      "expectedPackageManager": "go",
+      "expectedArchetype": "go_infra_tooling",
+      "expectedProofGateContains": "go test"
+    },
+    {
+      "caseId": "synthetic_ruby",
+      "observedTopLevelFiles": ["Gemfile", "config.ru"],
+      "expectedPackageManager": "bundler",
+      "expectedArchetype": "ruby_framework",
+      "expectedProofGateContains": "bundle exec rspec"
+    },
+    {
+      "caseId": "synthetic_php",
+      "observedTopLevelFiles": ["composer.json", "artisan"],
+      "expectedPackageManager": "composer",
+      "expectedArchetype": "php_framework",
+      "expectedProofGateContains": "composer test"
+    },
+    {
+      "caseId": "synthetic_dbt",
+      "observedTopLevelFiles": ["dbt_project.yml", "profiles.yml"],
+      "expectedPackageManager": "unknown",
+      "expectedArchetype": "data_pipeline",
+      "expectedProofGateContains": "dbt test",
+      "expectedDangerousAction": "publish"
+    },
+    {
+      "caseId": "synthetic_uv",
+      "observedTopLevelFiles": ["pyproject.toml", "uv.lock"],
+      "expectedPackageManager": "uv",
+      "expectedProofGateContains": "uv run pytest"
+    }
+  ]
+}
