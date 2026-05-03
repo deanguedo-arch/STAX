@@ -33,6 +33,12 @@ async function main(): Promise<void> {
     "real_use",
     "live_pr_artifact_trial_latest.json"
   );
+  const failedAttemptPath = path.join(
+    process.cwd(),
+    "fixtures",
+    "real_use",
+    "live_pr_artifact_trial_last_attempt_failed.json"
+  );
   await fs.mkdir(artifactsDir, { recursive: true });
   await fs.mkdir(path.dirname(fixtureSummaryPath), { recursive: true });
   await fs.writeFile(
@@ -45,7 +51,15 @@ async function main(): Promise<void> {
     `${formatLivePrArtifactTrial(summary)}\n`,
     "utf8"
   );
-  await fs.writeFile(fixtureSummaryPath, JSON.stringify(summary, null, 2), "utf8");
+  if (summary.status === "passed") {
+    await fs.writeFile(fixtureSummaryPath, JSON.stringify(summary, null, 2), "utf8");
+    await fs.rm(failedAttemptPath, { force: true });
+  } else {
+    await fs.writeFile(failedAttemptPath, JSON.stringify(summary, null, 2), "utf8");
+    process.stderr.write(
+      "Live PR trial did not pass; keeping existing live_pr_artifact_trial_latest.json unchanged.\n"
+    );
+  }
 
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
   if (summary.status !== "passed") process.exitCode = 1;
