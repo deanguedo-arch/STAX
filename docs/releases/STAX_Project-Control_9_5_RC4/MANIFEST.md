@@ -20,7 +20,7 @@ npm test
 npm run validate:all
 npm run pr-artifact:integrity
 npm run pr-artifact:score
-npm run pr-artifact:live-trial
+npm run pr-artifact:live-trial:refresh
 npm run campaign:promotion-gate
 npm run ci-failure:score
 npm run pr-review-comment:score

@@ -45,6 +45,7 @@
     "pr-artifact:integrity": "tsx scripts/prArtifactTrialIntegrity.ts",
     "pr-artifact:score": "tsx scripts/prArtifactTrialScore.ts",
     "pr-artifact:live-trial": "tsx scripts/prArtifactLiveTrial.ts --limit 25 --min-live 5",
+    "pr-artifact:live-trial:refresh": "tsx scripts/prArtifactLiveTrialRefresh.ts",
     "pr-artifact:audit": "tsx scripts/auditLivePrArtifact.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
