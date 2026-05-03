@@ -14,6 +14,7 @@ function structuredPacket(overrides: Partial<StructuredProjectControlEvidencePac
     commandEvidence: [],
     codexReport: "",
     visualEvidence: [],
+    dataProofArtifacts: [],
     humanApproval: [],
     ...overrides
   });
@@ -304,6 +305,36 @@ describe("project control evidence packet", () => {
 
     expect(output.validation.valid).toBe(true);
     expect(output.output).toContain("Claim-to-proof: visual claim is fully supported.");
+  });
+
+  it("accepts structured data packets when validation, dry-run, and row-count evidence are present", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether the admissions data publish claim is proven.",
+        targetRepoPath: "/Users/deanguedo/Documents/GitHub/ADMISSION-APP",
+        changedFiles: [{ path: "pipeline/build_ualberta_seed_from_coveo.py", changeType: "modified", fileRole: "source" }],
+        dataProofArtifacts: [
+          {
+            description: "validate-canonical passed after dry-run review and row-count diff.",
+            source: "dry_run",
+            rowCountBefore: 100,
+            rowCountAfter: 100,
+            duplicateCount: 0,
+            unknownFieldCount: 0,
+            dryRunPassed: true,
+            validationPassed: true,
+            configKind: "live"
+          }
+        ],
+        codexReport: "Codex says the data is ready."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Claim-to-proof: data claim is fully supported.");
   });
 
   it("rejects structured deploy claims missing rollback proof", async () => {

@@ -936,6 +936,7 @@ function renderProjectControl(packet: ProjectControlPacket): string {
     unifiedDiff: packet.structured?.unifiedDiff,
     commandEvidenceEntries: packet.structured?.commandEvidence,
     visualEvidence: packet.structured?.visualEvidence,
+    dataProofArtifacts: packet.structured?.dataProofArtifacts,
     humanApproval: packet.structured?.humanApproval,
     pullRequestArtifact: packet.structured?.pullRequestArtifact,
     targetRepoPath,

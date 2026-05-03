@@ -5,11 +5,13 @@ import type { DiffAuditInput } from "../diffAudit/DiffAuditSchemas.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { classifyCommandEvidence } from "../evidence/CommandEvidenceIntelligence.js";
 import type { CommandEvidenceClaimType, CommandEvidenceSource } from "../evidence/CommandEvidenceIntelligenceSchemas.js";
+import { analyzeDataPipelineProof } from "../evidence/DataPipelineProofAnalyzer.js";
 import { analyzeTestQuality } from "../evidence/TestQualityAnalyzer.js";
 import { analyzeVisualProof } from "../evidence/VisualProofAnalyzer.js";
 import type {
   ProjectControlChangedFile,
   ProjectControlCommandEvidenceEntry,
+  ProjectControlDataProofArtifact,
   ProjectControlHumanApproval,
   ProjectControlVisualEvidence,
   PullRequestArtifactPacket
@@ -25,6 +27,7 @@ export type ProjectControlProofStackInput = {
   unifiedDiff?: string;
   commandEvidenceEntries?: ProjectControlCommandEvidenceEntry[];
   visualEvidence?: ProjectControlVisualEvidence[];
+  dataProofArtifacts?: ProjectControlDataProofArtifact[];
   humanApproval?: ProjectControlHumanApproval[];
   pullRequestArtifact?: PullRequestArtifactPacket;
   targetRepoPath?: string;
@@ -155,6 +158,7 @@ export function buildProjectControlProofStack(
       changedFiles,
       input.changedFiles,
       input.visualEvidence,
+      input.dataProofArtifacts,
       commandInsight,
       combined
     );
@@ -290,6 +294,7 @@ function deriveProofItems(
   changedFiles: DiffChangedFileInput[],
   sourceChangedFiles: ProjectControlChangedFile[] | undefined,
   visualEvidence: ProjectControlVisualEvidence[] | undefined,
+  dataProofArtifacts: ProjectControlDataProofArtifact[] | undefined,
   commandInsight: CommandInsight | undefined,
   combined: string
 ): ClaimProofItem[] {
@@ -303,6 +308,7 @@ function deriveProofItems(
   const proof: ClaimProofItem[] = [];
   const testQuality = evaluateTestQuality(sourceChangedFiles, claim.claimType);
   const visualQuality = evaluateVisualProof(visualEvidence, files, claim.claimType);
+  const dataQuality = evaluateDataProof(dataProofArtifacts, claim.claimType, combined);
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -397,9 +403,57 @@ function deriveProofItems(
       push("eval_command_evidence", /\beval\b|\bredteam\b|\bregression\b/i.test(combined) && strongCommand ? "strong" : /\beval\b|\bredteam\b|\bregression\b/i.test(combined) ? "weak" : "missing", /\beval\b|\bredteam\b|\bregression\b/i.test(combined) ? "Eval command evidence mentioned." : "No eval command evidence detected.");
       break;
     case "data":
-      push("data_validation", /\bvalidate-dataset|validate-canonical|validation passed\b/i.test(combined) ? "strong" : "missing", /\bvalidate-dataset|validate-canonical|validation passed\b/i.test(combined) ? "Data validation evidence detected." : "No data validation evidence detected.");
-      push("row_count_diff", /\brow-count|row count|duplicate|unknown-field|unknown field|blank rates\b/i.test(combined) ? "strong" : "missing", /\brow-count|row count|duplicate|unknown-field|unknown field|blank rates\b/i.test(combined) ? "Row-count or QA diff evidence detected." : "No row-count/diff evidence detected.");
-      push("dry_run_artifact", /\bdry-run|dry run|candidate diff\b/i.test(combined) ? "strong" : "missing", /\bdry-run|dry run|candidate diff\b/i.test(combined) ? "Dry-run artifact detected." : "No dry-run artifact detected.");
+      push(
+        "data_validation",
+        dataQuality
+          ? dataQuality.supportsDataClaim || dataQuality.findings.some((finding) => finding.id === "validation_present")
+            ? dataQuality.verdict === "accept"
+              ? "strong"
+              : "weak"
+            : "missing"
+          : /\bvalidate-dataset|validate-canonical|validation passed\b/i.test(combined)
+            ? "strong"
+            : "missing",
+        dataQuality
+          ? renderDataQualityDescription(dataQuality)
+          : /\bvalidate-dataset|validate-canonical|validation passed\b/i.test(combined)
+            ? "Data validation evidence detected."
+            : "No data validation evidence detected."
+      );
+      push(
+        "row_count_diff",
+        dataQuality
+          ? dataQuality.supportsDataClaim || dataQuality.findings.some((finding) => finding.id === "row_count_present")
+            ? dataQuality.verdict === "accept"
+              ? "strong"
+              : "weak"
+            : "missing"
+          : /\brow-count|row count|duplicate|unknown-field|unknown field|blank rates\b/i.test(combined)
+            ? "strong"
+            : "missing",
+        dataQuality
+          ? renderDataQualityDescription(dataQuality)
+          : /\brow-count|row count|duplicate|unknown-field|unknown field|blank rates\b/i.test(combined)
+            ? "Row-count or QA diff evidence detected."
+            : "No row-count/diff evidence detected."
+      );
+      push(
+        "dry_run_artifact",
+        dataQuality
+          ? dataQuality.supportsDataClaim || dataQuality.findings.some((finding) => finding.id === "dry_run_present")
+            ? dataQuality.verdict === "accept"
+              ? "strong"
+              : "weak"
+            : "missing"
+          : /\bdry-run|dry run|candidate diff\b/i.test(combined)
+            ? "strong"
+            : "missing",
+        dataQuality
+          ? renderDataQualityDescription(dataQuality)
+          : /\bdry-run|dry run|candidate diff\b/i.test(combined)
+            ? "Dry-run artifact detected."
+            : "No dry-run artifact detected."
+      );
       break;
     case "release_deploy":
       push("build_proof", /\bbuild\b/i.test(combined) && strongCommand ? "strong" : /\bbuild\b/i.test(combined) ? "weak" : "missing", /\bbuild\b/i.test(combined) ? "Build-related evidence mentioned." : "No build proof detected.");
@@ -501,6 +555,25 @@ function evaluateVisualProof(
 function renderVisualQualityDescription(result: ReturnType<typeof analyzeVisualProof>): string {
   const topFindings = result.findings.slice(0, 2).map((finding) => finding.id).join(", ");
   return `Visual proof quality is ${result.verdict} (${topFindings}).`;
+}
+
+function evaluateDataProof(
+  dataProofArtifacts: ProjectControlDataProofArtifact[] | undefined,
+  claimType: ClaimProofClaimType,
+  combined: string
+) {
+  if (claimType !== "data") return undefined;
+  const primary = dataProofArtifacts?.[0];
+  if (!primary) return undefined;
+  return analyzeDataPipelineProof({
+    task: combined,
+    ...primary
+  });
+}
+
+function renderDataQualityDescription(result: ReturnType<typeof analyzeDataPipelineProof>): string {
+  const topFindings = result.findings.slice(0, 2).map((finding) => finding.id).join(", ");
+  return `Data proof quality is ${result.verdict} (${topFindings}).`;
 }
 
 function extractChecklistItems(text: string): string[] {

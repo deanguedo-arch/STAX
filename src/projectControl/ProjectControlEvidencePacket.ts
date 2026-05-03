@@ -61,6 +61,21 @@ export const ProjectControlHumanApprovalSchema = z.object({
   approvedAt: z.string().datetime().optional()
 });
 
+export const ProjectControlDataProofArtifactSchema = z.object({
+  description: z.string().min(1),
+  source: z.enum(["dry_run", "validation_script", "row_count_report", "config_check", "review_queue"]).default("validation_script"),
+  capturedAt: z.string().datetime().optional(),
+  rowCountBefore: z.number().int().nonnegative().optional(),
+  rowCountAfter: z.number().int().nonnegative().optional(),
+  duplicateCount: z.number().int().nonnegative().optional(),
+  unknownFieldCount: z.number().int().nonnegative().optional(),
+  blankRateNotes: z.string().optional(),
+  dryRunPassed: z.boolean().optional(),
+  validationPassed: z.boolean().optional(),
+  configPath: z.string().optional(),
+  configKind: z.enum(["live", "example"]).optional()
+});
+
 export const StructuredProjectControlEvidencePacketSchema = z.object({
   task: z.string().min(1),
   repo: z.string().optional(),
@@ -74,6 +89,7 @@ export const StructuredProjectControlEvidencePacketSchema = z.object({
   commandEvidence: z.array(ProjectControlCommandEvidenceEntrySchema).default([]),
   codexReport: z.string().default(""),
   visualEvidence: z.array(ProjectControlVisualEvidenceSchema).default([]),
+  dataProofArtifacts: z.array(ProjectControlDataProofArtifactSchema).default([]),
   humanApproval: z.array(ProjectControlHumanApprovalSchema).default([]),
   pullRequestArtifact: PullRequestArtifactPacketSchema.optional()
 });
@@ -82,6 +98,7 @@ export type StructuredProjectControlEvidencePacket = z.infer<typeof StructuredPr
 export type ProjectControlChangedFile = z.infer<typeof ProjectControlChangedFileSchema>;
 export type ProjectControlCommandEvidenceEntry = z.infer<typeof ProjectControlCommandEvidenceEntrySchema>;
 export type ProjectControlVisualEvidence = z.infer<typeof ProjectControlVisualEvidenceSchema>;
+export type ProjectControlDataProofArtifact = z.infer<typeof ProjectControlDataProofArtifactSchema>;
 export type ProjectControlHumanApproval = z.infer<typeof ProjectControlHumanApprovalSchema>;
 export type { PullRequestArtifactPacket };
 
@@ -174,6 +191,28 @@ function renderStructuredRepoEvidence(packet: StructuredProjectControlEvidencePa
         packet.visualEvidence
           .map((item) =>
             `- ${item.source}: ${[item.path, item.description, item.capturedAt].filter(Boolean).join(" | ")}`
+          )
+          .join("\n")
+    );
+  }
+  if (packet.dataProofArtifacts.length > 0) {
+    lines.push(
+      "Data proof artifacts:\n" +
+        packet.dataProofArtifacts
+          .map((item) =>
+            `- ${item.source}: ${[
+              item.description,
+              item.capturedAt,
+              item.rowCountBefore !== undefined ? `rowCountBefore=${item.rowCountBefore}` : "",
+              item.rowCountAfter !== undefined ? `rowCountAfter=${item.rowCountAfter}` : "",
+              item.duplicateCount !== undefined ? `duplicateCount=${item.duplicateCount}` : "",
+              item.unknownFieldCount !== undefined ? `unknownFieldCount=${item.unknownFieldCount}` : "",
+              item.dryRunPassed !== undefined ? `dryRunPassed=${item.dryRunPassed}` : "",
+              item.validationPassed !== undefined ? `validationPassed=${item.validationPassed}` : "",
+              item.configPath ? `configPath=${item.configPath}` : "",
+              item.configKind ? `configKind=${item.configKind}` : "",
+              item.blankRateNotes ?? ""
+            ].filter(Boolean).join(" | ")}`
           )
           .join("\n")
     );
