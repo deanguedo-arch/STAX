@@ -1,0 +1,1021 @@
+{
+  "fixtureSet": "unified_diff_cases_v1",
+  "cases": [
+    {
+      "caseId": "source_001",
+      "description": "parses source unified diff case 1",
+      "diff": "diff --git a/src/module/file1.ts b/src/module/file1.ts\n--- a/src/module/file1.ts\n+++ b/src/module/file1.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file1.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_002",
+      "description": "parses source unified diff case 2",
+      "diff": "diff --git a/src/module/file2.ts b/src/module/file2.ts\n--- a/src/module/file2.ts\n+++ b/src/module/file2.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file2.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_003",
+      "description": "parses source unified diff case 3",
+      "diff": "diff --git a/src/module/file3.ts b/src/module/file3.ts\n--- a/src/module/file3.ts\n+++ b/src/module/file3.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file3.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_004",
+      "description": "parses source unified diff case 4",
+      "diff": "diff --git a/src/module/file4.ts b/src/module/file4.ts\n--- a/src/module/file4.ts\n+++ b/src/module/file4.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file4.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_005",
+      "description": "parses source unified diff case 5",
+      "diff": "diff --git a/src/module/file5.ts b/src/module/file5.ts\n--- a/src/module/file5.ts\n+++ b/src/module/file5.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file5.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_006",
+      "description": "parses source unified diff case 6",
+      "diff": "diff --git a/src/module/file6.ts b/src/module/file6.ts\n--- a/src/module/file6.ts\n+++ b/src/module/file6.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file6.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_007",
+      "description": "parses source unified diff case 7",
+      "diff": "diff --git a/src/module/file7.ts b/src/module/file7.ts\n--- a/src/module/file7.ts\n+++ b/src/module/file7.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file7.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_008",
+      "description": "parses source unified diff case 8",
+      "diff": "diff --git a/src/module/file8.ts b/src/module/file8.ts\n--- a/src/module/file8.ts\n+++ b/src/module/file8.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file8.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "source_009",
+      "description": "parses source unified diff case 9",
+      "diff": "diff --git a/src/module/file9.ts b/src/module/file9.ts\n--- a/src/module/file9.ts\n+++ b/src/module/file9.ts\n@@ -1,1 +1,2 @@\n-old\n+new\n+extra",
+      "expected": {
+        "path": "src/module/file9.ts",
+        "changeType": "modified",
+        "fileRole": "source"
+      }
+    },
+    {
+      "caseId": "test_001",
+      "description": "parses test unified diff case 1",
+      "diff": "diff --git a/tests/module/file1.test.ts b/tests/module/file1.test.ts\n--- a/tests/module/file1.test.ts\n+++ b/tests/module/file1.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file1.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_002",
+      "description": "parses test unified diff case 2",
+      "diff": "diff --git a/tests/module/file2.test.ts b/tests/module/file2.test.ts\n--- a/tests/module/file2.test.ts\n+++ b/tests/module/file2.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file2.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_003",
+      "description": "parses test unified diff case 3",
+      "diff": "diff --git a/tests/module/file3.test.ts b/tests/module/file3.test.ts\n--- a/tests/module/file3.test.ts\n+++ b/tests/module/file3.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file3.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_004",
+      "description": "parses test unified diff case 4",
+      "diff": "diff --git a/tests/module/file4.test.ts b/tests/module/file4.test.ts\n--- a/tests/module/file4.test.ts\n+++ b/tests/module/file4.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file4.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_005",
+      "description": "parses test unified diff case 5",
+      "diff": "diff --git a/tests/module/file5.test.ts b/tests/module/file5.test.ts\n--- a/tests/module/file5.test.ts\n+++ b/tests/module/file5.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file5.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_006",
+      "description": "parses test unified diff case 6",
+      "diff": "diff --git a/tests/module/file6.test.ts b/tests/module/file6.test.ts\n--- a/tests/module/file6.test.ts\n+++ b/tests/module/file6.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file6.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_007",
+      "description": "parses test unified diff case 7",
+      "diff": "diff --git a/tests/module/file7.test.ts b/tests/module/file7.test.ts\n--- a/tests/module/file7.test.ts\n+++ b/tests/module/file7.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file7.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_008",
+      "description": "parses test unified diff case 8",
+      "diff": "diff --git a/tests/module/file8.test.ts b/tests/module/file8.test.ts\n--- a/tests/module/file8.test.ts\n+++ b/tests/module/file8.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file8.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "test_009",
+      "description": "parses test unified diff case 9",
+      "diff": "diff --git a/tests/module/file9.test.ts b/tests/module/file9.test.ts\n--- a/tests/module/file9.test.ts\n+++ b/tests/module/file9.test.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "tests/module/file9.test.ts",
+        "changeType": "modified",
+        "fileRole": "test"
+      }
+    },
+    {
+      "caseId": "docs_001",
+      "description": "parses docs unified diff case 1",
+      "diff": "diff --git a/docs/guide1.md b/docs/guide1.md\n--- a/docs/guide1.md\n+++ b/docs/guide1.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide1.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_002",
+      "description": "parses docs unified diff case 2",
+      "diff": "diff --git a/docs/guide2.md b/docs/guide2.md\n--- a/docs/guide2.md\n+++ b/docs/guide2.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide2.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_003",
+      "description": "parses docs unified diff case 3",
+      "diff": "diff --git a/docs/guide3.md b/docs/guide3.md\n--- a/docs/guide3.md\n+++ b/docs/guide3.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide3.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_004",
+      "description": "parses docs unified diff case 4",
+      "diff": "diff --git a/docs/guide4.md b/docs/guide4.md\n--- a/docs/guide4.md\n+++ b/docs/guide4.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide4.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_005",
+      "description": "parses docs unified diff case 5",
+      "diff": "diff --git a/docs/guide5.md b/docs/guide5.md\n--- a/docs/guide5.md\n+++ b/docs/guide5.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide5.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_006",
+      "description": "parses docs unified diff case 6",
+      "diff": "diff --git a/docs/guide6.md b/docs/guide6.md\n--- a/docs/guide6.md\n+++ b/docs/guide6.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide6.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_007",
+      "description": "parses docs unified diff case 7",
+      "diff": "diff --git a/docs/guide7.md b/docs/guide7.md\n--- a/docs/guide7.md\n+++ b/docs/guide7.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide7.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_008",
+      "description": "parses docs unified diff case 8",
+      "diff": "diff --git a/docs/guide8.md b/docs/guide8.md\n--- a/docs/guide8.md\n+++ b/docs/guide8.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide8.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "docs_009",
+      "description": "parses docs unified diff case 9",
+      "diff": "diff --git a/docs/guide9.md b/docs/guide9.md\n--- a/docs/guide9.md\n+++ b/docs/guide9.md\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "docs/guide9.md",
+        "changeType": "modified",
+        "fileRole": "docs"
+      }
+    },
+    {
+      "caseId": "fixture_001",
+      "description": "parses fixture unified diff case 1",
+      "diff": "diff --git a/fixtures/golden/file1.json b/fixtures/golden/file1.json\n--- a/fixtures/golden/file1.json\n+++ b/fixtures/golden/file1.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file1.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_002",
+      "description": "parses fixture unified diff case 2",
+      "diff": "diff --git a/fixtures/golden/file2.json b/fixtures/golden/file2.json\n--- a/fixtures/golden/file2.json\n+++ b/fixtures/golden/file2.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file2.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_003",
+      "description": "parses fixture unified diff case 3",
+      "diff": "diff --git a/fixtures/golden/file3.json b/fixtures/golden/file3.json\n--- a/fixtures/golden/file3.json\n+++ b/fixtures/golden/file3.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file3.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_004",
+      "description": "parses fixture unified diff case 4",
+      "diff": "diff --git a/fixtures/golden/file4.json b/fixtures/golden/file4.json\n--- a/fixtures/golden/file4.json\n+++ b/fixtures/golden/file4.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file4.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_005",
+      "description": "parses fixture unified diff case 5",
+      "diff": "diff --git a/fixtures/golden/file5.json b/fixtures/golden/file5.json\n--- a/fixtures/golden/file5.json\n+++ b/fixtures/golden/file5.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file5.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_006",
+      "description": "parses fixture unified diff case 6",
+      "diff": "diff --git a/fixtures/golden/file6.json b/fixtures/golden/file6.json\n--- a/fixtures/golden/file6.json\n+++ b/fixtures/golden/file6.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file6.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_007",
+      "description": "parses fixture unified diff case 7",
+      "diff": "diff --git a/fixtures/golden/file7.json b/fixtures/golden/file7.json\n--- a/fixtures/golden/file7.json\n+++ b/fixtures/golden/file7.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file7.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_008",
+      "description": "parses fixture unified diff case 8",
+      "diff": "diff --git a/fixtures/golden/file8.json b/fixtures/golden/file8.json\n--- a/fixtures/golden/file8.json\n+++ b/fixtures/golden/file8.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file8.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "fixture_009",
+      "description": "parses fixture unified diff case 9",
+      "diff": "diff --git a/fixtures/golden/file9.json b/fixtures/golden/file9.json\n--- a/fixtures/golden/file9.json\n+++ b/fixtures/golden/file9.json\n@@ -1,1 +1,1 @@\n-{\"a\":1}\n+{\"a\":2}",
+      "expected": {
+        "path": "fixtures/golden/file9.json",
+        "changeType": "modified",
+        "fileRole": "fixture"
+      }
+    },
+    {
+      "caseId": "config_001",
+      "description": "parses config unified diff case 1",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_002",
+      "description": "parses config unified diff case 2",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_003",
+      "description": "parses config unified diff case 3",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_004",
+      "description": "parses config unified diff case 4",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_005",
+      "description": "parses config unified diff case 5",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_006",
+      "description": "parses config unified diff case 6",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_007",
+      "description": "parses config unified diff case 7",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_008",
+      "description": "parses config unified diff case 8",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "config_009",
+      "description": "parses config unified diff case 9",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -1,1 +1,1 @@\n-{}\n+{\"compilerOptions\":{}}",
+      "expected": {
+        "path": "tsconfig.json",
+        "changeType": "modified",
+        "fileRole": "config"
+      }
+    },
+    {
+      "caseId": "generated_001",
+      "description": "parses generated unified diff case 1",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_002",
+      "description": "parses generated unified diff case 2",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_003",
+      "description": "parses generated unified diff case 3",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_004",
+      "description": "parses generated unified diff case 4",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_005",
+      "description": "parses generated unified diff case 5",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_006",
+      "description": "parses generated unified diff case 6",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_007",
+      "description": "parses generated unified diff case 7",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_008",
+      "description": "parses generated unified diff case 8",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "generated_009",
+      "description": "parses generated unified diff case 9",
+      "diff": "diff --git a/dist/index.js b/dist/index.js\n--- a/dist/index.js\n+++ b/dist/index.js\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "dist/index.js",
+        "changeType": "modified",
+        "fileRole": "generated"
+      }
+    },
+    {
+      "caseId": "lockfile_001",
+      "description": "parses lockfile unified diff case 1",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_002",
+      "description": "parses lockfile unified diff case 2",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_003",
+      "description": "parses lockfile unified diff case 3",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_004",
+      "description": "parses lockfile unified diff case 4",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_005",
+      "description": "parses lockfile unified diff case 5",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_006",
+      "description": "parses lockfile unified diff case 6",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_007",
+      "description": "parses lockfile unified diff case 7",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_008",
+      "description": "parses lockfile unified diff case 8",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "lockfile_009",
+      "description": "parses lockfile unified diff case 9",
+      "diff": "diff --git a/package-lock.json b/package-lock.json\n--- a/package-lock.json\n+++ b/package-lock.json\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "package-lock.json",
+        "changeType": "modified",
+        "fileRole": "lockfile"
+      }
+    },
+    {
+      "caseId": "script_001",
+      "description": "parses script unified diff case 1",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_002",
+      "description": "parses script unified diff case 2",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_003",
+      "description": "parses script unified diff case 3",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_004",
+      "description": "parses script unified diff case 4",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_005",
+      "description": "parses script unified diff case 5",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_006",
+      "description": "parses script unified diff case 6",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_007",
+      "description": "parses script unified diff case 7",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_008",
+      "description": "parses script unified diff case 8",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "script_009",
+      "description": "parses script unified diff case 9",
+      "diff": "diff --git a/tools/validate-sync-surface.ps1 b/tools/validate-sync-surface.ps1\n--- a/tools/validate-sync-surface.ps1\n+++ b/tools/validate-sync-surface.ps1\n@@ -1,1 +1,2 @@\n-Write-Host \"old\"\n+Write-Host \"new\"\n+Write-Host \"extra\"",
+      "expected": {
+        "path": "tools/validate-sync-surface.ps1",
+        "changeType": "modified",
+        "fileRole": "script"
+      }
+    },
+    {
+      "caseId": "migration_001",
+      "description": "parses migration unified diff case 1",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_002",
+      "description": "parses migration unified diff case 2",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_003",
+      "description": "parses migration unified diff case 3",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_004",
+      "description": "parses migration unified diff case 4",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_005",
+      "description": "parses migration unified diff case 5",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_006",
+      "description": "parses migration unified diff case 6",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_007",
+      "description": "parses migration unified diff case 7",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_008",
+      "description": "parses migration unified diff case 8",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "migration_009",
+      "description": "parses migration unified diff case 9",
+      "diff": "diff --git a/migrations/001_init.sql b/migrations/001_init.sql\n--- a/migrations/001_init.sql\n+++ b/migrations/001_init.sql\n@@ -1,1 +1,1 @@\n-CREATE TABLE a();\n+CREATE TABLE b();",
+      "expected": {
+        "path": "migrations/001_init.sql",
+        "changeType": "modified",
+        "fileRole": "migration"
+      }
+    },
+    {
+      "caseId": "visual_style_001",
+      "description": "parses visual_style unified diff case 1",
+      "diff": "diff --git a/projects/site1/workspace/styles.css b/projects/site1/workspace/styles.css\n--- a/projects/site1/workspace/styles.css\n+++ b/projects/site1/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site1/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_002",
+      "description": "parses visual_style unified diff case 2",
+      "diff": "diff --git a/projects/site2/workspace/styles.css b/projects/site2/workspace/styles.css\n--- a/projects/site2/workspace/styles.css\n+++ b/projects/site2/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site2/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_003",
+      "description": "parses visual_style unified diff case 3",
+      "diff": "diff --git a/projects/site3/workspace/styles.css b/projects/site3/workspace/styles.css\n--- a/projects/site3/workspace/styles.css\n+++ b/projects/site3/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site3/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_004",
+      "description": "parses visual_style unified diff case 4",
+      "diff": "diff --git a/projects/site4/workspace/styles.css b/projects/site4/workspace/styles.css\n--- a/projects/site4/workspace/styles.css\n+++ b/projects/site4/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site4/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_005",
+      "description": "parses visual_style unified diff case 5",
+      "diff": "diff --git a/projects/site5/workspace/styles.css b/projects/site5/workspace/styles.css\n--- a/projects/site5/workspace/styles.css\n+++ b/projects/site5/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site5/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_006",
+      "description": "parses visual_style unified diff case 6",
+      "diff": "diff --git a/projects/site6/workspace/styles.css b/projects/site6/workspace/styles.css\n--- a/projects/site6/workspace/styles.css\n+++ b/projects/site6/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site6/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_007",
+      "description": "parses visual_style unified diff case 7",
+      "diff": "diff --git a/projects/site7/workspace/styles.css b/projects/site7/workspace/styles.css\n--- a/projects/site7/workspace/styles.css\n+++ b/projects/site7/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site7/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_008",
+      "description": "parses visual_style unified diff case 8",
+      "diff": "diff --git a/projects/site8/workspace/styles.css b/projects/site8/workspace/styles.css\n--- a/projects/site8/workspace/styles.css\n+++ b/projects/site8/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site8/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "visual_style_009",
+      "description": "parses visual_style unified diff case 9",
+      "diff": "diff --git a/projects/site9/workspace/styles.css b/projects/site9/workspace/styles.css\n--- a/projects/site9/workspace/styles.css\n+++ b/projects/site9/workspace/styles.css\n@@ -1,1 +1,1 @@\n-.a { color: red; }\n+.a { color: blue; }",
+      "expected": {
+        "path": "projects/site9/workspace/styles.css",
+        "changeType": "modified",
+        "fileRole": "visual_style"
+      }
+    },
+    {
+      "caseId": "rename_001",
+      "description": "parses renamed source file",
+      "diff": "diff --git a/src/old.ts b/src/new.ts\nsimilarity index 100%\nrename from src/old.ts\nrename to src/new.ts",
+      "expected": {
+        "path": "src/new.ts",
+        "changeType": "renamed",
+        "fileRole": "source",
+        "oldPath": "src/old.ts",
+        "newPath": "src/new.ts",
+        "isRename": true
+      }
+    },
+    {
+      "caseId": "copy_001",
+      "description": "parses copied source file",
+      "diff": "diff --git a/src/original.ts b/src/copied.ts\nsimilarity index 100%\ncopy from src/original.ts\ncopy to src/copied.ts",
+      "expected": {
+        "path": "src/copied.ts",
+        "changeType": "modified",
+        "fileRole": "source",
+        "oldPath": "src/original.ts",
+        "newPath": "src/copied.ts",
+        "isCopy": true
+      }
+    },
+    {
+      "caseId": "binary_001",
+      "description": "parses binary diff markers",
+      "diff": "diff --git a/assets/logo.png b/assets/logo.png\nBinary files a/assets/logo.png and b/assets/logo.png differ",
+      "expected": {
+        "path": "assets/logo.png",
+        "changeType": "modified",
+        "fileRole": "unknown",
+        "isBinary": true
+      }
+    },
+    {
+      "caseId": "deleted_001",
+      "description": "parses deleted file",
+      "diff": "diff --git a/docs/old.md b/docs/old.md\ndeleted file mode 100644\n--- a/docs/old.md\n+++ /dev/null\n@@ -1,1 +0,0 @@\n-gone",
+      "expected": {
+        "path": "docs/old.md",
+        "changeType": "deleted",
+        "fileRole": "docs",
+        "oldPath": "docs/old.md",
+        "modeChanged": true
+      }
+    },
+    {
+      "caseId": "added_001",
+      "description": "parses added file",
+      "diff": "diff --git a/src/newfile.ts b/src/newfile.ts\nnew file mode 100644\n--- /dev/null\n+++ b/src/newfile.ts\n@@ -0,0 +1,2 @@\n+export const x = 1;\n+export const y = 2;",
+      "expected": {
+        "path": "src/newfile.ts",
+        "changeType": "added",
+        "fileRole": "source",
+        "newPath": "src/newfile.ts",
+        "modeChanged": true
+      }
+    },
+    {
+      "caseId": "extra_011",
+      "description": "parses extra source unified diff case 11",
+      "diff": "diff --git a/src/extra/case11.ts b/src/extra/case11.ts\nold mode 100644\nnew mode 100755\n--- a/src/extra/case11.ts\n+++ b/src/extra/case11.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "src/extra/case11.ts",
+        "changeType": "modified",
+        "fileRole": "source",
+        "modeChanged": true
+      }
+    },
+    {
+      "caseId": "extra_012",
+      "description": "parses extra source unified diff case 12",
+      "diff": "diff --git a/src/extra/case12.ts b/src/extra/case12.ts\nold mode 100644\nnew mode 100755\n--- a/src/extra/case12.ts\n+++ b/src/extra/case12.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "src/extra/case12.ts",
+        "changeType": "modified",
+        "fileRole": "source",
+        "modeChanged": true
+      }
+    },
+    {
+      "caseId": "extra_013",
+      "description": "parses extra source unified diff case 13",
+      "diff": "diff --git a/src/extra/case13.ts b/src/extra/case13.ts\nold mode 100644\nnew mode 100755\n--- a/src/extra/case13.ts\n+++ b/src/extra/case13.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "src/extra/case13.ts",
+        "changeType": "modified",
+        "fileRole": "source",
+        "modeChanged": true
+      }
+    },
+    {
+      "caseId": "extra_014",
+      "description": "parses extra source unified diff case 14",
+      "diff": "diff --git a/src/extra/case14.ts b/src/extra/case14.ts\nold mode 100644\nnew mode 100755\n--- a/src/extra/case14.ts\n+++ b/src/extra/case14.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "src/extra/case14.ts",
+        "changeType": "modified",
+        "fileRole": "source",
+        "modeChanged": true
+      }
+    },
+    {
+      "caseId": "extra_015",
+      "description": "parses extra source unified diff case 15",
+      "diff": "diff --git a/src/extra/case15.ts b/src/extra/case15.ts\nold mode 100644\nnew mode 100755\n--- a/src/extra/case15.ts\n+++ b/src/extra/case15.ts\n@@ -1,1 +1,1 @@\n-old\n+new",
+      "expected": {
+        "path": "src/extra/case15.ts",
+        "changeType": "modified",
+        "fileRole": "source",
+        "modeChanged": true
+      }
+    }
+  ]
+}

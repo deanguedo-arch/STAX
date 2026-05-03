@@ -109,6 +109,34 @@ describe("project control evidence packet", () => {
     expect(output.output).toContain("Claim-to-proof: implementation claim is fully supported.");
   });
 
+  it("uses structured unified diff evidence instead of filename guesswork", async () => {
+    const runtime = await createDefaultRuntime();
+    const output = await runtime.run(
+      structuredPacket({
+        task: "Audit whether this implementation fix is proven.",
+        repo: "STAX",
+        branch: "main",
+        baseSha: "1111111",
+        headSha: "2222222",
+        changedFiles: [],
+        unifiedDiff: [
+          "diff --git a/docs/runtime.md b/docs/runtime.md",
+          "--- a/docs/runtime.md",
+          "+++ b/docs/runtime.md",
+          "@@ -1 +1 @@",
+          "-old",
+          "+new"
+        ].join("\n"),
+        codexReport: "Codex says the implementation is complete."
+      }),
+      [],
+      { mode: "project_control" }
+    );
+
+    expect(output.validation.valid).toBe(true);
+    expect(output.output).toContain("Diff audit: reject due to docs_only_implementation_claim");
+  });
+
   it("rejects structured wrong-repo command evidence", async () => {
     const runtime = await createDefaultRuntime();
     const output = await runtime.run(

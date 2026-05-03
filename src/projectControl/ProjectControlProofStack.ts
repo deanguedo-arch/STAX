@@ -2,14 +2,26 @@ import { mapClaimToProof, requiredProofForClaim } from "../claims/ClaimProofMapp
 import type { ClaimProofClaimType, ClaimProofItem } from "../claims/ClaimProofMappingSchemas.js";
 import { auditDiffEvidence } from "../diffAudit/DiffAudit.js";
 import type { DiffAuditInput } from "../diffAudit/DiffAuditSchemas.js";
+import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { classifyCommandEvidence } from "../evidence/CommandEvidenceIntelligence.js";
 import type { CommandEvidenceClaimType, CommandEvidenceSource } from "../evidence/CommandEvidenceIntelligenceSchemas.js";
+import type {
+  ProjectControlChangedFile,
+  ProjectControlCommandEvidenceEntry,
+  ProjectControlHumanApproval,
+  ProjectControlVisualEvidence
+} from "./ProjectControlEvidencePacket.js";
 
 export type ProjectControlProofStackInput = {
   task: string;
   repoEvidence: string;
   commandEvidence: string;
   codexReport: string;
+  changedFiles?: ProjectControlChangedFile[];
+  unifiedDiff?: string;
+  commandEvidenceEntries?: ProjectControlCommandEvidenceEntry[];
+  visualEvidence?: ProjectControlVisualEvidence[];
+  humanApproval?: ProjectControlHumanApproval[];
   targetRepoPath?: string;
   expectedRepo?: string;
   expectedBranch?: string;
@@ -43,7 +55,7 @@ export function buildProjectControlProofStack(
   const combined = [input.task, input.repoEvidence, input.commandEvidence, input.codexReport].join("\n");
 
   const derivedClaims = deriveClaims(combined);
-  const changedFiles = detectChangedFiles(combined);
+  const changedFiles = resolveChangedFiles(input, combined);
   if (changedFiles.length > 0 && derivedClaims.length > 0) {
     const diffClaims: DiffAuditClaimInput[] = derivedClaims.map((claim) => ({
       claimType: claimToDiffClaimType(claim.claimType),
@@ -61,8 +73,14 @@ export function buildProjectControlProofStack(
       evidence: {
         behaviorTestEvidence: /\b(test|eval|e2e|playwright|pytest|vitest|rspec|phpunit)\b/i.test(input.commandEvidence),
         commandEvidenceAfterDiff: /\b(exit code|passed|failed|run-|runs\/)\b/i.test(input.commandEvidence),
-        visualProofProvided: /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined),
-        humanApprovalForForbidden: /\bapproved by|human approval|approval metadata\b/i.test(combined),
+        visualProofProvided:
+          input.visualEvidence !== undefined
+            ? input.visualEvidence.length > 0
+            : /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined),
+        humanApprovalForForbidden:
+          input.humanApproval !== undefined
+            ? input.humanApproval.length > 0
+            : /\bapproved by|human approval|approval metadata\b/i.test(combined),
         taskScopePaths: deriveScopePaths(changedFiles),
         forbiddenPaths: []
       }
@@ -137,17 +155,18 @@ export function buildProjectControlProofStack(
 type CommandInsight = ReturnType<typeof classifyCommandEvidence> & { command: string };
 
 function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsight | undefined {
-  const command = detectCommand(input.commandEvidence);
+  const structuredEntry = input.commandEvidenceEntries?.[0];
+  const command = structuredEntry?.command ?? detectCommand(input.commandEvidence);
   if (!command) return undefined;
-  const source = detectCommandSource(input.commandEvidence, input.codexReport);
+  const source = structuredEntry?.source ?? detectCommandSource(input.commandEvidence, input.codexReport);
   return {
     ...classifyCommandEvidence({
       command,
-      cwd: detectCwd(input.commandEvidence),
-      repo: detectRepo(input.commandEvidence),
-      branch: detectBranch(input.commandEvidence),
-      commitSha: detectCommit(input.commandEvidence),
-      exitCode: detectExitCode(input.commandEvidence),
+      cwd: structuredEntry?.cwd ?? detectCwd(input.commandEvidence),
+      repo: structuredEntry?.repo ?? detectRepo(input.commandEvidence),
+      branch: structuredEntry?.branch ?? detectBranch(input.commandEvidence),
+      commitSha: structuredEntry?.commitSha ?? detectCommit(input.commandEvidence),
+      exitCode: structuredEntry?.exitCode ?? detectExitCode(input.commandEvidence),
       output: input.commandEvidence,
       source,
       expectedRepo: input.expectedRepo ?? input.targetRepoPath,
@@ -158,6 +177,35 @@ function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsi
     }),
     command
   };
+}
+
+function resolveChangedFiles(input: ProjectControlProofStackInput, combined: string): DiffChangedFileInput[] {
+  if (input.changedFiles && input.changedFiles.length > 0) {
+    return input.changedFiles.map((file) => ({
+      path: file.newPath ?? file.path,
+      changeType: file.changeType,
+      fileRole: file.fileRole,
+      reason: file.patch ? "Structured changed file with patch evidence." : undefined
+    }));
+  }
+
+  if (input.unifiedDiff) {
+    const parsed = parseUnifiedDiff(input.unifiedDiff);
+    if (parsed.length > 0) {
+      return parsed.map((file) => ({
+        path: file.path,
+        changeType: file.changeType,
+        fileRole: file.fileRole,
+        reason: file.modeChanged
+          ? "Parsed from unified diff with mode change."
+          : file.isBinary
+            ? "Parsed from unified diff binary patch."
+            : "Parsed from unified diff."
+      }));
+    }
+  }
+
+  return detectChangedFiles(combined);
 }
 
 function deriveClaims(text: string): DerivedClaim[] {

@@ -100,7 +100,9 @@ export function auditDiffEvidence(input: DiffAuditInput): DiffAuditResult {
 
 export async function loadDiffAuditFixtureCases(rootDir = process.cwd()): Promise<DiffAuditFixtureCase[]> {
   const fixtureDir = path.join(rootDir, "fixtures", "diff_audit");
-  const files = (await fs.readdir(fixtureDir)).filter((file) => file.endsWith(".json")).sort();
+  const files = (await fs.readdir(fixtureDir))
+    .filter((file) => file.startsWith("diff_audit_") && file.endsWith(".json"))
+    .sort();
   const cases: DiffAuditFixtureCase[] = [];
   for (const filename of files) {
     const raw = JSON.parse(await fs.readFile(path.join(fixtureDir, filename), "utf8")) as unknown;
