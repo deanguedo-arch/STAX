@@ -35,6 +35,7 @@ export type OperatingDashboardSummary = {
     ciFailureTriage: string;
     prReviewComment: string;
     livePrArtifactTrial: string;
+    livePrArtifactTrialFull: string;
   };
   metrics: {
     baselineMeanCleanupPrompts: number | null;
@@ -63,6 +64,12 @@ export type OperatingDashboardSummary = {
     livePrArtifactTrialFalseBlocks: number;
     livePrArtifactTrialUsefulNextActionRate: number;
     livePrArtifactTrialCiProofSurfaceRate: number;
+    livePrArtifactTrialFullCaseCount: number;
+    livePrArtifactTrialFullLiveSourceCount: number;
+    livePrArtifactTrialFullFalseAccepts: number;
+    livePrArtifactTrialFullFalseBlocks: number;
+    livePrArtifactTrialFullUsefulNextActionRate: number;
+    livePrArtifactTrialFullCiProofSurfaceRate: number;
   };
   trendlines: string[];
   repoHotspots: Array<{ repo: string; count: number }>;
@@ -102,6 +109,7 @@ export async function summarizeOperatingDashboard(args: {
   ciFailureTriageSummary?: CiFailureTriageGateSummary;
   prReviewCommentSummary?: PrReviewCommentGateSummary;
   livePrArtifactTrialSummary?: LivePrArtifactTrialGateSummary;
+  livePrArtifactTrialFullSummary?: LivePrArtifactTrialGateSummary;
   snapshotDate?: string;
 }): Promise<OperatingDashboardSummary> {
   const baseline = summarizeBaselineCleanup(args.baselineLedger);
@@ -126,6 +134,7 @@ export async function summarizeOperatingDashboard(args: {
   const ciFailureTriage = args.ciFailureTriageSummary ?? (await validateCiFailureTriageGate());
   const prReviewComment = args.prReviewCommentSummary ?? (await validatePrReviewCommentGate());
   const livePrArtifactTrial = args.livePrArtifactTrialSummary ?? (await validateLivePrArtifactTrialGate());
+  const livePrArtifactTrialFull = args.livePrArtifactTrialFullSummary;
   const humanJudgment = summarizeHumanJudgmentLedger({
     ledger: args.humanJudgmentLedger,
     closedLoopLedger: args.closedLoopLedger
@@ -167,7 +176,8 @@ export async function summarizeOperatingDashboard(args: {
     ...operatingWindow.blockers,
     ...(ciFailureTriage.status === "blocked" ? ciFailureTriage.issues : []),
     ...(prReviewComment.status === "blocked" ? prReviewComment.issues : []),
-    ...(livePrArtifactTrial.status === "failed" ? livePrArtifactTrial.blockers : [])
+    ...(livePrArtifactTrial.status === "failed" ? livePrArtifactTrial.blockers : []),
+    ...(livePrArtifactTrialFull?.status === "failed" ? livePrArtifactTrialFull.blockers : [])
   ];
 
   const nextRecommendedHardeningTask =
@@ -193,7 +203,8 @@ export async function summarizeOperatingDashboard(args: {
       operatingWindow: operatingWindow.status,
       ciFailureTriage: ciFailureTriage.status,
       prReviewComment: prReviewComment.status,
-      livePrArtifactTrial: livePrArtifactTrial.status
+      livePrArtifactTrial: livePrArtifactTrial.status,
+      livePrArtifactTrialFull: livePrArtifactTrialFull?.status ?? "not_recorded"
     },
     metrics: {
       baselineMeanCleanupPrompts: baseline.meanCleanupPrompts,
@@ -223,7 +234,13 @@ export async function summarizeOperatingDashboard(args: {
       livePrArtifactTrialFalseAccepts: livePrArtifactTrial.falseAccepts,
       livePrArtifactTrialFalseBlocks: livePrArtifactTrial.falseBlocks,
       livePrArtifactTrialUsefulNextActionRate: livePrArtifactTrial.usefulNextActionRate,
-      livePrArtifactTrialCiProofSurfaceRate: livePrArtifactTrial.ciProofClassificationSurfaceRate
+      livePrArtifactTrialCiProofSurfaceRate: livePrArtifactTrial.ciProofClassificationSurfaceRate,
+      livePrArtifactTrialFullCaseCount: livePrArtifactTrialFull?.selectedCaseCount ?? 0,
+      livePrArtifactTrialFullLiveSourceCount: livePrArtifactTrialFull?.liveSourceCount ?? 0,
+      livePrArtifactTrialFullFalseAccepts: livePrArtifactTrialFull?.falseAccepts ?? 0,
+      livePrArtifactTrialFullFalseBlocks: livePrArtifactTrialFull?.falseBlocks ?? 0,
+      livePrArtifactTrialFullUsefulNextActionRate: livePrArtifactTrialFull?.usefulNextActionRate ?? 0,
+      livePrArtifactTrialFullCiProofSurfaceRate: livePrArtifactTrialFull?.ciProofClassificationSurfaceRate ?? 0
     },
     trendlines,
     repoHotspots,
@@ -251,6 +268,7 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- ci failure triage: ${summary.statuses.ciFailureTriage}`,
     `- pr review comment: ${summary.statuses.prReviewComment}`,
     `- live PR artifact trial: ${summary.statuses.livePrArtifactTrial}`,
+    `- live PR artifact trial full: ${summary.statuses.livePrArtifactTrialFull}`,
     "",
     "Key Metrics",
     `- baseline mean cleanup prompts: ${summary.metrics.baselineMeanCleanupPrompts ?? "n/a"}`,
@@ -269,6 +287,10 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- live PR trial false accepts / false blocks: ${summary.metrics.livePrArtifactTrialFalseAccepts}/${summary.metrics.livePrArtifactTrialFalseBlocks}`,
     `- live PR trial useful next-action rate: ${summary.metrics.livePrArtifactTrialUsefulNextActionRate}%`,
     `- live PR trial CI proof surface rate: ${summary.metrics.livePrArtifactTrialCiProofSurfaceRate}%`,
+    `- live PR trial full cases / live-source: ${summary.metrics.livePrArtifactTrialFullCaseCount}/${summary.metrics.livePrArtifactTrialFullLiveSourceCount}`,
+    `- live PR trial full false accepts / false blocks: ${summary.metrics.livePrArtifactTrialFullFalseAccepts}/${summary.metrics.livePrArtifactTrialFullFalseBlocks}`,
+    `- live PR trial full useful next-action rate: ${summary.metrics.livePrArtifactTrialFullUsefulNextActionRate}%`,
+    `- live PR trial full CI proof surface rate: ${summary.metrics.livePrArtifactTrialFullCiProofSurfaceRate}%`,
     `- human-judgment followups / blocked-too-hard: ${summary.metrics.humanJudgmentFollowupCount}/${summary.metrics.humanJudgmentBlockedTooHardCount}`,
     `- eval candidates: ${summary.metrics.evalCandidateCount}`,
     "",
@@ -307,6 +329,8 @@ export async function validateOperatingDashboard(input: {
     input.operatingWindowLedgerPath ?? path.join(process.cwd(), "fixtures", "real_use", "operating_window_30_tasks.json");
   const workflowLedgerPath =
     path.join(process.cwd(), "fixtures", "real_use", "live_codex_workflow_10_tasks.json");
+  const livePrArtifactTrialFullPath =
+    path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_full_latest.json");
 
   const [
     baselineLedger,
@@ -345,6 +369,22 @@ export async function validateOperatingDashboard(input: {
     ciFailureTriageSummary,
     prReviewCommentSummary,
     livePrArtifactTrialSummary,
+    livePrArtifactTrialFullSummary: await loadOptionalLivePrArtifactTrialFullSummary(livePrArtifactTrialFullPath),
     workflowContractSummary: summarizeLiveCodexWorkflowContract({ ledger: workflowLedger })
   });
+}
+
+async function loadOptionalLivePrArtifactTrialFullSummary(
+  artifactPath: string
+): Promise<LivePrArtifactTrialGateSummary | undefined> {
+  try {
+    return await validateLivePrArtifactTrialGate({
+      artifactPath,
+      requestedCaseCount: 50,
+      minimumLiveSourceCount: 10,
+      allowFallbackSource: true
+    });
+  } catch {
+    return undefined;
+  }
 }
