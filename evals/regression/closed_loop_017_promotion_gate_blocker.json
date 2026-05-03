@@ -5,8 +5,9 @@
   "expectedProperties": ["bounded_prompt"],
   "forbiddenPatterns": [
     "promotion_ready",
-    "approve",
-    "complete"
+    "Release gate (strict) passed",
+    "canRelease\": true",
+    "status: promotion_ready"
   ],
   "requiredSections": [
     "## Verdict",
