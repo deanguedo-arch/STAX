@@ -3,6 +3,7 @@ import type { AgentResult } from "../schemas/AgentResult.js";
 import { assessAuditEvidence, renderAuditContractSections } from "../audit/VerifiedAuditContract.js";
 import { decideEvidence, renderEvidenceDecision } from "../audit/EvidenceDecisionGate.js";
 import { renderProjectControlVerdictCard } from "../projectControl/ControlCard.js";
+import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
 import { formatBlockedActions, getRepoProofSurface } from "../projectControl/RepoProofSurfaceRegistry.js";
 import { renderRepoTransferProjectControl } from "../repoTransfer/RepoTransferProjectControl.js";
 import { StrategicDeliberation } from "../strategy/StrategicDeliberation.js";
@@ -945,6 +946,15 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   const weak: string[] = [];
   const unverified: string[] = [];
   const risks: string[] = [];
+  const proofStack = buildProjectControlProofStack({
+    task: packet.task,
+    repoEvidence: packet.repoEvidence,
+    commandEvidence: packet.commandEvidence,
+    codexReport: packet.codexReport,
+    targetRepoPath,
+    expectedRepo: targetRepoPath,
+    expectedCwd: targetRepoPath
+  });
 
   if (targetRepoPath) {
     verified.push(`Target repo path is ${targetRepoPath}.`);
@@ -1250,6 +1260,11 @@ function renderProjectControl(packet: ProjectControlPacket): string {
   if (!risks.length) {
     risks.push("The main risk is upgrading weak or missing evidence into a hard completion claim.");
   }
+
+  verified.push(...proofStack.verified);
+  weak.push(...proofStack.weak);
+  unverified.push(...proofStack.unverified);
+  risks.push(...proofStack.risk);
 
   const verdict = projectControlVerdict(signals);
   const nextAction = projectControlNextAction(signals);
