@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-04T14:24:27.529Z
+- Recorded at: 2026-05-04T14:41:14.121Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -31,8 +31,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:01.578Z
-- Finished at: 2026-05-04T14:22:04.923Z
+- Started at: 2026-05-04T14:38:53.978Z
+- Finished at: 2026-05-04T14:38:57.737Z
 
 Stdout tail:
 
@@ -53,8 +53,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:04.923Z
-- Finished at: 2026-05-04T14:22:18.222Z
+- Started at: 2026-05-04T14:38:57.738Z
+- Finished at: 2026-05-04T14:39:12.574Z
 
 Stdout tail:
 
@@ -68,8 +68,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  08:22:05
-   Duration  12.86s (transform 7.46s, setup 0ms, import 36.33s, tests 51.32s, environment 39ms)
+   Start at  08:38:58
+   Duration  14.35s (transform 9.18s, setup 0ms, import 41.04s, tests 55.40s, environment 25ms)
 ```
 
 Stderr tail:
@@ -84,8 +84,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:18.222Z
-- Finished at: 2026-05-04T14:22:18.872Z
+- Started at: 2026-05-04T14:39:12.574Z
+- Finished at: 2026-05-04T14:39:13.273Z
 
 Stdout tail:
 
@@ -99,8 +99,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  08:22:18
-   Duration  236ms (transform 43ms, setup 0ms, import 87ms, tests 39ms, environment 0ms)
+   Start at  08:39:13
+   Duration  251ms (transform 49ms, setup 0ms, import 101ms, tests 42ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -115,8 +115,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:18.872Z
-- Finished at: 2026-05-04T14:22:19.561Z
+- Started at: 2026-05-04T14:39:13.273Z
+- Finished at: 2026-05-04T14:39:13.955Z
 
 Stdout tail:
 
@@ -130,8 +130,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  08:22:19
-   Duration  239ms (transform 42ms, setup 0ms, import 88ms, tests 36ms, environment 0ms)
+   Start at  08:39:13
+   Duration  245ms (transform 44ms, setup 0ms, import 91ms, tests 43ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -146,8 +146,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:19.561Z
-- Finished at: 2026-05-04T14:22:37.979Z
+- Started at: 2026-05-04T14:39:13.955Z
+- Finished at: 2026-05-04T14:39:34.066Z
 
 Stdout tail:
 
@@ -169,8 +169,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  08:22:23
-   Duration  13.21s (transform 7.86s, setup 0ms, import 36.35s, tests 53.65s, environment 18ms)
+   Start at  08:39:18
+   Duration  14.51s (transform 8.39s, setup 0ms, import 40.05s, tests 57.75s, environment 47ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -201,8 +201,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:37.979Z
-- Finished at: 2026-05-04T14:22:38.757Z
+- Started at: 2026-05-04T14:39:34.066Z
+- Finished at: 2026-05-04T14:39:34.723Z
 
 Stdout tail:
 
@@ -240,8 +240,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:38.757Z
-- Finished at: 2026-05-04T14:22:39.936Z
+- Started at: 2026-05-04T14:39:34.723Z
+- Finished at: 2026-05-04T14:39:35.842Z
 
 Stdout tail:
 
@@ -281,8 +281,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:39.936Z
-- Finished at: 2026-05-04T14:22:52.596Z
+- Started at: 2026-05-04T14:39:35.842Z
+- Finished at: 2026-05-04T14:39:47.519Z
 
 Stdout tail:
 
@@ -292,7 +292,7 @@ Stdout tail:
 
 {
   "fixtureSet": "real_pr_artifact_trial_v1",
-  "recordedAt": "2026-05-04T14:22:52.562Z",
+  "recordedAt": "2026-05-04T14:39:47.475Z",
   "selectedCaseCount": 25,
   "requestedCaseCount": 25,
   "uniquePullRequestCount": 5,
@@ -697,8 +697,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:full:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:22:52.596Z
-- Finished at: 2026-05-04T14:23:14.945Z
+- Started at: 2026-05-04T14:39:47.519Z
+- Finished at: 2026-05-04T14:40:08.953Z
 
 Stdout tail:
 
@@ -1221,36 +1221,13 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:hard:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:23:14.945Z
-- Finished at: 2026-05-04T14:24:22.159Z
+- Started at: 2026-05-04T14:40:08.953Z
+- Finished at: 2026-05-04T14:41:08.940Z
 
 Stdout tail:
 
 ```text
-_03_hm",
-      "snapshotId": "nextjs_93410_hm",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93381,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
-      "falseAccept": false,
-      "falseBlock": false,
-      "warnings": [],
-      "issues": []
-    },
-    {
-      "caseId": "nextjs_93410_case_04_hm",
-      "snapshotId": "nextjs_93410_hm",
-      "repoFullName": "vercel/next.js",
-      "prNumber": 93381,
-      "source": "live_github_api",
-      "expectedStatus": "Provisional",
-      "actualStatus": "Provisional",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
+aced": true,
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [],
@@ -1348,9 +1325,9 @@ _03_hm",
     },
     {
       "caseId": "dbt_12897_case_01_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12901,
+      "prNumber": 12894,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1363,9 +1340,9 @@ _03_hm",
     },
     {
       "caseId": "dbt_12897_case_02_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12901,
+      "prNumber": 12894,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1378,9 +1355,9 @@ _03_hm",
     },
     {
       "caseId": "dbt_12897_case_03_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12901,
+      "prNumber": 12894,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1393,9 +1370,9 @@ _03_hm",
     },
     {
       "caseId": "dbt_12897_case_04_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12901,
+      "prNumber": 12894,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1498,9 +1475,9 @@ _03_hm",
     },
     {
       "caseId": "rails_57291_case_01_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57295,
+      "prNumber": 57294,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1513,9 +1490,9 @@ _03_hm",
     },
     {
       "caseId": "rails_57291_case_02_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57295,
+      "prNumber": 57294,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1528,9 +1505,9 @@ _03_hm",
     },
     {
       "caseId": "rails_57291_case_03_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57295,
+      "prNumber": 57294,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1543,9 +1520,9 @@ _03_hm",
     },
     {
       "caseId": "rails_57291_case_04_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57295,
+      "prNumber": 57294,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1573,63 +1550,79 @@ _03_hm",
     },
     {
       "caseId": "storybook_34682_case_01_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34696,
+      "prNumber": 34699,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
+      "actualStatus": "Reject",
+      "usefulNextAction": false,
+      "ciProofSurfaced": false,
       "falseAccept": false,
-      "falseBlock": false,
+      "falseBlock": true,
       "warnings": [],
-      "issues": []
+      "issues": [
+        "next action is missing or not actionable",
+        "CI proof-strength line not surfaced in output",
+        "unexpected block against expected fixture status"
+      ]
     },
     {
       "caseId": "storybook_34682_case_02_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34696,
+      "prNumber": 34699,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
+      "actualStatus": "Reject",
+      "usefulNextAction": false,
+      "ciProofSurfaced": false,
       "falseAccept": false,
-      "falseBlock": false,
+      "falseBlock": true,
       "warnings": [],
-      "issues": []
+      "issues": [
+        "next action is missing or not actionable",
+        "CI proof-strength line not surfaced in output",
+        "unexpected block against expected fixture status"
+      ]
     },
     {
       "caseId": "storybook_34682_case_03_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34696,
+      "prNumber": 34699,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
+      "actualStatus": "Reject",
+      "usefulNextAction": false,
+      "ciProofSurfaced": false,
       "falseAccept": false,
-      "falseBlock": false,
+      "falseBlock": true,
       "warnings": [],
-      "issues": []
+      "issues": [
+        "next action is missing or not actionable",
+        "CI proof-strength line not surfaced in output",
+        "unexpected block against expected fixture status"
+      ]
     },
     {
       "caseId": "storybook_34682_case_04_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34696,
+      "prNumber": 34699,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Accept",
-      "usefulNextAction": true,
-      "ciProofSurfaced": true,
+      "actualStatus": "Reject",
+      "usefulNextAction": false,
+      "ciProofSurfaced": false,
       "falseAccept": false,
-      "falseBlock": false,
+      "falseBlock": true,
       "warnings": [],
-      "issues": []
+      "issues": [
+        "next action is missing or not actionable",
+        "CI proof-strength line not surfaced in output",
+        "unexpected block against expected fixture status"
+      ]
     },
     {
       "caseId": "storybook_34682_case_05_hm",
@@ -1737,8 +1730,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:22.159Z
-- Finished at: 2026-05-04T14:24:23.026Z
+- Started at: 2026-05-04T14:41:08.940Z
+- Finished at: 2026-05-04T14:41:09.707Z
 
 Stdout tail:
 
@@ -1777,8 +1770,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:23.026Z
-- Finished at: 2026-05-04T14:24:23.458Z
+- Started at: 2026-05-04T14:41:09.707Z
+- Finished at: 2026-05-04T14:41:10.124Z
 
 Stdout tail:
 
@@ -1809,8 +1802,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:23.458Z
-- Finished at: 2026-05-04T14:24:23.946Z
+- Started at: 2026-05-04T14:41:10.124Z
+- Finished at: 2026-05-04T14:41:10.585Z
 
 Stdout tail:
 
@@ -1839,8 +1832,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:23.946Z
-- Finished at: 2026-05-04T14:24:24.470Z
+- Started at: 2026-05-04T14:41:10.585Z
+- Finished at: 2026-05-04T14:41:11.035Z
 
 Stdout tail:
 
@@ -1877,8 +1870,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:24.470Z
-- Finished at: 2026-05-04T14:24:26.125Z
+- Started at: 2026-05-04T14:41:11.035Z
+- Finished at: 2026-05-04T14:41:12.593Z
 
 Stdout tail:
 
@@ -1914,8 +1907,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:26.125Z
-- Finished at: 2026-05-04T14:24:26.512Z
+- Started at: 2026-05-04T14:41:12.594Z
+- Finished at: 2026-05-04T14:41:12.976Z
 
 Stdout tail:
 
@@ -1971,8 +1964,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:26.512Z
-- Finished at: 2026-05-04T14:24:26.870Z
+- Started at: 2026-05-04T14:41:12.976Z
+- Finished at: 2026-05-04T14:41:13.343Z
 
 Stdout tail:
 
@@ -2094,8 +2087,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:24:26.870Z
-- Finished at: 2026-05-04T14:24:27.529Z
+- Started at: 2026-05-04T14:41:13.343Z
+- Finished at: 2026-05-04T14:41:14.120Z
 
 Stdout tail:
 
@@ -2138,14 +2131,14 @@ Key Metrics
 - live PR trial false accepts / false blocks: 0/0
 - live PR trial useful next-action rate: 100%
 - live PR trial CI proof surface rate: 100%
-- live PR trial freshness / live-source rate: 0.03h / 100%
+- live PR trial freshness / live-source rate: 0.02h / 100%
 - live PR trial full cases / live-source: 50/50
 - live PR trial full false accepts / false blocks: 0/0
 - live PR trial full useful next-action rate: 100%
 - live PR trial full CI proof surface rate: 100%
 - live PR trial full freshness / live-source rate: 0.02h / 100%
 - live PR trial hard cases / live-source: 100/100
-- live PR trial hard false accepts / false blocks: 0/0
+- live PR trial hard false accepts / false blocks: 0/4
 - live PR trial hard useful next-action rate: 95%
 - live PR trial hard CI proof surface rate: 95%
 - live PR trial hard freshness / live-source rate: 0h / 100%

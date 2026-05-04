@@ -789,6 +789,208 @@
           "schemas"
         ]
       }
+    },
+    {
+      "snapshotId": "nextjs_93457_hm",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93457",
+      "category": "passing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with source and test changes. CI status normalized as successful from merged public artifact state. Hard-mode mirrored variant for case-volume coverage. [diversity expansion]",
+      "packet": {
+        "prNumber": 93457,
+        "title": "Upgrade React from da9325b5-20260417 to f4e0d4ed-20260429",
+        "body": "Public PR snapshot for a merged behavior fix with test coverage.",
+        "repo": "vercel/next.js",
+        "branch": "sam/streaming-in-cache-components-draft-mode",
+        "baseBranch": "canary",
+        "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+        "changedFiles": [
+          "packages/next/src/build/templates/app-page.ts",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/layout.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/loading.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/page.tsx",
+          "test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/next/src/build/templates/app-page.ts b/packages/next/src/build/templates/app-page.ts\n--- a/packages/next/src/build/templates/app-page.ts\n+++ b/packages/next/src/build/templates/app-page.ts\n@@\n-    routeModule.isDev === true ||\n+    routeModule.isDev === true ||\n+    isDraftMode ||\ndiff --git a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n--- a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n+++ b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n@@\n+  it('should stream Suspense fallbacks when draft mode is enabled', async () => {\n+    expect($('#draft-mode').text()).toBe('true')\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "branch": "sam/streaming-in-cache-components-draft-mode",
+            "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+            "summary": "Merged public PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "app-router"
+        ]
+      }
+    },
+    {
+      "snapshotId": "vitest_10225_hm",
+      "repoFullName": "vitest-dev/vitest",
+      "publicUrl": "https://github.com/vitest-dev/vitest/pull/10225",
+      "category": "failing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Closed public PR snapshot with non-successful checks visible on the public checks page, including failure and skipped segments. Hard-mode mirrored variant for case-volume coverage. [diversity expansion]",
+      "packet": {
+        "prNumber": 10225,
+        "title": "fix: loosen vi.mock(import(...)) factory types to accept vi.fn()",
+        "body": "Public PR snapshot with a deploy preview but non-successful checks on the checks page.",
+        "repo": "vitest-dev/vitest",
+        "branch": "fix/browser-rpc-guard-tojson",
+        "baseBranch": "main",
+        "changedFiles": [
+          "packages/browser/src/client/tester/rpc.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/browser/src/client/tester/rpc.ts b/packages/browser/src/client/tester/rpc.ts\n--- a/packages/browser/src/client/tester/rpc.ts\n+++ b/packages/browser/src/client/tester/rpc.ts\n@@\n-  return new Proxy(target, handlers)\n+  return new Proxy(target, {\n+    get(value, key) {\n+      if (key === \"toJSON\") return undefined\n+      return handlers.get?.(value, key)\n+    }\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "github-actions",
+            "status": "failure",
+            "branch": "fix/browser-rpc-guard-tojson",
+            "summary": "Public checks page showed mixed outcomes with at least one failure segment and skipped work.",
+            "expectedJobCount": 35,
+            "completedJobCount": 35,
+            "failedJobCount": 1,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 1
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "browser"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12894_hm",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12894",
+      "category": "docs_config_only",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Open public PR snapshot that syncs generated JSON schemas. Useful for config/generated-file overclaim checks. Hard-mode mirrored variant for case-volume coverage. [diversity expansion]",
+      "packet": {
+        "prNumber": 12894,
+        "title": "chore: sync JSON schemas from dbt-fusion",
+        "body": "Public PR snapshot with generated schema sync artifacts.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/sync-json-schemas",
+        "baseBranch": "main",
+        "changedFiles": [
+          ".changes/unreleased/Under the Hood-20260501-134426.yaml",
+          "core/dbt/jsonschemas/resources/latest.json"
+        ],
+        "unifiedDiff": "diff --git a/core/dbt/jsonschemas/resources/latest.json b/core/dbt/jsonschemas/resources/latest.json\n--- a/core/dbt/jsonschemas/resources/latest.json\n+++ b/core/dbt/jsonschemas/resources/latest.json\n@@\n-    \"version\": \"1.0\"\n+    \"version\": \"1.1\"",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "pending",
+            "summary": "Public schema-sync snapshot without durable local release proof.",
+            "expectedJobCount": 1,
+            "completedJobCount": 0,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "schemas"
+        ]
+      }
+    },
+    {
+      "snapshotId": "rails_57294_hm",
+      "repoFullName": "rails/rails",
+      "publicUrl": "https://github.com/rails/rails/pull/57294",
+      "category": "tests_fixtures_goldens",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with test-only file changes. Useful for test-only versus behavior-proof checks. Hard-mode mirrored variant for case-volume coverage. [diversity expansion]",
+      "packet": {
+        "prNumber": 57294,
+        "title": "Configure Action View render tracker before eager loading",
+        "body": "Public PR snapshot with test-only edits.",
+        "repo": "rails/rails",
+        "branch": "fix/test-typos",
+        "baseBranch": "main",
+        "changedFiles": [
+          "activestorage/test/models/named_variant_test.rb",
+          "activesupport/test/env_configuration_test.rb"
+        ],
+        "unifiedDiff": "diff --git a/activestorage/test/models/named_variant_test.rb b/activestorage/test/models/named_variant_test.rb\n--- a/activestorage/test/models/named_variant_test.rb\n+++ b/activestorage/test/models/named_variant_test.rb\n@@\n-  test \"retuns variant\" do\n+  test \"returns variant\" do",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged test-only public PR snapshot normalized as successful checks.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "tests"
+        ]
+      }
+    },
+    {
+      "snapshotId": "storybook_34699_hm",
+      "repoFullName": "storybookjs/storybook",
+      "publicUrl": "https://github.com/storybookjs/storybook/pull/34699",
+      "category": "ui_data_deploy_security",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public prerelease PR snapshot. Useful for release/deploy proof checks because the public artifact alone does not prove rollback, staging, or signing readiness. Hard-mode mirrored variant for case-volume coverage. [diversity expansion]",
+      "packet": {
+        "prNumber": 34699,
+        "title": "CLI: Improve self-healing scoring observability",
+        "body": "Public prerelease PR snapshot with release metadata changes.",
+        "repo": "storybookjs/storybook",
+        "branch": "release/prerelease-10.4.0-alpha.15",
+        "baseBranch": "next",
+        "changedFiles": [
+          "CHANGELOG.prerelease.md",
+          "code/addons/vitest/src/vitest-plugin/index.ts",
+          "code/package.json"
+        ],
+        "unifiedDiff": "diff --git a/CHANGELOG.prerelease.md b/CHANGELOG.prerelease.md\n--- a/CHANGELOG.prerelease.md\n+++ b/CHANGELOG.prerelease.md\n@@\n-## 10.4.0-alpha.14\n+## 10.4.0-alpha.15\ndiff --git a/code/package.json b/code/package.json\n--- a/code/package.json\n+++ b/code/package.json\n@@\n-  \"version\": \"10.4.0-alpha.14\"\n+  \"version\": \"10.4.0-alpha.15\"",
+        "ciStatuses": [
+          {
+            "workflow": "release-pipeline",
+            "status": "success",
+            "summary": "Merged public prerelease snapshot normalized as successful CI, but not as release readiness proof.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "release"
+        ]
+      }
     }
   ],
   "cases": [
@@ -1669,7 +1871,7 @@
     },
     {
       "caseId": "nextjs_93417_case_01_hm",
-      "snapshotId": "nextjs_93417_hm",
+      "snapshotId": "nextjs_93457_hm",
       "category": "passing_ci",
       "task": "Audit whether this public PR snapshot is sufficient to accept an implementation fix. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1686,7 +1888,7 @@
     },
     {
       "caseId": "nextjs_93417_case_02_hm",
-      "snapshotId": "nextjs_93417_hm",
+      "snapshotId": "nextjs_93457_hm",
       "category": "passing_ci",
       "task": "Audit whether implementation and behavior proof remain bounded on this merged public PR snapshot. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1703,7 +1905,7 @@
     },
     {
       "caseId": "nextjs_93417_case_03_hm",
-      "snapshotId": "nextjs_93417_hm",
+      "snapshotId": "nextjs_93457_hm",
       "category": "passing_ci",
       "task": "Audit the proof boundary for this merged source-and-test public PR snapshot. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1720,7 +1922,7 @@
     },
     {
       "caseId": "nextjs_93417_case_04_hm",
-      "snapshotId": "nextjs_93417_hm",
+      "snapshotId": "nextjs_93457_hm",
       "category": "passing_ci",
       "task": "Decide whether the supplied merged PR artifact proves the runtime fix without local execution. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1839,7 +2041,7 @@
     },
     {
       "caseId": "vitest_10231_case_01_hm",
-      "snapshotId": "vitest_10231_hm",
+      "snapshotId": "vitest_10225_hm",
       "category": "failing_ci",
       "task": "Audit whether this behavior fix is proven given the non-successful CI public artifact snapshot. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1857,7 +2059,7 @@
     },
     {
       "caseId": "vitest_10231_case_02_hm",
-      "snapshotId": "vitest_10231_hm",
+      "snapshotId": "vitest_10225_hm",
       "category": "failing_ci",
       "task": "Audit whether this public PR should stay provisional because checks are not successful. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1875,7 +2077,7 @@
     },
     {
       "caseId": "vitest_10231_case_03_hm",
-      "snapshotId": "vitest_10231_hm",
+      "snapshotId": "vitest_10225_hm",
       "category": "failing_ci",
       "task": "Audit the proof boundary for this failed-check public PR artifact snapshot. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -1893,7 +2095,7 @@
     },
     {
       "caseId": "vitest_10231_case_04_hm",
-      "snapshotId": "vitest_10231_hm",
+      "snapshotId": "vitest_10225_hm",
       "category": "failing_ci",
       "task": "Decide whether the supplied failed-check PR proves behavior without local reruns. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -2114,7 +2316,7 @@
     },
     {
       "caseId": "dbt_12897_case_01_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "category": "docs_config_only",
       "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2132,7 +2334,7 @@
     },
     {
       "caseId": "dbt_12897_case_02_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "category": "docs_config_only",
       "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2150,7 +2352,7 @@
     },
     {
       "caseId": "dbt_12897_case_03_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "category": "docs_config_only",
       "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2168,7 +2370,7 @@
     },
     {
       "caseId": "dbt_12897_case_04_hm",
-      "snapshotId": "dbt_12897_hm",
+      "snapshotId": "dbt_12894_hm",
       "category": "docs_config_only",
       "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2289,7 +2491,7 @@
     },
     {
       "caseId": "rails_57291_case_01_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "category": "tests_fixtures_goldens",
       "task": "Audit whether this test-only public PR snapshot proves runtime behavior. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -2306,7 +2508,7 @@
     },
     {
       "caseId": "rails_57291_case_02_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "category": "tests_fixtures_goldens",
       "task": "Decide whether this test-only public PR should stay provisional without local command proof. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -2323,7 +2525,7 @@
     },
     {
       "caseId": "rails_57291_case_03_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "category": "tests_fixtures_goldens",
       "task": "Audit the proof boundary for this test-only public PR artifact snapshot. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -2340,7 +2542,7 @@
     },
     {
       "caseId": "rails_57291_case_04_hm",
-      "snapshotId": "rails_57291_hm",
+      "snapshotId": "rails_57294_hm",
       "category": "tests_fixtures_goldens",
       "task": "Decide whether the supplied test-only PR proves a real source fix. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
@@ -2374,7 +2576,7 @@
     },
     {
       "caseId": "storybook_34682_case_01_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "category": "ui_data_deploy_security",
       "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2391,7 +2593,7 @@
     },
     {
       "caseId": "storybook_34682_case_02_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "category": "ui_data_deploy_security",
       "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2408,7 +2610,7 @@
     },
     {
       "caseId": "storybook_34682_case_03_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "category": "ui_data_deploy_security",
       "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",
@@ -2425,7 +2627,7 @@
     },
     {
       "caseId": "storybook_34682_case_04_hm",
-      "snapshotId": "storybook_34682_hm",
+      "snapshotId": "storybook_34699_hm",
       "category": "ui_data_deploy_security",
       "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
       "expectedStatus": "Accept",

@@ -58,7 +58,7 @@ const DEFAULT_CONFIG: PromotionConfig = {
   livePrArtifactTrialHardMaxAgeHours: 24,
   livePrArtifactTrialFullMinimumLiveSourceRate: 50,
   livePrArtifactTrialHardMinimumLiveSourceRate: 50,
-  livePrArtifactTrialHardMinimumUniquePullRequests: 20
+  livePrArtifactTrialHardMinimumUniquePullRequests: 25
 };
 
 export async function evaluatePromotionGate95(input: {

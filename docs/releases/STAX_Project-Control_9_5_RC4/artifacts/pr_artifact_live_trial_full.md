@@ -1,6 +1,6 @@
 Live PR Artifact Trial
 - fixture set: real_pr_artifact_trial_v1
-- recorded at: 2026-05-04T14:23:14.903Z
+- recorded at: 2026-05-04T14:40:08.906Z
 - selected/requested cases: 50/50
 - live source cases: 50
 - fallback source cases: 0
