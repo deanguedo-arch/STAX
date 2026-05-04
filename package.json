@@ -50,6 +50,7 @@
     "pr-artifact:live-trial:full:refresh": "tsx scripts/prArtifactLiveTrialRefresh.ts --limit 50 --min-live 10",
     "pr-artifact:audit": "tsx scripts/auditLivePrArtifact.ts",
     "staxcore:status": "tsx scripts/staxcoreWorkflowStatus.ts",
+    "staxcore:wait": "tsx scripts/staxcoreWorkflowWait.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
     "campaign:phaseB:capture": "tsx scripts/phaseBCaptureClipboard.ts",

@@ -77,6 +77,12 @@ npm run staxcore:status -- --limit 3
 
 Use this to quickly inspect the latest `staxcore-strict` GitHub Actions runs (including status, conclusion, and run URL) without manual API calls.
 
+To block until completion:
+
+```bash
+npm run staxcore:wait -- --timeout-ms 900000 --interval-ms 15000
+```
+
 ## Evidence Outputs
 
 Both profiles produce:
