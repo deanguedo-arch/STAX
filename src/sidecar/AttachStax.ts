@@ -12,10 +12,17 @@ import {
 } from "./SidecarRepo.js";
 
 export const STAX_AGENTS_SECTION_MARKER = "<!-- STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
+export const STAX_AGENTS_SECTION_END_MARKER = "<!-- /STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
 
 export const STAX_AGENT_PROTOCOL = `# STAX Project-Control Protocol
 
 You are working under STAX project-control protocol.
+
+At the start of every Codex turn in this repo:
+
+1. Read \`.stax/status.json\` if it exists.
+2. If the verdict is \`Reject\`, \`Provisional\`, or \`Human review\`, read \`.stax/next-codex-prompt.md\` and treat it as the immediate correction task unless the user explicitly says to ignore STAX for this turn.
+3. If \`.stax/task.md\` is blank, write the user's current objective there before editing.
 
 Do not claim completion without proof.
 Do not claim tests passed without command output.
@@ -154,26 +161,18 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
 
   for (const [filePath, content] of files) {
     const existed = await pathExists(filePath);
-    await writeFileIfMissing(filePath, content);
+    if (filePath.endsWith(path.join(".stax", "AGENT_PROTOCOL.md"))) {
+      await fs.writeFile(filePath, content, "utf8");
+    } else {
+      await writeFileIfMissing(filePath, content);
+    }
     if (!existed) createdFiles.push(filePath);
   }
 
   const agentsPath = path.join(repoPath, "AGENTS.md");
   const agentsBefore = await readTextIfExists(agentsPath);
-  let appendedAgentsProtocol = false;
-  if (!agentsBefore.includes(STAX_AGENTS_SECTION_MARKER)) {
-    const section = [
-      agentsBefore.trimEnd(),
-      "",
-      STAX_AGENTS_SECTION_MARKER,
-      "",
-      STAX_AGENT_PROTOCOL
-    ]
-      .filter(Boolean)
-      .join("\n");
-    await fs.writeFile(agentsPath, `${section.trimEnd()}\n`, "utf8");
-    appendedAgentsProtocol = true;
-  }
+  const appendedAgentsProtocol = !agentsBefore.includes(STAX_AGENTS_SECTION_MARKER);
+  await fs.writeFile(agentsPath, `${upsertAgentsProtocolSection(agentsBefore).trimEnd()}\n`, "utf8");
 
   return {
     repoPath,
@@ -182,4 +181,24 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
     agentsPath,
     appendedAgentsProtocol
   };
+}
+
+export function renderAgentsProtocolSection(): string {
+  return [STAX_AGENTS_SECTION_MARKER, STAX_AGENT_PROTOCOL.trimEnd(), STAX_AGENTS_SECTION_END_MARKER].join("\n");
+}
+
+export function upsertAgentsProtocolSection(existing: string): string {
+  const section = renderAgentsProtocolSection();
+  const markerIndex = existing.indexOf(STAX_AGENTS_SECTION_MARKER);
+  if (markerIndex === -1) {
+    return [existing.trimEnd(), section].filter(Boolean).join("\n\n");
+  }
+
+  const endIndex = existing.indexOf(STAX_AGENTS_SECTION_END_MARKER, markerIndex);
+  if (endIndex >= 0) {
+    const afterEnd = endIndex + STAX_AGENTS_SECTION_END_MARKER.length;
+    return `${existing.slice(0, markerIndex).trimEnd()}\n\n${section}${existing.slice(afterEnd)}`;
+  }
+
+  return `${existing.slice(0, markerIndex).trimEnd()}\n\n${section}`;
 }

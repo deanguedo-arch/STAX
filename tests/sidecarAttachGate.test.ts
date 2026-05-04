@@ -1,7 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { attachStaxToRepo, STAX_AGENTS_SECTION_MARKER } from "../src/sidecar/AttachStax.js";
+import {
+  attachStaxToRepo,
+  STAX_AGENTS_SECTION_END_MARKER,
+  STAX_AGENTS_SECTION_MARKER,
+  upsertAgentsProtocolSection
+} from "../src/sidecar/AttachStax.js";
+import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
@@ -17,10 +23,29 @@ describe("STAX sidecar attach and gate", () => {
     expect(first.sidecarPath).toBe(path.join(repoPath, ".stax"));
     expect(second.appendedAgentsProtocol).toBe(false);
     expect(agents).toContain("Keep this.");
+    expect(agents).toContain("read `.stax/next-codex-prompt.md`");
     expect(agents.match(new RegExp(STAX_AGENTS_SECTION_MARKER, "g"))?.length).toBe(1);
+    expect(agents.match(new RegExp(STAX_AGENTS_SECTION_END_MARKER, "g"))?.length).toBe(1);
     await expect(fs.stat(path.join(repoPath, ".stax", "config.json"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "events"))).resolves.toBeTruthy();
+  });
+
+  it("updates an existing protocol section instead of appending duplicate stale protocol", () => {
+    const existing = [
+      "# Existing",
+      "",
+      STAX_AGENTS_SECTION_MARKER,
+      "# Old STAX Protocol",
+      "Do old things."
+    ].join("\n");
+
+    const updated = upsertAgentsProtocolSection(existing);
+
+    expect(updated).toContain("# Existing");
+    expect(updated).toContain("read `.stax/next-codex-prompt.md`");
+    expect(updated).not.toContain("Do old things.");
+    expect(updated.match(new RegExp(STAX_AGENTS_SECTION_MARKER, "g"))?.length).toBe(1);
   });
 
   it("rejects a diff with a missing Codex report and writes sidecar status", async () => {
@@ -37,6 +62,19 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "status.md"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "status.json"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "next-codex-prompt.md"))).resolves.toBeTruthy();
+  });
+
+  it("returns the next Codex prompt after running the gate", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-next-prompt-");
+    await attachStaxToRepo(repoPath);
+    await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
+    await fs.writeFile(path.join(repoPath, "src/app.ts"), "export const value = 2;\n", "utf8");
+
+    const result = await getNextCodexPrompt({ repoPath, runGate: true });
+
+    expect(result.copied).toBe(false);
+    expect(result.prompt).toContain("STAX Sidecar rejected or held this task");
+    expect(result.prompt).toContain("Update .stax/codex-report.md");
   });
 
   it("rejects fake-complete reports without local command evidence", async () => {
