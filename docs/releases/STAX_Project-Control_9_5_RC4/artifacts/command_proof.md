@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-04T13:20:10.122Z
+- Recorded at: 2026-05-04T14:11:31.540Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -31,8 +31,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:18:37.344Z
-- Finished at: 2026-05-04T13:18:40.567Z
+- Started at: 2026-05-04T14:09:54.817Z
+- Finished at: 2026-05-04T14:09:57.716Z
 
 Stdout tail:
 
@@ -53,8 +53,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:18:40.567Z
-- Finished at: 2026-05-04T13:18:53.987Z
+- Started at: 2026-05-04T14:09:57.716Z
+- Finished at: 2026-05-04T14:10:09.675Z
 
 Stdout tail:
 
@@ -68,8 +68,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  07:18:40
-   Duration  12.93s (transform 8.27s, setup 0ms, import 37.34s, tests 51.65s, environment 47ms)
+   Start at  08:09:58
+   Duration  11.52s (transform 7.75s, setup 0ms, import 33.79s, tests 44.85s, environment 19ms)
 ```
 
 Stderr tail:
@@ -84,8 +84,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:18:53.987Z
-- Finished at: 2026-05-04T13:18:54.632Z
+- Started at: 2026-05-04T14:10:09.675Z
+- Finished at: 2026-05-04T14:10:10.240Z
 
 Stdout tail:
 
@@ -99,8 +99,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  07:18:54
-   Duration  222ms (transform 42ms, setup 0ms, import 86ms, tests 35ms, environment 0ms)
+   Start at  08:10:10
+   Duration  209ms (transform 43ms, setup 0ms, import 84ms, tests 32ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -115,8 +115,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:18:54.632Z
-- Finished at: 2026-05-04T13:18:55.245Z
+- Started at: 2026-05-04T14:10:10.240Z
+- Finished at: 2026-05-04T14:10:10.833Z
 
 Stdout tail:
 
@@ -130,8 +130,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  07:18:54
-   Duration  236ms (transform 42ms, setup 0ms, import 90ms, tests 36ms, environment 0ms)
+   Start at  08:10:10
+   Duration  211ms (transform 37ms, setup 0ms, import 80ms, tests 34ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -146,8 +146,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:18:55.245Z
-- Finished at: 2026-05-04T13:19:12.363Z
+- Started at: 2026-05-04T14:10:10.833Z
+- Finished at: 2026-05-04T14:10:26.899Z
 
 Stdout tail:
 
@@ -169,8 +169,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  07:18:58
-   Duration  12.57s (transform 8.33s, setup 0ms, import 34.29s, tests 51.07s, environment 33ms)
+   Start at  08:10:14
+   Duration  11.55s (transform 7.29s, setup 0ms, import 31.68s, tests 47.12s, environment 16ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -201,8 +201,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:19:12.363Z
-- Finished at: 2026-05-04T13:19:12.951Z
+- Started at: 2026-05-04T14:10:26.899Z
+- Finished at: 2026-05-04T14:10:27.509Z
 
 Stdout tail:
 
@@ -240,8 +240,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:19:12.951Z
-- Finished at: 2026-05-04T13:19:13.836Z
+- Started at: 2026-05-04T14:10:27.509Z
+- Finished at: 2026-05-04T14:10:28.534Z
 
 Stdout tail:
 
@@ -281,8 +281,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:19:13.836Z
-- Finished at: 2026-05-04T13:19:24.637Z
+- Started at: 2026-05-04T14:10:28.534Z
+- Finished at: 2026-05-04T14:10:41.113Z
 
 Stdout tail:
 
@@ -292,9 +292,10 @@ Stdout tail:
 
 {
   "fixtureSet": "real_pr_artifact_trial_v1",
-  "recordedAt": "2026-05-04T13:19:24.603Z",
+  "recordedAt": "2026-05-04T14:10:41.085Z",
   "selectedCaseCount": 25,
   "requestedCaseCount": 25,
+  "uniquePullRequestCount": 5,
   "liveSourceCount": 25,
   "fallbackSourceCount": 0,
   "falseAccepts": 0,
@@ -696,8 +697,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:full:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:19:24.637Z
-- Finished at: 2026-05-04T13:19:43.787Z
+- Started at: 2026-05-04T14:10:41.113Z
+- Finished at: 2026-05-04T14:11:03.360Z
 
 Stdout tail:
 
@@ -1220,8 +1221,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:hard:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:19:43.787Z
-- Finished at: 2026-05-04T13:20:05.453Z
+- Started at: 2026-05-04T14:11:03.360Z
+- Finished at: 2026-05-04T14:11:26.923Z
 
 Stdout tail:
 
@@ -1736,8 +1737,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:05.453Z
-- Finished at: 2026-05-04T13:20:06.155Z
+- Started at: 2026-05-04T14:11:26.923Z
+- Finished at: 2026-05-04T14:11:27.603Z
 
 Stdout tail:
 
@@ -1758,7 +1759,7 @@ Stdout tail:
   "prReviewCommentStatus": "passed",
   "livePrArtifactTrialStatus": "passed",
   "livePrArtifactTrialFullStatus": "passed",
-  "livePrArtifactTrialHardStatus": "not_required",
+  "livePrArtifactTrialHardStatus": "passed",
   "status": "promotion_ready",
   "blockers": []
 }
@@ -1776,8 +1777,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:06.155Z
-- Finished at: 2026-05-04T13:20:06.563Z
+- Started at: 2026-05-04T14:11:27.603Z
+- Finished at: 2026-05-04T14:11:27.996Z
 
 Stdout tail:
 
@@ -1808,8 +1809,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:06.563Z
-- Finished at: 2026-05-04T13:20:06.995Z
+- Started at: 2026-05-04T14:11:27.996Z
+- Finished at: 2026-05-04T14:11:28.410Z
 
 Stdout tail:
 
@@ -1838,8 +1839,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:06.995Z
-- Finished at: 2026-05-04T13:20:07.427Z
+- Started at: 2026-05-04T14:11:28.410Z
+- Finished at: 2026-05-04T14:11:28.813Z
 
 Stdout tail:
 
@@ -1876,8 +1877,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:07.427Z
-- Finished at: 2026-05-04T13:20:08.714Z
+- Started at: 2026-05-04T14:11:28.813Z
+- Finished at: 2026-05-04T14:11:30.265Z
 
 Stdout tail:
 
@@ -1913,8 +1914,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:08.714Z
-- Finished at: 2026-05-04T13:20:09.068Z
+- Started at: 2026-05-04T14:11:30.265Z
+- Finished at: 2026-05-04T14:11:30.620Z
 
 Stdout tail:
 
@@ -1970,8 +1971,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:09.068Z
-- Finished at: 2026-05-04T13:20:09.413Z
+- Started at: 2026-05-04T14:11:30.620Z
+- Finished at: 2026-05-04T14:11:30.948Z
 
 Stdout tail:
 
@@ -2093,8 +2094,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T13:20:09.413Z
-- Finished at: 2026-05-04T13:20:10.122Z
+- Started at: 2026-05-04T14:11:30.948Z
+- Finished at: 2026-05-04T14:11:31.540Z
 
 Stdout tail:
 

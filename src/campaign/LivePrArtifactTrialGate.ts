@@ -8,6 +8,7 @@ const LivePrArtifactTrialSummarySchema = z.object({
   recordedAt: z.string().datetime(),
   selectedCaseCount: z.number().int().nonnegative(),
   requestedCaseCount: z.number().int().nonnegative(),
+  uniquePullRequestCount: z.number().int().nonnegative(),
   liveSourceCount: z.number().int().nonnegative(),
   fallbackSourceCount: z.number().int().nonnegative(),
   falseAccepts: z.number().int().nonnegative(),
@@ -23,6 +24,7 @@ const LivePrArtifactTrialSummarySchema = z.object({
 export type LivePrArtifactTrialGateSummary = Pick<
   z.infer<typeof LivePrArtifactTrialSummarySchema>,
   | "selectedCaseCount"
+  | "uniquePullRequestCount"
   | "liveSourceCount"
   | "fallbackSourceCount"
   | "falseAccepts"
@@ -47,6 +49,7 @@ type LivePrArtifactTrialGateInput = {
   artifactPath?: string;
   maxAgeHours?: number;
   minimumLiveSourceRate?: number;
+  minimumUniquePullRequestCount?: number;
 };
 
 export async function validateLivePrArtifactTrialGate(
@@ -58,6 +61,7 @@ export async function validateLivePrArtifactTrialGate(
   const allowFallbackSource = input.allowFallbackSource ?? false;
   const maxAgeHours = input.maxAgeHours ?? 72;
   const minimumLiveSourceRate = input.minimumLiveSourceRate;
+  const minimumUniquePullRequestCount = input.minimumUniquePullRequestCount;
   const source = input.source ?? "artifact";
 
   const summary =
@@ -85,6 +89,11 @@ export async function validateLivePrArtifactTrialGate(
   if (summary.selectedCaseCount < requestedCaseCount) {
     blockers.push(`live PR trial selected case count is below ${requestedCaseCount}`);
   }
+  if (minimumUniquePullRequestCount != null && summary.uniquePullRequestCount < minimumUniquePullRequestCount) {
+    blockers.push(
+      `unique PR coverage too low: ${summary.uniquePullRequestCount}/${minimumUniquePullRequestCount}`
+    );
+  }
   if (summary.liveSourceCount < minimumLiveSourceCount) {
     blockers.push(`live-source coverage too low: ${summary.liveSourceCount}/${summary.selectedCaseCount} (minimum ${minimumLiveSourceCount})`);
   }
@@ -102,6 +111,7 @@ export async function validateLivePrArtifactTrialGate(
 
   return {
     selectedCaseCount: summary.selectedCaseCount,
+    uniquePullRequestCount: summary.uniquePullRequestCount,
     liveSourceCount: summary.liveSourceCount,
     fallbackSourceCount: summary.fallbackSourceCount,
     falseAccepts: summary.falseAccepts,

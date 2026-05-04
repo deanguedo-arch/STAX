@@ -42,6 +42,7 @@ type PromotionConfig = {
   livePrArtifactTrialHardMaxAgeHours?: number;
   livePrArtifactTrialFullMinimumLiveSourceRate?: number;
   livePrArtifactTrialHardMinimumLiveSourceRate?: number;
+  livePrArtifactTrialHardMinimumUniquePullRequests?: number;
 };
 
 const DEFAULT_CONFIG: PromotionConfig = {
@@ -51,12 +52,13 @@ const DEFAULT_CONFIG: PromotionConfig = {
   requirePrReviewCommentScore: true,
   requireLivePrArtifactTrial: true,
   requireLivePrArtifactTrialFull: true,
-  requireLivePrArtifactTrialHard: false,
+  requireLivePrArtifactTrialHard: true,
   livePrArtifactTrialMaxAgeHours: 24,
   livePrArtifactTrialFullMaxAgeHours: 24,
   livePrArtifactTrialHardMaxAgeHours: 24,
   livePrArtifactTrialFullMinimumLiveSourceRate: 50,
-  livePrArtifactTrialHardMinimumLiveSourceRate: 50
+  livePrArtifactTrialHardMinimumLiveSourceRate: 50,
+  livePrArtifactTrialHardMinimumUniquePullRequests: 10
 };
 
 export async function evaluatePromotionGate95(input: {
@@ -84,7 +86,10 @@ export async function evaluatePromotionGate95(input: {
       livePrArtifactTrialFullMinimumLiveSourceRate:
         raw.livePrArtifactTrialFullMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialFullMinimumLiveSourceRate,
       livePrArtifactTrialHardMinimumLiveSourceRate:
-        raw.livePrArtifactTrialHardMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialHardMinimumLiveSourceRate
+        raw.livePrArtifactTrialHardMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialHardMinimumLiveSourceRate,
+      livePrArtifactTrialHardMinimumUniquePullRequests:
+        raw.livePrArtifactTrialHardMinimumUniquePullRequests ??
+        DEFAULT_CONFIG.livePrArtifactTrialHardMinimumUniquePullRequests
     };
   } catch {
     config = DEFAULT_CONFIG;
@@ -126,7 +131,8 @@ export async function evaluatePromotionGate95(input: {
           minimumLiveSourceCount: 25,
           allowFallbackSource: true,
           maxAgeHours: config.livePrArtifactTrialHardMaxAgeHours,
-          minimumLiveSourceRate: config.livePrArtifactTrialHardMinimumLiveSourceRate
+          minimumLiveSourceRate: config.livePrArtifactTrialHardMinimumLiveSourceRate,
+          minimumUniquePullRequestCount: config.livePrArtifactTrialHardMinimumUniquePullRequests
         });
 
   const blockers: string[] = [];

@@ -154,6 +154,7 @@ describe("Operating dashboard", () => {
       },
       livePrArtifactTrialSummary: {
         selectedCaseCount: 25,
+        uniquePullRequestCount: 5,
         liveSourceCount: 25,
         fallbackSourceCount: 0,
         falseAccepts: 0,
@@ -169,6 +170,7 @@ describe("Operating dashboard", () => {
       },
       livePrArtifactTrialFullSummary: {
         selectedCaseCount: 50,
+        uniquePullRequestCount: 10,
         liveSourceCount: 30,
         fallbackSourceCount: 20,
         falseAccepts: 0,

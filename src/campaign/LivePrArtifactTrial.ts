@@ -39,6 +39,7 @@ export type LivePrArtifactTrialSummary = {
   recordedAt: string;
   selectedCaseCount: number;
   requestedCaseCount: number;
+  uniquePullRequestCount: number;
   liveSourceCount: number;
   fallbackSourceCount: number;
   falseAccepts: number;
@@ -95,6 +96,7 @@ export async function runLivePrArtifactTrial(
   let ciProofSurfacedCount = 0;
   const blockers: string[] = [];
   const results: LivePrArtifactTrialCaseResult[] = [];
+  const uniquePullRequests = new Set<string>();
 
   for (const testCase of selectedCases) {
     const snapshot = snapshotsById.get(testCase.snapshotId);
@@ -103,6 +105,7 @@ export async function runLivePrArtifactTrial(
       continue;
     }
     const key = `${snapshot.repoFullName}#${snapshot.packet.prNumber}`;
+    uniquePullRequests.add(key);
     let fetched = fetchCache.get(key);
     if (!fetched) {
       fetched = await fetchPacket(
@@ -215,6 +218,7 @@ export async function runLivePrArtifactTrial(
     recordedAt: new Date().toISOString(),
     selectedCaseCount: selectedCases.length,
     requestedCaseCount,
+    uniquePullRequestCount: uniquePullRequests.size,
     liveSourceCount,
     fallbackSourceCount,
     falseAccepts,

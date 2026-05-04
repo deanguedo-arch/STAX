@@ -9,10 +9,11 @@
   "requirePrReviewCommentScore": true,
   "requireLivePrArtifactTrial": true,
   "requireLivePrArtifactTrialFull": true,
-  "requireLivePrArtifactTrialHard": false,
+  "requireLivePrArtifactTrialHard": true,
   "livePrArtifactTrialMaxAgeHours": 24,
   "livePrArtifactTrialFullMaxAgeHours": 24,
   "livePrArtifactTrialHardMaxAgeHours": 24,
   "livePrArtifactTrialFullMinimumLiveSourceRate": 50,
-  "livePrArtifactTrialHardMinimumLiveSourceRate": 50
+  "livePrArtifactTrialHardMinimumLiveSourceRate": 50,
+  "livePrArtifactTrialHardMinimumUniquePullRequests": 10
 }

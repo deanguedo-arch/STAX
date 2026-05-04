@@ -1,8 +1,9 @@
 {
   "fixtureSet": "real_pr_artifact_trial_v2_hard",
-  "recordedAt": "2026-05-04T13:20:05.415Z",
+  "recordedAt": "2026-05-04T14:11:26.878Z",
   "selectedCaseCount": 100,
   "requestedCaseCount": 100,
+  "uniquePullRequestCount": 10,
   "liveSourceCount": 100,
   "fallbackSourceCount": 0,
   "falseAccepts": 0,

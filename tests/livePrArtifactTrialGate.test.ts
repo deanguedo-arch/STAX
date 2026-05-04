@@ -18,6 +18,7 @@ afterEach(async () => {
 async function writeGateSummary(args: {
   recordedAt?: string;
   selectedCaseCount: number;
+  uniquePullRequestCount?: number;
   liveSourceCount: number;
   fallbackSourceCount: number;
   falseAccepts: number;
@@ -37,6 +38,7 @@ async function writeGateSummary(args: {
         fixtureSet: "real_pr_artifact_trial_v1",
         recordedAt: args.recordedAt ?? new Date().toISOString(),
         requestedCaseCount: 25,
+        uniquePullRequestCount: args.uniquePullRequestCount ?? Math.max(1, Math.floor(args.selectedCaseCount / 5)),
         status: "passed",
         blockers: [],
         cases: [],
