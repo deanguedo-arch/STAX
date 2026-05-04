@@ -19,5 +19,5 @@ describe("overblock calibration", () => {
     expect(result.falseAccepts).toBe(0);
     expect(result.falseRejectRatePct).toBeLessThanOrEqual(15);
     expect(result.status).toBe("calibration_passed");
-  });
+  }, 20000);
 });

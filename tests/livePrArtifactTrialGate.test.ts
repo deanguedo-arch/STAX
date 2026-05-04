@@ -66,6 +66,8 @@ describe("Live PR artifact trial gate", () => {
     const summary = await validateLivePrArtifactTrialGate({ rootDir });
     expect(summary.status).toBe("passed");
     expect(summary.blockers).toEqual([]);
+    expect(summary.liveSourceRate).toBe(100);
+    expect(summary.freshnessHours).toBeGreaterThanOrEqual(0);
   });
 
   it("blocks when fallback sources and false accepts are present", async () => {
@@ -103,5 +105,28 @@ describe("Live PR artifact trial gate", () => {
     const summary = await validateLivePrArtifactTrialGate({ rootDir, maxAgeHours: 72 });
     expect(summary.status).toBe("failed");
     expect(summary.blockers.some((item) => item.includes("artifact is stale"))).toBe(true);
+  });
+
+  it("blocks when live-source rate is below the required threshold", async () => {
+    const rootDir = await writeGateSummary({
+      selectedCaseCount: 50,
+      liveSourceCount: 20,
+      fallbackSourceCount: 30,
+      falseAccepts: 0,
+      falseBlocks: 0,
+      falseBlockRatePct: 0,
+      usefulNextActionRate: 100,
+      ciProofClassificationSurfaceRate: 100
+    });
+
+    const summary = await validateLivePrArtifactTrialGate({
+      rootDir,
+      requestedCaseCount: 50,
+      minimumLiveSourceCount: 10,
+      allowFallbackSource: true,
+      minimumLiveSourceRate: 50
+    });
+    expect(summary.status).toBe("failed");
+    expect(summary.blockers).toContain("live-source rate too low: 40% (minimum 50%)");
   });
 });

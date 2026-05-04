@@ -32,7 +32,11 @@ export type LivePrArtifactTrialGateSummary = Pick<
   | "ciProofClassificationSurfaceRate"
   | "status"
   | "blockers"
->;
+> & {
+  recordedAt: string;
+  freshnessHours: number;
+  liveSourceRate: number;
+};
 
 type LivePrArtifactTrialGateInput = {
   rootDir?: string;
@@ -42,6 +46,7 @@ type LivePrArtifactTrialGateInput = {
   source?: "artifact" | "live";
   artifactPath?: string;
   maxAgeHours?: number;
+  minimumLiveSourceRate?: number;
 };
 
 export async function validateLivePrArtifactTrialGate(
@@ -52,6 +57,7 @@ export async function validateLivePrArtifactTrialGate(
   const minimumLiveSourceCount = input.minimumLiveSourceCount ?? 5;
   const allowFallbackSource = input.allowFallbackSource ?? false;
   const maxAgeHours = input.maxAgeHours ?? 72;
+  const minimumLiveSourceRate = input.minimumLiveSourceRate;
   const source = input.source ?? "artifact";
 
   const summary =
@@ -69,6 +75,10 @@ export async function validateLivePrArtifactTrialGate(
 
   const blockers = [...summary.blockers];
   const freshnessHours = ageHours(summary.recordedAt);
+  const liveSourceRate =
+    summary.selectedCaseCount === 0
+      ? 0
+      : Number(((summary.liveSourceCount / summary.selectedCaseCount) * 100).toFixed(2));
   if (freshnessHours > maxAgeHours) {
     blockers.push(`live PR trial artifact is stale at ${freshnessHours}h (max ${maxAgeHours}h)`);
   }
@@ -80,6 +90,9 @@ export async function validateLivePrArtifactTrialGate(
   }
   if (!allowFallbackSource && summary.fallbackSourceCount > 0) {
     blockers.push(`fallback snapshot source used in ${summary.fallbackSourceCount} case(s)`);
+  }
+  if (minimumLiveSourceRate != null && liveSourceRate < minimumLiveSourceRate) {
+    blockers.push(`live-source rate too low: ${liveSourceRate}% (minimum ${minimumLiveSourceRate}%)`);
   }
   if (summary.falseAccepts > 0) blockers.push("false accepts were recorded during the live PR trial");
   if (summary.falseBlockRatePct > 15) blockers.push("false-block rate exceeded 15 percent");
@@ -96,6 +109,9 @@ export async function validateLivePrArtifactTrialGate(
     falseBlockRatePct: summary.falseBlockRatePct,
     usefulNextActionRate: summary.usefulNextActionRate,
     ciProofClassificationSurfaceRate: summary.ciProofClassificationSurfaceRate,
+    recordedAt: summary.recordedAt,
+    freshnessHours,
+    liveSourceRate,
     status: normalizedStatus,
     blockers
   };

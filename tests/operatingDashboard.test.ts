@@ -161,6 +161,9 @@ describe("Operating dashboard", () => {
         falseBlockRatePct: 0,
         usefulNextActionRate: 100,
         ciProofClassificationSurfaceRate: 100,
+        recordedAt: "2026-05-03T10:00:00.000Z",
+        freshnessHours: 1,
+        liveSourceRate: 100,
         status: "passed",
         blockers: []
       },
@@ -173,6 +176,9 @@ describe("Operating dashboard", () => {
         falseBlockRatePct: 0,
         usefulNextActionRate: 100,
         ciProofClassificationSurfaceRate: 100,
+        recordedAt: "2026-05-03T10:00:00.000Z",
+        freshnessHours: 1,
+        liveSourceRate: 60,
         status: "passed",
         blockers: []
       },
@@ -195,7 +201,9 @@ describe("Operating dashboard", () => {
     expect(formatOperatingDashboard(summary)).toContain("pr review comment cases / passing: 10/10 (100%)");
     expect(formatOperatingDashboard(summary)).toContain("live PR trial cases / live-source: 25/25");
     expect(formatOperatingDashboard(summary)).toContain("live PR trial false accepts / false blocks: 0/0");
+    expect(formatOperatingDashboard(summary)).toContain("live PR trial freshness / live-source rate: 1h / 100%");
     expect(formatOperatingDashboard(summary)).toContain("live PR trial full cases / live-source: 50/30");
     expect(formatOperatingDashboard(summary)).toContain("live PR trial full false accepts / false blocks: 0/0");
+    expect(formatOperatingDashboard(summary)).toContain("live PR trial full freshness / live-source rate: 1h / 60%");
   });
 });

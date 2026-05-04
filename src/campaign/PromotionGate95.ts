@@ -35,6 +35,9 @@ type PromotionConfig = {
   requirePrReviewCommentScore?: boolean;
   requireLivePrArtifactTrial?: boolean;
   requireLivePrArtifactTrialFull?: boolean;
+  livePrArtifactTrialMaxAgeHours?: number;
+  livePrArtifactTrialFullMaxAgeHours?: number;
+  livePrArtifactTrialFullMinimumLiveSourceRate?: number;
 };
 
 const DEFAULT_CONFIG: PromotionConfig = {
@@ -43,7 +46,10 @@ const DEFAULT_CONFIG: PromotionConfig = {
   requireCiFailureTriage: true,
   requirePrReviewCommentScore: true,
   requireLivePrArtifactTrial: true,
-  requireLivePrArtifactTrialFull: true
+  requireLivePrArtifactTrialFull: true,
+  livePrArtifactTrialMaxAgeHours: 24,
+  livePrArtifactTrialFullMaxAgeHours: 24,
+  livePrArtifactTrialFullMinimumLiveSourceRate: 50
 };
 
 export async function evaluatePromotionGate95(input: {
@@ -60,7 +66,12 @@ export async function evaluatePromotionGate95(input: {
       requirePrReviewCommentScore: raw.requirePrReviewCommentScore ?? DEFAULT_CONFIG.requirePrReviewCommentScore,
       requireLivePrArtifactTrial: raw.requireLivePrArtifactTrial ?? DEFAULT_CONFIG.requireLivePrArtifactTrial,
       requireLivePrArtifactTrialFull:
-        raw.requireLivePrArtifactTrialFull ?? DEFAULT_CONFIG.requireLivePrArtifactTrialFull
+        raw.requireLivePrArtifactTrialFull ?? DEFAULT_CONFIG.requireLivePrArtifactTrialFull,
+      livePrArtifactTrialMaxAgeHours: raw.livePrArtifactTrialMaxAgeHours ?? DEFAULT_CONFIG.livePrArtifactTrialMaxAgeHours,
+      livePrArtifactTrialFullMaxAgeHours:
+        raw.livePrArtifactTrialFullMaxAgeHours ?? DEFAULT_CONFIG.livePrArtifactTrialFullMaxAgeHours,
+      livePrArtifactTrialFullMinimumLiveSourceRate:
+        raw.livePrArtifactTrialFullMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialFullMinimumLiveSourceRate
     };
   } catch {
     config = DEFAULT_CONFIG;
@@ -77,7 +88,11 @@ export async function evaluatePromotionGate95(input: {
   const ciFailureTriage = config.requireCiFailureTriage === false ? undefined : await validateCiFailureTriageGate();
   const prReviewComment = config.requirePrReviewCommentScore === false ? undefined : await validatePrReviewCommentGate();
   const livePrArtifactTrial =
-    config.requireLivePrArtifactTrial === false ? undefined : await validateLivePrArtifactTrialGate();
+    config.requireLivePrArtifactTrial === false
+      ? undefined
+      : await validateLivePrArtifactTrialGate({
+          maxAgeHours: config.livePrArtifactTrialMaxAgeHours
+        });
   const livePrArtifactTrialFull =
     config.requireLivePrArtifactTrialFull === false
       ? undefined
@@ -85,7 +100,9 @@ export async function evaluatePromotionGate95(input: {
           artifactPath: path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_full_latest.json"),
           requestedCaseCount: 50,
           minimumLiveSourceCount: 10,
-          allowFallbackSource: true
+          allowFallbackSource: true,
+          maxAgeHours: config.livePrArtifactTrialFullMaxAgeHours,
+          minimumLiveSourceRate: config.livePrArtifactTrialFullMinimumLiveSourceRate
         });
 
   const blockers: string[] = [];

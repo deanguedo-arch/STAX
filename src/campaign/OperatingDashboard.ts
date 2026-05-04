@@ -64,12 +64,16 @@ export type OperatingDashboardSummary = {
     livePrArtifactTrialFalseBlocks: number;
     livePrArtifactTrialUsefulNextActionRate: number;
     livePrArtifactTrialCiProofSurfaceRate: number;
+    livePrArtifactTrialFreshnessHours: number;
+    livePrArtifactTrialLiveSourceRate: number;
     livePrArtifactTrialFullCaseCount: number;
     livePrArtifactTrialFullLiveSourceCount: number;
     livePrArtifactTrialFullFalseAccepts: number;
     livePrArtifactTrialFullFalseBlocks: number;
     livePrArtifactTrialFullUsefulNextActionRate: number;
     livePrArtifactTrialFullCiProofSurfaceRate: number;
+    livePrArtifactTrialFullFreshnessHours: number;
+    livePrArtifactTrialFullLiveSourceRate: number;
   };
   trendlines: string[];
   repoHotspots: Array<{ repo: string; count: number }>;
@@ -247,12 +251,16 @@ export async function summarizeOperatingDashboard(args: {
       livePrArtifactTrialFalseBlocks: livePrArtifactTrial.falseBlocks,
       livePrArtifactTrialUsefulNextActionRate: livePrArtifactTrial.usefulNextActionRate,
       livePrArtifactTrialCiProofSurfaceRate: livePrArtifactTrial.ciProofClassificationSurfaceRate,
+      livePrArtifactTrialFreshnessHours: livePrArtifactTrial.freshnessHours,
+      livePrArtifactTrialLiveSourceRate: livePrArtifactTrial.liveSourceRate,
       livePrArtifactTrialFullCaseCount: livePrArtifactTrialFull?.selectedCaseCount ?? 0,
       livePrArtifactTrialFullLiveSourceCount: livePrArtifactTrialFull?.liveSourceCount ?? 0,
       livePrArtifactTrialFullFalseAccepts: livePrArtifactTrialFull?.falseAccepts ?? 0,
       livePrArtifactTrialFullFalseBlocks: livePrArtifactTrialFull?.falseBlocks ?? 0,
       livePrArtifactTrialFullUsefulNextActionRate: livePrArtifactTrialFull?.usefulNextActionRate ?? 0,
-      livePrArtifactTrialFullCiProofSurfaceRate: livePrArtifactTrialFull?.ciProofClassificationSurfaceRate ?? 0
+      livePrArtifactTrialFullCiProofSurfaceRate: livePrArtifactTrialFull?.ciProofClassificationSurfaceRate ?? 0,
+      livePrArtifactTrialFullFreshnessHours: livePrArtifactTrialFull?.freshnessHours ?? 0,
+      livePrArtifactTrialFullLiveSourceRate: livePrArtifactTrialFull?.liveSourceRate ?? 0
     },
     trendlines,
     repoHotspots,
@@ -299,10 +307,12 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- live PR trial false accepts / false blocks: ${summary.metrics.livePrArtifactTrialFalseAccepts}/${summary.metrics.livePrArtifactTrialFalseBlocks}`,
     `- live PR trial useful next-action rate: ${summary.metrics.livePrArtifactTrialUsefulNextActionRate}%`,
     `- live PR trial CI proof surface rate: ${summary.metrics.livePrArtifactTrialCiProofSurfaceRate}%`,
+    `- live PR trial freshness / live-source rate: ${summary.metrics.livePrArtifactTrialFreshnessHours}h / ${summary.metrics.livePrArtifactTrialLiveSourceRate}%`,
     `- live PR trial full cases / live-source: ${summary.metrics.livePrArtifactTrialFullCaseCount}/${summary.metrics.livePrArtifactTrialFullLiveSourceCount}`,
     `- live PR trial full false accepts / false blocks: ${summary.metrics.livePrArtifactTrialFullFalseAccepts}/${summary.metrics.livePrArtifactTrialFullFalseBlocks}`,
     `- live PR trial full useful next-action rate: ${summary.metrics.livePrArtifactTrialFullUsefulNextActionRate}%`,
     `- live PR trial full CI proof surface rate: ${summary.metrics.livePrArtifactTrialFullCiProofSurfaceRate}%`,
+    `- live PR trial full freshness / live-source rate: ${summary.metrics.livePrArtifactTrialFullFreshnessHours}h / ${summary.metrics.livePrArtifactTrialFullLiveSourceRate}%`,
     `- human-judgment followups / blocked-too-hard: ${summary.metrics.humanJudgmentFollowupCount}/${summary.metrics.humanJudgmentBlockedTooHardCount}`,
     `- eval candidates: ${summary.metrics.evalCandidateCount}`,
     "",
@@ -394,7 +404,8 @@ async function loadOptionalLivePrArtifactTrialFullSummary(
       artifactPath,
       requestedCaseCount: 50,
       minimumLiveSourceCount: 10,
-      allowFallbackSource: true
+      allowFallbackSource: true,
+      minimumLiveSourceRate: 50
     });
   } catch {
     return undefined;

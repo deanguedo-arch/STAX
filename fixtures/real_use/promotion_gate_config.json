@@ -6,5 +6,10 @@
     "investor-proof-10-2026-05-01"
   ],
   "requireCiFailureTriage": true,
-  "requirePrReviewCommentScore": true
+  "requirePrReviewCommentScore": true,
+  "requireLivePrArtifactTrial": true,
+  "requireLivePrArtifactTrialFull": true,
+  "livePrArtifactTrialMaxAgeHours": 24,
+  "livePrArtifactTrialFullMaxAgeHours": 24,
+  "livePrArtifactTrialFullMinimumLiveSourceRate": 50
 }
