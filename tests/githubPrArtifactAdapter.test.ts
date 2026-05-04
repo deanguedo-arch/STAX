@@ -128,6 +128,23 @@ describe("GitHub PR artifact adapter", () => {
     expect(result.warnings.join("\n")).toContain("No GitHub token configured");
   });
 
+  it("does not emit missing-token warning when a GitHub token is supplied", async () => {
+    const result = await fetchGitHubPullRequestArtifactPacket(
+      { repoFullName: "vercel/next.js", prNumber: 93417 },
+      {
+        rootDir: process.cwd(),
+        githubToken: "test-token",
+        fetchImpl: async () => {
+          throw new Error("rate limit");
+        }
+      }
+    );
+
+    expect(result.source).toBe("recorded_snapshot_fallback");
+    expect(result.warnings.join("\n")).toContain("rate limit");
+    expect(result.warnings.join("\n")).not.toContain("No GitHub token configured");
+  });
+
   it("surfaces rate-limit reset context when GitHub headers are present", async () => {
     const result = await fetchGitHubPullRequestArtifactPacket(
       { repoFullName: "vercel/next.js", prNumber: 93417 },

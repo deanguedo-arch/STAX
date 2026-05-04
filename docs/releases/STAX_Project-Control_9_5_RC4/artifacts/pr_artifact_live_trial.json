@@ -1,5 +1,6 @@
 {
   "fixtureSet": "real_pr_artifact_trial_v1",
+  "recordedAt": "2026-05-04T01:03:35.632Z",
   "selectedCaseCount": 25,
   "requestedCaseCount": 25,
   "liveSourceCount": 25,
@@ -387,6 +388,5 @@
       "warnings": [],
       "issues": []
     }
-  ],
-  "recordedAt": "2026-05-03T22:30:46.492Z"
+  ]
 }

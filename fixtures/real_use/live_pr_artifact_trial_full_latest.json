@@ -1,10 +1,10 @@
 {
   "fixtureSet": "real_pr_artifact_trial_v1",
-  "recordedAt": "2026-05-03T22:58:31.335Z",
+  "recordedAt": "2026-05-04T01:03:41.283Z",
   "selectedCaseCount": 50,
   "requestedCaseCount": 50,
-  "liveSourceCount": 30,
-  "fallbackSourceCount": 20,
+  "liveSourceCount": 45,
+  "fallbackSourceCount": 5,
   "falseAccepts": 0,
   "falseBlocks": 0,
   "falseBlockRatePct": 0,
@@ -468,17 +468,14 @@
       "snapshotId": "dbt_12899",
       "repoFullName": "dbt-labs/dbt-core",
       "prNumber": 12899,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12899",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -486,17 +483,14 @@
       "snapshotId": "dbt_12899",
       "repoFullName": "dbt-labs/dbt-core",
       "prNumber": 12899,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12899",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -504,17 +498,14 @@
       "snapshotId": "dbt_12899",
       "repoFullName": "dbt-labs/dbt-core",
       "prNumber": 12899,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12899",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -522,17 +513,14 @@
       "snapshotId": "dbt_12899",
       "repoFullName": "dbt-labs/dbt-core",
       "prNumber": 12899,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12899",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -540,17 +528,14 @@
       "snapshotId": "dbt_12899",
       "repoFullName": "dbt-labs/dbt-core",
       "prNumber": 12899,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12899",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -558,17 +543,14 @@
       "snapshotId": "rails_57291",
       "repoFullName": "rails/rails",
       "prNumber": 57291,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/rails/rails/pulls/57291",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -576,17 +558,14 @@
       "snapshotId": "rails_57291",
       "repoFullName": "rails/rails",
       "prNumber": 57291,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/rails/rails/pulls/57291",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -594,17 +573,14 @@
       "snapshotId": "rails_57291",
       "repoFullName": "rails/rails",
       "prNumber": 57291,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/rails/rails/pulls/57291",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -612,17 +588,14 @@
       "snapshotId": "rails_57291",
       "repoFullName": "rails/rails",
       "prNumber": 57291,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/rails/rails/pulls/57291",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -630,17 +603,14 @@
       "snapshotId": "rails_57291",
       "repoFullName": "rails/rails",
       "prNumber": 57291,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/rails/rails/pulls/57291",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -648,17 +618,14 @@
       "snapshotId": "storybook_34682",
       "repoFullName": "storybookjs/storybook",
       "prNumber": 34682,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/storybookjs/storybook/pulls/34682",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -666,17 +633,14 @@
       "snapshotId": "storybook_34682",
       "repoFullName": "storybookjs/storybook",
       "prNumber": 34682,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/storybookjs/storybook/pulls/34682",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -684,17 +648,14 @@
       "snapshotId": "storybook_34682",
       "repoFullName": "storybookjs/storybook",
       "prNumber": 34682,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/storybookjs/storybook/pulls/34682",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -702,17 +663,14 @@
       "snapshotId": "storybook_34682",
       "repoFullName": "storybookjs/storybook",
       "prNumber": 34682,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/storybookjs/storybook/pulls/34682",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -720,17 +678,14 @@
       "snapshotId": "storybook_34682",
       "repoFullName": "storybookjs/storybook",
       "prNumber": 34682,
-      "source": "recorded_snapshot_fallback",
+      "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
       "usefulNextAction": true,
       "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
-      "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/storybookjs/storybook/pulls/34682",
-        "Using recorded public PR snapshot fallback."
-      ],
+      "warnings": [],
       "issues": []
     },
     {
@@ -746,7 +701,8 @@
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896",
+        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896; rate limit exceeded (resource=core, reset_at=2026-05-04T01:48:59.000Z)",
+        "No GitHub token configured; set STAX_GITHUB_TOKEN or GITHUB_TOKEN for higher GitHub API limits.",
         "Using recorded public PR snapshot fallback."
       ],
       "issues": []
@@ -764,7 +720,8 @@
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896",
+        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896; rate limit exceeded (resource=core, reset_at=2026-05-04T01:48:59.000Z)",
+        "No GitHub token configured; set STAX_GITHUB_TOKEN or GITHUB_TOKEN for higher GitHub API limits.",
         "Using recorded public PR snapshot fallback."
       ],
       "issues": []
@@ -782,7 +739,8 @@
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896",
+        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896; rate limit exceeded (resource=core, reset_at=2026-05-04T01:48:59.000Z)",
+        "No GitHub token configured; set STAX_GITHUB_TOKEN or GITHUB_TOKEN for higher GitHub API limits.",
         "Using recorded public PR snapshot fallback."
       ],
       "issues": []
@@ -800,7 +758,8 @@
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896",
+        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896; rate limit exceeded (resource=core, reset_at=2026-05-04T01:48:59.000Z)",
+        "No GitHub token configured; set STAX_GITHUB_TOKEN or GITHUB_TOKEN for higher GitHub API limits.",
         "Using recorded public PR snapshot fallback."
       ],
       "issues": []
@@ -818,7 +777,8 @@
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [
-        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896",
+        "GitHub API request failed: 403 rate limit exceeded for https://api.github.com/repos/dbt-labs/dbt-core/pulls/12896; rate limit exceeded (resource=core, reset_at=2026-05-04T01:48:59.000Z)",
+        "No GitHub token configured; set STAX_GITHUB_TOKEN or GITHUB_TOKEN for higher GitHub API limits.",
         "Using recorded public PR snapshot fallback."
       ],
       "issues": []
