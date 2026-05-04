@@ -3,6 +3,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { attachStaxToRepo } from "../src/sidecar/AttachStax.js";
 import {
+  collectCodexTurn,
+  writeSidecarHeartbeat
+} from "../src/sidecar/CodexTurnCapture.js";
+import {
   collectCommandEvidence,
   isDangerousSidecarCommand
 } from "../src/sidecar/CommandEvidenceCollector.js";
@@ -11,6 +15,134 @@ import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 describe("STAX sidecar watch and collect", () => {
+  it("collects Codex session content into current-turn and turn artifacts", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-codex-turn-");
+    await attachStaxToRepo(repoPath);
+    const sessionsRoot = path.join(repoPath, "codex-sessions");
+    const sessionPath = path.join(sessionsRoot, "rollout-session.jsonl");
+    await fs.mkdir(sessionsRoot, { recursive: true });
+    await fs.writeFile(
+      sessionPath,
+      [
+        JSON.stringify({ type: "session_meta", payload: { id: "session-123" } }),
+        JSON.stringify({
+          type: "response_item",
+          payload: {
+            type: "message",
+            role: "user",
+            content: [{ type: "input_text", text: "Run STAX sidecar." }]
+          }
+        }),
+        JSON.stringify({
+          type: "response_item",
+          payload: {
+            type: "message",
+            role: "assistant",
+            content: [{ type: "output_text", text: "Starting sidecar." }]
+          }
+        })
+      ].join("\n"),
+      "utf8"
+    );
+
+    const result = await collectCodexTurn({
+      repoPath,
+      sessionsRoot,
+      now: new Date("2026-05-04T18:00:00.000Z")
+    });
+    const currentTurn = JSON.parse(
+      await fs.readFile(path.join(repoPath, ".stax", "current-turn.json"), "utf8")
+    ) as { sessionId: string; messages: Array<{ role: string; text: string }>; source: { hash: string } };
+
+    expect(result.messageCount).toBe(2);
+    expect(currentTurn.sessionId).toBe("session-123");
+    expect(currentTurn.source.hash).toHaveLength(64);
+    expect(currentTurn.messages).toEqual([
+      { role: "user", text: "Run STAX sidecar." },
+      { role: "assistant", text: "Starting sidecar." }
+    ]);
+    await expect(fs.stat(result.turnArtifactPath)).resolves.toBeTruthy();
+  });
+
+  it("accepts a clean attached repo only after fresh heartbeat and Codex turn capture", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-fresh-turn-");
+    await attachStaxToRepo(repoPath);
+    await writeSidecarHeartbeat({
+      repoPath,
+      now: new Date("2026-05-04T18:00:00.000Z"),
+      pid: 123
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "current-turn.json"),
+      JSON.stringify(
+        {
+          schemaVersion: "stax-codex-turn-v1",
+          capturedAt: "2026-05-04T18:00:00.000Z",
+          sessionId: "session-123",
+          source: {
+            path: path.join(repoPath, "codex-sessions", "rollout-session.jsonl"),
+            hash: "a".repeat(64),
+            modifiedAt: "2026-05-04T18:00:00.000Z"
+          },
+          messageCount: 1,
+          messages: [{ role: "user", text: "Run STAX sidecar." }]
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+    const status = await runStaxGate({
+      repoPath,
+      writeLearningEvent: false,
+      now: new Date("2026-05-04T18:01:00.000Z")
+    });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.verified.join("\n")).toContain("Fresh Codex turn capture is present");
+  });
+
+  it("rejects stale heartbeat and Codex turn capture", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-stale-turn-");
+    await attachStaxToRepo(repoPath);
+    await writeSidecarHeartbeat({
+      repoPath,
+      now: new Date("2026-05-04T17:00:00.000Z"),
+      pid: 123
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "current-turn.json"),
+      JSON.stringify(
+        {
+          schemaVersion: "stax-codex-turn-v1",
+          capturedAt: "2026-05-04T17:00:00.000Z",
+          sessionId: "session-123",
+          source: {
+            path: path.join(repoPath, "codex-sessions", "rollout-session.jsonl"),
+            hash: "a".repeat(64),
+            modifiedAt: "2026-05-04T17:00:00.000Z"
+          },
+          messageCount: 1,
+          messages: [{ role: "user", text: "Old prompt." }]
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+    const status = await runStaxGate({
+      repoPath,
+      writeLearningEvent: false,
+      now: new Date("2026-05-04T18:00:00.000Z")
+    });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("STAX sidecar heartbeat is stale");
+    expect(status.unverified.join("\n")).toContain("Codex turn capture is stale");
+  });
+
   it("collects successful and failed command evidence", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-collect-");
     await attachStaxToRepo(repoPath);
@@ -47,7 +179,7 @@ describe("STAX sidecar watch and collect", () => {
 
     const allowed = await collectCommandEvidence({
       repoPath,
-      command: ["echo", "deploy"],
+      command: ["node", "-e", "console.log('deploy')"],
       allowRisky: true,
       writeLearningEvent: false
     });

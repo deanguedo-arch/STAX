@@ -64,6 +64,7 @@
     "stax:next-prompt": "tsx scripts/staxNextPrompt.ts",
     "stax:watch": "tsx scripts/staxWatch.ts",
     "stax:collect": "tsx scripts/staxCollect.ts",
+    "stax:codex-collect": "tsx scripts/staxCodexCollect.ts",
     "stax:harvest": "tsx scripts/staxHarvest.ts",
     "stax:review-imports": "tsx scripts/staxReviewImports.ts",
     "stax:promote-import": "tsx scripts/staxPromoteImport.ts",

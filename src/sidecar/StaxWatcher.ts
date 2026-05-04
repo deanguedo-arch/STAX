@@ -1,11 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { tryCollectCodexTurn, writeSidecarHeartbeat } from "./CodexTurnCapture.js";
 import { runStaxGate, type StaxGateStatus } from "./StaxGate.js";
 import { pathExists, readTextIfExists, runGit, sha256, sidecarDir, validateRepoPath } from "./SidecarRepo.js";
 
 export type StaxWatcherOptions = {
   repoPath: string;
   intervalMs?: number;
+  sessionsRoot?: string;
+  sourceFile?: string;
   onVerdictChange?: (status: StaxGateStatus) => void;
 };
 
@@ -21,6 +24,12 @@ export class StaxWatcher {
     if (!(await pathExists(staxPath))) {
       throw new Error(`STAX Sidecar is not attached for ${repoPath}. Run npm run stax:attach -- --repo ${repoPath}`);
     }
+    await writeSidecarHeartbeat({ repoPath });
+    await tryCollectCodexTurn({
+      repoPath,
+      sessionsRoot: this.options.sessionsRoot,
+      sourceFile: this.options.sourceFile
+    });
 
     const inputHash = await computeWatcherInputHash(repoPath);
     if (inputHash === this.previousInputHash) {

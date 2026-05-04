@@ -70,6 +70,8 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
   await ensureDirectory(path.join(staxPath, "command-evidence"));
   await ensureDirectory(path.join(staxPath, "events"));
   await ensureDirectory(path.join(staxPath, "imports"));
+  await ensureDirectory(path.join(staxPath, "runtime"));
+  await ensureDirectory(path.join(staxPath, "turns"));
 
   const files: Array<[string, string]> = [
     [
@@ -83,6 +85,9 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
           branch: snapshot.branch ?? null,
           commitSha: snapshot.commitSha ?? null,
           requireCodexReportForDiff: true,
+          requireFreshCodexTurnCapture: true,
+          maxCodexTurnAgeMs: 300000,
+          maxSidecarHeartbeatAgeMs: 300000,
           dangerousCommandsRequireAllowRisky: true
         },
         null,
@@ -173,6 +178,7 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
   const agentsBefore = await readTextIfExists(agentsPath);
   const appendedAgentsProtocol = !agentsBefore.includes(STAX_AGENTS_SECTION_MARKER);
   await fs.writeFile(agentsPath, `${upsertAgentsProtocolSection(agentsBefore).trimEnd()}\n`, "utf8");
+  await upsertGeneratedArtifactIgnores(path.join(repoPath, ".gitignore"));
 
   return {
     repoPath,
@@ -181,6 +187,19 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
     agentsPath,
     appendedAgentsProtocol
   };
+}
+
+async function upsertGeneratedArtifactIgnores(gitignorePath: string): Promise<void> {
+  const existing = await readTextIfExists(gitignorePath);
+  const required = [".stax/current-turn.json", ".stax/runtime/", ".stax/turns/"];
+  const existingLines = new Set(existing.split(/\r?\n/).map((line) => line.trim()));
+  const missing = required.filter((line) => !existingLines.has(line));
+  if (missing.length === 0) return;
+
+  const next = [existing.trimEnd(), "", "# STAX generated local capture artifacts", ...missing]
+    .filter((line, index) => line || index > 0)
+    .join("\n");
+  await fs.writeFile(gitignorePath, `${next.trimStart()}\n`, "utf8");
 }
 
 export function renderAgentsProtocolSection(): string {

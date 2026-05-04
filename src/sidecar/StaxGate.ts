@@ -50,6 +50,7 @@ export type StaxGateStatus = {
 export type RunStaxGateOptions = {
   repoPath: string;
   writeLearningEvent?: boolean;
+  now?: Date;
 };
 
 type CommandEvidenceFile = ProjectControlCommandEvidenceEntry & {
@@ -63,6 +64,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   const staxPath = sidecarDir(repoPath);
   await ensureDirectory(staxPath);
   const snapshot = await collectGitSnapshot(repoPath);
+  const config = await readSidecarConfig(repoPath);
   const task = (await readTextIfExists(path.join(staxPath, "task.md"))).trim() || `STAX sidecar audit for ${snapshot.repoName}.`;
   const codexReport = (await readTextIfExists(path.join(staxPath, "codex-report.md"))).trim();
   const commandEvidenceEntries = await readCommandEvidenceEntries(repoPath);
@@ -110,17 +112,19 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     repoPath,
     snapshot
   });
+  const runtime = await deriveRuntimeFindings(repoPath, config, options.now ?? new Date());
 
   const verified = dedupe([
       ...(!auditableDiff
       ? ["No working-tree diff is currently present."]
       : [`Working-tree diff detected with ${changedFiles.length} changed file(s).`]),
     ...proofStack.verified,
-    ...extra.verified
+    ...extra.verified,
+    ...runtime.verified
   ]);
-  const weak = dedupe([...proofStack.weak, ...extra.weak]);
-  const unverified = dedupe([...proofStack.unverified, ...extra.unverified]);
-  const risk = dedupe([...proofStack.risk, ...extra.risk]);
+  const weak = dedupe([...proofStack.weak, ...extra.weak, ...runtime.weak]);
+  const unverified = dedupe([...proofStack.unverified, ...extra.unverified, ...runtime.unverified]);
+  const risk = dedupe([...proofStack.risk, ...extra.risk, ...runtime.risk]);
   const verdict = deriveVerdict({
     hasDiff: auditableDiff,
     codexReport,
@@ -179,6 +183,99 @@ export async function printStaxStatus(repoPathInput: string): Promise<string> {
   if (existing.trim()) return existing;
   const status = await runStaxGate({ repoPath, writeLearningEvent: false });
   return status.statusMarkdown;
+}
+
+type SidecarConfig = {
+  requireFreshCodexTurnCapture?: boolean;
+  maxCodexTurnAgeMs?: number;
+  maxSidecarHeartbeatAgeMs?: number;
+};
+
+async function readSidecarConfig(repoPath: string): Promise<SidecarConfig> {
+  const raw = await readTextIfExists(path.join(sidecarDir(repoPath), "config.json"));
+  if (!raw.trim()) return {};
+  try {
+    const parsed = JSON.parse(raw) as SidecarConfig;
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+async function deriveRuntimeFindings(
+  repoPath: string,
+  config: SidecarConfig,
+  now: Date
+): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
+  const verified: string[] = [];
+  const weak: string[] = [];
+  const unverified: string[] = [];
+  const risk: string[] = [];
+  if (!config.requireFreshCodexTurnCapture) return { verified, weak, unverified, risk };
+
+  const nowMs = now.getTime();
+  const heartbeatMaxAge = config.maxSidecarHeartbeatAgeMs ?? 300000;
+  const turnMaxAge = config.maxCodexTurnAgeMs ?? 300000;
+  const heartbeatRaw = await readTextIfExists(path.join(sidecarDir(repoPath), "runtime", "heartbeat.json"));
+  const currentTurnRaw = await readTextIfExists(path.join(sidecarDir(repoPath), "current-turn.json"));
+
+  if (!heartbeatRaw.trim()) {
+    unverified.push("Fresh STAX sidecar heartbeat is missing.");
+    risk.push("False Pass risk: sidecar runtime is not proven alive for this turn.");
+  } else {
+    const heartbeat = parseJsonObject(heartbeatRaw);
+    const updatedAt = parseTimestampMs(heartbeat?.updatedAt);
+    const ageMs = updatedAt === undefined ? undefined : nowMs - updatedAt;
+    if (ageMs === undefined) {
+      unverified.push("STAX sidecar heartbeat has invalid updatedAt.");
+      risk.push("False Pass risk: sidecar runtime freshness cannot be verified.");
+    } else if (ageMs < 0 || ageMs > heartbeatMaxAge) {
+      unverified.push("STAX sidecar heartbeat is stale.");
+      risk.push("False Pass risk: sidecar runtime heartbeat is stale.");
+    } else {
+      verified.push(`Fresh STAX sidecar heartbeat is present (${ageMs}ms old).`);
+    }
+  }
+
+  if (!currentTurnRaw.trim()) {
+    unverified.push("Fresh Codex turn capture is missing.");
+    risk.push("False Pass risk: STAX has not captured the current Codex turn content.");
+  } else {
+    const currentTurn = parseJsonObject(currentTurnRaw);
+    const capturedAt = parseTimestampMs(currentTurn?.capturedAt);
+    const ageMs = capturedAt === undefined ? undefined : nowMs - capturedAt;
+    const sessionId = typeof currentTurn?.sessionId === "string" ? currentTurn.sessionId : "";
+    const messages = Array.isArray(currentTurn?.messages) ? currentTurn.messages : [];
+    if (ageMs === undefined) {
+      unverified.push("Codex turn capture has invalid capturedAt.");
+      risk.push("False Pass risk: Codex turn capture freshness cannot be verified.");
+    } else if (ageMs < 0 || ageMs > turnMaxAge) {
+      unverified.push("Codex turn capture is stale.");
+      risk.push("False Pass risk: Codex turn capture is stale.");
+    } else if (!sessionId || messages.length === 0) {
+      unverified.push("Codex turn capture is malformed or empty.");
+      risk.push("False Pass risk: Codex turn capture has no usable session messages.");
+    } else {
+      verified.push(`Fresh Codex turn capture is present for session ${sessionId} with ${messages.length} message(s).`);
+    }
+  }
+
+  return { verified, weak, unverified, risk };
+}
+
+function parseJsonObject(raw: string): Record<string, unknown> | undefined {
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function parseTimestampMs(value: unknown): number | undefined {
+  if (typeof value !== "string") return undefined;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 async function writeSidecarStatus(repoPath: string, status: StaxGateStatus): Promise<void> {
@@ -241,10 +338,10 @@ function deriveVerdict(input: {
   unverified: string[];
   risk: string[];
 }): StaxGateVerdict {
-  if (!input.hasDiff && input.codexReport.trim().length === 0) return "Accept";
   if (input.unverified.length > 0 || input.risk.some((item) => /wrong repo|wrong branch|fake-complete|unsafe|unsupported|missing|malformed|docs-only|source-only/i.test(item))) {
     return "Reject";
   }
+  if (!input.hasDiff && input.codexReport.trim().length === 0) return "Accept";
   if (input.risk.length > 0) return "Human review";
   if (input.weak.length > 0) return "Provisional";
   return "Accept";
@@ -363,7 +460,7 @@ function parseStatusChangedFiles(gitStatusShort: string): ProjectControlChangedF
 
 function isSidecarManagedPath(filePath: string): boolean {
   const normalized = filePath.replace(/\\/g, "/");
-  return normalized === "AGENTS.md" || normalized.startsWith(".stax/");
+  return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/");
 }
 
 function deriveSidecarFindings(input: {
