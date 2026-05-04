@@ -13,6 +13,7 @@ const PrArtifactSnapshotCategorySchema = z.enum([
   "tests_fixtures_goldens",
   "ui_data_deploy_security"
 ]);
+const PrArtifactTrialProfileSchema = z.enum(["standard_50", "hard_100"]);
 
 const ExpectedStatusSchema = z.enum(["Accept", "Reject", "Provisional", "Human review", "Clean failure"]);
 
@@ -53,8 +54,9 @@ const PrArtifactTrialCaseSchema = z.object({
 
 const PrArtifactTrialFixtureSchema = z.object({
   fixtureSet: z.string().min(1),
-  snapshots: z.array(PrArtifactSnapshotSchema).length(10),
-  cases: z.array(PrArtifactTrialCaseSchema).length(50)
+  trialProfile: PrArtifactTrialProfileSchema.optional(),
+  snapshots: z.array(PrArtifactSnapshotSchema).min(10),
+  cases: z.array(PrArtifactTrialCaseSchema).min(50)
 });
 
 export type PrArtifactSnapshotCategory = z.infer<typeof PrArtifactSnapshotCategorySchema>;
@@ -85,7 +87,9 @@ export type PrArtifactTrialMiss = {
 
 export type PrArtifactTrialScoreSummary = {
   fixtureSet: string;
+  trialProfile: z.infer<typeof PrArtifactTrialProfileSchema> | "custom";
   snapshotCount: number;
+  uniquePullRequestCount: number;
   caseCount: number;
   falseAccepts: number;
   falseBlocks: number;
@@ -100,14 +104,28 @@ export type PrArtifactTrialScoreSummary = {
   blockers: string[];
 };
 
-export async function loadPrArtifactTrialFixture(rootDir = process.cwd()): Promise<PrArtifactTrialFixture> {
-  const fixturePath = path.join(rootDir, "fixtures", "pr_artifact_trial", "pr_artifact_trial_50_cases.json");
+type PrArtifactTrialLoadOptions = {
+  fixturePath?: string;
+};
+
+function resolvePrArtifactFixturePath(rootDir: string, fixturePath?: string): string {
+  return fixturePath ?? path.join(rootDir, "fixtures", "pr_artifact_trial", "pr_artifact_trial_50_cases.json");
+}
+
+export async function loadPrArtifactTrialFixture(
+  rootDir = process.cwd(),
+  options: PrArtifactTrialLoadOptions = {}
+): Promise<PrArtifactTrialFixture> {
+  const fixturePath = resolvePrArtifactFixturePath(rootDir, options.fixturePath);
   const raw = JSON.parse(await fs.readFile(fixturePath, "utf8")) as unknown;
   return PrArtifactTrialFixtureSchema.parse(raw);
 }
 
-export async function validatePrArtifactTrialFixtures(rootDir = process.cwd()): Promise<PrArtifactTrialIntegritySummary> {
-  const fixture = await loadPrArtifactTrialFixture(rootDir);
+export async function validatePrArtifactTrialFixtures(
+  rootDir = process.cwd(),
+  options: PrArtifactTrialLoadOptions = {}
+): Promise<PrArtifactTrialIntegritySummary> {
+  const fixture = await loadPrArtifactTrialFixture(rootDir, options);
   const issues: string[] = [];
   const snapshotIds = new Set(fixture.snapshots.map((snapshot) => snapshot.snapshotId));
   const categoryCounts = zeroCategoryCounts();
@@ -125,9 +143,16 @@ export async function validatePrArtifactTrialFixtures(rootDir = process.cwd()): 
     }
   }
 
+  const expectedCaseCountByCategory = expectedCategoryCount(fixture.cases.length, fixture.trialProfile);
   for (const category of PrArtifactSnapshotCategorySchema.options) {
-    if (categoryCounts[category] !== 10) {
-      issues.push(`category ${category} must contain exactly 10 cases`);
+    if (expectedCaseCountByCategory != null) {
+      if (categoryCounts[category] !== expectedCaseCountByCategory) {
+        issues.push(`category ${category} must contain exactly ${expectedCaseCountByCategory} cases`);
+      }
+      continue;
+    }
+    if (categoryCounts[category] === 0) {
+      issues.push(`category ${category} must include at least one case`);
     }
   }
 
@@ -143,11 +168,17 @@ export async function validatePrArtifactTrialFixtures(rootDir = process.cwd()): 
   };
 }
 
-export async function scorePrArtifactTrial(rootDir = process.cwd()): Promise<PrArtifactTrialScoreSummary> {
-  const integrity = await validatePrArtifactTrialFixtures(rootDir);
-  const fixture = await loadPrArtifactTrialFixture(rootDir);
+export async function scorePrArtifactTrial(
+  rootDir = process.cwd(),
+  options: PrArtifactTrialLoadOptions = {}
+): Promise<PrArtifactTrialScoreSummary> {
+  const integrity = await validatePrArtifactTrialFixtures(rootDir, options);
+  const fixture = await loadPrArtifactTrialFixture(rootDir, options);
   const runtime = await createDefaultRuntime();
   const snapshots = new Map(fixture.snapshots.map((snapshot) => [snapshot.snapshotId, snapshot]));
+  const uniquePullRequestCount = new Set(
+    fixture.snapshots.map((snapshot) => `${snapshot.repoFullName}#${snapshot.packet.prNumber}`)
+  ).size;
   const misses: PrArtifactTrialMiss[] = [];
 
   let falseAccepts = 0;
@@ -235,7 +266,9 @@ export async function scorePrArtifactTrial(rootDir = process.cwd()): Promise<PrA
 
   return {
     fixtureSet: fixture.fixtureSet,
+    trialProfile: fixture.trialProfile ?? "custom",
     snapshotCount: fixture.snapshots.length,
+    uniquePullRequestCount,
     caseCount: fixture.cases.length,
     falseAccepts,
     falseBlocks,
@@ -351,6 +384,15 @@ function zeroCategoryCounts(): Record<PrArtifactSnapshotCategory, number> {
     tests_fixtures_goldens: 0,
     ui_data_deploy_security: 0
   };
+}
+
+function expectedCategoryCount(
+  caseCount: number,
+  profile?: z.infer<typeof PrArtifactTrialProfileSchema>
+): number | undefined {
+  if (profile === "standard_50" || caseCount === 50) return 10;
+  if (profile === "hard_100" || caseCount === 100) return 20;
+  return undefined;
 }
 
 export function normalizeTrialPacket(packet: PullRequestArtifactPacket): PullRequestArtifactPacket {

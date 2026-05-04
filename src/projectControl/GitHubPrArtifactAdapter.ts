@@ -141,13 +141,23 @@ export async function loadRecordedPullRequestArtifactPacket(
   ref: GitHubPrRef,
   rootDir = process.cwd()
 ): Promise<PullRequestArtifactPacket | undefined> {
-  const fixturePath = path.join(rootDir, "fixtures", "pr_artifact_trial", "pr_artifact_trial_50_cases.json");
-  const raw = JSON.parse(await fs.readFile(fixturePath, "utf8")) as unknown;
-  const fixture = RecordedSnapshotFixtureSchema.parse(raw);
-  const match = fixture.snapshots.find(
-    (snapshot) => snapshot.repoFullName === ref.repoFullName && snapshot.packet.prNumber === ref.prNumber
-  );
-  return match?.packet;
+  const fixturePaths = [
+    path.join(rootDir, "fixtures", "pr_artifact_trial", "pr_artifact_trial_100_cases.json"),
+    path.join(rootDir, "fixtures", "pr_artifact_trial", "pr_artifact_trial_50_cases.json")
+  ];
+  for (const fixturePath of fixturePaths) {
+    try {
+      const raw = JSON.parse(await fs.readFile(fixturePath, "utf8")) as unknown;
+      const fixture = RecordedSnapshotFixtureSchema.parse(raw);
+      const match = fixture.snapshots.find(
+        (snapshot) => snapshot.repoFullName === ref.repoFullName && snapshot.packet.prNumber === ref.prNumber
+      );
+      if (match) return match.packet;
+    } catch {
+      // Ignore missing or malformed fixture variants; fallback resolution is best-effort.
+    }
+  }
+  return undefined;
 }
 
 async function fetchLivePacket(

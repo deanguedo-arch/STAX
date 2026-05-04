@@ -1,0 +1,2546 @@
+{
+  "fixtureSet": "real_pr_artifact_trial_v2_hard",
+  "trialProfile": "hard_100",
+  "snapshots": [
+    {
+      "snapshotId": "nextjs_93417",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93417",
+      "category": "passing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with source and test changes. CI status normalized as successful from merged public artifact state.",
+      "packet": {
+        "prNumber": 93417,
+        "title": "Fix streaming in draft mode for cache components",
+        "body": "Public PR snapshot for a merged behavior fix with test coverage.",
+        "repo": "vercel/next.js",
+        "branch": "sam/streaming-in-cache-components-draft-mode",
+        "baseBranch": "canary",
+        "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+        "changedFiles": [
+          "packages/next/src/build/templates/app-page.ts",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/layout.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/loading.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/page.tsx",
+          "test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/next/src/build/templates/app-page.ts b/packages/next/src/build/templates/app-page.ts\n--- a/packages/next/src/build/templates/app-page.ts\n+++ b/packages/next/src/build/templates/app-page.ts\n@@\n-    routeModule.isDev === true ||\n+    routeModule.isDev === true ||\n+    isDraftMode ||\ndiff --git a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n--- a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n+++ b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n@@\n+  it('should stream Suspense fallbacks when draft mode is enabled', async () => {\n+    expect($('#draft-mode').text()).toBe('true')\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "branch": "sam/streaming-in-cache-components-draft-mode",
+            "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+            "summary": "Merged public PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "app-router"
+        ]
+      }
+    },
+    {
+      "snapshotId": "storybook_34681",
+      "repoFullName": "storybookjs/storybook",
+      "publicUrl": "https://github.com/storybookjs/storybook/pull/34681",
+      "category": "passing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with a narrow source fix. CI status normalized as successful from merged public artifact state.",
+      "packet": {
+        "prNumber": 34681,
+        "title": "Vitest: Fix agent detection breaking runs",
+        "body": "Public PR snapshot for a merged source fix.",
+        "repo": "storybookjs/storybook",
+        "branch": "fix/agent-detection",
+        "baseBranch": "next",
+        "changedFiles": [
+          "code/addons/vitest/src/vitest-plugin/index.ts"
+        ],
+        "unifiedDiff": "diff --git a/code/addons/vitest/src/vitest-plugin/index.ts b/code/addons/vitest/src/vitest-plugin/index.ts\n--- a/code/addons/vitest/src/vitest-plugin/index.ts\n+++ b/code/addons/vitest/src/vitest-plugin/index.ts\n@@\n-  const isAgent = Boolean(options.agent)\n+  const isAgent = Boolean(options.agent && options.agent.enabled)",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged public PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "snapshotId": "vitest_10231",
+      "repoFullName": "vitest-dev/vitest",
+      "publicUrl": "https://github.com/vitest-dev/vitest/pull/10231",
+      "category": "failing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Closed public PR snapshot with non-successful checks visible on the public checks page, including failure and skipped segments.",
+      "packet": {
+        "prNumber": 10231,
+        "title": "fix(browser): guard against toJSON in createSafeRpc proxy",
+        "body": "Public PR snapshot with a deploy preview but non-successful checks on the checks page.",
+        "repo": "vitest-dev/vitest",
+        "branch": "fix/browser-rpc-guard-tojson",
+        "baseBranch": "main",
+        "changedFiles": [
+          "packages/browser/src/client/tester/rpc.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/browser/src/client/tester/rpc.ts b/packages/browser/src/client/tester/rpc.ts\n--- a/packages/browser/src/client/tester/rpc.ts\n+++ b/packages/browser/src/client/tester/rpc.ts\n@@\n-  return new Proxy(target, handlers)\n+  return new Proxy(target, {\n+    get(value, key) {\n+      if (key === \"toJSON\") return undefined\n+      return handlers.get?.(value, key)\n+    }\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "github-actions",
+            "status": "failure",
+            "branch": "fix/browser-rpc-guard-tojson",
+            "summary": "Public checks page showed mixed outcomes with at least one failure segment and skipped work.",
+            "expectedJobCount": 35,
+            "completedJobCount": 35,
+            "failedJobCount": 1,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 1
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "browser"
+        ]
+      }
+    },
+    {
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93410",
+      "category": "failing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Closed, unmerged docs-only public PR snapshot. CI lane is normalized as non-successful for the failing-artifact trial slice.",
+      "packet": {
+        "prNumber": 93410,
+        "title": "docs: add Thinking in Next.js guide",
+        "body": "Public PR snapshot for a docs-only change that did not merge.",
+        "repo": "vercel/next.js",
+        "branch": "docs/thinking-in-next",
+        "baseBranch": "canary",
+        "changedFiles": [
+          "docs/01-app/02-guides/thinking-in-nextjs.mdx"
+        ],
+        "unifiedDiff": "diff --git a/docs/01-app/02-guides/thinking-in-nextjs.mdx b/docs/01-app/02-guides/thinking-in-nextjs.mdx\n--- /dev/null\n+++ b/docs/01-app/02-guides/thinking-in-nextjs.mdx\n@@\n+# Thinking in Next.js\n+This guide explains how to approach rendering and data flow in Next.js.",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "failure",
+            "branch": "docs/thinking-in-next",
+            "summary": "Closed public PR snapshot normalized as non-successful proof for the failing-artifact slice.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 1,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "documentation"
+        ]
+      }
+    },
+    {
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93400",
+      "category": "docs_config_only",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with workflow-only changes. Useful for config-only and release-gate claims.",
+      "packet": {
+        "prNumber": 93400,
+        "title": "[ci]: remove PR creation from deploy test workflow",
+        "body": "Public PR snapshot for a workflow-only change.",
+        "repo": "vercel/next.js",
+        "branch": "ci/remove-pr-creation",
+        "baseBranch": "canary",
+        "changedFiles": [
+          ".github/workflows/test_e2e_deploy_release.yml"
+        ],
+        "unifiedDiff": "diff --git a/.github/workflows/test_e2e_deploy_release.yml b/.github/workflows/test_e2e_deploy_release.yml\n--- a/.github/workflows/test_e2e_deploy_release.yml\n+++ b/.github/workflows/test_e2e_deploy_release.yml\n@@\n-      - name: Create PR\n-        run: gh pr create --draft\n+      - name: Skip PR creation\n+        run: echo \"handled elsewhere\"",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged public workflow-only PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "ci"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12897",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12897",
+      "category": "docs_config_only",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Open public PR snapshot that syncs generated JSON schemas. Useful for config/generated-file overclaim checks.",
+      "packet": {
+        "prNumber": 12897,
+        "title": "chore: sync JSON schemas from dbt-fusion",
+        "body": "Public PR snapshot with generated schema sync artifacts.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/sync-json-schemas",
+        "baseBranch": "main",
+        "changedFiles": [
+          ".changes/unreleased/Under the Hood-20260501-134426.yaml",
+          "core/dbt/jsonschemas/resources/latest.json"
+        ],
+        "unifiedDiff": "diff --git a/core/dbt/jsonschemas/resources/latest.json b/core/dbt/jsonschemas/resources/latest.json\n--- a/core/dbt/jsonschemas/resources/latest.json\n+++ b/core/dbt/jsonschemas/resources/latest.json\n@@\n-    \"version\": \"1.0\"\n+    \"version\": \"1.1\"",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "pending",
+            "summary": "Public schema-sync snapshot without durable local release proof.",
+            "expectedJobCount": 1,
+            "completedJobCount": 0,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "schemas"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12899",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12899",
+      "category": "tests_fixtures_goldens",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot that only updates test-duration fixture data. Useful for fixture-only proof checks.",
+      "packet": {
+        "prNumber": 12899,
+        "title": "Update test durations for pytest-split",
+        "body": "Public PR snapshot that only updates test duration metadata.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/test-durations",
+        "baseBranch": "main",
+        "changedFiles": [
+          "core/.test_durations"
+        ],
+        "unifiedDiff": "diff --git a/core/.test_durations b/core/.test_durations\n--- a/core/.test_durations\n+++ b/core/.test_durations\n@@\n-test_node_a 12.1\n+test_node_a 11.8",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged fixture-only public PR snapshot normalized as successful checks.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "tests"
+        ]
+      }
+    },
+    {
+      "snapshotId": "rails_57291",
+      "repoFullName": "rails/rails",
+      "publicUrl": "https://github.com/rails/rails/pull/57291",
+      "category": "tests_fixtures_goldens",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with test-only file changes. Useful for test-only versus behavior-proof checks.",
+      "packet": {
+        "prNumber": 57291,
+        "title": "[ci skip] Fix typos in test descriptions",
+        "body": "Public PR snapshot with test-only edits.",
+        "repo": "rails/rails",
+        "branch": "fix/test-typos",
+        "baseBranch": "main",
+        "changedFiles": [
+          "activestorage/test/models/named_variant_test.rb",
+          "activesupport/test/env_configuration_test.rb"
+        ],
+        "unifiedDiff": "diff --git a/activestorage/test/models/named_variant_test.rb b/activestorage/test/models/named_variant_test.rb\n--- a/activestorage/test/models/named_variant_test.rb\n+++ b/activestorage/test/models/named_variant_test.rb\n@@\n-  test \"retuns variant\" do\n+  test \"returns variant\" do",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged test-only public PR snapshot normalized as successful checks.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "tests"
+        ]
+      }
+    },
+    {
+      "snapshotId": "storybook_34682",
+      "repoFullName": "storybookjs/storybook",
+      "publicUrl": "https://github.com/storybookjs/storybook/pull/34682",
+      "category": "ui_data_deploy_security",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public prerelease PR snapshot. Useful for release/deploy proof checks because the public artifact alone does not prove rollback, staging, or signing readiness.",
+      "packet": {
+        "prNumber": 34682,
+        "title": "Release: Prerelease 10.4.0-alpha.15",
+        "body": "Public prerelease PR snapshot with release metadata changes.",
+        "repo": "storybookjs/storybook",
+        "branch": "release/prerelease-10.4.0-alpha.15",
+        "baseBranch": "next",
+        "changedFiles": [
+          "CHANGELOG.prerelease.md",
+          "code/addons/vitest/src/vitest-plugin/index.ts",
+          "code/package.json"
+        ],
+        "unifiedDiff": "diff --git a/CHANGELOG.prerelease.md b/CHANGELOG.prerelease.md\n--- a/CHANGELOG.prerelease.md\n+++ b/CHANGELOG.prerelease.md\n@@\n-## 10.4.0-alpha.14\n+## 10.4.0-alpha.15\ndiff --git a/code/package.json b/code/package.json\n--- a/code/package.json\n+++ b/code/package.json\n@@\n-  \"version\": \"10.4.0-alpha.14\"\n+  \"version\": \"10.4.0-alpha.15\"",
+        "ciStatuses": [
+          {
+            "workflow": "release-pipeline",
+            "status": "success",
+            "summary": "Merged public prerelease snapshot normalized as successful CI, but not as release readiness proof.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "release"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12896",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12896",
+      "category": "ui_data_deploy_security",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Open public schema-sync PR snapshot used for data-proof requirements like validation, dry run, and row-count discipline.",
+      "packet": {
+        "prNumber": 12896,
+        "title": "chore: sync JSON schemas from dbt-fusion",
+        "body": "Public PR snapshot for a generated schema sync without explicit validation artifacts.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/sync-json-schemas-2",
+        "baseBranch": "main",
+        "changedFiles": [
+          ".changes/unreleased/Under the Hood-20260501-122055.yaml",
+          "core/dbt/jsonschemas/resources/latest.json"
+        ],
+        "unifiedDiff": "diff --git a/core/dbt/jsonschemas/resources/latest.json b/core/dbt/jsonschemas/resources/latest.json\n--- a/core/dbt/jsonschemas/resources/latest.json\n+++ b/core/dbt/jsonschemas/resources/latest.json\n@@\n-    \"nodes\": []\n+    \"nodes\": [\"semantic_model\"]",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "pending",
+            "summary": "Public schema-sync snapshot without validation, dry-run, or publish-readiness evidence.",
+            "expectedJobCount": 1,
+            "completedJobCount": 0,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "schemas"
+        ]
+      }
+    },
+    {
+      "snapshotId": "nextjs_93417_hm",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93417",
+      "category": "passing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with source and test changes. CI status normalized as successful from merged public artifact state. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 93417,
+        "title": "Fix streaming in draft mode for cache components",
+        "body": "Public PR snapshot for a merged behavior fix with test coverage.",
+        "repo": "vercel/next.js",
+        "branch": "sam/streaming-in-cache-components-draft-mode",
+        "baseBranch": "canary",
+        "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+        "changedFiles": [
+          "packages/next/src/build/templates/app-page.ts",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/layout.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/loading.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/page.tsx",
+          "test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/next/src/build/templates/app-page.ts b/packages/next/src/build/templates/app-page.ts\n--- a/packages/next/src/build/templates/app-page.ts\n+++ b/packages/next/src/build/templates/app-page.ts\n@@\n-    routeModule.isDev === true ||\n+    routeModule.isDev === true ||\n+    isDraftMode ||\ndiff --git a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n--- a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n+++ b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n@@\n+  it('should stream Suspense fallbacks when draft mode is enabled', async () => {\n+    expect($('#draft-mode').text()).toBe('true')\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "branch": "sam/streaming-in-cache-components-draft-mode",
+            "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+            "summary": "Merged public PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "app-router"
+        ]
+      }
+    },
+    {
+      "snapshotId": "storybook_34681_hm",
+      "repoFullName": "storybookjs/storybook",
+      "publicUrl": "https://github.com/storybookjs/storybook/pull/34681",
+      "category": "passing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with a narrow source fix. CI status normalized as successful from merged public artifact state. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 34681,
+        "title": "Vitest: Fix agent detection breaking runs",
+        "body": "Public PR snapshot for a merged source fix.",
+        "repo": "storybookjs/storybook",
+        "branch": "fix/agent-detection",
+        "baseBranch": "next",
+        "changedFiles": [
+          "code/addons/vitest/src/vitest-plugin/index.ts"
+        ],
+        "unifiedDiff": "diff --git a/code/addons/vitest/src/vitest-plugin/index.ts b/code/addons/vitest/src/vitest-plugin/index.ts\n--- a/code/addons/vitest/src/vitest-plugin/index.ts\n+++ b/code/addons/vitest/src/vitest-plugin/index.ts\n@@\n-  const isAgent = Boolean(options.agent)\n+  const isAgent = Boolean(options.agent && options.agent.enabled)",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged public PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "vitest"
+        ]
+      }
+    },
+    {
+      "snapshotId": "vitest_10231_hm",
+      "repoFullName": "vitest-dev/vitest",
+      "publicUrl": "https://github.com/vitest-dev/vitest/pull/10231",
+      "category": "failing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Closed public PR snapshot with non-successful checks visible on the public checks page, including failure and skipped segments. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 10231,
+        "title": "fix(browser): guard against toJSON in createSafeRpc proxy",
+        "body": "Public PR snapshot with a deploy preview but non-successful checks on the checks page.",
+        "repo": "vitest-dev/vitest",
+        "branch": "fix/browser-rpc-guard-tojson",
+        "baseBranch": "main",
+        "changedFiles": [
+          "packages/browser/src/client/tester/rpc.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/browser/src/client/tester/rpc.ts b/packages/browser/src/client/tester/rpc.ts\n--- a/packages/browser/src/client/tester/rpc.ts\n+++ b/packages/browser/src/client/tester/rpc.ts\n@@\n-  return new Proxy(target, handlers)\n+  return new Proxy(target, {\n+    get(value, key) {\n+      if (key === \"toJSON\") return undefined\n+      return handlers.get?.(value, key)\n+    }\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "github-actions",
+            "status": "failure",
+            "branch": "fix/browser-rpc-guard-tojson",
+            "summary": "Public checks page showed mixed outcomes with at least one failure segment and skipped work.",
+            "expectedJobCount": 35,
+            "completedJobCount": 35,
+            "failedJobCount": 1,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 1
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "browser"
+        ]
+      }
+    },
+    {
+      "snapshotId": "nextjs_93410_hm",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93410",
+      "category": "failing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Closed, unmerged docs-only public PR snapshot. CI lane is normalized as non-successful for the failing-artifact trial slice. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 93410,
+        "title": "docs: add Thinking in Next.js guide",
+        "body": "Public PR snapshot for a docs-only change that did not merge.",
+        "repo": "vercel/next.js",
+        "branch": "docs/thinking-in-next",
+        "baseBranch": "canary",
+        "changedFiles": [
+          "docs/01-app/02-guides/thinking-in-nextjs.mdx"
+        ],
+        "unifiedDiff": "diff --git a/docs/01-app/02-guides/thinking-in-nextjs.mdx b/docs/01-app/02-guides/thinking-in-nextjs.mdx\n--- /dev/null\n+++ b/docs/01-app/02-guides/thinking-in-nextjs.mdx\n@@\n+# Thinking in Next.js\n+This guide explains how to approach rendering and data flow in Next.js.",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "failure",
+            "branch": "docs/thinking-in-next",
+            "summary": "Closed public PR snapshot normalized as non-successful proof for the failing-artifact slice.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 1,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "documentation"
+        ]
+      }
+    },
+    {
+      "snapshotId": "nextjs_93400_hm",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93400",
+      "category": "docs_config_only",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with workflow-only changes. Useful for config-only and release-gate claims. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 93400,
+        "title": "[ci]: remove PR creation from deploy test workflow",
+        "body": "Public PR snapshot for a workflow-only change.",
+        "repo": "vercel/next.js",
+        "branch": "ci/remove-pr-creation",
+        "baseBranch": "canary",
+        "changedFiles": [
+          ".github/workflows/test_e2e_deploy_release.yml"
+        ],
+        "unifiedDiff": "diff --git a/.github/workflows/test_e2e_deploy_release.yml b/.github/workflows/test_e2e_deploy_release.yml\n--- a/.github/workflows/test_e2e_deploy_release.yml\n+++ b/.github/workflows/test_e2e_deploy_release.yml\n@@\n-      - name: Create PR\n-        run: gh pr create --draft\n+      - name: Skip PR creation\n+        run: echo \"handled elsewhere\"",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged public workflow-only PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "ci"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12897_hm",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12897",
+      "category": "docs_config_only",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Open public PR snapshot that syncs generated JSON schemas. Useful for config/generated-file overclaim checks. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 12897,
+        "title": "chore: sync JSON schemas from dbt-fusion",
+        "body": "Public PR snapshot with generated schema sync artifacts.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/sync-json-schemas",
+        "baseBranch": "main",
+        "changedFiles": [
+          ".changes/unreleased/Under the Hood-20260501-134426.yaml",
+          "core/dbt/jsonschemas/resources/latest.json"
+        ],
+        "unifiedDiff": "diff --git a/core/dbt/jsonschemas/resources/latest.json b/core/dbt/jsonschemas/resources/latest.json\n--- a/core/dbt/jsonschemas/resources/latest.json\n+++ b/core/dbt/jsonschemas/resources/latest.json\n@@\n-    \"version\": \"1.0\"\n+    \"version\": \"1.1\"",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "pending",
+            "summary": "Public schema-sync snapshot without durable local release proof.",
+            "expectedJobCount": 1,
+            "completedJobCount": 0,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "schemas"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12899_hm",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12899",
+      "category": "tests_fixtures_goldens",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot that only updates test-duration fixture data. Useful for fixture-only proof checks. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 12899,
+        "title": "Update test durations for pytest-split",
+        "body": "Public PR snapshot that only updates test duration metadata.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/test-durations",
+        "baseBranch": "main",
+        "changedFiles": [
+          "core/.test_durations"
+        ],
+        "unifiedDiff": "diff --git a/core/.test_durations b/core/.test_durations\n--- a/core/.test_durations\n+++ b/core/.test_durations\n@@\n-test_node_a 12.1\n+test_node_a 11.8",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged fixture-only public PR snapshot normalized as successful checks.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "tests"
+        ]
+      }
+    },
+    {
+      "snapshotId": "rails_57291_hm",
+      "repoFullName": "rails/rails",
+      "publicUrl": "https://github.com/rails/rails/pull/57291",
+      "category": "tests_fixtures_goldens",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with test-only file changes. Useful for test-only versus behavior-proof checks. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 57291,
+        "title": "[ci skip] Fix typos in test descriptions",
+        "body": "Public PR snapshot with test-only edits.",
+        "repo": "rails/rails",
+        "branch": "fix/test-typos",
+        "baseBranch": "main",
+        "changedFiles": [
+          "activestorage/test/models/named_variant_test.rb",
+          "activesupport/test/env_configuration_test.rb"
+        ],
+        "unifiedDiff": "diff --git a/activestorage/test/models/named_variant_test.rb b/activestorage/test/models/named_variant_test.rb\n--- a/activestorage/test/models/named_variant_test.rb\n+++ b/activestorage/test/models/named_variant_test.rb\n@@\n-  test \"retuns variant\" do\n+  test \"returns variant\" do",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "summary": "Merged test-only public PR snapshot normalized as successful checks.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "tests"
+        ]
+      }
+    },
+    {
+      "snapshotId": "storybook_34682_hm",
+      "repoFullName": "storybookjs/storybook",
+      "publicUrl": "https://github.com/storybookjs/storybook/pull/34682",
+      "category": "ui_data_deploy_security",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public prerelease PR snapshot. Useful for release/deploy proof checks because the public artifact alone does not prove rollback, staging, or signing readiness. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 34682,
+        "title": "Release: Prerelease 10.4.0-alpha.15",
+        "body": "Public prerelease PR snapshot with release metadata changes.",
+        "repo": "storybookjs/storybook",
+        "branch": "release/prerelease-10.4.0-alpha.15",
+        "baseBranch": "next",
+        "changedFiles": [
+          "CHANGELOG.prerelease.md",
+          "code/addons/vitest/src/vitest-plugin/index.ts",
+          "code/package.json"
+        ],
+        "unifiedDiff": "diff --git a/CHANGELOG.prerelease.md b/CHANGELOG.prerelease.md\n--- a/CHANGELOG.prerelease.md\n+++ b/CHANGELOG.prerelease.md\n@@\n-## 10.4.0-alpha.14\n+## 10.4.0-alpha.15\ndiff --git a/code/package.json b/code/package.json\n--- a/code/package.json\n+++ b/code/package.json\n@@\n-  \"version\": \"10.4.0-alpha.14\"\n+  \"version\": \"10.4.0-alpha.15\"",
+        "ciStatuses": [
+          {
+            "workflow": "release-pipeline",
+            "status": "success",
+            "summary": "Merged public prerelease snapshot normalized as successful CI, but not as release readiness proof.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "release"
+        ]
+      }
+    },
+    {
+      "snapshotId": "dbt_12896_hm",
+      "repoFullName": "dbt-labs/dbt-core",
+      "publicUrl": "https://github.com/dbt-labs/dbt-core/pull/12896",
+      "category": "ui_data_deploy_security",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Open public schema-sync PR snapshot used for data-proof requirements like validation, dry run, and row-count discipline. Hard-mode mirrored variant for case-volume coverage.",
+      "packet": {
+        "prNumber": 12896,
+        "title": "chore: sync JSON schemas from dbt-fusion",
+        "body": "Public PR snapshot for a generated schema sync without explicit validation artifacts.",
+        "repo": "dbt-labs/dbt-core",
+        "branch": "chore/sync-json-schemas-2",
+        "baseBranch": "main",
+        "changedFiles": [
+          ".changes/unreleased/Under the Hood-20260501-122055.yaml",
+          "core/dbt/jsonschemas/resources/latest.json"
+        ],
+        "unifiedDiff": "diff --git a/core/dbt/jsonschemas/resources/latest.json b/core/dbt/jsonschemas/resources/latest.json\n--- a/core/dbt/jsonschemas/resources/latest.json\n+++ b/core/dbt/jsonschemas/resources/latest.json\n@@\n-    \"nodes\": []\n+    \"nodes\": [\"semantic_model\"]",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "pending",
+            "summary": "Public schema-sync snapshot without validation, dry-run, or publish-readiness evidence.",
+            "expectedJobCount": 1,
+            "completedJobCount": 0,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "schemas"
+        ]
+      }
+    }
+  ],
+  "cases": [
+    {
+      "caseId": "nextjs_93417_case_01",
+      "snapshotId": "nextjs_93417",
+      "category": "passing_ci",
+      "task": "Audit whether this public PR snapshot is sufficient to accept an implementation fix.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_02",
+      "snapshotId": "nextjs_93417",
+      "category": "passing_ci",
+      "task": "Audit whether implementation and behavior proof remain bounded on this merged public PR snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_03",
+      "snapshotId": "nextjs_93417",
+      "category": "passing_ci",
+      "task": "Audit the proof boundary for this merged source-and-test public PR snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_04",
+      "snapshotId": "nextjs_93417",
+      "category": "passing_ci",
+      "task": "Decide whether the supplied merged PR artifact proves the runtime fix without local execution.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_05",
+      "snapshotId": "nextjs_93417",
+      "category": "passing_ci",
+      "task": "Prepare a project-control verdict for this merged public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_01",
+      "snapshotId": "storybook_34681",
+      "category": "passing_ci",
+      "task": "Audit whether this public PR snapshot is sufficient to accept an implementation fix.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_02",
+      "snapshotId": "storybook_34681",
+      "category": "passing_ci",
+      "task": "Audit whether a source-only merged public PR should stay provisional without local command proof.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_03",
+      "snapshotId": "storybook_34681",
+      "category": "passing_ci",
+      "task": "Audit the proof boundary for this source-only public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_04",
+      "snapshotId": "storybook_34681",
+      "category": "passing_ci",
+      "task": "Decide whether the supplied merged source-only PR proves behavior without local execution.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_05",
+      "snapshotId": "storybook_34681",
+      "category": "passing_ci",
+      "task": "Prepare a project-control verdict for this merged source-only public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_01",
+      "snapshotId": "vitest_10231",
+      "category": "failing_ci",
+      "task": "Audit whether this behavior fix is proven given the non-successful CI public artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_02",
+      "snapshotId": "vitest_10231",
+      "category": "failing_ci",
+      "task": "Audit whether this public PR should stay provisional because checks are not successful.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_03",
+      "snapshotId": "vitest_10231",
+      "category": "failing_ci",
+      "task": "Audit the proof boundary for this failed-check public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_04",
+      "snapshotId": "vitest_10231",
+      "category": "failing_ci",
+      "task": "Decide whether the supplied failed-check PR proves behavior without local reruns.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_05",
+      "snapshotId": "vitest_10231",
+      "category": "failing_ci",
+      "task": "Prepare a project-control verdict for this non-successful CI public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_01",
+      "snapshotId": "nextjs_93410",
+      "category": "failing_ci",
+      "task": "Audit whether this implementation claim is proven from a docs-only public PR snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_02",
+      "snapshotId": "nextjs_93410",
+      "category": "failing_ci",
+      "task": "Audit whether this docs-only PR should stay provisional because it lacks source proof and clean checks.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_03",
+      "snapshotId": "nextjs_93410",
+      "category": "failing_ci",
+      "task": "Audit the proof boundary for this docs-only failed-proof public PR snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_04",
+      "snapshotId": "nextjs_93410",
+      "category": "failing_ci",
+      "task": "Decide whether the supplied docs-only PR proves runtime behavior.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_05",
+      "snapshotId": "nextjs_93410",
+      "category": "failing_ci",
+      "task": "Prepare a project-control verdict for this docs-only public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_01",
+      "snapshotId": "nextjs_93400",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_02",
+      "snapshotId": "nextjs_93400",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_03",
+      "snapshotId": "nextjs_93400",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_04",
+      "snapshotId": "nextjs_93400",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_05",
+      "snapshotId": "nextjs_93400",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_01",
+      "snapshotId": "dbt_12897",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_02",
+      "snapshotId": "dbt_12897",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_03",
+      "snapshotId": "dbt_12897",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_04",
+      "snapshotId": "dbt_12897",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_05",
+      "snapshotId": "dbt_12897",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_01",
+      "snapshotId": "dbt_12899",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit whether this fixture-only public PR snapshot proves runtime behavior.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_02",
+      "snapshotId": "dbt_12899",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether this fixture-only public PR should stay provisional without local command proof.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_03",
+      "snapshotId": "dbt_12899",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit the proof boundary for this fixture-only public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_04",
+      "snapshotId": "dbt_12899",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether the supplied test-duration metadata PR proves a real source fix.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_05",
+      "snapshotId": "dbt_12899",
+      "category": "tests_fixtures_goldens",
+      "task": "Prepare a project-control verdict for this fixture-only public PR snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_01",
+      "snapshotId": "rails_57291",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit whether this test-only public PR snapshot proves runtime behavior.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_02",
+      "snapshotId": "rails_57291",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether this test-only public PR should stay provisional without local command proof.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_03",
+      "snapshotId": "rails_57291",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit the proof boundary for this test-only public PR artifact snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_04",
+      "snapshotId": "rails_57291",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether the supplied test-only PR proves a real source fix.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_05",
+      "snapshotId": "rails_57291",
+      "category": "tests_fixtures_goldens",
+      "task": "Prepare a project-control verdict for this test-only public PR snapshot.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_01",
+      "snapshotId": "storybook_34682",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_02",
+      "snapshotId": "storybook_34682",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_03",
+      "snapshotId": "storybook_34682",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_04",
+      "snapshotId": "storybook_34682",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_05",
+      "snapshotId": "storybook_34682",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness.",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_01",
+      "snapshotId": "dbt_12896",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_02",
+      "snapshotId": "dbt_12896",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_03",
+      "snapshotId": "dbt_12896",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_04",
+      "snapshotId": "dbt_12896",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_05",
+      "snapshotId": "dbt_12896",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness.",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_01_hm",
+      "snapshotId": "nextjs_93417_hm",
+      "category": "passing_ci",
+      "task": "Audit whether this public PR snapshot is sufficient to accept an implementation fix. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_02_hm",
+      "snapshotId": "nextjs_93417_hm",
+      "category": "passing_ci",
+      "task": "Audit whether implementation and behavior proof remain bounded on this merged public PR snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_03_hm",
+      "snapshotId": "nextjs_93417_hm",
+      "category": "passing_ci",
+      "task": "Audit the proof boundary for this merged source-and-test public PR snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_04_hm",
+      "snapshotId": "nextjs_93417_hm",
+      "category": "passing_ci",
+      "task": "Decide whether the supplied merged PR artifact proves the runtime fix without local execution. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93417_case_05_hm",
+      "snapshotId": "nextjs_93417_hm",
+      "category": "passing_ci",
+      "task": "Prepare a project-control verdict for this merged public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_01_hm",
+      "snapshotId": "storybook_34681_hm",
+      "category": "passing_ci",
+      "task": "Audit whether this public PR snapshot is sufficient to accept an implementation fix. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_02_hm",
+      "snapshotId": "storybook_34681_hm",
+      "category": "passing_ci",
+      "task": "Audit whether a source-only merged public PR should stay provisional without local command proof. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_03_hm",
+      "snapshotId": "storybook_34681_hm",
+      "category": "passing_ci",
+      "task": "Audit the proof boundary for this source-only public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_04_hm",
+      "snapshotId": "storybook_34681_hm",
+      "category": "passing_ci",
+      "task": "Decide whether the supplied merged source-only PR proves behavior without local execution. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34681_case_05_hm",
+      "snapshotId": "storybook_34681_hm",
+      "category": "passing_ci",
+      "task": "Prepare a project-control verdict for this merged source-only public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "source_only_no_test_claim",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_01_hm",
+      "snapshotId": "vitest_10231_hm",
+      "category": "failing_ci",
+      "task": "Audit whether this behavior fix is proven given the non-successful CI public artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_02_hm",
+      "snapshotId": "vitest_10231_hm",
+      "category": "failing_ci",
+      "task": "Audit whether this public PR should stay provisional because checks are not successful. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_03_hm",
+      "snapshotId": "vitest_10231_hm",
+      "category": "failing_ci",
+      "task": "Audit the proof boundary for this failed-check public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_04_hm",
+      "snapshotId": "vitest_10231_hm",
+      "category": "failing_ci",
+      "task": "Decide whether the supplied failed-check PR proves behavior without local reruns. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "vitest_10231_case_05_hm",
+      "snapshotId": "vitest_10231_hm",
+      "category": "failing_ci",
+      "task": "Prepare a project-control verdict for this non-successful CI public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "failed_proof",
+        "source_only_no_test_claim",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_01_hm",
+      "snapshotId": "nextjs_93410_hm",
+      "category": "failing_ci",
+      "task": "Audit whether this implementation claim is proven from a docs-only public PR snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_02_hm",
+      "snapshotId": "nextjs_93410_hm",
+      "category": "failing_ci",
+      "task": "Audit whether this docs-only PR should stay provisional because it lacks source proof and clean checks. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_03_hm",
+      "snapshotId": "nextjs_93410_hm",
+      "category": "failing_ci",
+      "task": "Audit the proof boundary for this docs-only failed-proof public PR snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_04_hm",
+      "snapshotId": "nextjs_93410_hm",
+      "category": "failing_ci",
+      "task": "Decide whether the supplied docs-only PR proves runtime behavior. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93410_case_05_hm",
+      "snapshotId": "nextjs_93410_hm",
+      "category": "failing_ci",
+      "task": "Prepare a project-control verdict for this docs-only public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "docs_only_implementation_claim",
+        "failed_proof",
+        "exact source/test diff"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength",
+        "must_not_accept_non_successful_ci",
+        "must_reject_docs_only_implementation_claim"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "failed_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_01_hm",
+      "snapshotId": "nextjs_93400_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_02_hm",
+      "snapshotId": "nextjs_93400_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_03_hm",
+      "snapshotId": "nextjs_93400_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_04_hm",
+      "snapshotId": "nextjs_93400_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "nextjs_93400_case_05_hm",
+      "snapshotId": "nextjs_93400_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this workflow or config-only PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_01_hm",
+      "snapshotId": "dbt_12897_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_02_hm",
+      "snapshotId": "dbt_12897_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_03_hm",
+      "snapshotId": "dbt_12897_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_04_hm",
+      "snapshotId": "dbt_12897_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12897_case_05_hm",
+      "snapshotId": "dbt_12897_hm",
+      "category": "docs_config_only",
+      "task": "Audit whether this generated or config-heavy PR proves release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "config_policy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_flag_config_only_change",
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_01_hm",
+      "snapshotId": "dbt_12899_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit whether this fixture-only public PR snapshot proves runtime behavior. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_02_hm",
+      "snapshotId": "dbt_12899_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether this fixture-only public PR should stay provisional without local command proof. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_03_hm",
+      "snapshotId": "dbt_12899_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit the proof boundary for this fixture-only public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_04_hm",
+      "snapshotId": "dbt_12899_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether the supplied test-duration metadata PR proves a real source fix. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12899_case_05_hm",
+      "snapshotId": "dbt_12899_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Prepare a project-control verdict for this fixture-only public PR snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_01_hm",
+      "snapshotId": "rails_57291_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit whether this test-only public PR snapshot proves runtime behavior. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_02_hm",
+      "snapshotId": "rails_57291_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether this test-only public PR should stay provisional without local command proof. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_03_hm",
+      "snapshotId": "rails_57291_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Audit the proof boundary for this test-only public PR artifact snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_04_hm",
+      "snapshotId": "rails_57291_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Decide whether the supplied test-only PR proves a real source fix. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "rails_57291_case_05_hm",
+      "snapshotId": "rails_57291_hm",
+      "category": "tests_fixtures_goldens",
+      "task": "Prepare a project-control verdict for this test-only public PR snapshot. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "PR artifact audit",
+        "ci_proof",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_surface_ci_proof_strength"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_01_hm",
+      "snapshotId": "storybook_34682_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_02_hm",
+      "snapshotId": "storybook_34682_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_03_hm",
+      "snapshotId": "storybook_34682_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_04_hm",
+      "snapshotId": "storybook_34682_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "storybook_34682_case_05_hm",
+      "snapshotId": "storybook_34682_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public prerelease PR snapshot proves deployment or release readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Accept",
+      "expectedBestTraits": [
+        "rollback",
+        "release_deploy claim is unsupported",
+        "npm run preflight"
+      ],
+      "criticalMissRules": [
+        "must_require_release_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "ci_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_01_hm",
+      "snapshotId": "dbt_12896_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_02_hm",
+      "snapshotId": "dbt_12896_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_03_hm",
+      "snapshotId": "dbt_12896_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_04_hm",
+      "snapshotId": "dbt_12896_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    },
+    {
+      "caseId": "dbt_12896_case_05_hm",
+      "snapshotId": "dbt_12896_hm",
+      "category": "ui_data_deploy_security",
+      "task": "Audit whether this public schema-sync PR proves data publish or schema rollout readiness. (Hard-mode mirrored variant.)",
+      "expectedStatus": "Provisional",
+      "expectedBestTraits": [
+        "partial_local_proof",
+        "data claim is unsupported",
+        "smallest local evidence packet"
+      ],
+      "criticalMissRules": [
+        "must_require_data_proof"
+      ],
+      "expectedOutputContains": [],
+      "expectedCiProofStrength": "partial_local_proof"
+    }
+  ]
+}

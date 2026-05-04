@@ -19,16 +19,22 @@ type RefreshArgs = {
   release: string;
 };
 
-function artifactKeyForLimit(limit: number): "default" | "full" {
-  return limit >= 50 ? "full" : "default";
+function artifactKeyForLimit(limit: number): "default" | "full" | "hard" {
+  if (limit >= 100) return "hard";
+  if (limit >= 50) return "full";
+  return "default";
 }
 
-function artifactPathForKey(key: "default" | "full"): string {
+function artifactPathForKey(key: "default" | "full" | "hard"): string {
   return path.join(
     process.cwd(),
     "fixtures",
     "real_use",
-    key === "full" ? "live_pr_artifact_trial_full_latest.json" : "live_pr_artifact_trial_latest.json"
+    key === "full"
+      ? "live_pr_artifact_trial_full_latest.json"
+      : key === "hard"
+        ? "live_pr_artifact_trial_hard_latest.json"
+        : "live_pr_artifact_trial_latest.json"
   );
 }
 
@@ -248,10 +254,14 @@ async function loadCachedLiveTrial(artifactPath: string): Promise<LivePrArtifact
 async function syncReleaseArtifacts(input: {
   summary: LivePrArtifactTrialSummary;
   release: string;
-  artifactKey: "default" | "full";
+  artifactKey: "default" | "full" | "hard";
 }): Promise<void> {
   const artifactBaseName =
-    input.artifactKey === "full" ? "pr_artifact_live_trial_full" : "pr_artifact_live_trial";
+    input.artifactKey === "full"
+      ? "pr_artifact_live_trial_full"
+      : input.artifactKey === "hard"
+        ? "pr_artifact_live_trial_hard"
+        : "pr_artifact_live_trial";
   const artifactDir = path.join(process.cwd(), "docs", "releases", input.release, "artifacts");
   await fs.mkdir(artifactDir, { recursive: true });
   await fs.writeFile(

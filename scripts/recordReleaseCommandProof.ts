@@ -57,6 +57,11 @@ const RC4_COMMAND_CHAIN: CommandSpec[] = [
     command: "npm run pr-artifact:live-trial:full:refresh:force-live",
     expectedExitCode: 0
   },
+  {
+    id: "pr_artifact_live_trial_hard_refresh",
+    command: "npm run pr-artifact:live-trial:hard:refresh:force-live",
+    expectedExitCode: 0
+  },
   { id: "promotion_gate", command: "npm run campaign:promotion-gate", expectedExitCode: 0 },
   { id: "ci_failure_score", command: "npm run ci-failure:score", expectedExitCode: 0 },
   { id: "pr_review_comment_score", command: "npm run pr-review-comment:score", expectedExitCode: 0 },

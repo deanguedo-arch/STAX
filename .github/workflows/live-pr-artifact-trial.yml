@@ -39,6 +39,9 @@ jobs:
       - name: Refresh 50-case live PR artifact trial
         run: npm run pr-artifact:live-trial:full:refresh:force-live
 
+      - name: Refresh 100-case hard-mode live PR artifact trial
+        run: npm run pr-artifact:live-trial:hard:refresh:force-live
+
       - name: Upload live PR trial artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -47,8 +50,11 @@ jobs:
           path: |
             fixtures/real_use/live_pr_artifact_trial_latest.json
             fixtures/real_use/live_pr_artifact_trial_full_latest.json
+            fixtures/real_use/live_pr_artifact_trial_hard_latest.json
             docs/releases/STAX_Project-Control_9_5_RC4/artifacts/pr_artifact_live_trial.json
             docs/releases/STAX_Project-Control_9_5_RC4/artifacts/pr_artifact_live_trial.md
             docs/releases/STAX_Project-Control_9_5_RC4/artifacts/pr_artifact_live_trial_full.json
             docs/releases/STAX_Project-Control_9_5_RC4/artifacts/pr_artifact_live_trial_full.md
+            docs/releases/STAX_Project-Control_9_5_RC4/artifacts/pr_artifact_live_trial_hard.json
+            docs/releases/STAX_Project-Control_9_5_RC4/artifacts/pr_artifact_live_trial_hard.md
           if-no-files-found: warn

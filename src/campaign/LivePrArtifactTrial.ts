@@ -1,3 +1,4 @@
+import path from "node:path";
 import { createDefaultRuntime } from "../core/RaxRuntime.js";
 import { fetchGitHubPullRequestArtifactPacket } from "../projectControl/GitHubPrArtifactAdapter.js";
 import {
@@ -55,6 +56,7 @@ type LivePrArtifactTrialOptions = {
   requestedCaseCount?: number;
   minimumLiveSourceCount?: number;
   allowFallbackSource?: boolean;
+  fixturePath?: string;
   fetchPacket?: typeof fetchGitHubPullRequestArtifactPacket;
   runAudit?: (input: {
     testCase: PrArtifactTrialCase;
@@ -73,7 +75,12 @@ export async function runLivePrArtifactTrial(
   const minimumLiveSourceCount = options.minimumLiveSourceCount ?? 5;
   const allowFallbackSource = options.allowFallbackSource ?? true;
   const fetchPacket = options.fetchPacket ?? fetchGitHubPullRequestArtifactPacket;
-  const fixture = await loadPrArtifactTrialFixture(rootDir);
+  const fixturePath =
+    options.fixturePath ??
+    (requestedCaseCount > 50
+      ? path.join(rootDir, "fixtures", "pr_artifact_trial", "pr_artifact_trial_100_cases.json")
+      : undefined);
+  const fixture = await loadPrArtifactTrialFixture(rootDir, { fixturePath });
   const selectedCases = fixture.cases.slice(0, requestedCaseCount);
   const snapshotsById = new Map(fixture.snapshots.map((snapshot) => [snapshot.snapshotId, snapshot]));
   const fetchCache = new Map<string, PullRequestArtifactFetchResult>();

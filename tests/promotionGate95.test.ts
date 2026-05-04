@@ -59,7 +59,8 @@ describe("9.5 campaign building blocks", () => {
           requireCiFailureTriage: false,
           requirePrReviewCommentScore: false,
           requireLivePrArtifactTrial: false,
-          requireLivePrArtifactTrialFull: false
+          requireLivePrArtifactTrialFull: false,
+          requireLivePrArtifactTrialHard: false
         },
         null,
         2
@@ -71,6 +72,7 @@ describe("9.5 campaign building blocks", () => {
       expect(summary.status).toBe("promotion_ready");
       expect(summary.livePrArtifactTrialStatus).toBe("not_required");
       expect(summary.livePrArtifactTrialFullStatus).toBe("not_required");
+      expect(summary.livePrArtifactTrialHardStatus).toBe("not_required");
     } finally {
       await fs.rm(tempDir, { recursive: true, force: true });
     }

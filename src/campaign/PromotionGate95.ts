@@ -24,6 +24,7 @@ export type PromotionGate95Summary = {
   prReviewCommentStatus: string;
   livePrArtifactTrialStatus: string;
   livePrArtifactTrialFullStatus: string;
+  livePrArtifactTrialHardStatus: string;
   status: "promotion_ready" | "promotion_blocked";
   blockers: string[];
 };
@@ -35,9 +36,12 @@ type PromotionConfig = {
   requirePrReviewCommentScore?: boolean;
   requireLivePrArtifactTrial?: boolean;
   requireLivePrArtifactTrialFull?: boolean;
+  requireLivePrArtifactTrialHard?: boolean;
   livePrArtifactTrialMaxAgeHours?: number;
   livePrArtifactTrialFullMaxAgeHours?: number;
+  livePrArtifactTrialHardMaxAgeHours?: number;
   livePrArtifactTrialFullMinimumLiveSourceRate?: number;
+  livePrArtifactTrialHardMinimumLiveSourceRate?: number;
 };
 
 const DEFAULT_CONFIG: PromotionConfig = {
@@ -47,9 +51,12 @@ const DEFAULT_CONFIG: PromotionConfig = {
   requirePrReviewCommentScore: true,
   requireLivePrArtifactTrial: true,
   requireLivePrArtifactTrialFull: true,
+  requireLivePrArtifactTrialHard: false,
   livePrArtifactTrialMaxAgeHours: 24,
   livePrArtifactTrialFullMaxAgeHours: 24,
-  livePrArtifactTrialFullMinimumLiveSourceRate: 50
+  livePrArtifactTrialHardMaxAgeHours: 24,
+  livePrArtifactTrialFullMinimumLiveSourceRate: 50,
+  livePrArtifactTrialHardMinimumLiveSourceRate: 50
 };
 
 export async function evaluatePromotionGate95(input: {
@@ -67,11 +74,17 @@ export async function evaluatePromotionGate95(input: {
       requireLivePrArtifactTrial: raw.requireLivePrArtifactTrial ?? DEFAULT_CONFIG.requireLivePrArtifactTrial,
       requireLivePrArtifactTrialFull:
         raw.requireLivePrArtifactTrialFull ?? DEFAULT_CONFIG.requireLivePrArtifactTrialFull,
+      requireLivePrArtifactTrialHard:
+        raw.requireLivePrArtifactTrialHard ?? DEFAULT_CONFIG.requireLivePrArtifactTrialHard,
       livePrArtifactTrialMaxAgeHours: raw.livePrArtifactTrialMaxAgeHours ?? DEFAULT_CONFIG.livePrArtifactTrialMaxAgeHours,
       livePrArtifactTrialFullMaxAgeHours:
         raw.livePrArtifactTrialFullMaxAgeHours ?? DEFAULT_CONFIG.livePrArtifactTrialFullMaxAgeHours,
+      livePrArtifactTrialHardMaxAgeHours:
+        raw.livePrArtifactTrialHardMaxAgeHours ?? DEFAULT_CONFIG.livePrArtifactTrialHardMaxAgeHours,
       livePrArtifactTrialFullMinimumLiveSourceRate:
-        raw.livePrArtifactTrialFullMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialFullMinimumLiveSourceRate
+        raw.livePrArtifactTrialFullMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialFullMinimumLiveSourceRate,
+      livePrArtifactTrialHardMinimumLiveSourceRate:
+        raw.livePrArtifactTrialHardMinimumLiveSourceRate ?? DEFAULT_CONFIG.livePrArtifactTrialHardMinimumLiveSourceRate
     };
   } catch {
     config = DEFAULT_CONFIG;
@@ -104,6 +117,17 @@ export async function evaluatePromotionGate95(input: {
           maxAgeHours: config.livePrArtifactTrialFullMaxAgeHours,
           minimumLiveSourceRate: config.livePrArtifactTrialFullMinimumLiveSourceRate
         });
+  const livePrArtifactTrialHard =
+    config.requireLivePrArtifactTrialHard === false
+      ? undefined
+      : await validateLivePrArtifactTrialGate({
+          artifactPath: path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_hard_latest.json"),
+          requestedCaseCount: 100,
+          minimumLiveSourceCount: 25,
+          allowFallbackSource: true,
+          maxAgeHours: config.livePrArtifactTrialHardMaxAgeHours,
+          minimumLiveSourceRate: config.livePrArtifactTrialHardMinimumLiveSourceRate
+        });
 
   const blockers: string[] = [];
   if (cleanRunsPassed < config.requiredCleanRuns) blockers.push(`fewer than ${config.requiredCleanRuns} clean evidence runs are recorded`);
@@ -125,6 +149,9 @@ export async function evaluatePromotionGate95(input: {
   if (config.requireLivePrArtifactTrialFull !== false && livePrArtifactTrialFull?.status !== "passed") {
     blockers.push("full live PR artifact trial has not passed");
   }
+  if (config.requireLivePrArtifactTrialHard !== false && livePrArtifactTrialHard?.status !== "passed") {
+    blockers.push("hard-mode live PR artifact trial has not passed");
+  }
 
   return {
     cleanRunsPassed,
@@ -139,6 +166,7 @@ export async function evaluatePromotionGate95(input: {
     prReviewCommentStatus: prReviewComment?.status ?? "not_required",
     livePrArtifactTrialStatus: livePrArtifactTrial?.status ?? "not_required",
     livePrArtifactTrialFullStatus: livePrArtifactTrialFull?.status ?? "not_required",
+    livePrArtifactTrialHardStatus: livePrArtifactTrialHard?.status ?? "not_required",
     status: blockers.length === 0 ? "promotion_ready" : "promotion_blocked",
     blockers
   };

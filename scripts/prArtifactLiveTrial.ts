@@ -11,7 +11,7 @@ type CliArgs = {
   allowFallback: boolean;
   release: string;
   skipArtifactsOnFailure: boolean;
-  artifactKey: "default" | "full";
+  artifactKey: "default" | "full" | "hard";
 };
 
 async function main(): Promise<void> {
@@ -35,6 +35,8 @@ async function main(): Promise<void> {
     "real_use",
     args.artifactKey === "full"
       ? "live_pr_artifact_trial_full_latest.json"
+      : args.artifactKey === "hard"
+        ? "live_pr_artifact_trial_hard_latest.json"
       : "live_pr_artifact_trial_latest.json"
   );
   const failedAttemptPath = path.join(
@@ -43,10 +45,16 @@ async function main(): Promise<void> {
     "real_use",
     args.artifactKey === "full"
       ? "live_pr_artifact_trial_full_last_attempt_failed.json"
+      : args.artifactKey === "hard"
+        ? "live_pr_artifact_trial_hard_last_attempt_failed.json"
       : "live_pr_artifact_trial_last_attempt_failed.json"
   );
   const releaseArtifactBaseName =
-    args.artifactKey === "full" ? "pr_artifact_live_trial_full" : "pr_artifact_live_trial";
+    args.artifactKey === "full"
+      ? "pr_artifact_live_trial_full"
+      : args.artifactKey === "hard"
+        ? "pr_artifact_live_trial_hard"
+        : "pr_artifact_live_trial";
   const shouldWriteReleaseArtifacts = summary.status === "passed" || !args.skipArtifactsOnFailure;
   if (shouldWriteReleaseArtifacts) {
     await fs.mkdir(artifactsDir, { recursive: true });
@@ -110,7 +118,7 @@ function parseArgs(argv: string[]): CliArgs {
       args.skipArtifactsOnFailure = true;
       continue;
     }
-    if (token === "--artifact-key" && next && (next === "default" || next === "full")) {
+    if (token === "--artifact-key" && next && (next === "default" || next === "full" || next === "hard")) {
       args.artifactKey = next;
       index += 1;
       continue;

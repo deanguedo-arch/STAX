@@ -36,6 +36,7 @@ export type OperatingDashboardSummary = {
     prReviewComment: string;
     livePrArtifactTrial: string;
     livePrArtifactTrialFull: string;
+    livePrArtifactTrialHard: string;
   };
   metrics: {
     baselineMeanCleanupPrompts: number | null;
@@ -74,6 +75,14 @@ export type OperatingDashboardSummary = {
     livePrArtifactTrialFullCiProofSurfaceRate: number;
     livePrArtifactTrialFullFreshnessHours: number;
     livePrArtifactTrialFullLiveSourceRate: number;
+    livePrArtifactTrialHardCaseCount: number;
+    livePrArtifactTrialHardLiveSourceCount: number;
+    livePrArtifactTrialHardFalseAccepts: number;
+    livePrArtifactTrialHardFalseBlocks: number;
+    livePrArtifactTrialHardUsefulNextActionRate: number;
+    livePrArtifactTrialHardCiProofSurfaceRate: number;
+    livePrArtifactTrialHardFreshnessHours: number;
+    livePrArtifactTrialHardLiveSourceRate: number;
   };
   trendlines: string[];
   repoHotspots: Array<{ repo: string; count: number }>;
@@ -118,6 +127,7 @@ export async function summarizeOperatingDashboard(args: {
   prReviewCommentSummary?: PrReviewCommentGateSummary;
   livePrArtifactTrialSummary?: LivePrArtifactTrialGateSummary;
   livePrArtifactTrialFullSummary?: LivePrArtifactTrialGateSummary;
+  livePrArtifactTrialHardSummary?: LivePrArtifactTrialGateSummary;
   snapshotDate?: string;
 }): Promise<OperatingDashboardSummary> {
   const baseline = summarizeBaselineCleanup(args.baselineLedger);
@@ -143,6 +153,7 @@ export async function summarizeOperatingDashboard(args: {
   const prReviewComment = args.prReviewCommentSummary ?? (await validatePrReviewCommentGate());
   const livePrArtifactTrial = args.livePrArtifactTrialSummary ?? (await validateLivePrArtifactTrialGate());
   const livePrArtifactTrialFull = args.livePrArtifactTrialFullSummary;
+  const livePrArtifactTrialHard = args.livePrArtifactTrialHardSummary;
   const humanJudgment = summarizeHumanJudgmentLedger({
     ledger: args.humanJudgmentLedger,
     closedLoopLedger: args.closedLoopLedger
@@ -193,7 +204,8 @@ export async function summarizeOperatingDashboard(args: {
     ...(ciFailureTriage.status === "blocked" ? ciFailureTriage.issues : []),
     ...(prReviewComment.status === "blocked" ? prReviewComment.issues : []),
     ...(livePrArtifactTrial.status === "failed" ? livePrArtifactTrial.blockers : []),
-    ...(livePrArtifactTrialFull?.status === "failed" ? livePrArtifactTrialFull.blockers : [])
+    ...(livePrArtifactTrialFull?.status === "failed" ? livePrArtifactTrialFull.blockers : []),
+    ...(livePrArtifactTrialHard?.status === "failed" ? livePrArtifactTrialHard.blockers : [])
   ];
 
   const nextRecommendedHardeningTask =
@@ -220,7 +232,8 @@ export async function summarizeOperatingDashboard(args: {
       ciFailureTriage: ciFailureTriage.status,
       prReviewComment: prReviewComment.status,
       livePrArtifactTrial: livePrArtifactTrial.status,
-      livePrArtifactTrialFull: livePrArtifactTrialFull?.status ?? "not_recorded"
+      livePrArtifactTrialFull: livePrArtifactTrialFull?.status ?? "not_recorded",
+      livePrArtifactTrialHard: livePrArtifactTrialHard?.status ?? "not_recorded"
     },
     metrics: {
       baselineMeanCleanupPrompts: baseline.meanCleanupPrompts,
@@ -260,7 +273,15 @@ export async function summarizeOperatingDashboard(args: {
       livePrArtifactTrialFullUsefulNextActionRate: livePrArtifactTrialFull?.usefulNextActionRate ?? 0,
       livePrArtifactTrialFullCiProofSurfaceRate: livePrArtifactTrialFull?.ciProofClassificationSurfaceRate ?? 0,
       livePrArtifactTrialFullFreshnessHours: livePrArtifactTrialFull?.freshnessHours ?? 0,
-      livePrArtifactTrialFullLiveSourceRate: livePrArtifactTrialFull?.liveSourceRate ?? 0
+      livePrArtifactTrialFullLiveSourceRate: livePrArtifactTrialFull?.liveSourceRate ?? 0,
+      livePrArtifactTrialHardCaseCount: livePrArtifactTrialHard?.selectedCaseCount ?? 0,
+      livePrArtifactTrialHardLiveSourceCount: livePrArtifactTrialHard?.liveSourceCount ?? 0,
+      livePrArtifactTrialHardFalseAccepts: livePrArtifactTrialHard?.falseAccepts ?? 0,
+      livePrArtifactTrialHardFalseBlocks: livePrArtifactTrialHard?.falseBlocks ?? 0,
+      livePrArtifactTrialHardUsefulNextActionRate: livePrArtifactTrialHard?.usefulNextActionRate ?? 0,
+      livePrArtifactTrialHardCiProofSurfaceRate: livePrArtifactTrialHard?.ciProofClassificationSurfaceRate ?? 0,
+      livePrArtifactTrialHardFreshnessHours: livePrArtifactTrialHard?.freshnessHours ?? 0,
+      livePrArtifactTrialHardLiveSourceRate: livePrArtifactTrialHard?.liveSourceRate ?? 0
     },
     trendlines,
     repoHotspots,
@@ -289,6 +310,7 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- pr review comment: ${summary.statuses.prReviewComment}`,
     `- live PR artifact trial: ${summary.statuses.livePrArtifactTrial}`,
     `- live PR artifact trial full: ${summary.statuses.livePrArtifactTrialFull}`,
+    `- live PR artifact trial hard: ${summary.statuses.livePrArtifactTrialHard}`,
     "",
     "Key Metrics",
     `- baseline mean cleanup prompts: ${summary.metrics.baselineMeanCleanupPrompts ?? "n/a"}`,
@@ -313,6 +335,11 @@ export function formatOperatingDashboard(summary: OperatingDashboardSummary): st
     `- live PR trial full useful next-action rate: ${summary.metrics.livePrArtifactTrialFullUsefulNextActionRate}%`,
     `- live PR trial full CI proof surface rate: ${summary.metrics.livePrArtifactTrialFullCiProofSurfaceRate}%`,
     `- live PR trial full freshness / live-source rate: ${summary.metrics.livePrArtifactTrialFullFreshnessHours}h / ${summary.metrics.livePrArtifactTrialFullLiveSourceRate}%`,
+    `- live PR trial hard cases / live-source: ${summary.metrics.livePrArtifactTrialHardCaseCount}/${summary.metrics.livePrArtifactTrialHardLiveSourceCount}`,
+    `- live PR trial hard false accepts / false blocks: ${summary.metrics.livePrArtifactTrialHardFalseAccepts}/${summary.metrics.livePrArtifactTrialHardFalseBlocks}`,
+    `- live PR trial hard useful next-action rate: ${summary.metrics.livePrArtifactTrialHardUsefulNextActionRate}%`,
+    `- live PR trial hard CI proof surface rate: ${summary.metrics.livePrArtifactTrialHardCiProofSurfaceRate}%`,
+    `- live PR trial hard freshness / live-source rate: ${summary.metrics.livePrArtifactTrialHardFreshnessHours}h / ${summary.metrics.livePrArtifactTrialHardLiveSourceRate}%`,
     `- human-judgment followups / blocked-too-hard: ${summary.metrics.humanJudgmentFollowupCount}/${summary.metrics.humanJudgmentBlockedTooHardCount}`,
     `- eval candidates: ${summary.metrics.evalCandidateCount}`,
     "",
@@ -353,6 +380,8 @@ export async function validateOperatingDashboard(input: {
     path.join(process.cwd(), "fixtures", "real_use", "live_codex_workflow_10_tasks.json");
   const livePrArtifactTrialFullPath =
     path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_full_latest.json");
+  const livePrArtifactTrialHardPath =
+    path.join(process.cwd(), "fixtures", "real_use", "live_pr_artifact_trial_hard_latest.json");
 
   const [
     baselineLedger,
@@ -392,6 +421,7 @@ export async function validateOperatingDashboard(input: {
     prReviewCommentSummary,
     livePrArtifactTrialSummary,
     livePrArtifactTrialFullSummary: await loadOptionalLivePrArtifactTrialFullSummary(livePrArtifactTrialFullPath),
+    livePrArtifactTrialHardSummary: await loadOptionalLivePrArtifactTrialHardSummary(livePrArtifactTrialHardPath),
     workflowContractSummary: summarizeLiveCodexWorkflowContract({ ledger: workflowLedger })
   });
 }
@@ -404,6 +434,22 @@ async function loadOptionalLivePrArtifactTrialFullSummary(
       artifactPath,
       requestedCaseCount: 50,
       minimumLiveSourceCount: 10,
+      allowFallbackSource: true,
+      minimumLiveSourceRate: 50
+    });
+  } catch {
+    return undefined;
+  }
+}
+
+async function loadOptionalLivePrArtifactTrialHardSummary(
+  artifactPath: string
+): Promise<LivePrArtifactTrialGateSummary | undefined> {
+  try {
+    return await validateLivePrArtifactTrialGate({
+      artifactPath,
+      requestedCaseCount: 100,
+      minimumLiveSourceCount: 25,
       allowFallbackSource: true,
       minimumLiveSourceRate: 50
     });

@@ -1272,5 +1272,6 @@
       "expectedOutputContains": [],
       "expectedCiProofStrength": "partial_local_proof"
     }
-  ]
+  ],
+  "trialProfile": "standard_50"
 }
