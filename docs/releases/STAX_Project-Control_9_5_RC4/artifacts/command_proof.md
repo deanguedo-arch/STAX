@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-04T14:11:31.540Z
+- Recorded at: 2026-05-04T14:24:27.529Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -31,8 +31,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:09:54.817Z
-- Finished at: 2026-05-04T14:09:57.716Z
+- Started at: 2026-05-04T14:22:01.578Z
+- Finished at: 2026-05-04T14:22:04.923Z
 
 Stdout tail:
 
@@ -53,8 +53,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:09:57.716Z
-- Finished at: 2026-05-04T14:10:09.675Z
+- Started at: 2026-05-04T14:22:04.923Z
+- Finished at: 2026-05-04T14:22:18.222Z
 
 Stdout tail:
 
@@ -68,8 +68,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  08:09:58
-   Duration  11.52s (transform 7.75s, setup 0ms, import 33.79s, tests 44.85s, environment 19ms)
+   Start at  08:22:05
+   Duration  12.86s (transform 7.46s, setup 0ms, import 36.33s, tests 51.32s, environment 39ms)
 ```
 
 Stderr tail:
@@ -84,8 +84,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:09.675Z
-- Finished at: 2026-05-04T14:10:10.240Z
+- Started at: 2026-05-04T14:22:18.222Z
+- Finished at: 2026-05-04T14:22:18.872Z
 
 Stdout tail:
 
@@ -99,8 +99,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  08:10:10
-   Duration  209ms (transform 43ms, setup 0ms, import 84ms, tests 32ms, environment 0ms)
+   Start at  08:22:18
+   Duration  236ms (transform 43ms, setup 0ms, import 87ms, tests 39ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -115,8 +115,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:10.240Z
-- Finished at: 2026-05-04T14:10:10.833Z
+- Started at: 2026-05-04T14:22:18.872Z
+- Finished at: 2026-05-04T14:22:19.561Z
 
 Stdout tail:
 
@@ -130,8 +130,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  08:10:10
-   Duration  211ms (transform 37ms, setup 0ms, import 80ms, tests 34ms, environment 0ms)
+   Start at  08:22:19
+   Duration  239ms (transform 42ms, setup 0ms, import 88ms, tests 36ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -146,8 +146,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:10.833Z
-- Finished at: 2026-05-04T14:10:26.899Z
+- Started at: 2026-05-04T14:22:19.561Z
+- Finished at: 2026-05-04T14:22:37.979Z
 
 Stdout tail:
 
@@ -169,8 +169,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  08:10:14
-   Duration  11.55s (transform 7.29s, setup 0ms, import 31.68s, tests 47.12s, environment 16ms)
+   Start at  08:22:23
+   Duration  13.21s (transform 7.86s, setup 0ms, import 36.35s, tests 53.65s, environment 18ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -201,8 +201,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:26.899Z
-- Finished at: 2026-05-04T14:10:27.509Z
+- Started at: 2026-05-04T14:22:37.979Z
+- Finished at: 2026-05-04T14:22:38.757Z
 
 Stdout tail:
 
@@ -240,8 +240,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:27.509Z
-- Finished at: 2026-05-04T14:10:28.534Z
+- Started at: 2026-05-04T14:22:38.757Z
+- Finished at: 2026-05-04T14:22:39.936Z
 
 Stdout tail:
 
@@ -281,8 +281,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:28.534Z
-- Finished at: 2026-05-04T14:10:41.113Z
+- Started at: 2026-05-04T14:22:39.936Z
+- Finished at: 2026-05-04T14:22:52.596Z
 
 Stdout tail:
 
@@ -292,7 +292,7 @@ Stdout tail:
 
 {
   "fixtureSet": "real_pr_artifact_trial_v1",
-  "recordedAt": "2026-05-04T14:10:41.085Z",
+  "recordedAt": "2026-05-04T14:22:52.562Z",
   "selectedCaseCount": 25,
   "requestedCaseCount": 25,
   "uniquePullRequestCount": 5,
@@ -697,8 +697,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:full:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:10:41.113Z
-- Finished at: 2026-05-04T14:11:03.360Z
+- Started at: 2026-05-04T14:22:52.596Z
+- Finished at: 2026-05-04T14:23:14.945Z
 
 Stdout tail:
 
@@ -1221,8 +1221,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:hard:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:03.360Z
-- Finished at: 2026-05-04T14:11:26.923Z
+- Started at: 2026-05-04T14:23:14.945Z
+- Finished at: 2026-05-04T14:24:22.159Z
 
 Stdout tail:
 
@@ -1230,7 +1230,7 @@ Stdout tail:
 _03_hm",
       "snapshotId": "nextjs_93410_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
+      "prNumber": 93381,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1245,7 +1245,7 @@ _03_hm",
       "caseId": "nextjs_93410_case_04_hm",
       "snapshotId": "nextjs_93410_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
+      "prNumber": 93381,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1260,7 +1260,7 @@ _03_hm",
       "caseId": "nextjs_93410_case_05_hm",
       "snapshotId": "nextjs_93410_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93410,
+      "prNumber": 93381,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1275,7 +1275,7 @@ _03_hm",
       "caseId": "nextjs_93400_case_01_hm",
       "snapshotId": "nextjs_93400_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
+      "prNumber": 93380,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1290,7 +1290,7 @@ _03_hm",
       "caseId": "nextjs_93400_case_02_hm",
       "snapshotId": "nextjs_93400_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
+      "prNumber": 93380,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1305,7 +1305,7 @@ _03_hm",
       "caseId": "nextjs_93400_case_03_hm",
       "snapshotId": "nextjs_93400_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
+      "prNumber": 93380,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1320,7 +1320,7 @@ _03_hm",
       "caseId": "nextjs_93400_case_04_hm",
       "snapshotId": "nextjs_93400_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
+      "prNumber": 93380,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1335,7 +1335,7 @@ _03_hm",
       "caseId": "nextjs_93400_case_05_hm",
       "snapshotId": "nextjs_93400_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93400,
+      "prNumber": 93380,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1350,7 +1350,7 @@ _03_hm",
       "caseId": "dbt_12897_case_01_hm",
       "snapshotId": "dbt_12897_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12897,
+      "prNumber": 12901,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1365,7 +1365,7 @@ _03_hm",
       "caseId": "dbt_12897_case_02_hm",
       "snapshotId": "dbt_12897_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12897,
+      "prNumber": 12901,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1380,7 +1380,7 @@ _03_hm",
       "caseId": "dbt_12897_case_03_hm",
       "snapshotId": "dbt_12897_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12897,
+      "prNumber": 12901,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1395,7 +1395,7 @@ _03_hm",
       "caseId": "dbt_12897_case_04_hm",
       "snapshotId": "dbt_12897_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12897,
+      "prNumber": 12901,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1410,7 +1410,7 @@ _03_hm",
       "caseId": "dbt_12897_case_05_hm",
       "snapshotId": "dbt_12897_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12897,
+      "prNumber": 12901,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1425,7 +1425,7 @@ _03_hm",
       "caseId": "dbt_12899_case_01_hm",
       "snapshotId": "dbt_12899_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12899,
+      "prNumber": 12898,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1440,7 +1440,7 @@ _03_hm",
       "caseId": "dbt_12899_case_02_hm",
       "snapshotId": "dbt_12899_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12899,
+      "prNumber": 12898,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1455,7 +1455,7 @@ _03_hm",
       "caseId": "dbt_12899_case_03_hm",
       "snapshotId": "dbt_12899_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12899,
+      "prNumber": 12898,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1470,7 +1470,7 @@ _03_hm",
       "caseId": "dbt_12899_case_04_hm",
       "snapshotId": "dbt_12899_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12899,
+      "prNumber": 12898,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1485,7 +1485,7 @@ _03_hm",
       "caseId": "dbt_12899_case_05_hm",
       "snapshotId": "dbt_12899_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12899,
+      "prNumber": 12898,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1500,7 +1500,7 @@ _03_hm",
       "caseId": "rails_57291_case_01_hm",
       "snapshotId": "rails_57291_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57291,
+      "prNumber": 57295,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1515,7 +1515,7 @@ _03_hm",
       "caseId": "rails_57291_case_02_hm",
       "snapshotId": "rails_57291_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57291,
+      "prNumber": 57295,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1530,7 +1530,7 @@ _03_hm",
       "caseId": "rails_57291_case_03_hm",
       "snapshotId": "rails_57291_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57291,
+      "prNumber": 57295,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1545,7 +1545,7 @@ _03_hm",
       "caseId": "rails_57291_case_04_hm",
       "snapshotId": "rails_57291_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57291,
+      "prNumber": 57295,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1560,7 +1560,7 @@ _03_hm",
       "caseId": "rails_57291_case_05_hm",
       "snapshotId": "rails_57291_hm",
       "repoFullName": "rails/rails",
-      "prNumber": 57291,
+      "prNumber": 57295,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1575,7 +1575,7 @@ _03_hm",
       "caseId": "storybook_34682_case_01_hm",
       "snapshotId": "storybook_34682_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34682,
+      "prNumber": 34696,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1590,7 +1590,7 @@ _03_hm",
       "caseId": "storybook_34682_case_02_hm",
       "snapshotId": "storybook_34682_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34682,
+      "prNumber": 34696,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1605,7 +1605,7 @@ _03_hm",
       "caseId": "storybook_34682_case_03_hm",
       "snapshotId": "storybook_34682_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34682,
+      "prNumber": 34696,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1620,7 +1620,7 @@ _03_hm",
       "caseId": "storybook_34682_case_04_hm",
       "snapshotId": "storybook_34682_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34682,
+      "prNumber": 34696,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1635,7 +1635,7 @@ _03_hm",
       "caseId": "storybook_34682_case_05_hm",
       "snapshotId": "storybook_34682_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34682,
+      "prNumber": 34696,
       "source": "live_github_api",
       "expectedStatus": "Accept",
       "actualStatus": "Accept",
@@ -1650,7 +1650,7 @@ _03_hm",
       "caseId": "dbt_12896_case_01_hm",
       "snapshotId": "dbt_12896_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12896,
+      "prNumber": 12893,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1665,7 +1665,7 @@ _03_hm",
       "caseId": "dbt_12896_case_02_hm",
       "snapshotId": "dbt_12896_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12896,
+      "prNumber": 12893,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1680,7 +1680,7 @@ _03_hm",
       "caseId": "dbt_12896_case_03_hm",
       "snapshotId": "dbt_12896_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12896,
+      "prNumber": 12893,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1695,7 +1695,7 @@ _03_hm",
       "caseId": "dbt_12896_case_04_hm",
       "snapshotId": "dbt_12896_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12896,
+      "prNumber": 12893,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1710,7 +1710,7 @@ _03_hm",
       "caseId": "dbt_12896_case_05_hm",
       "snapshotId": "dbt_12896_hm",
       "repoFullName": "dbt-labs/dbt-core",
-      "prNumber": 12896,
+      "prNumber": 12893,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -1737,8 +1737,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:26.923Z
-- Finished at: 2026-05-04T14:11:27.603Z
+- Started at: 2026-05-04T14:24:22.159Z
+- Finished at: 2026-05-04T14:24:23.026Z
 
 Stdout tail:
 
@@ -1777,8 +1777,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:27.603Z
-- Finished at: 2026-05-04T14:11:27.996Z
+- Started at: 2026-05-04T14:24:23.026Z
+- Finished at: 2026-05-04T14:24:23.458Z
 
 Stdout tail:
 
@@ -1809,8 +1809,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:27.996Z
-- Finished at: 2026-05-04T14:11:28.410Z
+- Started at: 2026-05-04T14:24:23.458Z
+- Finished at: 2026-05-04T14:24:23.946Z
 
 Stdout tail:
 
@@ -1839,8 +1839,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:28.410Z
-- Finished at: 2026-05-04T14:11:28.813Z
+- Started at: 2026-05-04T14:24:23.946Z
+- Finished at: 2026-05-04T14:24:24.470Z
 
 Stdout tail:
 
@@ -1877,8 +1877,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:28.813Z
-- Finished at: 2026-05-04T14:11:30.265Z
+- Started at: 2026-05-04T14:24:24.470Z
+- Finished at: 2026-05-04T14:24:26.125Z
 
 Stdout tail:
 
@@ -1914,8 +1914,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:30.265Z
-- Finished at: 2026-05-04T14:11:30.620Z
+- Started at: 2026-05-04T14:24:26.125Z
+- Finished at: 2026-05-04T14:24:26.512Z
 
 Stdout tail:
 
@@ -1971,8 +1971,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:30.620Z
-- Finished at: 2026-05-04T14:11:30.948Z
+- Started at: 2026-05-04T14:24:26.512Z
+- Finished at: 2026-05-04T14:24:26.870Z
 
 Stdout tail:
 
@@ -2094,8 +2094,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T14:11:30.948Z
-- Finished at: 2026-05-04T14:11:31.540Z
+- Started at: 2026-05-04T14:24:26.870Z
+- Finished at: 2026-05-04T14:24:27.529Z
 
 Stdout tail:
 
@@ -2138,16 +2138,16 @@ Key Metrics
 - live PR trial false accepts / false blocks: 0/0
 - live PR trial useful next-action rate: 100%
 - live PR trial CI proof surface rate: 100%
-- live PR trial freshness / live-source rate: 0.01h / 100%
+- live PR trial freshness / live-source rate: 0.03h / 100%
 - live PR trial full cases / live-source: 50/50
 - live PR trial full false accepts / false blocks: 0/0
 - live PR trial full useful next-action rate: 100%
 - live PR trial full CI proof surface rate: 100%
-- live PR trial full freshness / live-source rate: 0.01h / 100%
+- live PR trial full freshness / live-source rate: 0.02h / 100%
 - live PR trial hard cases / live-source: 100/100
 - live PR trial hard false accepts / false blocks: 0/0
-- live PR trial hard useful next-action rate: 100%
-- live PR trial hard CI proof surface rate: 100%
+- live PR trial hard useful next-action rate: 95%
+- live PR trial hard CI proof surface rate: 95%
 - live PR trial hard freshness / live-source rate: 0h / 100%
 - human-judgment followups / blocked-too-hard: 0/0
 - eval candidates: 9

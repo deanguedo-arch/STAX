@@ -15,5 +15,5 @@
   "livePrArtifactTrialHardMaxAgeHours": 24,
   "livePrArtifactTrialFullMinimumLiveSourceRate": 50,
   "livePrArtifactTrialHardMinimumLiveSourceRate": 50,
-  "livePrArtifactTrialHardMinimumUniquePullRequests": 10
+  "livePrArtifactTrialHardMinimumUniquePullRequests": 20
 }
