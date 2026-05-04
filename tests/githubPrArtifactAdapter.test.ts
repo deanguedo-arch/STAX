@@ -115,6 +115,7 @@ describe("GitHub PR artifact adapter", () => {
       { repoFullName: "vercel/next.js", prNumber: 93417 },
       {
         rootDir: process.cwd(),
+        githubToken: "",
         fetchImpl: async () => {
           throw new Error("rate limit");
         }
