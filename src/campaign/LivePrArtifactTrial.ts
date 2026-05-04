@@ -78,6 +78,7 @@ export async function runLivePrArtifactTrial(
   const snapshotsById = new Map(fixture.snapshots.map((snapshot) => [snapshot.snapshotId, snapshot]));
   const fetchCache = new Map<string, PullRequestArtifactFetchResult>();
   const runtime = options.runAudit ? undefined : await createDefaultRuntime();
+  let rateLimitFallbackMode = false;
 
   let liveSourceCount = 0;
   let fallbackSourceCount = 0;
@@ -102,9 +103,16 @@ export async function runLivePrArtifactTrial(
           repoFullName: snapshot.repoFullName,
           prNumber: snapshot.packet.prNumber
         },
-        { rootDir }
+        {
+          rootDir,
+          mode: "live_trial",
+          preferRecordedSnapshot: rateLimitFallbackMode
+        }
       );
       fetchCache.set(key, fetched);
+      if (fetched.warnings.some((warning) => /rate limit exceeded/i.test(warning))) {
+        rateLimitFallbackMode = true;
+      }
     }
 
     if (fetched.source === "live_github_api") liveSourceCount += 1;

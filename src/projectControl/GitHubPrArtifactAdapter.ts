@@ -33,6 +33,14 @@ export type PullRequestArtifactFetchResult = {
   warnings: string[];
 };
 
+type GitHubPrArtifactFetchOptions = {
+  rootDir?: string;
+  fetchImpl?: FetchLike;
+  githubToken?: string;
+  mode?: "standard" | "live_trial";
+  preferRecordedSnapshot?: boolean;
+};
+
 type FetchLike = typeof fetch;
 
 type GitHubPullResponse = {
@@ -97,19 +105,24 @@ type GitHubWorkflowJobsResponse = {
 
 export async function fetchGitHubPullRequestArtifactPacket(
   ref: GitHubPrRef,
-  options: {
-    rootDir?: string;
-    fetchImpl?: FetchLike;
-    githubToken?: string;
-  } = {}
+  options: GitHubPrArtifactFetchOptions = {}
 ): Promise<PullRequestArtifactFetchResult> {
   const parsed = GitHubPrRefSchema.parse(ref);
   const fetchImpl = options.fetchImpl ?? fetch;
   const warnings: string[] = [];
   const githubToken = resolveGitHubToken(options.githubToken);
+  const mode = options.mode ?? "standard";
+
+  if (options.preferRecordedSnapshot === true) {
+    const fallback = await loadRecordedPullRequestArtifactPacket(parsed, options.rootDir);
+    if (fallback) {
+      warnings.push("Live GitHub fetch skipped after rate-limit signal; using recorded public PR snapshot fallback.");
+      return { source: "recorded_snapshot_fallback", packet: fallback, warnings };
+    }
+  }
 
   try {
-    const packet = await fetchLivePacket(parsed, fetchImpl, githubToken);
+    const packet = await fetchLivePacket(parsed, fetchImpl, githubToken, mode);
     return { source: "live_github_api", packet, warnings };
   } catch (error) {
     const fallback = await loadRecordedPullRequestArtifactPacket(parsed, options.rootDir);
@@ -139,7 +152,8 @@ export async function loadRecordedPullRequestArtifactPacket(
 async function fetchLivePacket(
   ref: GitHubPrRef,
   fetchImpl: FetchLike,
-  githubToken?: string
+  githubToken: string | undefined,
+  mode: "standard" | "live_trial"
 ): Promise<PullRequestArtifactPacket> {
   const headers = buildHeaders(githubToken);
   const pull = await fetchJson<GitHubPullResponse>(
@@ -159,23 +173,33 @@ async function fetchLivePacket(
   ).catch(() => []);
   const issueLinks = extractIssueLinks(pull.body ?? "");
   const unifiedDiff = await fetchPatch(fetchImpl, ref);
+  const workflowRunPageSize = mode === "live_trial" ? 5 : 20;
   const workflowRuns = pull.head?.sha
     ? await fetchJson<GitHubWorkflowRunsResponse>(
         fetchImpl,
-        `https://api.github.com/repos/${ref.repoFullName}/actions/runs?head_sha=${pull.head.sha}&event=pull_request&per_page=20`,
+        `https://api.github.com/repos/${ref.repoFullName}/actions/runs?head_sha=${pull.head.sha}&event=pull_request&per_page=${workflowRunPageSize}`,
         headers
       ).catch(() => ({ workflow_runs: [] }))
     : { workflow_runs: [] };
-  const checkRuns = pull.head?.sha
-    ? await fetchJson<GitHubCheckRunsResponse>(
-        fetchImpl,
-        `https://api.github.com/repos/${ref.repoFullName}/commits/${pull.head.sha}/check-runs`,
-        headers
-      ).catch(() => ({ check_runs: [] }))
-    : { check_runs: [] };
   const workflowRunStatuses = pull.head?.sha
-    ? await buildWorkflowRunStatuses(fetchImpl, headers, ref.repoFullName, workflowRuns.workflow_runs ?? [], pull.head.ref, pull.head.sha)
+    ? await buildWorkflowRunStatuses({
+        fetchImpl,
+        headers,
+        repoFullName: ref.repoFullName,
+        runs: workflowRuns.workflow_runs ?? [],
+        branch: pull.head.ref,
+        commitSha: pull.head.sha,
+        includeJobDetails: mode !== "live_trial"
+      })
     : [];
+  const checkRuns =
+    workflowRunStatuses.length === 0 && pull.head?.sha
+      ? await fetchJson<GitHubCheckRunsResponse>(
+          fetchImpl,
+          `https://api.github.com/repos/${ref.repoFullName}/commits/${pull.head.sha}/check-runs`,
+          headers
+        ).catch(() => ({ check_runs: [] }))
+      : { check_runs: [] };
   const ciStatuses = workflowRunStatuses.length > 0
     ? workflowRunStatuses
     : (checkRuns.check_runs ?? []).map((checkRun) => {
@@ -220,20 +244,26 @@ async function fetchLivePacket(
 }
 
 async function buildWorkflowRunStatuses(
-  fetchImpl: FetchLike,
-  headers: Record<string, string>,
-  repoFullName: string,
-  runs: NonNullable<GitHubWorkflowRunsResponse["workflow_runs"]>,
-  branch: string | undefined,
-  commitSha: string | undefined
+  args: {
+    fetchImpl: FetchLike;
+    headers: Record<string, string>;
+    repoFullName: string;
+    runs: NonNullable<GitHubWorkflowRunsResponse["workflow_runs"]>;
+    branch: string | undefined;
+    commitSha: string | undefined;
+    includeJobDetails: boolean;
+  }
 ): Promise<Array<PullRequestArtifactPacket["ciStatuses"][number]>> {
   const statuses: Array<PullRequestArtifactPacket["ciStatuses"][number]> = [];
-  for (const run of runs) {
-    const jobs = await fetchJson<GitHubWorkflowJobsResponse>(
-      fetchImpl,
-      `https://api.github.com/repos/${repoFullName}/actions/runs/${run.id}/jobs?per_page=100`,
-      headers
-    ).catch(() => ({ jobs: [] }));
+  for (const run of args.runs) {
+    const jobs =
+      args.includeJobDetails === true
+        ? await fetchJson<GitHubWorkflowJobsResponse>(
+            args.fetchImpl,
+            `https://api.github.com/repos/${args.repoFullName}/actions/runs/${run.id}/jobs?per_page=100`,
+            args.headers
+          ).catch(() => ({ jobs: [] }))
+        : { jobs: [] };
     const jobItems = jobs.jobs ?? [];
     const completedJobCount = jobItems.filter((job) => job.status === "completed" && job.conclusion === "success").length;
     const failedJobCount = jobItems.filter((job) => job.conclusion === "failure" || job.conclusion === "timed_out" || job.conclusion === "action_required").length;
@@ -249,8 +279,8 @@ async function buildWorkflowRunStatuses(
       workflow: run.name ?? `workflow-${run.id}`,
       provider: "github_actions",
       status,
-      branch: run.head_branch ?? branch,
-      commitSha: run.head_sha ?? commitSha,
+      branch: run.head_branch ?? args.branch,
+      commitSha: run.head_sha ?? args.commitSha,
       startedAt: run.created_at ?? undefined,
       finishedAt: run.updated_at ?? undefined,
       runId: run.id,

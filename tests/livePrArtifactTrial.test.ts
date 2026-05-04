@@ -159,4 +159,40 @@ describe("Live PR artifact trial", () => {
     expect(summary.blockers).toContain("live-source coverage too low: 0/2 (minimum 1)");
     expect(summary.blockers).toContain("live GitHub API likely rate limited; retry after 2026-05-04T00:30:00.000Z");
   });
+
+  it("switches to snapshot-first mode after a rate-limit warning", async () => {
+    const fixture = await loadPrArtifactTrialFixture();
+    const snapshots = new Map(
+      fixture.snapshots.map((snapshot) => [`${snapshot.repoFullName}#${snapshot.packet.prNumber}`, snapshot.packet])
+    );
+    const preferRecordedSnapshotFlags: boolean[] = [];
+
+    await runLivePrArtifactTrial({
+      requestedCaseCount: 6,
+      minimumLiveSourceCount: 0,
+      allowFallbackSource: true,
+      fetchPacket: async (ref, options) => {
+        preferRecordedSnapshotFlags.push(options?.preferRecordedSnapshot === true);
+        const packet = snapshots.get(`${ref.repoFullName}#${ref.prNumber}`);
+        if (!packet) throw new Error("missing packet");
+        if (preferRecordedSnapshotFlags.length === 1) {
+          return {
+            source: "recorded_snapshot_fallback",
+            packet,
+            warnings: [
+              "GitHub API request failed: 403 Forbidden; rate limit exceeded (resource=core, reset_at=2026-05-04T00:30:00.000Z)"
+            ]
+          };
+        }
+        return {
+          source: "recorded_snapshot_fallback",
+          packet,
+          warnings: ["Live GitHub fetch skipped after rate-limit signal; using recorded public PR snapshot fallback."]
+        };
+      },
+      runAudit: async ({ testCase }) => renderProjectControlCard(testCase.expectedStatus)
+    });
+
+    expect(preferRecordedSnapshotFlags).toEqual([false, true]);
+  });
 });

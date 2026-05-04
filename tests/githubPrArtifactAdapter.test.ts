@@ -166,6 +166,80 @@ describe("GitHub PR artifact adapter", () => {
     expect(packet?.prNumber).toBe(10231);
     expect(packet?.changedFiles).toContain("packages/browser/src/client/tester/rpc.ts");
   });
+
+  it("can force recorded snapshot usage without calling the live API", async () => {
+    const result = await fetchGitHubPullRequestArtifactPacket(
+      { repoFullName: "vercel/next.js", prNumber: 93417 },
+      {
+        rootDir: process.cwd(),
+        preferRecordedSnapshot: true,
+        fetchImpl: async () => {
+          throw new Error("live fetch should not run");
+        }
+      }
+    );
+
+    expect(result.source).toBe("recorded_snapshot_fallback");
+    expect(result.packet.prNumber).toBe(93417);
+    expect(result.warnings.join("\n")).toContain("Live GitHub fetch skipped");
+  });
+
+  it("uses lightweight CI collection in live-trial mode", async () => {
+    const responses = new Map<string, Response>([
+      [
+        "https://api.github.com/repos/example/repo/pulls/12",
+        jsonResponse({
+          number: 12,
+          title: "Fix parser edge case",
+          body: "Closes #44",
+          head: { ref: "fix/parser-edge", sha: "abc1234" },
+          base: { ref: "main" },
+          labels: [{ name: "bug" }]
+        })
+      ],
+      [
+        "https://api.github.com/repos/example/repo/pulls/12/files?per_page=100",
+        jsonResponse([{ filename: "src/parser.ts", patch: "@@ -1 +1 @@\n-old\n+new" }])
+      ],
+      [
+        "https://api.github.com/repos/example/repo/pulls/12/comments?per_page=100",
+        jsonResponse([{ user: { login: "reviewer" }, path: "src/parser.ts", body: "Please add a guard." }])
+      ],
+      [
+        "https://api.github.com/repos/example/repo/actions/runs?head_sha=abc1234&event=pull_request&per_page=5",
+        jsonResponse({
+          workflow_runs: [
+            {
+              id: 77,
+              name: "CI",
+              status: "completed",
+              conclusion: "success",
+              html_url: "https://github.com/example/repo/actions/runs/77",
+              head_branch: "fix/parser-edge",
+              head_sha: "abc1234",
+              event: "pull_request",
+              run_attempt: 1,
+              created_at: "2026-05-03T00:00:00Z",
+              updated_at: "2026-05-03T00:05:00Z"
+            }
+          ]
+        })
+      ],
+      [
+        "https://patch-diff.githubusercontent.com/raw/example/repo/pull/12.patch",
+        textResponse("diff --git a/src/parser.ts b/src/parser.ts\n--- a/src/parser.ts\n+++ b/src/parser.ts\n@@ -1 +1 @@\n-old\n+new")
+      ]
+    ]);
+
+    const result = await fetchGitHubPullRequestArtifactPacket(
+      { repoFullName: "example/repo", prNumber: 12 },
+      { fetchImpl: mockFetch(responses), mode: "live_trial" }
+    );
+
+    expect(result.source).toBe("live_github_api");
+    expect(result.packet.ciStatuses[0]?.provider).toBe("github_actions");
+    expect(result.packet.ciStatuses[0]?.expectedJobCount).toBeUndefined();
+  });
 });
 
 function mockFetch(responses: Map<string, Response>): typeof fetch {

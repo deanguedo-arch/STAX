@@ -3,6 +3,8 @@ import { spawn } from "node:child_process";
 type CliArgs = {
   attempts: number;
   delayMs: number;
+  maxDelayMs: number;
+  backoffFactor: number;
   command: string;
 };
 
@@ -27,8 +29,10 @@ function sleep(ms: number): Promise<void> {
 
 function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {
-    attempts: 2,
-    delayMs: 3000,
+    attempts: 3,
+    delayMs: 5000,
+    maxDelayMs: 30000,
+    backoffFactor: 2,
     command: "npm run validate:staxcore:strict"
   };
 
@@ -47,6 +51,18 @@ function parseArgs(argv: string[]): CliArgs {
       index += 1;
       continue;
     }
+    if (token === "--max-delay-ms" && next) {
+      const parsed = Number(next);
+      if (Number.isFinite(parsed) && parsed >= 0) args.maxDelayMs = Math.trunc(parsed);
+      index += 1;
+      continue;
+    }
+    if (token === "--backoff-factor" && next) {
+      const parsed = Number(next);
+      if (Number.isFinite(parsed) && parsed >= 1) args.backoffFactor = parsed;
+      index += 1;
+      continue;
+    }
     if (token === "--command" && next) {
       args.command = next;
       index += 1;
@@ -59,6 +75,7 @@ function parseArgs(argv: string[]): CliArgs {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   let lastExitCode = 1;
+  let retryDelayMs = args.delayMs;
 
   for (let attempt = 1; attempt <= args.attempts; attempt += 1) {
     process.stdout.write(
@@ -76,9 +93,13 @@ async function main(): Promise<void> {
 
     if (attempt < args.attempts) {
       process.stderr.write(
-        `[staxcore-strict-ci] strict gate failed on attempt ${attempt} (exit ${lastExitCode}); retrying in ${args.delayMs}ms.\n`
+        `[staxcore-strict-ci] strict gate failed on attempt ${attempt} (exit ${lastExitCode}); retrying in ${retryDelayMs}ms.\n`
       );
-      await sleep(args.delayMs);
+      await sleep(retryDelayMs);
+      retryDelayMs = Math.min(
+        args.maxDelayMs,
+        Math.max(args.delayMs, Math.trunc(retryDelayMs * args.backoffFactor))
+      );
     }
   }
 

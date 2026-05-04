@@ -97,6 +97,10 @@ function pctDelta(previous: number | null, current: number | null): string {
   return `${direction} ${Math.abs(delta)}`;
 }
 
+function isAcceptedDecision(decision: string): boolean {
+  return /accepted/i.test(decision);
+}
+
 export async function summarizeOperatingDashboard(args: {
   baselineLedger: BaselineCleanupLedger;
   dogfoodLedger: DogfoodRoundCLedger;
@@ -144,9 +148,16 @@ export async function summarizeOperatingDashboard(args: {
     baselineLedger: args.baselineLedger
   });
 
-  const repoHotspots = topCounts(
-    args.humanJudgmentLedger.entries.filter((entry) => entry.evalCandidate || entry.humanDecision !== "accepted").map((entry) => entry.repo)
-  ).map((item) => ({ repo: item.key, count: item.count }));
+  const unresolvedJudgments = args.humanJudgmentLedger.entries.filter(
+    (entry) =>
+      !isAcceptedDecision(entry.humanDecision) ||
+      entry.blockedUnnecessarily ||
+      (entry.evalCandidate && !entry.promotedLesson)
+  );
+  const repoHotspots = topCounts(unresolvedJudgments.map((entry) => entry.repo)).map((item) => ({
+    repo: item.key,
+    count: item.count
+  }));
   const unresolvedFailureEntries = args.failureLedger.entries.filter((entry) => entry.status !== "resolved");
   const failureHotspots = topCounts(unresolvedFailureEntries.map((entry) => entry.failureType)).map((item) => ({
     failureType: item.key,
