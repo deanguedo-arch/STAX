@@ -47,7 +47,7 @@ Current evidence snapshot (2026-05-04):
 
 - Strict command-proof chain passed; see `artifacts/command_proof.json` and `artifacts/command_proof.md`.
 - 25-case live PR trial refresh: 25 live-source / 0 fallback, false accepts 0, false blocks 0.
-- 50-case live PR trial refresh: 40 live-source / 10 fallback, false accepts 0, false blocks 0.
+- 50-case live PR trial refresh: 50 live-source / 0 fallback, false accepts 0, false blocks 0.
 
 Scope of allowed claim:
 
