@@ -34,6 +34,16 @@ const DEFAULT_RELEASE = "STAX_Project-Control_9_5_RC4";
 const RC4_COMMAND_CHAIN: CommandSpec[] = [
   { id: "typecheck", command: "npm run typecheck", expectedExitCode: 0 },
   { id: "test", command: "npm test", expectedExitCode: 0 },
+  {
+    id: "github_pr_adapter_test_with_token",
+    command: "GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts",
+    expectedExitCode: 0
+  },
+  {
+    id: "github_pr_adapter_test_without_token",
+    command: "GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts",
+    expectedExitCode: 0
+  },
   { id: "validate_all", command: "npm run validate:all", expectedExitCode: 0 },
   { id: "pr_artifact_integrity", command: "npm run pr-artifact:integrity", expectedExitCode: 0 },
   { id: "pr_artifact_score", command: "npm run pr-artifact:score", expectedExitCode: 0 },

@@ -17,6 +17,8 @@ Required command-proof chain:
 ```bash
 npm run typecheck
 npm test
+GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts
+GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts
 npm run validate:all
 npm run pr-artifact:integrity
 npm run pr-artifact:score
