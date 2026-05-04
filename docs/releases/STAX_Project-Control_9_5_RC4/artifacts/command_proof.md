@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-03T23:57:23.393Z
+- Recorded at: 2026-05-04T00:02:47.641Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -28,8 +28,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:56:31.041Z
-- Finished at: 2026-05-03T23:56:35.218Z
+- Started at: 2026-05-04T00:01:51.823Z
+- Finished at: 2026-05-04T00:01:56.377Z
 
 Stdout tail:
 
@@ -50,8 +50,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:56:35.218Z
-- Finished at: 2026-05-03T23:56:51.433Z
+- Started at: 2026-05-04T00:01:56.377Z
+- Finished at: 2026-05-04T00:02:15.103Z
 
 Stdout tail:
 
@@ -65,8 +65,8 @@ Stdout tail:
 
  Test Files  159 passed (159)
       Tests  781 passed (781)
-   Start at  17:56:35
-   Duration  15.64s (transform 9.75s, setup 0ms, import 44.15s, tests 60.13s, environment 46ms)
+   Start at  18:01:56
+   Duration  18.08s (transform 10.39s, setup 0ms, import 51.25s, tests 70.26s, environment 29ms)
 ```
 
 Stderr tail:
@@ -81,8 +81,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:56:51.433Z
-- Finished at: 2026-05-03T23:57:14.042Z
+- Started at: 2026-05-04T00:02:15.103Z
+- Finished at: 2026-05-04T00:02:38.013Z
 
 Stdout tail:
 
@@ -104,8 +104,8 @@ Stdout tail:
 
  Test Files  159 passed (159)
       Tests  781 passed (781)
-   Start at  17:56:56
-   Duration  16.10s (transform 10.38s, setup 0ms, import 45.94s, tests 62.12s, environment 29ms)
+   Start at  18:02:20
+   Duration  16.23s (transform 10.52s, setup 0ms, import 45.56s, tests 62.45s, environment 21ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -136,8 +136,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:14.042Z
-- Finished at: 2026-05-03T23:57:14.878Z
+- Started at: 2026-05-04T00:02:38.013Z
+- Finished at: 2026-05-04T00:02:38.885Z
 
 Stdout tail:
 
@@ -175,8 +175,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:14.878Z
-- Finished at: 2026-05-03T23:57:16.161Z
+- Started at: 2026-05-04T00:02:38.885Z
+- Finished at: 2026-05-04T00:02:40.181Z
 
 Stdout tail:
 
@@ -214,8 +214,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:16.161Z
-- Finished at: 2026-05-03T23:57:16.935Z
+- Started at: 2026-05-04T00:02:40.181Z
+- Finished at: 2026-05-04T00:02:40.983Z
 
 Stdout tail:
 
@@ -227,7 +227,7 @@ Stdout tail:
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
   "cachedRecordedAt": "2026-05-03T22:30:46.492Z",
-  "cachedAgeHours": 1.44,
+  "cachedAgeHours": 1.53,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 25,
@@ -256,8 +256,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:full:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:16.935Z
-- Finished at: 2026-05-03T23:57:17.688Z
+- Started at: 2026-05-04T00:02:40.983Z
+- Finished at: 2026-05-04T00:02:41.783Z
 
 Stdout tail:
 
@@ -269,7 +269,7 @@ Stdout tail:
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
   "cachedRecordedAt": "2026-05-03T22:58:31.335Z",
-  "cachedAgeHours": 0.98,
+  "cachedAgeHours": 1.07,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 50,
@@ -298,8 +298,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:17.688Z
-- Finished at: 2026-05-03T23:57:18.513Z
+- Started at: 2026-05-04T00:02:41.783Z
+- Finished at: 2026-05-04T00:02:42.586Z
 
 Stdout tail:
 
@@ -337,8 +337,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:18.513Z
-- Finished at: 2026-05-03T23:57:19.033Z
+- Started at: 2026-05-04T00:02:42.586Z
+- Finished at: 2026-05-04T00:02:43.118Z
 
 Stdout tail:
 
@@ -369,8 +369,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:19.033Z
-- Finished at: 2026-05-03T23:57:19.569Z
+- Started at: 2026-05-04T00:02:43.118Z
+- Finished at: 2026-05-04T00:02:43.675Z
 
 Stdout tail:
 
@@ -399,8 +399,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:19.569Z
-- Finished at: 2026-05-03T23:57:20.080Z
+- Started at: 2026-05-04T00:02:43.675Z
+- Finished at: 2026-05-04T00:02:44.195Z
 
 Stdout tail:
 
@@ -437,8 +437,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:20.080Z
-- Finished at: 2026-05-03T23:57:21.743Z
+- Started at: 2026-05-04T00:02:44.195Z
+- Finished at: 2026-05-04T00:02:45.916Z
 
 Stdout tail:
 
@@ -474,8 +474,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:21.743Z
-- Finished at: 2026-05-03T23:57:22.206Z
+- Started at: 2026-05-04T00:02:45.916Z
+- Finished at: 2026-05-04T00:02:46.392Z
 
 Stdout tail:
 
@@ -531,8 +531,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:22.206Z
-- Finished at: 2026-05-03T23:57:22.608Z
+- Started at: 2026-05-04T00:02:46.392Z
+- Finished at: 2026-05-04T00:02:46.828Z
 
 Stdout tail:
 
@@ -654,8 +654,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-03T23:57:22.608Z
-- Finished at: 2026-05-03T23:57:23.392Z
+- Started at: 2026-05-04T00:02:46.828Z
+- Finished at: 2026-05-04T00:02:47.641Z
 
 Stdout tail:
 
@@ -664,7 +664,7 @@ Stdout tail:
 > tsx scripts/opsDashboard.ts
 
 STAX Ops Dashboard
-- snapshot: 2026-05-03
+- snapshot: 2026-05-04
 - status: ops_healthy
 
 Status Checks

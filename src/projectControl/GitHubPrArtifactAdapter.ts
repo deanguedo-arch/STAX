@@ -106,14 +106,18 @@ export async function fetchGitHubPullRequestArtifactPacket(
   const parsed = GitHubPrRefSchema.parse(ref);
   const fetchImpl = options.fetchImpl ?? fetch;
   const warnings: string[] = [];
+  const githubToken = resolveGitHubToken(options.githubToken);
 
   try {
-    const packet = await fetchLivePacket(parsed, fetchImpl, options.githubToken);
+    const packet = await fetchLivePacket(parsed, fetchImpl, githubToken);
     return { source: "live_github_api", packet, warnings };
   } catch (error) {
     const fallback = await loadRecordedPullRequestArtifactPacket(parsed, options.rootDir);
     if (!fallback) throw error;
     warnings.push(formatAdapterWarning(error));
+    if (!githubToken && isRateLimitWarning(error)) {
+      warnings.push("No GitHub token configured; set STAX_GITHUB_TOKEN or GITHUB_TOKEN for higher GitHub API limits.");
+    }
     warnings.push("Using recorded public PR snapshot fallback.");
     return { source: "recorded_snapshot_fallback", packet: fallback, warnings };
   }
@@ -304,7 +308,7 @@ async function fetchPaginatedJson<T>(fetchImpl: FetchLike, url: string, headers:
 }
 
 function buildHeaders(githubToken?: string): Record<string, string> {
-  const token = githubToken ?? process.env.STAX_GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
+  const token = resolveGitHubToken(githubToken);
   const headers: Record<string, string> = {
     "User-Agent": "Codex-STAX",
     Accept: "application/vnd.github+json"
@@ -345,6 +349,15 @@ function extractIssueLinks(body: string): Array<{ issueId: string; title?: strin
 function formatAdapterWarning(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
+}
+
+function resolveGitHubToken(githubToken?: string): string | undefined {
+  return githubToken ?? process.env.STAX_GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
+}
+
+function isRateLimitWarning(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /rate limit/i.test(message);
 }
 
 function formatGitHubApiError(url: string, response: Response): Error {

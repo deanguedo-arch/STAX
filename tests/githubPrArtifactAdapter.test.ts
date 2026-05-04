@@ -124,6 +124,7 @@ describe("GitHub PR artifact adapter", () => {
     expect(result.source).toBe("recorded_snapshot_fallback");
     expect(result.packet.prNumber).toBe(93417);
     expect(result.warnings.join("\n")).toContain("rate limit");
+    expect(result.warnings.join("\n")).toContain("No GitHub token configured");
   });
 
   it("surfaces rate-limit reset context when GitHub headers are present", async () => {
