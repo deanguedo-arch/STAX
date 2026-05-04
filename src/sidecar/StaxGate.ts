@@ -418,7 +418,7 @@ function deriveSidecarFindings(input: {
     risk.push("Unsafe publish/deploy/sync claim blocked.");
   }
 
-  for (const entry of input.commandEvidenceEntries) {
+  for (const entry of latestCommandEvidenceByCommand(input.commandEvidenceEntries)) {
     if (entry.repo && entry.repo !== input.snapshot.repoName) {
       unverified.push(`Command evidence repo mismatch: ${entry.repo} does not match ${input.snapshot.repoName}.`);
       risk.push("Wrong repo command proof blocked.");
@@ -438,6 +438,14 @@ function deriveSidecarFindings(input: {
     if (entry.exitCode !== 0) {
       unverified.push(`Command evidence failed: ${entry.command} exited ${entry.exitCode ?? "unknown"}.`);
     }
+  }
+  const supersededFailures = input.commandEvidenceEntries.filter((entry) => {
+    if (entry.exitCode === 0) return false;
+    const latest = latestCommandEvidenceByCommand(input.commandEvidenceEntries).find((item) => item.command === entry.command);
+    return latest && latest !== entry && latest.exitCode === 0;
+  });
+  for (const entry of supersededFailures.slice(0, 2)) {
+    weak.push(`Earlier failed command evidence exists but is superseded by a later passing ${entry.command} run.`);
   }
 
   return { verified, weak, unverified, risk };
@@ -472,7 +480,7 @@ async function readCommandEvidenceEntries(repoPath: string): Promise<ProjectCont
       source: parsed.source ?? "local_stax_command_output"
     });
   }
-  return entries;
+  return sortCommandEvidenceNewestFirst(entries);
 }
 
 function renderCommandEvidence(entries: ProjectControlCommandEvidenceEntry[]): string {
@@ -495,6 +503,26 @@ function renderCommandEvidence(entries: ProjectControlCommandEvidenceEntry[]): s
         .join("\n")
     )
     .join("\n\n");
+}
+
+function sortCommandEvidenceNewestFirst(
+  entries: ProjectControlCommandEvidenceEntry[]
+): ProjectControlCommandEvidenceEntry[] {
+  return [...entries].sort((a, b) => commandEvidenceTime(b) - commandEvidenceTime(a));
+}
+
+function latestCommandEvidenceByCommand(
+  entries: ProjectControlCommandEvidenceEntry[]
+): ProjectControlCommandEvidenceEntry[] {
+  const latest = new Map<string, ProjectControlCommandEvidenceEntry>();
+  for (const entry of sortCommandEvidenceNewestFirst(entries)) {
+    if (!latest.has(entry.command)) latest.set(entry.command, entry);
+  }
+  return [...latest.values()];
+}
+
+function commandEvidenceTime(entry: ProjectControlCommandEvidenceEntry): number {
+  return Date.parse(entry.finishedAt ?? entry.startedAt ?? "") || 0;
 }
 
 async function updateTaskLedger(repoPath: string, status: StaxGateStatus): Promise<void> {

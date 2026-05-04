@@ -92,7 +92,8 @@ export function buildProjectControlProofStack(
     }
   }
 
-  const derivedClaims = deriveClaims(combined);
+  const claimSource = input.codexReport.trim() ? [input.task, input.codexReport].join("\n") : input.task;
+  const derivedClaims = deriveClaims(claimSource);
   const changedFiles = resolveChangedFiles(input, combined);
   if (changedFiles.length > 0 && derivedClaims.length > 0) {
     const diffClaims: DiffAuditClaimInput[] = [];
@@ -225,7 +226,7 @@ function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsi
       branch: structuredEntry?.branch ?? detectBranch(input.commandEvidence),
       commitSha: structuredEntry?.commitSha ?? detectCommit(input.commandEvidence),
       exitCode: structuredEntry?.exitCode ?? detectExitCode(input.commandEvidence),
-      output: input.commandEvidence,
+      output: structuredEntry ? renderStructuredCommandOutput(structuredEntry) : input.commandEvidence,
       source,
       expectedRepo: input.expectedRepo ?? input.targetRepoPath,
       expectedCwd: input.expectedCwd ?? input.targetRepoPath,
@@ -235,6 +236,23 @@ function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsi
     }),
     command
   };
+}
+
+function renderStructuredCommandOutput(entry: NonNullable<ProjectControlProofStackInput["commandEvidenceEntries"]>[number]): string {
+  return [
+    entry.cwd ? `cwd=${entry.cwd}` : "",
+    entry.repo ? `repo=${entry.repo}` : "",
+    entry.branch ? `branch=${entry.branch}` : "",
+    entry.commitSha ? `commitSha=${entry.commitSha}` : "",
+    `$ ${entry.command}`,
+    entry.exitCode !== undefined && entry.exitCode !== null ? `Exit code: ${entry.exitCode}` : "",
+    entry.startedAt ? `startedAt=${entry.startedAt}` : "",
+    entry.finishedAt ? `finishedAt=${entry.finishedAt}` : "",
+    entry.stdout,
+    entry.stderr
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function resolveChangedFiles(input: ProjectControlProofStackInput, combined: string): DiffChangedFileInput[] {

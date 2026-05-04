@@ -6,8 +6,9 @@ import {
   collectCommandEvidence,
   isDangerousSidecarCommand
 } from "../src/sidecar/CommandEvidenceCollector.js";
+import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
-import { createTempGitRepo } from "./sidecarTestHelpers.js";
+import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 describe("STAX sidecar watch and collect", () => {
   it("collects successful and failed command evidence", async () => {
@@ -75,5 +76,28 @@ describe("STAX sidecar watch and collect", () => {
     expect(second.audited).toBe(false);
     expect(third.audited).toBe(true);
     expect(verdicts.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("uses latest rerun evidence instead of permanently blocking on an older failure", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-rerun-");
+    await attachStaxToRepo(repoPath);
+    await commitFile(repoPath, "check.js", "process.exit(2);\n");
+    await collectCommandEvidence({
+      repoPath,
+      command: ["node", "check.js"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, "check.js"), "process.exit(0);\n", "utf8");
+    await collectCommandEvidence({
+      repoPath,
+      command: ["node", "check.js"],
+      writeLearningEvent: false
+    });
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.why).not.toContain("failed_proof");
+    expect(status.unverified.join("\n")).not.toContain("Command evidence failed");
+    expect(status.weak.join("\n")).toContain("superseded by a later passing");
   });
 });
