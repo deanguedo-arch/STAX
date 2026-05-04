@@ -1,3 +1,6 @@
+import path from "node:path";
+import dotenv from "dotenv";
+
 type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 
 export type StaxcoreWorkflowStatusOptions = {
@@ -68,6 +71,7 @@ function toIsoFromUnixSeconds(value: string | null): string | null {
 function resolveGitHubToken(override?: string): string | undefined {
   const direct = override?.trim();
   if (direct) return direct;
+  dotenv.config({ path: path.join(process.cwd(), ".env"), quiet: true });
   const staxToken = process.env.STAX_GITHUB_TOKEN?.trim();
   if (staxToken) return staxToken;
   const githubToken = process.env.GITHUB_TOKEN?.trim();

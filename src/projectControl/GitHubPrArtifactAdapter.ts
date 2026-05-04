@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import dotenv from "dotenv";
 import { z } from "zod";
 import {
   PullRequestArtifactPacketSchema,
@@ -110,7 +111,7 @@ export async function fetchGitHubPullRequestArtifactPacket(
   const parsed = GitHubPrRefSchema.parse(ref);
   const fetchImpl = options.fetchImpl ?? fetch;
   const warnings: string[] = [];
-  const githubToken = resolveGitHubToken(options.githubToken);
+  const githubToken = resolveGitHubToken(options.githubToken, options.rootDir);
   const mode = options.mode ?? "standard";
 
   if (options.preferRecordedSnapshot === true) {
@@ -338,12 +339,11 @@ async function fetchPaginatedJson<T>(fetchImpl: FetchLike, url: string, headers:
 }
 
 function buildHeaders(githubToken?: string): Record<string, string> {
-  const token = resolveGitHubToken(githubToken);
   const headers: Record<string, string> = {
     "User-Agent": "Codex-STAX",
     Accept: "application/vnd.github+json"
   };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (githubToken) headers.Authorization = `Bearer ${githubToken}`;
   return headers;
 }
 
@@ -381,8 +381,9 @@ function formatAdapterWarning(error: unknown): string {
   return String(error);
 }
 
-function resolveGitHubToken(githubToken?: string): string | undefined {
-  return githubToken ?? process.env.STAX_GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
+function resolveGitHubToken(githubToken?: string, rootDir = process.cwd()): string | undefined {
+  dotenv.config({ path: path.join(rootDir, ".env"), quiet: true });
+  return githubToken ?? process.env.STAX_GITHUB_TOKEN?.trim() ?? process.env.GITHUB_TOKEN?.trim();
 }
 
 function isRateLimitWarning(error: unknown): boolean {
