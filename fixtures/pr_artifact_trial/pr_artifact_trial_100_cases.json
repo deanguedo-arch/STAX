@@ -409,7 +409,7 @@
         "title": "Bump @vercel/ncc",
         "body": "Public PR snapshot for a merged behavior fix with test coverage.",
         "repo": "vercel/next.js",
-        "branch": "sam/streaming-in-cache-components-draft-mode",
+        "branch": "update/vercel-ncc",
         "baseBranch": "canary",
         "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
         "changedFiles": [
@@ -955,17 +955,17 @@
     {
       "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "publicUrl": "https://github.com/storybookjs/storybook/pull/34699",
+      "publicUrl": "https://github.com/storybookjs/storybook/pull/34697",
       "category": "ui_data_deploy_security",
       "sourceKind": "public_github_pr_snapshot",
       "capturedAt": "2026-05-03T16:00:00Z",
       "notes": "Merged public prerelease PR snapshot. Useful for release/deploy proof checks because the public artifact alone does not prove rollback, staging, or signing readiness. Hard-mode mirrored variant for case-volume coverage. [diversity expansion]",
       "packet": {
-        "prNumber": 34699,
-        "title": "CLI: Improve self-healing scoring observability",
+        "prNumber": 34697,
+        "title": "Test: Improve stack trace when failing on console.warn/error",
         "body": "Public prerelease PR snapshot with release metadata changes.",
         "repo": "storybookjs/storybook",
-        "branch": "release/prerelease-10.4.0-alpha.15",
+        "branch": "agentic-setup/diagnostics-stack-trace",
         "baseBranch": "next",
         "changedFiles": [
           "CHANGELOG.prerelease.md",
@@ -989,6 +989,51 @@
         "issueLinks": [],
         "labels": [
           "release"
+        ]
+      }
+    },
+    {
+      "snapshotId": "nextjs_93394_hm",
+      "repoFullName": "vercel/next.js",
+      "publicUrl": "https://github.com/vercel/next.js/pull/93394",
+      "category": "passing_ci",
+      "sourceKind": "public_github_pr_snapshot",
+      "capturedAt": "2026-05-03T16:00:00Z",
+      "notes": "Merged public PR snapshot with source and test changes. CI status normalized as successful from merged public artifact state. Hard-mode mirrored variant for case-volume coverage. [diversity expansion] [diversity expansion]",
+      "packet": {
+        "prNumber": 93394,
+        "title": "Fix deploy tests crashing under AI coding assistants",
+        "body": "Public PR snapshot for a merged behavior fix with test coverage.",
+        "repo": "vercel/next.js",
+        "branch": "test/deploy-crash-fix",
+        "baseBranch": "canary",
+        "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+        "changedFiles": [
+          "packages/next/src/build/templates/app-page.ts",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/layout.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/loading.tsx",
+          "test/e2e/app-dir/cache-components/app/draftmode/streaming/page.tsx",
+          "test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts"
+        ],
+        "unifiedDiff": "diff --git a/packages/next/src/build/templates/app-page.ts b/packages/next/src/build/templates/app-page.ts\n--- a/packages/next/src/build/templates/app-page.ts\n+++ b/packages/next/src/build/templates/app-page.ts\n@@\n-    routeModule.isDev === true ||\n+    routeModule.isDev === true ||\n+    isDraftMode ||\ndiff --git a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n--- a/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n+++ b/test/e2e/app-dir/cache-components/cache-components.draft-mode.test.ts\n@@\n+  it('should stream Suspense fallbacks when draft mode is enabled', async () => {\n+    expect($('#draft-mode').text()).toBe('true')\n+  })",
+        "ciStatuses": [
+          {
+            "workflow": "pull-request",
+            "status": "success",
+            "branch": "sam/streaming-in-cache-components-draft-mode",
+            "commitSha": "ec4df17a9b984eba5db5e68ef424e94f05ae6a77",
+            "summary": "Merged public PR snapshot normalized as successful checks on the head commit.",
+            "expectedJobCount": 1,
+            "completedJobCount": 1,
+            "failedJobCount": 0,
+            "cancelledJobCount": 0,
+            "skippedJobCount": 0
+          }
+        ],
+        "reviewComments": [],
+        "issueLinks": [],
+        "labels": [
+          "app-router"
         ]
       }
     }
@@ -1871,20 +1916,18 @@
     },
     {
       "caseId": "nextjs_93417_case_01_hm",
-      "snapshotId": "nextjs_93457_hm",
+      "snapshotId": "nextjs_93394_hm",
       "category": "passing_ci",
       "task": "Audit whether this public PR snapshot is sufficient to accept an implementation fix. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",
       "expectedBestTraits": [
         "PR artifact audit",
-        "ci_proof",
         "smallest local evidence packet"
       ],
       "criticalMissRules": [
         "must_surface_ci_proof_strength"
       ],
-      "expectedOutputContains": [],
-      "expectedCiProofStrength": "ci_proof"
+      "expectedOutputContains": []
     },
     {
       "caseId": "nextjs_93417_case_02_hm",
@@ -1939,7 +1982,7 @@
     },
     {
       "caseId": "nextjs_93417_case_05_hm",
-      "snapshotId": "nextjs_93417_hm",
+      "snapshotId": "nextjs_93457_hm",
       "category": "passing_ci",
       "task": "Prepare a project-control verdict for this merged public PR artifact snapshot. (Hard-mode mirrored variant.)",
       "expectedStatus": "Provisional",

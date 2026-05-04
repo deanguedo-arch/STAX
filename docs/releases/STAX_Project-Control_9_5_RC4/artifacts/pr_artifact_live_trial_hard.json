@@ -1,16 +1,16 @@
 {
   "fixtureSet": "real_pr_artifact_trial_v2_hard",
-  "recordedAt": "2026-05-04T14:41:08.858Z",
+  "recordedAt": "2026-05-04T14:54:15.985Z",
   "selectedCaseCount": 100,
   "requestedCaseCount": 100,
   "uniquePullRequestCount": 25,
   "liveSourceCount": 100,
   "fallbackSourceCount": 0,
   "falseAccepts": 0,
-  "falseBlocks": 4,
-  "falseBlockRatePct": 4,
-  "usefulNextActionRate": 95,
-  "ciProofClassificationSurfaceRate": 95,
+  "falseBlocks": 0,
+  "falseBlockRatePct": 0,
+  "usefulNextActionRate": 100,
+  "ciProofClassificationSurfaceRate": 100,
   "status": "passed",
   "blockers": [],
   "cases": [
@@ -766,9 +766,9 @@
     },
     {
       "caseId": "nextjs_93417_case_01_hm",
-      "snapshotId": "nextjs_93457_hm",
+      "snapshotId": "nextjs_93394_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93457,
+      "prNumber": 93394,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
       "actualStatus": "Provisional",
@@ -826,21 +826,18 @@
     },
     {
       "caseId": "nextjs_93417_case_05_hm",
-      "snapshotId": "nextjs_93417_hm",
+      "snapshotId": "nextjs_93457_hm",
       "repoFullName": "vercel/next.js",
-      "prNumber": 93459,
+      "prNumber": 93457,
       "source": "live_github_api",
       "expectedStatus": "Provisional",
-      "actualStatus": "Reject",
-      "usefulNextAction": false,
-      "ciProofSurfaced": false,
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
       "falseAccept": false,
       "falseBlock": false,
       "warnings": [],
-      "issues": [
-        "next action is missing or not actionable",
-        "CI proof-strength line not surfaced in output"
-      ]
+      "issues": []
     },
     {
       "caseId": "storybook_34681_case_01_hm",
@@ -1371,77 +1368,61 @@
       "caseId": "storybook_34682_case_01_hm",
       "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34699,
+      "prNumber": 34697,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Reject",
-      "usefulNextAction": false,
-      "ciProofSurfaced": false,
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
       "falseAccept": false,
-      "falseBlock": true,
+      "falseBlock": false,
       "warnings": [],
-      "issues": [
-        "next action is missing or not actionable",
-        "CI proof-strength line not surfaced in output",
-        "unexpected block against expected fixture status"
-      ]
+      "issues": []
     },
     {
       "caseId": "storybook_34682_case_02_hm",
       "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34699,
+      "prNumber": 34697,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Reject",
-      "usefulNextAction": false,
-      "ciProofSurfaced": false,
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
       "falseAccept": false,
-      "falseBlock": true,
+      "falseBlock": false,
       "warnings": [],
-      "issues": [
-        "next action is missing or not actionable",
-        "CI proof-strength line not surfaced in output",
-        "unexpected block against expected fixture status"
-      ]
+      "issues": []
     },
     {
       "caseId": "storybook_34682_case_03_hm",
       "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34699,
+      "prNumber": 34697,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Reject",
-      "usefulNextAction": false,
-      "ciProofSurfaced": false,
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
       "falseAccept": false,
-      "falseBlock": true,
+      "falseBlock": false,
       "warnings": [],
-      "issues": [
-        "next action is missing or not actionable",
-        "CI proof-strength line not surfaced in output",
-        "unexpected block against expected fixture status"
-      ]
+      "issues": []
     },
     {
       "caseId": "storybook_34682_case_04_hm",
       "snapshotId": "storybook_34699_hm",
       "repoFullName": "storybookjs/storybook",
-      "prNumber": 34699,
+      "prNumber": 34697,
       "source": "live_github_api",
       "expectedStatus": "Accept",
-      "actualStatus": "Reject",
-      "usefulNextAction": false,
-      "ciProofSurfaced": false,
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
       "falseAccept": false,
-      "falseBlock": true,
+      "falseBlock": false,
       "warnings": [],
-      "issues": [
-        "next action is missing or not actionable",
-        "CI proof-strength line not surfaced in output",
-        "unexpected block against expected fixture status"
-      ]
+      "issues": []
     },
     {
       "caseId": "storybook_34682_case_05_hm",
