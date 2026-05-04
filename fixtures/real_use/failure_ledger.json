@@ -10,7 +10,7 @@
       "actualBehavior": "Initial answer drifted into iOS/TestFlight preflight due to unrelated release docs in repo evidence.",
       "patchTarget": "tests/projectControlMode.test.ts",
       "evalCandidate": true,
-      "status": "patch_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_001"
     },
     {
@@ -22,7 +22,7 @@
       "actualBehavior": "Initial self-audit leaked ADMISSION-APP/TestFlight/Sheets context from prior evidence.",
       "patchTarget": "src/agents/AnalystAgent.ts",
       "evalCandidate": true,
-      "status": "patch_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_003"
     },
     {
@@ -34,7 +34,7 @@
       "actualBehavior": "Initial answer routed scrape/data correctness to Sheets publish/sync safety.",
       "patchTarget": "tests/projectControlMode.test.ts",
       "evalCandidate": true,
-      "status": "eval_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_004"
     },
     {
@@ -46,7 +46,7 @@
       "actualBehavior": "STAX repeated the same data-contract audit despite already-supplied coverage results.",
       "patchTarget": "tests/projectControlMode.test.ts",
       "evalCandidate": true,
-      "status": "patch_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_005"
     },
     {
@@ -58,7 +58,7 @@
       "actualBehavior": "Safety text saying no publish/sync was run was misread as a Sheets publish/sync task.",
       "patchTarget": "tests/projectControlMode.test.ts",
       "evalCandidate": true,
-      "status": "patch_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_007"
     },
     {
@@ -70,7 +70,7 @@
       "actualBehavior": "Initial answer leaked ADMISSION-APP/iOS/TestFlight context into the Brightspace task.",
       "patchTarget": "src/projectControl/RepoProofSurfaceRegistry.ts",
       "evalCandidate": true,
-      "status": "patch_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_008"
     },
     {
@@ -82,7 +82,7 @@
       "actualBehavior": "First self-audit treated the one-line shell argument as unstructured text and lacked a specific dogfood campaign completion lane.",
       "patchTarget": "src/agents/AnalystAgent.ts",
       "evalCandidate": true,
-      "status": "patch_created",
+      "status": "resolved",
       "proofReference": "fixtures/real_use/dogfood_10_tasks_2026-04-30.json#real_codex_010"
     }
   ]

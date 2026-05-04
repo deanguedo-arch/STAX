@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-04T00:02:47.641Z
+- Recorded at: 2026-05-04T00:08:34.507Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -28,8 +28,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:01:51.823Z
-- Finished at: 2026-05-04T00:01:56.377Z
+- Started at: 2026-05-04T00:07:42.147Z
+- Finished at: 2026-05-04T00:07:46.323Z
 
 Stdout tail:
 
@@ -50,8 +50,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:01:56.377Z
-- Finished at: 2026-05-04T00:02:15.103Z
+- Started at: 2026-05-04T00:07:46.323Z
+- Finished at: 2026-05-04T00:08:02.723Z
 
 Stdout tail:
 
@@ -65,8 +65,8 @@ Stdout tail:
 
  Test Files  159 passed (159)
       Tests  781 passed (781)
-   Start at  18:01:56
-   Duration  18.08s (transform 10.39s, setup 0ms, import 51.25s, tests 70.26s, environment 29ms)
+   Start at  18:07:46
+   Duration  15.85s (transform 10.16s, setup 0ms, import 44.89s, tests 61.03s, environment 58ms)
 ```
 
 Stderr tail:
@@ -81,8 +81,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:15.103Z
-- Finished at: 2026-05-04T00:02:38.013Z
+- Started at: 2026-05-04T00:08:02.723Z
+- Finished at: 2026-05-04T00:08:24.944Z
 
 Stdout tail:
 
@@ -104,8 +104,8 @@ Stdout tail:
 
  Test Files  159 passed (159)
       Tests  781 passed (781)
-   Start at  18:02:20
-   Duration  16.23s (transform 10.52s, setup 0ms, import 45.56s, tests 62.45s, environment 21ms)
+   Start at  18:08:07
+   Duration  15.99s (transform 10.78s, setup 0ms, import 45.96s, tests 61.85s, environment 39ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -136,8 +136,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:38.013Z
-- Finished at: 2026-05-04T00:02:38.885Z
+- Started at: 2026-05-04T00:08:24.944Z
+- Finished at: 2026-05-04T00:08:25.749Z
 
 Stdout tail:
 
@@ -175,8 +175,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:38.885Z
-- Finished at: 2026-05-04T00:02:40.181Z
+- Started at: 2026-05-04T00:08:25.749Z
+- Finished at: 2026-05-04T00:08:27.036Z
 
 Stdout tail:
 
@@ -214,8 +214,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:40.181Z
-- Finished at: 2026-05-04T00:02:40.983Z
+- Started at: 2026-05-04T00:08:27.036Z
+- Finished at: 2026-05-04T00:08:27.906Z
 
 Stdout tail:
 
@@ -227,7 +227,7 @@ Stdout tail:
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
   "cachedRecordedAt": "2026-05-03T22:30:46.492Z",
-  "cachedAgeHours": 1.53,
+  "cachedAgeHours": 1.63,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 25,
@@ -256,8 +256,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:full:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:40.983Z
-- Finished at: 2026-05-04T00:02:41.783Z
+- Started at: 2026-05-04T00:08:27.906Z
+- Finished at: 2026-05-04T00:08:28.699Z
 
 Stdout tail:
 
@@ -269,7 +269,7 @@ Stdout tail:
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
   "cachedRecordedAt": "2026-05-03T22:58:31.335Z",
-  "cachedAgeHours": 1.07,
+  "cachedAgeHours": 1.17,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 50,
@@ -298,8 +298,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:41.783Z
-- Finished at: 2026-05-04T00:02:42.586Z
+- Started at: 2026-05-04T00:08:28.699Z
+- Finished at: 2026-05-04T00:08:29.440Z
 
 Stdout tail:
 
@@ -337,8 +337,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:42.586Z
-- Finished at: 2026-05-04T00:02:43.118Z
+- Started at: 2026-05-04T00:08:29.440Z
+- Finished at: 2026-05-04T00:08:29.969Z
 
 Stdout tail:
 
@@ -369,8 +369,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:43.118Z
-- Finished at: 2026-05-04T00:02:43.675Z
+- Started at: 2026-05-04T00:08:29.969Z
+- Finished at: 2026-05-04T00:08:30.538Z
 
 Stdout tail:
 
@@ -399,8 +399,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:43.675Z
-- Finished at: 2026-05-04T00:02:44.195Z
+- Started at: 2026-05-04T00:08:30.538Z
+- Finished at: 2026-05-04T00:08:31.069Z
 
 Stdout tail:
 
@@ -437,8 +437,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:44.195Z
-- Finished at: 2026-05-04T00:02:45.916Z
+- Started at: 2026-05-04T00:08:31.069Z
+- Finished at: 2026-05-04T00:08:32.787Z
 
 Stdout tail:
 
@@ -474,8 +474,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:45.916Z
-- Finished at: 2026-05-04T00:02:46.392Z
+- Started at: 2026-05-04T00:08:32.787Z
+- Finished at: 2026-05-04T00:08:33.240Z
 
 Stdout tail:
 
@@ -531,8 +531,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:46.392Z
-- Finished at: 2026-05-04T00:02:46.828Z
+- Started at: 2026-05-04T00:08:33.240Z
+- Finished at: 2026-05-04T00:08:33.693Z
 
 Stdout tail:
 
@@ -654,8 +654,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T00:02:46.828Z
-- Finished at: 2026-05-04T00:02:47.641Z
+- Started at: 2026-05-04T00:08:33.693Z
+- Finished at: 2026-05-04T00:08:34.507Z
 
 Stdout tail:
 
@@ -717,12 +717,10 @@ Repo Hotspots
 - canvas-helper: 2
 
 Failure Hotspots
-- brightspace_context_leak: 1
-- cross_repo_context_leak: 1
-- repeated_audit_loop: 1
+- none
 
 Next Recommended Hardening Task
-- Patch the top recurring failure pattern: brightspace_context_leak.
+- Deepen proof coverage for the current hotspot repo: ADMISSION-APP.
 
 Blockers
 - none

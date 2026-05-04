@@ -147,7 +147,8 @@ export async function summarizeOperatingDashboard(args: {
   const repoHotspots = topCounts(
     args.humanJudgmentLedger.entries.filter((entry) => entry.evalCandidate || entry.humanDecision !== "accepted").map((entry) => entry.repo)
   ).map((item) => ({ repo: item.key, count: item.count }));
-  const failureHotspots = topCounts(args.failureLedger.entries.map((entry) => entry.failureType)).map((item) => ({
+  const unresolvedFailureEntries = args.failureLedger.entries.filter((entry) => entry.status !== "resolved");
+  const failureHotspots = topCounts(unresolvedFailureEntries.map((entry) => entry.failureType)).map((item) => ({
     failureType: item.key,
     count: item.count
   }));
