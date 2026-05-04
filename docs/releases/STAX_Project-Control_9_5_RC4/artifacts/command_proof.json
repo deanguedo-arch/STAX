@@ -1,6 +1,6 @@
 {
   "release": "STAX_Project-Control_9_5_RC4",
-  "recordedAt": "2026-05-04T01:08:18.986Z",
+  "recordedAt": "2026-05-04T02:03:23.749Z",
   "status": "passed",
   "rootDir": "/Users/deanguedo/Documents/GitHub/STAX",
   "commands": [
@@ -10,8 +10,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:07:35.229Z",
-      "finishedAt": "2026-05-04T01:07:37.774Z",
+      "startedAt": "2026-05-04T02:02:33.442Z",
+      "finishedAt": "2026-05-04T02:02:37.552Z",
       "stdoutTail": "\n> rax@0.1.0 typecheck\n> tsc --noEmit\n\n",
       "stderrTail": ""
     },
@@ -21,9 +21,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:07:37.774Z",
-      "finishedAt": "2026-05-04T01:07:49.215Z",
-      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  159 passed (159)\n      Tests  786 passed (786)\n   Start at  19:07:38\n   Duration  10.98s (transform 7.58s, setup 0ms, import 32.47s, tests 43.40s, environment 21ms)\n\n",
+      "startedAt": "2026-05-04T02:02:37.552Z",
+      "finishedAt": "2026-05-04T02:02:53.242Z",
+      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  161 passed (161)\n      Tests  792 passed (792)\n   Start at  20:02:38\n   Duration  15.10s (transform 11.22s, setup 0ms, import 44.40s, tests 57.11s, environment 27ms)\n\n",
       "stderrTail": ""
     },
     {
@@ -32,9 +32,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:07:49.215Z",
-      "finishedAt": "2026-05-04T01:07:49.809Z",
-      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run tests/githubPrArtifactAdapter.test.ts\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  19:07:49\n   Duration  205ms (transform 35ms, setup 0ms, import 73ms, tests 33ms, environment 0ms)\n\n",
+      "startedAt": "2026-05-04T02:02:53.242Z",
+      "finishedAt": "2026-05-04T02:02:54.042Z",
+      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run tests/githubPrArtifactAdapter.test.ts\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  20:02:53\n   Duration  289ms (transform 61ms, setup 0ms, import 134ms, tests 41ms, environment 0ms)\n\n",
       "stderrTail": ""
     },
     {
@@ -43,9 +43,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:07:49.809Z",
-      "finishedAt": "2026-05-04T01:07:50.395Z",
-      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run tests/githubPrArtifactAdapter.test.ts\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  19:07:50\n   Duration  208ms (transform 39ms, setup 0ms, import 78ms, tests 32ms, environment 0ms)\n\n",
+      "startedAt": "2026-05-04T02:02:54.042Z",
+      "finishedAt": "2026-05-04T02:02:54.741Z",
+      "stdoutTail": "\n> rax@0.1.0 test\n> vitest run tests/githubPrArtifactAdapter.test.ts\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  1 passed (1)\n      Tests  7 passed (7)\n   Start at  20:02:54\n   Duration  255ms (transform 43ms, setup 0ms, import 95ms, tests 44ms, environment 0ms)\n\n",
       "stderrTail": ""
     },
     {
@@ -54,9 +54,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:07:50.395Z",
-      "finishedAt": "2026-05-04T01:08:09.175Z",
-      "stdoutTail": "\n> rax@0.1.0 validate:all\n> npm run typecheck && npm run test && npm run audit:doctrine && npm run audit:boundaries && npm run audit:security\n\n\n> rax@0.1.0 typecheck\n> tsc --noEmit\n\n\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  159 passed (159)\n      Tests  786 passed (786)\n   Start at  19:07:53\n   Duration  14.06s (transform 8.67s, setup 0ms, import 39.79s, tests 54.47s, environment 23ms)\n\n\n> rax@0.1.0 audit:doctrine\n> tsx scripts/auditDoctrine.ts\n\nDoctrine audit passed.\n\n> rax@0.1.0 audit:boundaries\n> tsx scripts/auditBoundaries.ts\n\nBoundary audit passed.\n\n> rax@0.1.0 audit:security\n> tsx scripts/auditSecurity.ts\n\nSecurity audit passed.\n",
+      "startedAt": "2026-05-04T02:02:54.741Z",
+      "finishedAt": "2026-05-04T02:03:15.244Z",
+      "stdoutTail": "\n> rax@0.1.0 validate:all\n> npm run typecheck && npm run test && npm run audit:doctrine && npm run audit:boundaries && npm run audit:security\n\n\n> rax@0.1.0 typecheck\n> tsc --noEmit\n\n\n> rax@0.1.0 test\n> vitest run\n\n\n RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX\n\n\n Test Files  161 passed (161)\n      Tests  792 passed (792)\n   Start at  20:02:59\n   Duration  14.67s (transform 9.37s, setup 0ms, import 41.73s, tests 58.19s, environment 41ms)\n\n\n> rax@0.1.0 audit:doctrine\n> tsx scripts/auditDoctrine.ts\n\nDoctrine audit passed.\n\n> rax@0.1.0 audit:boundaries\n> tsx scripts/auditBoundaries.ts\n\nBoundary audit passed.\n\n> rax@0.1.0 audit:security\n> tsx scripts/auditSecurity.ts\n\nSecurity audit passed.\n",
       "stderrTail": ""
     },
     {
@@ -65,8 +65,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:09.175Z",
-      "finishedAt": "2026-05-04T01:08:09.931Z",
+      "startedAt": "2026-05-04T02:03:15.244Z",
+      "finishedAt": "2026-05-04T02:03:15.963Z",
       "stdoutTail": "\n> rax@0.1.0 pr-artifact:integrity\n> tsx scripts/prArtifactTrialIntegrity.ts\n\n{\n  \"fixtureSet\": \"real_pr_artifact_trial_v1\",\n  \"snapshotCount\": 10,\n  \"caseCount\": 50,\n  \"categoryCounts\": {\n    \"passing_ci\": 10,\n    \"failing_ci\": 10,\n    \"docs_config_only\": 10,\n    \"tests_fixtures_goldens\": 10,\n    \"ui_data_deploy_security\": 10\n  },\n  \"snapshotCoverageValid\": true,\n  \"caseShapeValid\": true,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -76,8 +76,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:09.931Z",
-      "finishedAt": "2026-05-04T01:08:11.247Z",
+      "startedAt": "2026-05-04T02:03:15.963Z",
+      "finishedAt": "2026-05-04T02:03:17.149Z",
       "stdoutTail": "\n> rax@0.1.0 pr-artifact:score\n> tsx scripts/prArtifactTrialScore.ts\n\n{\n  \"fixtureSet\": \"real_pr_artifact_trial_v1\",\n  \"snapshotCount\": 10,\n  \"caseCount\": 50,\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"falseBlockRatePct\": 0,\n  \"usefulNextActions\": 50,\n  \"usefulNextActionRate\": 100,\n  \"ciProofClassificationAccuracy\": 100,\n  \"criticalMisses\": 0,\n  \"evalCandidatesCreated\": 0,\n  \"misses\": [],\n  \"status\": \"passed\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
@@ -87,9 +87,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:11.247Z",
-      "finishedAt": "2026-05-04T01:08:12.072Z",
-      "stdoutTail": "\n> rax@0.1.0 pr-artifact:live-trial:refresh\n> tsx scripts/prArtifactLiveTrialRefresh.ts\n\n{\n  \"status\": \"live_trial_refresh_skipped_cached_pass_fresh\",\n  \"reason\": \"Cached live PR artifact trial is already passing and fresh; skipping live API refresh.\",\n  \"cachedRecordedAt\": \"2026-05-04T01:03:35.632Z\",\n  \"cachedAgeHours\": 0.08,\n  \"maxCacheHours\": 24,\n  \"gateSummary\": {\n    \"selectedCaseCount\": 25,\n    \"liveSourceCount\": 25,\n    \"fallbackSourceCount\": 0,\n    \"falseAccepts\": 0,\n    \"falseBlocks\": 0,\n    \"falseBlockRatePct\": 0,\n    \"usefulNextActionRate\": 100,\n    \"ciProofClassificationSurfaceRate\": 100,\n    \"recordedAt\": \"2026-05-04T01:03:35.632Z\",\n    \"freshnessHours\": 0.08,\n    \"liveSourceRate\": 100,\n    \"status\": \"passed\",\n    \"blockers\": []\n  }\n}\n",
+      "startedAt": "2026-05-04T02:03:17.149Z",
+      "finishedAt": "2026-05-04T02:03:17.836Z",
+      "stdoutTail": "\n> rax@0.1.0 pr-artifact:live-trial:refresh\n> tsx scripts/prArtifactLiveTrialRefresh.ts\n\n{\n  \"status\": \"live_trial_refresh_skipped_cached_pass_fresh\",\n  \"reason\": \"Cached live PR artifact trial is already passing and fresh; skipping live API refresh.\",\n  \"cachedRecordedAt\": \"2026-05-04T02:02:21.749Z\",\n  \"cachedAgeHours\": 0.02,\n  \"maxCacheHours\": 24,\n  \"gateSummary\": {\n    \"selectedCaseCount\": 25,\n    \"liveSourceCount\": 25,\n    \"fallbackSourceCount\": 0,\n    \"falseAccepts\": 0,\n    \"falseBlocks\": 0,\n    \"falseBlockRatePct\": 0,\n    \"usefulNextActionRate\": 100,\n    \"ciProofClassificationSurfaceRate\": 100,\n    \"recordedAt\": \"2026-05-04T02:02:21.749Z\",\n    \"freshnessHours\": 0.02,\n    \"liveSourceRate\": 100,\n    \"status\": \"passed\",\n    \"blockers\": []\n  }\n}\n",
       "stderrTail": ""
     },
     {
@@ -98,9 +98,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:12.072Z",
-      "finishedAt": "2026-05-04T01:08:12.931Z",
-      "stdoutTail": "\n> rax@0.1.0 pr-artifact:live-trial:full:refresh\n> tsx scripts/prArtifactLiveTrialRefresh.ts --limit 50 --min-live 10\n\n{\n  \"status\": \"live_trial_refresh_skipped_cached_pass_fresh\",\n  \"reason\": \"Cached live PR artifact trial is already passing and fresh; skipping live API refresh.\",\n  \"cachedRecordedAt\": \"2026-05-04T01:03:41.283Z\",\n  \"cachedAgeHours\": 0.08,\n  \"maxCacheHours\": 24,\n  \"gateSummary\": {\n    \"selectedCaseCount\": 50,\n    \"liveSourceCount\": 45,\n    \"fallbackSourceCount\": 5,\n    \"falseAccepts\": 0,\n    \"falseBlocks\": 0,\n    \"falseBlockRatePct\": 0,\n    \"usefulNextActionRate\": 100,\n    \"ciProofClassificationSurfaceRate\": 100,\n    \"recordedAt\": \"2026-05-04T01:03:41.283Z\",\n    \"freshnessHours\": 0.08,\n    \"liveSourceRate\": 90,\n    \"status\": \"passed\",\n    \"blockers\": []\n  }\n}\n",
+      "startedAt": "2026-05-04T02:03:17.836Z",
+      "finishedAt": "2026-05-04T02:03:18.618Z",
+      "stdoutTail": "\n> rax@0.1.0 pr-artifact:live-trial:full:refresh\n> tsx scripts/prArtifactLiveTrialRefresh.ts --limit 50 --min-live 10\n\n{\n  \"status\": \"live_trial_refresh_skipped_cached_pass_fresh\",\n  \"reason\": \"Cached live PR artifact trial is already passing and fresh; skipping live API refresh.\",\n  \"cachedRecordedAt\": \"2026-05-04T02:02:26.344Z\",\n  \"cachedAgeHours\": 0.01,\n  \"maxCacheHours\": 24,\n  \"gateSummary\": {\n    \"selectedCaseCount\": 50,\n    \"liveSourceCount\": 40,\n    \"fallbackSourceCount\": 10,\n    \"falseAccepts\": 0,\n    \"falseBlocks\": 0,\n    \"falseBlockRatePct\": 0,\n    \"usefulNextActionRate\": 100,\n    \"ciProofClassificationSurfaceRate\": 100,\n    \"recordedAt\": \"2026-05-04T02:02:26.344Z\",\n    \"freshnessHours\": 0.01,\n    \"liveSourceRate\": 80,\n    \"status\": \"passed\",\n    \"blockers\": []\n  }\n}\n",
       "stderrTail": ""
     },
     {
@@ -109,8 +109,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:12.931Z",
-      "finishedAt": "2026-05-04T01:08:13.772Z",
+      "startedAt": "2026-05-04T02:03:18.618Z",
+      "finishedAt": "2026-05-04T02:03:19.380Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:promotion-gate\n> tsx scripts/promotionGate95.ts\n\n{\n  \"cleanRunsPassed\": 3,\n  \"requiredCleanRuns\": 3,\n  \"baselineStatus\": \"baseline_ready\",\n  \"dogfoodRoundCStatus\": \"round_c_passed\",\n  \"failureLedgerStatus\": \"tracked\",\n  \"workflowContractStatus\": \"workflow_contract_passed\",\n  \"humanJudgmentStatus\": \"judgment_ready\",\n  \"operatingWindowStatus\": \"operating_window_passed\",\n  \"ciFailureTriageStatus\": \"passed\",\n  \"prReviewCommentStatus\": \"passed\",\n  \"livePrArtifactTrialStatus\": \"passed\",\n  \"livePrArtifactTrialFullStatus\": \"passed\",\n  \"status\": \"promotion_ready\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
@@ -120,8 +120,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:13.772Z",
-      "finishedAt": "2026-05-04T01:08:14.316Z",
+      "startedAt": "2026-05-04T02:03:19.380Z",
+      "finishedAt": "2026-05-04T02:03:19.865Z",
       "stdoutTail": "\n> rax@0.1.0 ci-failure:score\n> tsx scripts/ciFailureTriageScore.ts\n\n{\n  \"caseCount\": 24,\n  \"passingCount\": 24,\n  \"likelyCauseAccuracyPct\": 100,\n  \"proofStrengthAccuracyPct\": 100,\n  \"nextActionAccuracyPct\": 100,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -131,8 +131,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:14.316Z",
-      "finishedAt": "2026-05-04T01:08:14.873Z",
+      "startedAt": "2026-05-04T02:03:19.865Z",
+      "finishedAt": "2026-05-04T02:03:20.344Z",
       "stdoutTail": "\n> rax@0.1.0 pr-review-comment:score\n> tsx scripts/prReviewCommentScore.ts\n\n{\n  \"caseCount\": 15,\n  \"passedCount\": 15,\n  \"usefulCommentRate\": 100,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -142,8 +142,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:14.873Z",
-      "finishedAt": "2026-05-04T01:08:15.397Z",
+      "startedAt": "2026-05-04T02:03:20.344Z",
+      "finishedAt": "2026-05-04T02:03:20.787Z",
       "stdoutTail": "\n> rax@0.1.0 repo-onboarding:score\n> tsx scripts/repoOnboardingScore.ts\n\n{\n  \"caseCount\": 26,\n  \"packageManagerChecks\": 14,\n  \"packageManagerHits\": 14,\n  \"archetypeChecks\": 22,\n  \"archetypeHits\": 22,\n  \"visualChecks\": 14,\n  \"visualHits\": 14,\n  \"proofGateChecks\": 14,\n  \"proofGateHits\": 14,\n  \"dangerousActionChecks\": 8,\n  \"dangerousActionHits\": 8,\n  \"status\": \"passed\",\n  \"issues\": []\n}\n",
       "stderrTail": ""
     },
@@ -153,8 +153,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:15.397Z",
-      "finishedAt": "2026-05-04T01:08:17.162Z",
+      "startedAt": "2026-05-04T02:03:20.787Z",
+      "finishedAt": "2026-05-04T02:03:22.323Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:overblock\n> tsx scripts/overblockCalibration.ts\n\n{\n  \"taskCount\": 100,\n  \"sufficientProofCases\": 50,\n  \"insufficientProofCases\": 50,\n  \"verifiedAccepts\": 50,\n  \"falseAccepts\": 0,\n  \"falseRejects\": 0,\n  \"falseRejectRatePct\": 0,\n  \"provisionalCount\": 5,\n  \"humanReviewCount\": 0,\n  \"cleanFailureCount\": 0,\n  \"status\": \"calibration_passed\",\n  \"blockerReasons\": []\n}\n",
       "stderrTail": ""
     },
@@ -164,8 +164,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:17.162Z",
-      "finishedAt": "2026-05-04T01:08:17.642Z",
+      "startedAt": "2026-05-04T02:03:22.323Z",
+      "finishedAt": "2026-05-04T02:03:22.723Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:closed-loop\n> tsx scripts/closedLoopCodexCampaign.ts\n\n{\n  \"ledgerPath\": \"fixtures/real_use/closed_loop_20_tasks.json\",\n  \"baselineLedgerPath\": \"fixtures/real_use/baseline_cleanup_tasks.json\",\n  \"campaignId\": \"closed_loop_20_tasks\",\n  \"taskCount\": 20,\n  \"reposRepresented\": 4,\n  \"stateCoverageValid\": true,\n  \"evidenceReplayValid\": true,\n  \"evidenceReplayDeterministic\": true,\n  \"evidenceReplayChainValid\": true,\n  \"evidenceReplayIssues\": [],\n  \"auditTraceCount\": 20,\n  \"doctrineVersion\": \"core-v1\",\n  \"runtimeVersion\": \"0.1.0\",\n  \"failureRoutingValid\": true,\n  \"autoRoutedFailureCount\": 3,\n  \"failureRoutingIssues\": [],\n  \"evalGenerationValid\": true,\n  \"generatedEvalCandidateCount\": 1,\n  \"evalGenerationIssues\": [],\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"usefulBlocks\": 12,\n  \"verifiedAccepts\": 11,\n  \"usefulInitialPrompts\": 20,\n  \"usefulInitialPromptRate\": 100,\n  \"verifiedNextStateRate\": 80,\n  \"cleanupPromptsMean\": 0,\n  \"baselineMeanCleanupPrompts\": 1.4,\n  \"cleanupReductionPct\": 100,\n  \"evalConversionRate\": 100,\n  \"status\": \"closed_loop_passed\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
@@ -175,8 +175,8 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:17.642Z",
-      "finishedAt": "2026-05-04T01:08:18.102Z",
+      "startedAt": "2026-05-04T02:03:22.723Z",
+      "finishedAt": "2026-05-04T02:03:23.089Z",
       "stdoutTail": "\n> rax@0.1.0 campaign:closed-loop:workflow\n> tsx scripts/liveCodexWorkflowContract.ts\n\n{\n  \"campaignId\": \"live_codex_workflow_v1\",\n  \"taskCount\": 10,\n  \"promptStrongCount\": 10,\n  \"promptUsableCount\": 10,\n  \"promptUsableRate\": 100,\n  \"reportWellFormedCount\": 9,\n  \"reportUsableCount\": 10,\n  \"reportUsableRate\": 100,\n  \"nextActionCoverage\": 100,\n  \"verifiedOutcomeReportCoverage\": 100,\n  \"falseAccepts\": 0,\n  \"falseBlocks\": 0,\n  \"taskSummaries\": [\n    {\n      \"taskId\": \"workflow_001\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_002\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_003\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_004\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_005\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_006\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_007\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_008\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"partial\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": [\n        \"report contract: pass claims mention no command-output details\"\n      ]\n    },\n    {\n      \"taskId\": \"workflow_009\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": false,\n      \"issues\": []\n    },\n    {\n      \"taskId\": \"workflow_010\",\n      \"promptStatus\": \"strong\",\n      \"reportStatus\": \"well_formed\",\n      \"nextActionPresent\": true,\n      \"verifiedOutcome\": true,\n      \"issues\": []\n    }\n  ],\n  \"status\": \"workflow_contract_passed\",\n  \"blockers\": []\n}\n",
       "stderrTail": ""
     },
@@ -186,9 +186,9 @@
       "cwd": "/Users/deanguedo/Documents/GitHub/STAX",
       "expectedExitCode": 0,
       "exitCode": 0,
-      "startedAt": "2026-05-04T01:08:18.102Z",
-      "finishedAt": "2026-05-04T01:08:18.986Z",
-      "stdoutTail": "\n> rax@0.1.0 stax:ops-dashboard\n> tsx scripts/opsDashboard.ts\n\nSTAX Ops Dashboard\n- snapshot: 2026-05-04\n- status: ops_healthy\n\nStatus Checks\n- baseline: baseline_ready\n- dogfood round c: round_c_passed\n- closed loop: closed_loop_passed\n- workflow contract: workflow_contract_passed\n- human judgment: judgment_ready\n- failure ledger: tracked\n- operating window: operating_window_passed\n- ci failure triage: passed\n- pr review comment: passed\n- live PR artifact trial: passed\n- live PR artifact trial full: passed\n\nKey Metrics\n- baseline mean cleanup prompts: 1.4\n- dogfood cleanup reduction: 100%\n- closed-loop verified next-state rate: 80%\n- closed-loop false accepts / false blocks: 0/0\n- workflow prompt usable rate: 100%\n- workflow report usable rate: 100%\n- operating-window cleanup reduction: 100%\n- operating-window accepted decisions: 100%\n- operating-window useful initial prompts: 100%\n- operating-window meaningful catches: 21\n- ci failure triage cases / passing: 24/24 (100%)\n- pr review comment cases / passing: 15/15 (100%)\n- live PR trial cases / live-source: 25/25\n- live PR trial false accepts / false blocks: 0/0\n- live PR trial useful next-action rate: 100%\n- live PR trial CI proof surface rate: 100%\n- live PR trial freshness / live-source rate: 0.08h / 100%\n- live PR trial full cases / live-source: 50/45\n- live PR trial full false accepts / false blocks: 0/0\n- live PR trial full useful next-action rate: 100%\n- live PR trial full CI proof surface rate: 100%\n- live PR trial full freshness / live-source rate: 0.08h / 90%\n- human-judgment followups / blocked-too-hard: 0/0\n- eval candidates: 9\n\nTrendlines\n- Cleanup reduction moved from baseline to Dogfood Round C: 100%.\n- Useful prompt rate from Dogfood Round C to Operating Window: flat 0.\n- Live Codex workflow prompt/report usability: 100%/100%.\n- Accepted decision rate from Dogfood Round C to Operating Window: flat 0.\n- Closed-loop false accepts / false blocks: 0/0.\n\nRepo Hotspots\n- none\n\nFailure Hotspots\n- none\n\nNext Recommended Hardening Task\n- Keep dogfooding and refresh operating metrics with new real tasks.\n\nBlockers\n- none\n",
+      "startedAt": "2026-05-04T02:03:23.089Z",
+      "finishedAt": "2026-05-04T02:03:23.749Z",
+      "stdoutTail": "\n> rax@0.1.0 stax:ops-dashboard\n> tsx scripts/opsDashboard.ts\n\nSTAX Ops Dashboard\n- snapshot: 2026-05-04\n- status: ops_healthy\n\nStatus Checks\n- baseline: baseline_ready\n- dogfood round c: round_c_passed\n- closed loop: closed_loop_passed\n- workflow contract: workflow_contract_passed\n- human judgment: judgment_ready\n- failure ledger: tracked\n- operating window: operating_window_passed\n- ci failure triage: passed\n- pr review comment: passed\n- live PR artifact trial: passed\n- live PR artifact trial full: passed\n\nKey Metrics\n- baseline mean cleanup prompts: 1.4\n- dogfood cleanup reduction: 100%\n- closed-loop verified next-state rate: 80%\n- closed-loop false accepts / false blocks: 0/0\n- workflow prompt usable rate: 100%\n- workflow report usable rate: 100%\n- operating-window cleanup reduction: 100%\n- operating-window accepted decisions: 100%\n- operating-window useful initial prompts: 100%\n- operating-window meaningful catches: 21\n- ci failure triage cases / passing: 24/24 (100%)\n- pr review comment cases / passing: 15/15 (100%)\n- live PR trial cases / live-source: 25/25\n- live PR trial false accepts / false blocks: 0/0\n- live PR trial useful next-action rate: 100%\n- live PR trial CI proof surface rate: 100%\n- live PR trial freshness / live-source rate: 0.02h / 100%\n- live PR trial full cases / live-source: 50/40\n- live PR trial full false accepts / false blocks: 0/0\n- live PR trial full useful next-action rate: 100%\n- live PR trial full CI proof surface rate: 100%\n- live PR trial full freshness / live-source rate: 0.02h / 80%\n- human-judgment followups / blocked-too-hard: 0/0\n- eval candidates: 9\n\nTrendlines\n- Cleanup reduction moved from baseline to Dogfood Round C: 100%.\n- Useful prompt rate from Dogfood Round C to Operating Window: flat 0.\n- Live Codex workflow prompt/report usability: 100%/100%.\n- Accepted decision rate from Dogfood Round C to Operating Window: flat 0.\n- Closed-loop false accepts / false blocks: 0/0.\n\nRepo Hotspots\n- none\n\nFailure Hotspots\n- none\n\nNext Recommended Hardening Task\n- Keep dogfooding and refresh operating metrics with new real tasks.\n\nBlockers\n- none\n",
       "stderrTail": ""
     }
   ]

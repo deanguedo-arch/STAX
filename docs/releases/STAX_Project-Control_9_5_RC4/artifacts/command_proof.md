@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-04T01:08:18.986Z
+- Recorded at: 2026-05-04T02:03:23.749Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -30,8 +30,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:07:35.229Z
-- Finished at: 2026-05-04T01:07:37.774Z
+- Started at: 2026-05-04T02:02:33.442Z
+- Finished at: 2026-05-04T02:02:37.552Z
 
 Stdout tail:
 
@@ -52,8 +52,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:07:37.774Z
-- Finished at: 2026-05-04T01:07:49.215Z
+- Started at: 2026-05-04T02:02:37.552Z
+- Finished at: 2026-05-04T02:02:53.242Z
 
 Stdout tail:
 
@@ -65,10 +65,10 @@ Stdout tail:
  RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX
 
 
- Test Files  159 passed (159)
-      Tests  786 passed (786)
-   Start at  19:07:38
-   Duration  10.98s (transform 7.58s, setup 0ms, import 32.47s, tests 43.40s, environment 21ms)
+ Test Files  161 passed (161)
+      Tests  792 passed (792)
+   Start at  20:02:38
+   Duration  15.10s (transform 11.22s, setup 0ms, import 44.40s, tests 57.11s, environment 27ms)
 ```
 
 Stderr tail:
@@ -83,8 +83,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:07:49.215Z
-- Finished at: 2026-05-04T01:07:49.809Z
+- Started at: 2026-05-04T02:02:53.242Z
+- Finished at: 2026-05-04T02:02:54.042Z
 
 Stdout tail:
 
@@ -98,8 +98,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  19:07:49
-   Duration  205ms (transform 35ms, setup 0ms, import 73ms, tests 33ms, environment 0ms)
+   Start at  20:02:53
+   Duration  289ms (transform 61ms, setup 0ms, import 134ms, tests 41ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -114,8 +114,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:07:49.809Z
-- Finished at: 2026-05-04T01:07:50.395Z
+- Started at: 2026-05-04T02:02:54.042Z
+- Finished at: 2026-05-04T02:02:54.741Z
 
 Stdout tail:
 
@@ -129,8 +129,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  19:07:50
-   Duration  208ms (transform 39ms, setup 0ms, import 78ms, tests 32ms, environment 0ms)
+   Start at  20:02:54
+   Duration  255ms (transform 43ms, setup 0ms, import 95ms, tests 44ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -145,8 +145,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:07:50.395Z
-- Finished at: 2026-05-04T01:08:09.175Z
+- Started at: 2026-05-04T02:02:54.741Z
+- Finished at: 2026-05-04T02:03:15.244Z
 
 Stdout tail:
 
@@ -166,10 +166,10 @@ Stdout tail:
  RUN  v4.1.5 /Users/deanguedo/Documents/GitHub/STAX
 
 
- Test Files  159 passed (159)
-      Tests  786 passed (786)
-   Start at  19:07:53
-   Duration  14.06s (transform 8.67s, setup 0ms, import 39.79s, tests 54.47s, environment 23ms)
+ Test Files  161 passed (161)
+      Tests  792 passed (792)
+   Start at  20:02:59
+   Duration  14.67s (transform 9.37s, setup 0ms, import 41.73s, tests 58.19s, environment 41ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -200,8 +200,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:09.175Z
-- Finished at: 2026-05-04T01:08:09.931Z
+- Started at: 2026-05-04T02:03:15.244Z
+- Finished at: 2026-05-04T02:03:15.963Z
 
 Stdout tail:
 
@@ -239,8 +239,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:09.931Z
-- Finished at: 2026-05-04T01:08:11.247Z
+- Started at: 2026-05-04T02:03:15.963Z
+- Finished at: 2026-05-04T02:03:17.149Z
 
 Stdout tail:
 
@@ -278,8 +278,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:11.247Z
-- Finished at: 2026-05-04T01:08:12.072Z
+- Started at: 2026-05-04T02:03:17.149Z
+- Finished at: 2026-05-04T02:03:17.836Z
 
 Stdout tail:
 
@@ -290,8 +290,8 @@ Stdout tail:
 {
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
-  "cachedRecordedAt": "2026-05-04T01:03:35.632Z",
-  "cachedAgeHours": 0.08,
+  "cachedRecordedAt": "2026-05-04T02:02:21.749Z",
+  "cachedAgeHours": 0.02,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 25,
@@ -302,8 +302,8 @@ Stdout tail:
     "falseBlockRatePct": 0,
     "usefulNextActionRate": 100,
     "ciProofClassificationSurfaceRate": 100,
-    "recordedAt": "2026-05-04T01:03:35.632Z",
-    "freshnessHours": 0.08,
+    "recordedAt": "2026-05-04T02:02:21.749Z",
+    "freshnessHours": 0.02,
     "liveSourceRate": 100,
     "status": "passed",
     "blockers": []
@@ -323,8 +323,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:live-trial:full:refresh`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:12.072Z
-- Finished at: 2026-05-04T01:08:12.931Z
+- Started at: 2026-05-04T02:03:17.836Z
+- Finished at: 2026-05-04T02:03:18.618Z
 
 Stdout tail:
 
@@ -335,21 +335,21 @@ Stdout tail:
 {
   "status": "live_trial_refresh_skipped_cached_pass_fresh",
   "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
-  "cachedRecordedAt": "2026-05-04T01:03:41.283Z",
-  "cachedAgeHours": 0.08,
+  "cachedRecordedAt": "2026-05-04T02:02:26.344Z",
+  "cachedAgeHours": 0.01,
   "maxCacheHours": 24,
   "gateSummary": {
     "selectedCaseCount": 50,
-    "liveSourceCount": 45,
-    "fallbackSourceCount": 5,
+    "liveSourceCount": 40,
+    "fallbackSourceCount": 10,
     "falseAccepts": 0,
     "falseBlocks": 0,
     "falseBlockRatePct": 0,
     "usefulNextActionRate": 100,
     "ciProofClassificationSurfaceRate": 100,
-    "recordedAt": "2026-05-04T01:03:41.283Z",
-    "freshnessHours": 0.08,
-    "liveSourceRate": 90,
+    "recordedAt": "2026-05-04T02:02:26.344Z",
+    "freshnessHours": 0.01,
+    "liveSourceRate": 80,
     "status": "passed",
     "blockers": []
   }
@@ -368,8 +368,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:12.931Z
-- Finished at: 2026-05-04T01:08:13.772Z
+- Started at: 2026-05-04T02:03:18.618Z
+- Finished at: 2026-05-04T02:03:19.380Z
 
 Stdout tail:
 
@@ -407,8 +407,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:13.772Z
-- Finished at: 2026-05-04T01:08:14.316Z
+- Started at: 2026-05-04T02:03:19.380Z
+- Finished at: 2026-05-04T02:03:19.865Z
 
 Stdout tail:
 
@@ -439,8 +439,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:14.316Z
-- Finished at: 2026-05-04T01:08:14.873Z
+- Started at: 2026-05-04T02:03:19.865Z
+- Finished at: 2026-05-04T02:03:20.344Z
 
 Stdout tail:
 
@@ -469,8 +469,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:14.873Z
-- Finished at: 2026-05-04T01:08:15.397Z
+- Started at: 2026-05-04T02:03:20.344Z
+- Finished at: 2026-05-04T02:03:20.787Z
 
 Stdout tail:
 
@@ -507,8 +507,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:15.397Z
-- Finished at: 2026-05-04T01:08:17.162Z
+- Started at: 2026-05-04T02:03:20.787Z
+- Finished at: 2026-05-04T02:03:22.323Z
 
 Stdout tail:
 
@@ -544,8 +544,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:17.162Z
-- Finished at: 2026-05-04T01:08:17.642Z
+- Started at: 2026-05-04T02:03:22.323Z
+- Finished at: 2026-05-04T02:03:22.723Z
 
 Stdout tail:
 
@@ -601,8 +601,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:17.642Z
-- Finished at: 2026-05-04T01:08:18.102Z
+- Started at: 2026-05-04T02:03:22.723Z
+- Finished at: 2026-05-04T02:03:23.089Z
 
 Stdout tail:
 
@@ -724,8 +724,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T01:08:18.102Z
-- Finished at: 2026-05-04T01:08:18.986Z
+- Started at: 2026-05-04T02:03:23.089Z
+- Finished at: 2026-05-04T02:03:23.749Z
 
 Stdout tail:
 
@@ -767,12 +767,12 @@ Key Metrics
 - live PR trial false accepts / false blocks: 0/0
 - live PR trial useful next-action rate: 100%
 - live PR trial CI proof surface rate: 100%
-- live PR trial freshness / live-source rate: 0.08h / 100%
-- live PR trial full cases / live-source: 50/45
+- live PR trial freshness / live-source rate: 0.02h / 100%
+- live PR trial full cases / live-source: 50/40
 - live PR trial full false accepts / false blocks: 0/0
 - live PR trial full useful next-action rate: 100%
 - live PR trial full CI proof surface rate: 100%
-- live PR trial full freshness / live-source rate: 0.08h / 90%
+- live PR trial full freshness / live-source rate: 0.02h / 80%
 - human-judgment followups / blocked-too-hard: 0/0
 - eval candidates: 9
 
