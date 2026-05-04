@@ -181,7 +181,7 @@ function parseArgs(argv: string[]): RefreshArgs {
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     const next = argv[index + 1];
-    if (token === "--force") {
+    if (token === "--force" || token === "--force-live") {
       args.force = true;
       continue;
     }

@@ -1,6 +1,6 @@
 # Command Proof (STAX_Project-Control_9_5_RC4)
 
-- Recorded at: 2026-05-04T03:29:12.985Z
+- Recorded at: 2026-05-04T12:27:17.097Z
 - Root dir: `/Users/deanguedo/Documents/GitHub/STAX`
 - Status: `passed`
 
@@ -12,8 +12,8 @@
 - validate_all: exit 0 (expected 0) :: `npm run validate:all`
 - pr_artifact_integrity: exit 0 (expected 0) :: `npm run pr-artifact:integrity`
 - pr_artifact_score: exit 0 (expected 0) :: `npm run pr-artifact:score`
-- pr_artifact_live_trial_refresh: exit 0 (expected 0) :: `npm run pr-artifact:live-trial:refresh`
-- pr_artifact_live_trial_full_refresh: exit 0 (expected 0) :: `npm run pr-artifact:live-trial:full:refresh`
+- pr_artifact_live_trial_refresh: exit 0 (expected 0) :: `npm run pr-artifact:live-trial:refresh:force-live`
+- pr_artifact_live_trial_full_refresh: exit 0 (expected 0) :: `npm run pr-artifact:live-trial:full:refresh:force-live`
 - promotion_gate: exit 0 (expected 0) :: `npm run campaign:promotion-gate`
 - ci_failure_score: exit 0 (expected 0) :: `npm run ci-failure:score`
 - pr_review_comment_score: exit 0 (expected 0) :: `npm run pr-review-comment:score`
@@ -30,8 +30,8 @@
 - Command: `npm run typecheck`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:28:37.954Z
-- Finished at: 2026-05-04T03:28:40.462Z
+- Started at: 2026-05-04T12:26:30.728Z
+- Finished at: 2026-05-04T12:26:32.439Z
 
 Stdout tail:
 
@@ -52,8 +52,8 @@ Stderr tail:
 - Command: `npm test`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:28:40.462Z
-- Finished at: 2026-05-04T03:28:51.015Z
+- Started at: 2026-05-04T12:26:32.439Z
+- Finished at: 2026-05-04T12:26:39.826Z
 
 Stdout tail:
 
@@ -67,8 +67,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  21:28:40
-   Duration  10.18s (transform 6.64s, setup 0ms, import 28.59s, tests 41.80s, environment 15ms)
+   Start at  06:26:32
+   Duration  7.15s (transform 4.56s, setup 0ms, import 18.87s, tests 28.45s, environment 12ms)
 ```
 
 Stderr tail:
@@ -83,8 +83,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN=dummy npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:28:51.015Z
-- Finished at: 2026-05-04T03:28:51.572Z
+- Started at: 2026-05-04T12:26:39.826Z
+- Finished at: 2026-05-04T12:26:40.195Z
 
 Stdout tail:
 
@@ -98,8 +98,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  21:28:51
-   Duration  204ms (transform 36ms, setup 0ms, import 74ms, tests 29ms, environment 0ms)
+   Start at  06:26:40
+   Duration  118ms (transform 20ms, setup 0ms, import 43ms, tests 20ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -114,8 +114,8 @@ Stderr tail:
 - Command: `GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:28:51.572Z
-- Finished at: 2026-05-04T03:28:52.067Z
+- Started at: 2026-05-04T12:26:40.195Z
+- Finished at: 2026-05-04T12:26:40.535Z
 
 Stdout tail:
 
@@ -129,8 +129,8 @@ Stdout tail:
 
  Test Files  1 passed (1)
       Tests  7 passed (7)
-   Start at  21:28:51
-   Duration  180ms (transform 32ms, setup 0ms, import 69ms, tests 30ms, environment 0ms)
+   Start at  06:26:40
+   Duration  114ms (transform 22ms, setup 0ms, import 43ms, tests 18ms, environment 0ms)
 ```
 
 Stderr tail:
@@ -145,8 +145,8 @@ Stderr tail:
 - Command: `npm run validate:all`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:28:52.067Z
-- Finished at: 2026-05-04T03:29:06.728Z
+- Started at: 2026-05-04T12:26:40.535Z
+- Finished at: 2026-05-04T12:26:50.465Z
 
 Stdout tail:
 
@@ -168,8 +168,8 @@ Stdout tail:
 
  Test Files  161 passed (161)
       Tests  792 passed (792)
-   Start at  21:28:55
-   Duration  10.55s (transform 8.63s, setup 0ms, import 30.91s, tests 41.86s, environment 15ms)
+   Start at  06:26:42
+   Duration  7.36s (transform 4.73s, setup 0ms, import 19.17s, tests 29.69s, environment 12ms)
 
 
 > rax@0.1.0 audit:doctrine
@@ -200,8 +200,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:integrity`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:06.728Z
-- Finished at: 2026-05-04T03:29:07.238Z
+- Started at: 2026-05-04T12:26:50.465Z
+- Finished at: 2026-05-04T12:26:50.775Z
 
 Stdout tail:
 
@@ -239,8 +239,8 @@ Stderr tail:
 - Command: `npm run pr-artifact:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:07.238Z
-- Finished at: 2026-05-04T03:29:08.161Z
+- Started at: 2026-05-04T12:26:50.775Z
+- Finished at: 2026-05-04T12:26:51.303Z
 
 Stdout tail:
 
@@ -275,39 +275,409 @@ Stderr tail:
 ### pr_artifact_live_trial_refresh
 
 - CWD: `/Users/deanguedo/Documents/GitHub/STAX`
-- Command: `npm run pr-artifact:live-trial:refresh`
+- Command: `npm run pr-artifact:live-trial:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:08.161Z
-- Finished at: 2026-05-04T03:29:08.679Z
+- Started at: 2026-05-04T12:26:51.303Z
+- Finished at: 2026-05-04T12:27:02.361Z
 
 Stdout tail:
 
 ```text
-> rax@0.1.0 pr-artifact:live-trial:refresh
-> tsx scripts/prArtifactLiveTrialRefresh.ts
+> rax@0.1.0 pr-artifact:live-trial:refresh:force-live
+> tsx scripts/prArtifactLiveTrialRefresh.ts --force-live
 
 {
-  "status": "live_trial_refresh_skipped_cached_pass_fresh",
-  "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
-  "cachedRecordedAt": "2026-05-04T02:02:21.749Z",
-  "cachedAgeHours": 1.45,
-  "maxCacheHours": 24,
-  "gateSummary": {
-    "selectedCaseCount": 25,
-    "liveSourceCount": 25,
-    "fallbackSourceCount": 0,
-    "falseAccepts": 0,
-    "falseBlocks": 0,
-    "falseBlockRatePct": 0,
-    "usefulNextActionRate": 100,
-    "ciProofClassificationSurfaceRate": 100,
-    "recordedAt": "2026-05-04T02:02:21.749Z",
-    "freshnessHours": 1.45,
-    "liveSourceRate": 100,
-    "status": "passed",
-    "blockers": []
-  }
+  "fixtureSet": "real_pr_artifact_trial_v1",
+  "recordedAt": "2026-05-04T12:27:02.342Z",
+  "selectedCaseCount": 25,
+  "requestedCaseCount": 25,
+  "liveSourceCount": 25,
+  "fallbackSourceCount": 0,
+  "falseAccepts": 0,
+  "falseBlocks": 0,
+  "falseBlockRatePct": 0,
+  "usefulNextActionRate": 100,
+  "ciProofClassificationSurfaceRate": 100,
+  "status": "passed",
+  "blockers": [],
+  "cases": [
+    {
+      "caseId": "nextjs_93417_case_01",
+      "snapshotId": "nextjs_93417",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93417,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93417_case_02",
+      "snapshotId": "nextjs_93417",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93417,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93417_case_03",
+      "snapshotId": "nextjs_93417",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93417,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93417_case_04",
+      "snapshotId": "nextjs_93417",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93417,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93417_case_05",
+      "snapshotId": "nextjs_93417",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93417,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34681_case_01",
+      "snapshotId": "storybook_34681",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34681,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34681_case_02",
+      "snapshotId": "storybook_34681",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34681,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34681_case_03",
+      "snapshotId": "storybook_34681",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34681,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34681_case_04",
+      "snapshotId": "storybook_34681",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34681,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34681_case_05",
+      "snapshotId": "storybook_34681",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34681,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "vitest_10231_case_01",
+      "snapshotId": "vitest_10231",
+      "repoFullName": "vitest-dev/vitest",
+      "prNumber": 10231,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "vitest_10231_case_02",
+      "snapshotId": "vitest_10231",
+      "repoFullName": "vitest-dev/vitest",
+      "prNumber": 10231,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "vitest_10231_case_03",
+      "snapshotId": "vitest_10231",
+      "repoFullName": "vitest-dev/vitest",
+      "prNumber": 10231,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "vitest_10231_case_04",
+      "snapshotId": "vitest_10231",
+      "repoFullName": "vitest-dev/vitest",
+      "prNumber": 10231,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "vitest_10231_case_05",
+      "snapshotId": "vitest_10231",
+      "repoFullName": "vitest-dev/vitest",
+      "prNumber": 10231,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_01",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_02",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_03",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_04",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_05",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_01",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_02",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_03",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_04",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_05",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    }
+  ]
 }
 ```
 
@@ -320,39 +690,518 @@ Stderr tail:
 ### pr_artifact_live_trial_full_refresh
 
 - CWD: `/Users/deanguedo/Documents/GitHub/STAX`
-- Command: `npm run pr-artifact:live-trial:full:refresh`
+- Command: `npm run pr-artifact:live-trial:full:refresh:force-live`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:08.679Z
-- Finished at: 2026-05-04T03:29:09.202Z
+- Started at: 2026-05-04T12:27:02.361Z
+- Finished at: 2026-05-04T12:27:14.912Z
 
 Stdout tail:
 
 ```text
-> rax@0.1.0 pr-artifact:live-trial:full:refresh
-> tsx scripts/prArtifactLiveTrialRefresh.ts --limit 50 --min-live 10
-
-{
-  "status": "live_trial_refresh_skipped_cached_pass_fresh",
-  "reason": "Cached live PR artifact trial is already passing and fresh; skipping live API refresh.",
-  "cachedRecordedAt": "2026-05-04T03:28:33.314Z",
-  "cachedAgeHours": 0.01,
-  "maxCacheHours": 24,
-  "gateSummary": {
-    "selectedCaseCount": 50,
-    "liveSourceCount": 50,
-    "fallbackSourceCount": 0,
-    "falseAccepts": 0,
-    "falseBlocks": 0,
-    "falseBlockRatePct": 0,
-    "usefulNextActionRate": 100,
-    "ciProofClassificationSurfaceRate": 100,
-    "recordedAt": "2026-05-04T03:28:33.314Z",
-    "freshnessHours": 0.01,
-    "liveSourceRate": 100,
-    "status": "passed",
-    "blockers": []
-  }
+sefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_03",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_04",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93410_case_05",
+      "snapshotId": "nextjs_93410",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93410,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_01",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_02",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_03",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_04",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "nextjs_93400_case_05",
+      "snapshotId": "nextjs_93400",
+      "repoFullName": "vercel/next.js",
+      "prNumber": 93400,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12897_case_01",
+      "snapshotId": "dbt_12897",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12897,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12897_case_02",
+      "snapshotId": "dbt_12897",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12897,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12897_case_03",
+      "snapshotId": "dbt_12897",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12897,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12897_case_04",
+      "snapshotId": "dbt_12897",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12897,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12897_case_05",
+      "snapshotId": "dbt_12897",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12897,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12899_case_01",
+      "snapshotId": "dbt_12899",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12899,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12899_case_02",
+      "snapshotId": "dbt_12899",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12899,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12899_case_03",
+      "snapshotId": "dbt_12899",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12899,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12899_case_04",
+      "snapshotId": "dbt_12899",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12899,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12899_case_05",
+      "snapshotId": "dbt_12899",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12899,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "rails_57291_case_01",
+      "snapshotId": "rails_57291",
+      "repoFullName": "rails/rails",
+      "prNumber": 57291,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "rails_57291_case_02",
+      "snapshotId": "rails_57291",
+      "repoFullName": "rails/rails",
+      "prNumber": 57291,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "rails_57291_case_03",
+      "snapshotId": "rails_57291",
+      "repoFullName": "rails/rails",
+      "prNumber": 57291,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "rails_57291_case_04",
+      "snapshotId": "rails_57291",
+      "repoFullName": "rails/rails",
+      "prNumber": 57291,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "rails_57291_case_05",
+      "snapshotId": "rails_57291",
+      "repoFullName": "rails/rails",
+      "prNumber": 57291,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34682_case_01",
+      "snapshotId": "storybook_34682",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34682,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34682_case_02",
+      "snapshotId": "storybook_34682",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34682,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34682_case_03",
+      "snapshotId": "storybook_34682",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34682,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34682_case_04",
+      "snapshotId": "storybook_34682",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34682,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "storybook_34682_case_05",
+      "snapshotId": "storybook_34682",
+      "repoFullName": "storybookjs/storybook",
+      "prNumber": 34682,
+      "source": "live_github_api",
+      "expectedStatus": "Accept",
+      "actualStatus": "Accept",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12896_case_01",
+      "snapshotId": "dbt_12896",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12896,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12896_case_02",
+      "snapshotId": "dbt_12896",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12896,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12896_case_03",
+      "snapshotId": "dbt_12896",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12896,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12896_case_04",
+      "snapshotId": "dbt_12896",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12896,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    },
+    {
+      "caseId": "dbt_12896_case_05",
+      "snapshotId": "dbt_12896",
+      "repoFullName": "dbt-labs/dbt-core",
+      "prNumber": 12896,
+      "source": "live_github_api",
+      "expectedStatus": "Provisional",
+      "actualStatus": "Provisional",
+      "usefulNextAction": true,
+      "ciProofSurfaced": true,
+      "falseAccept": false,
+      "falseBlock": false,
+      "warnings": [],
+      "issues": []
+    }
+  ]
 }
 ```
 
@@ -368,8 +1217,8 @@ Stderr tail:
 - Command: `npm run campaign:promotion-gate`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:09.202Z
-- Finished at: 2026-05-04T03:29:09.734Z
+- Started at: 2026-05-04T12:27:14.912Z
+- Finished at: 2026-05-04T12:27:15.231Z
 
 Stdout tail:
 
@@ -407,8 +1256,8 @@ Stderr tail:
 - Command: `npm run ci-failure:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:09.734Z
-- Finished at: 2026-05-04T03:29:10.085Z
+- Started at: 2026-05-04T12:27:15.231Z
+- Finished at: 2026-05-04T12:27:15.438Z
 
 Stdout tail:
 
@@ -439,8 +1288,8 @@ Stderr tail:
 - Command: `npm run pr-review-comment:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:10.085Z
-- Finished at: 2026-05-04T03:29:10.436Z
+- Started at: 2026-05-04T12:27:15.438Z
+- Finished at: 2026-05-04T12:27:15.647Z
 
 Stdout tail:
 
@@ -469,8 +1318,8 @@ Stderr tail:
 - Command: `npm run repo-onboarding:score`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:10.436Z
-- Finished at: 2026-05-04T03:29:10.793Z
+- Started at: 2026-05-04T12:27:15.647Z
+- Finished at: 2026-05-04T12:27:15.846Z
 
 Stdout tail:
 
@@ -507,8 +1356,8 @@ Stderr tail:
 - Command: `npm run campaign:overblock`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:10.793Z
-- Finished at: 2026-05-04T03:29:11.902Z
+- Started at: 2026-05-04T12:27:15.846Z
+- Finished at: 2026-05-04T12:27:16.442Z
 
 Stdout tail:
 
@@ -544,8 +1393,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:11.902Z
-- Finished at: 2026-05-04T03:29:12.182Z
+- Started at: 2026-05-04T12:27:16.442Z
+- Finished at: 2026-05-04T12:27:16.618Z
 
 Stdout tail:
 
@@ -601,8 +1450,8 @@ Stderr tail:
 - Command: `npm run campaign:closed-loop:workflow`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:12.182Z
-- Finished at: 2026-05-04T03:29:12.455Z
+- Started at: 2026-05-04T12:27:16.618Z
+- Finished at: 2026-05-04T12:27:16.791Z
 
 Stdout tail:
 
@@ -724,8 +1573,8 @@ Stderr tail:
 - Command: `npm run stax:ops-dashboard`
 - Exit code: 0
 - Expected exit code: 0
-- Started at: 2026-05-04T03:29:12.455Z
-- Finished at: 2026-05-04T03:29:12.985Z
+- Started at: 2026-05-04T12:27:16.791Z
+- Finished at: 2026-05-04T12:27:17.097Z
 
 Stdout tail:
 
@@ -767,12 +1616,12 @@ Key Metrics
 - live PR trial false accepts / false blocks: 0/0
 - live PR trial useful next-action rate: 100%
 - live PR trial CI proof surface rate: 100%
-- live PR trial freshness / live-source rate: 1.45h / 100%
+- live PR trial freshness / live-source rate: 0h / 100%
 - live PR trial full cases / live-source: 50/50
 - live PR trial full false accepts / false blocks: 0/0
 - live PR trial full useful next-action rate: 100%
 - live PR trial full CI proof surface rate: 100%
-- live PR trial full freshness / live-source rate: 0.01h / 100%
+- live PR trial full freshness / live-source rate: 0h / 100%
 - human-judgment followups / blocked-too-hard: 0/0
 - eval candidates: 9
 

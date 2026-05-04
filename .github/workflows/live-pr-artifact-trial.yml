@@ -34,10 +34,10 @@ jobs:
         run: npm ci
 
       - name: Refresh 25-case live PR artifact trial
-        run: npm run pr-artifact:live-trial:refresh -- --force
+        run: npm run pr-artifact:live-trial:refresh:force-live
 
       - name: Refresh 50-case live PR artifact trial
-        run: npm run pr-artifact:live-trial:full:refresh -- --force
+        run: npm run pr-artifact:live-trial:full:refresh:force-live
 
       - name: Upload live PR trial artifacts
         if: always()

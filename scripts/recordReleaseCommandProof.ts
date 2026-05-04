@@ -47,10 +47,14 @@ const RC4_COMMAND_CHAIN: CommandSpec[] = [
   { id: "validate_all", command: "npm run validate:all", expectedExitCode: 0 },
   { id: "pr_artifact_integrity", command: "npm run pr-artifact:integrity", expectedExitCode: 0 },
   { id: "pr_artifact_score", command: "npm run pr-artifact:score", expectedExitCode: 0 },
-  { id: "pr_artifact_live_trial_refresh", command: "npm run pr-artifact:live-trial:refresh", expectedExitCode: 0 },
+  {
+    id: "pr_artifact_live_trial_refresh",
+    command: "npm run pr-artifact:live-trial:refresh:force-live",
+    expectedExitCode: 0
+  },
   {
     id: "pr_artifact_live_trial_full_refresh",
-    command: "npm run pr-artifact:live-trial:full:refresh",
+    command: "npm run pr-artifact:live-trial:full:refresh:force-live",
     expectedExitCode: 0
   },
   { id: "promotion_gate", command: "npm run campaign:promotion-gate", expectedExitCode: 0 },
