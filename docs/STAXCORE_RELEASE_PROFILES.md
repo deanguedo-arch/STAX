@@ -67,6 +67,16 @@ Release packet artifacts must include the profile and all failed checks, if any.
 If strict fails, promotion is blocked even when standard passes.
 ```
 
+## Workflow Status Check
+
+Command:
+
+```bash
+npm run staxcore:status -- --limit 3
+```
+
+Use this to quickly inspect the latest `staxcore-strict` GitHub Actions runs (including status, conclusion, and run URL) without manual API calls.
+
 ## Evidence Outputs
 
 Both profiles produce:

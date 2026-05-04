@@ -49,6 +49,7 @@
     "pr-artifact:live-trial:full": "tsx scripts/prArtifactLiveTrial.ts --limit 50 --min-live 10 --artifact-key full --skip-artifacts-on-failure",
     "pr-artifact:live-trial:full:refresh": "tsx scripts/prArtifactLiveTrialRefresh.ts --limit 50 --min-live 10",
     "pr-artifact:audit": "tsx scripts/auditLivePrArtifact.ts",
+    "staxcore:status": "tsx scripts/staxcoreWorkflowStatus.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
     "campaign:phaseB:capture": "tsx scripts/phaseBCaptureClipboard.ts",
