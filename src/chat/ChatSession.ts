@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { createProofPacket, renderProofPacket, type EvidenceItem } from "../audit/ProofPacket.js";
 import { redactProofText } from "../audit/ProofRedactor.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import { runEvals } from "../core/EvalRunner.js";
 import { replayRun } from "../core/Replay.js";
 import type { RaxRuntime } from "../core/RaxRuntime.js";
@@ -1156,7 +1157,7 @@ export class ChatSession {
       ...(this.modeOverride ? [`ModeOverride: ${this.modeOverride}`] : []),
       `LearningEvent: ${learningEventId ?? "none"}`,
       `Queues: ${trace.learningQueues?.join(", ") || "none"}`,
-      `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`
+      `Trace: ${toPosixPath(path.relative(this.rootDir, path.join(runDir, "trace.json")))}`
     ].join("\n");
   }
 
@@ -1217,7 +1218,7 @@ export class ChatSession {
       `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
       `LearningEvent: ${trace.learningEventId ?? "none"}`,
       `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
-      `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`
+      `Trace: ${toPosixPath(path.relative(this.rootDir, path.join(runDir, "trace.json")))}`
     ].join("\n");
   }
 
@@ -1246,7 +1247,7 @@ export class ChatSession {
       `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
       `LearningEvent: ${trace.learningEventId ?? "none"}`,
       `Queues: ${trace.learningQueues?.join(", ") || "none"}`,
-      `Trace: ${path.relative(this.rootDir, path.join(runDir, "trace.json"))}`,
+      `Trace: ${toPosixPath(path.relative(this.rootDir, path.join(runDir, "trace.json")))}`,
       "",
       "In plain English: STAX answered, saved a trace, recorded a LearningEvent, and did not promote anything automatically."
     ].join("\n");
@@ -1257,7 +1258,7 @@ export class ChatSession {
     try {
       const entries = (await fs.readdir(dir)).filter((entry) => entry.endsWith(".json") || entry.endsWith(".md")).sort();
       if (entries.length === 0) return `- No lab ${label}.`;
-      return [`Lab ${label}: ${entries.length}`, ...entries.slice(-20).map((entry) => `- ${path.join("learning", "lab", folder, entry)}`)].join("\n");
+      return [`Lab ${label}: ${entries.length}`, ...entries.slice(-20).map((entry) => `- learning/lab/${folder}/${entry}`)].join("\n");
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") return `- No lab ${label}.`;
       throw error;
@@ -1538,8 +1539,8 @@ export class ChatSession {
       policiesApplied?: string[];
     };
     const evidence = await collectLocalEvidence(this.rootDir, { includeModeMaturity: true });
-    const runRelativePath = path.relative(this.rootDir, runDir);
-    const traceRelativePath = path.relative(this.rootDir, tracePath);
+    const runRelativePath = toPosixPath(path.relative(this.rootDir, runDir));
+    const traceRelativePath = toPosixPath(path.relative(this.rootDir, tracePath));
     const rawProofText = [
       "## Previous Assistant Output",
       this.lastAssistantOutput,
@@ -1570,7 +1571,7 @@ export class ChatSession {
       evidenceItems.push({
         evidenceId: "ev_last_learning_event",
         evidenceType: "learning_event",
-        path: path.join("learning", "events", "hot", `${trace.learningEventId}.json`),
+        path: `learning/events/hot/${trace.learningEventId}.json`,
         summary: `LearningEvent linked by trace: ${trace.learningEventId}.`,
         claimSupported: "The previous answer has a linked LearningEvent.",
         confidence: "high"
@@ -1696,14 +1697,15 @@ export class ChatSession {
     await fs.mkdir(summaryDir, { recursive: true });
     const summaryPath = path.join(summaryDir, `${candidateId}.md`);
     await fs.writeFile(summaryPath, content, "utf8");
-    this.context = [`Thread summary candidate: ${path.relative(this.rootDir, summaryPath)}`];
+    const summaryRelativePath = toPosixPath(path.relative(this.rootDir, summaryPath));
+    this.context = [`Thread summary candidate: ${summaryRelativePath}`];
     this.thread = await this.threadStore.appendMessage(thread.threadId, {
       role: "system",
-      content: `Thread summary candidate created at ${path.relative(this.rootDir, summaryPath)}. Approval required before memory promotion.`
+      content: `Thread summary candidate created at ${summaryRelativePath}. Approval required before memory promotion.`
     });
     return [
       "Thread summary candidate created.",
-      `Path: ${path.relative(this.rootDir, summaryPath)}`,
+      `Path: ${summaryRelativePath}`,
       "Approval: required before memory promotion.",
       "Active chat context was compacted; thread history was kept."
     ].join("\n");
@@ -2087,5 +2089,5 @@ function commandsEquivalent(left: string, right: string): boolean {
 }
 
 function commandEvidencePathFor(evidence: CommandEvidence): string {
-  return path.join("evidence", "commands", evidence.createdAt.slice(0, 10), `${evidence.commandEvidenceId}.json`);
+  return `evidence/commands/${evidence.createdAt.slice(0, 10)}/${evidence.commandEvidenceId}.json`;
 }

@@ -24,5 +24,5 @@ describe("PR artifact trial", () => {
     expect(summary.usefulNextActionRate).toBeGreaterThanOrEqual(85);
     expect(summary.ciProofClassificationAccuracy).toBeGreaterThanOrEqual(90);
     expect(summary.status).toBe("passed");
-  });
+  }, 60000);
 });

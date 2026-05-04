@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import type { BehaviorRequirement } from "./BehaviorMiner.js";
 
 export const BehaviorTriageDispositionSchema = z.enum([
@@ -84,7 +85,7 @@ export class BehaviorRequirementTriage {
     if (!options.write) return report;
     const file = path.join(this.rootDir, "learning", "extraction", "triage", "latest.json");
     await fs.mkdir(path.dirname(file), { recursive: true });
-    const writtenPath = path.relative(this.rootDir, file);
+    const writtenPath = toPosixPath(path.relative(this.rootDir, file));
     const written = BehaviorTriageReportSchema.parse({ ...report, writtenPath });
     await fs.writeFile(file, JSON.stringify(written, null, 2), "utf8");
     return written;

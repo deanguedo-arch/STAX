@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { LearningRecorder } from "../learning/LearningRecorder.js";
 import { ReviewLedger } from "./ReviewLedger.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import { ReviewQueue } from "./ReviewQueue.js";
 import { ReviewRiskScorer } from "./ReviewRiskScorer.js";
 import { ReviewSourceSchema, type ReviewRecord, type ReviewSource } from "./ReviewSchemas.js";
@@ -145,7 +146,7 @@ export class ReviewRouter {
 
   private async sourceFromPath(file: string): Promise<ReviewSource> {
     if (!this.insideRoot(file)) throw new Error(`Review source path must stay inside repo: ${file}`);
-    const relative = path.relative(this.rootDir, file);
+    const relative = toPosixPath(path.relative(this.rootDir, file));
     const content = await fs.readFile(file, "utf8");
     const parsed = this.parseJson(content);
     const sourceId = this.sourceId(parsed, relative);
@@ -295,7 +296,7 @@ export class ReviewRouter {
   }
 
   private insideRoot(file: string): boolean {
-    const relative = path.relative(this.rootDir, file);
+    const relative = toPosixPath(path.relative(this.rootDir, file));
     return Boolean(relative && !relative.startsWith("..") && !path.isAbsolute(relative));
   }
 }

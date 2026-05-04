@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import type { Dirent } from "node:fs";
 import path from "node:path";
+import { toPosixPath } from "./RepoPathGuards.js";
 
 export const REPO_MAX_FILE_BYTES = 200 * 1024;
 export const REPO_IGNORED_DIRS = new Set([
@@ -117,7 +118,7 @@ export async function resolveRepoRoot(repoPath: string): Promise<string> {
 }
 
 export function isIgnoredPath(relativePath: string): boolean {
-  const parts = relativePath.split(path.sep).filter(Boolean);
+  const parts = relativePath.split(/[\\/]/).filter(Boolean);
   return parts.some((part) => REPO_IGNORED_DIRS.has(part)) || parts.some(isSecretLikeFile);
 }
 
@@ -132,7 +133,7 @@ export function isSecretLikeFile(fileName: string): boolean {
 }
 
 export async function safeReadText(repoRoot: string, relativePath: string): Promise<SafeTextRead | undefined> {
-  const normalized = path.normalize(relativePath);
+  const normalized = toPosixPath(path.normalize(relativePath));
   if (normalized.startsWith("..") || path.isAbsolute(normalized) || isIgnoredPath(normalized)) {
     return { path: normalized, skipped: "unsafe path" };
   }
@@ -174,7 +175,7 @@ export async function listTree(repoRoot: string, relativeDir: string, maxDepth: 
   const skipped: string[] = [];
   async function visit(dir: string, depth: number): Promise<void> {
     if (depth > maxDepth) return;
-    const relative = path.relative(repoRoot, dir);
+    const relative = toPosixPath(path.relative(repoRoot, dir));
     if (relative && isIgnoredPath(relative)) return;
     let entries: Dirent[];
     try {
@@ -184,7 +185,7 @@ export async function listTree(repoRoot: string, relativeDir: string, maxDepth: 
       throw error;
     }
     for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
-      const entryRelative = path.join(relative, entry.name);
+      const entryRelative = toPosixPath(relative ? `${relative}/${entry.name}` : entry.name);
       if (isIgnoredPath(entryRelative)) {
         skipped.push(`${entryRelative}: ignored`);
         continue;
@@ -220,7 +221,7 @@ async function listTestTrees(repoRoot: string): Promise<{ files: string[]; skipp
   const [tests, test, scriptsTests, e2e] = await Promise.all([
     listTree(repoRoot, "tests", 3),
     listTree(repoRoot, "test", 3),
-    listTree(repoRoot, path.join("scripts", "tests"), 3),
+    listTree(repoRoot, "scripts/tests", 3),
     listTree(repoRoot, "e2e", 4)
   ]);
   return {

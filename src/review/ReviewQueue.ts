@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { JudgmentPacketBuilder } from "./JudgmentPacket.js";
 import type { ReviewDisposition, ReviewRecord, ReviewRiskLevel } from "./ReviewSchemas.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import { ReviewRecordSchema } from "./ReviewSchemas.js";
 
 export type ReviewInboxFilter = {
@@ -26,7 +27,7 @@ export class ReviewQueue {
       await fs.mkdir(path.dirname(stagedFile), { recursive: true });
       await fs.writeFile(stagedFile, JSON.stringify(parsed, null, 2), "utf8");
     }
-    return path.relative(this.rootDir, file);
+    return toPosixPath(path.relative(this.rootDir, file));
   }
 
   async list(filter: ReviewInboxFilter = {}): Promise<ReviewRecord[]> {

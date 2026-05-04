@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 
 export const BehaviorMiningStatusSchema = z.enum(["new_candidate", "captured", "duplicate", "rejected"]);
 export const BehaviorMiningCategorySchema = z.enum([
@@ -143,7 +144,7 @@ export class BehaviorMiner {
     await fs.writeFile(file, JSON.stringify(round, null, 2), "utf8");
     await this.writeRequirements([...previous, ...round.requirements]);
     const report = await this.report();
-    return { path: path.relative(this.rootDir, file), round, report };
+    return { path: toPosixPath(path.relative(this.rootDir, file)), round, report };
   }
 
   async report(windowSize = 3): Promise<BehaviorMiningSaturationReport> {
@@ -178,8 +179,9 @@ export class BehaviorMiner {
     });
     const reportPath = path.join(this.rootDir, "learning", "extraction", "latest_report.json");
     await fs.mkdir(path.dirname(reportPath), { recursive: true });
-    await fs.writeFile(reportPath, JSON.stringify({ ...report, latestReportPath: path.relative(this.rootDir, reportPath) }, null, 2), "utf8");
-    return { ...report, latestReportPath: path.relative(this.rootDir, reportPath) };
+    const latestReportPath = toPosixPath(path.relative(this.rootDir, reportPath));
+    await fs.writeFile(reportPath, JSON.stringify({ ...report, latestReportPath }, null, 2), "utf8");
+    return { ...report, latestReportPath };
   }
 
   async readRounds(): Promise<BehaviorMiningRound[]> {

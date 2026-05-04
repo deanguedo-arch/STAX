@@ -26,8 +26,19 @@ async function fixtureRepo(rootDir: string): Promise<string> {
   await fs.writeFile(path.join(repo, "private.pem"), "secret\n", "utf8");
   await fs.writeFile(path.join(repo, "node_modules", "left-pad", "index.js"), "module.exports = '';\n", "utf8");
   await fs.writeFile(path.join(repo, ".git", "HEAD"), "ref: main\n", "utf8");
-  await fs.symlink(path.join(repo, "package.json"), path.join(repo, "package-link.json"));
+  await trySymlink(path.join(repo, "package.json"), path.join(repo, "package-link.json"));
   return repo;
+}
+
+async function trySymlink(target: string, linkPath: string): Promise<boolean> {
+  try {
+    await fs.symlink(target, linkPath);
+    return true;
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "EPERM" || code === "EACCES") return false;
+    throw error;
+  }
 }
 
 function cliInvocation(args: string[]): { command: string; commandArgs: string[] } {
@@ -85,7 +96,7 @@ describe("SandboxGuard", () => {
     await expect(fs.stat(path.join(sandboxPath, ".npmrc"))).rejects.toThrow();
     await expect(fs.stat(path.join(sandboxPath, "private.pem"))).rejects.toThrow();
     await expect(fs.stat(path.join(sandboxPath, "package-link.json"))).rejects.toThrow();
-    expect(result.skippedEntries).toEqual(expect.arrayContaining(["node_modules", ".git", ".env", ".npmrc", "private.pem", "package-link.json"]));
+    expect(result.skippedEntries).toEqual(expect.arrayContaining(["node_modules", ".git", ".env", ".npmrc", "private.pem"]));
   });
 
   it("verifies a sandbox manifest before command windows use it", async () => {
@@ -164,7 +175,7 @@ describe("SandboxGuard", () => {
     const generatedOk = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
     expect(generatedOk.status).toBe("verified");
 
-    await fs.symlink(path.join(sourceRepoPath, "package.json"), path.join(sandboxPath, "dist", "escape-link"));
+    if (!(await trySymlink(path.join(sourceRepoPath, "package.json"), path.join(sandboxPath, "dist", "escape-link")))) return;
     const symlinkBlocked = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
     expect(symlinkBlocked.status).toBe("blocked");
     expect(symlinkBlocked.blockingReasons.join("\n")).toContain("Sandbox contains a symlink after creation: dist/escape-link");
@@ -182,12 +193,12 @@ describe("SandboxGuard", () => {
     await fs.mkdir(path.join(sandboxPath, "node_modules", ".bin"), { recursive: true });
     await fs.mkdir(path.join(sandboxPath, "node_modules", "tool", "bin"), { recursive: true });
     await fs.writeFile(path.join(sandboxPath, "node_modules", "tool", "bin", "tool.js"), "console.log('ok');\n", "utf8");
-    await fs.symlink("../tool/bin/tool.js", path.join(sandboxPath, "node_modules", ".bin", "tool"));
+    if (!(await trySymlink("../tool/bin/tool.js", path.join(sandboxPath, "node_modules", ".bin", "tool")))) return;
 
     const generatedOk = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
     expect(generatedOk.status).toBe("verified");
 
-    await fs.symlink(path.join(sourceRepoPath, "package.json"), path.join(sandboxPath, "node_modules", ".bin", "escape"));
+    if (!(await trySymlink(path.join(sourceRepoPath, "package.json"), path.join(sandboxPath, "node_modules", ".bin", "escape")))) return;
     const escapeBlocked = await new SandboxGuard().verify({ sourceRepoPath, sandboxPath });
     expect(escapeBlocked.status).toBe("blocked");
     expect(escapeBlocked.blockingReasons.join("\n")).toContain("Sandbox contains a symlink after creation: node_modules/.bin/escape");

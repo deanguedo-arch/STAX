@@ -26,9 +26,9 @@ export class RepoEvidencePackBuilder {
       this.readOperationalFiles(reader),
       this.readGitStatus(repoRoot),
       reader.listTree("src", 3),
-      reader.listTree(path.join("src", "test"), 4),
+      reader.listTree("src/test", 4),
       reader.listTree("scripts", 2),
-      reader.listTree(path.join("scripts", "tests"), 3),
+      reader.listTree("scripts/tests", 3),
       reader.listTree("tests", 3),
       reader.listTree("test", 3),
       reader.listTree("e2e", 4),
@@ -123,10 +123,10 @@ export class RepoEvidencePackBuilder {
 
   private async readOperationalFiles(reader: RepoSafeFileReader): Promise<SafeRepoText[]> {
     const paths = [
-      path.join("docs", "ops", "ACTIVE_HANDOFF.md"),
-      path.join("docs", "ops", "FAST_PATHS.md"),
-      path.join("docs", "ops", "session-checklist.md"),
-      path.join("docs", "ops", "codex-mac-workflow.md")
+      "docs/ops/ACTIVE_HANDOFF.md",
+      "docs/ops/FAST_PATHS.md",
+      "docs/ops/session-checklist.md",
+      "docs/ops/codex-mac-workflow.md"
     ];
     return (await Promise.all(paths.map((relative) => reader.readText(relative)))).filter(Boolean) as SafeRepoText[];
   }
@@ -165,13 +165,15 @@ export class RepoEvidencePackBuilder {
       risks.push("git_branch_drift_detected");
     }
     if (input.importantFiles.some((file) => /(^|[/\\]).* 2(\.|$)/.test(file))) risks.push("duplicate_copy_file_names_detected");
-    const activeHandoff = input.operationalReads.find((item) => item.path === path.join("docs", "ops", "ACTIVE_HANDOFF.md"))?.text;
+    const activeHandoff = input.operationalReads.find((item) => item.path === "docs/ops/ACTIVE_HANDOFF.md")?.text;
     if (activeHandoff && /\b(fails?|failing|red test|still red)\b/i.test(activeHandoff)) risks.push("active_handoff_mentions_red_or_failing_test");
     if (activeHandoff && /\bmanual browser\b/i.test(activeHandoff) && /\bnot run|did not run|needs validation|still needs validation\b/i.test(activeHandoff)) {
       risks.push("active_handoff_has_unvalidated_manual_check");
     }
     if (input.redactions.length) risks.push("secret_like_values_redacted");
-    if (input.skippedPaths.some((item) => /secret|ignored|outside|symlink/i.test(item.reason))) risks.push("sensitive_or_unsafe_paths_skipped");
+    if (input.skippedPaths.some((item) => /secret|ignored|outside|symlink|system metadata|non-text|binary/i.test(item.reason))) {
+      risks.push("sensitive_or_unsafe_paths_skipped");
+    }
     return risks;
   }
 }

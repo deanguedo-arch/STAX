@@ -9,6 +9,7 @@ import {
   REPO_MAX_FILE_BYTES,
   resolveRepoRoot
 } from "./RepoSummary.js";
+import { toPosixPath } from "./RepoPathGuards.js";
 
 export type RepoSearchResult = {
   path: string;
@@ -67,7 +68,7 @@ export class RepoSearch {
     maxResults: number
   ): Promise<void> {
     if (results.length >= maxResults) return;
-    const relativeDir = path.relative(repoRoot, dir);
+    const relativeDir = toPosixPath(path.relative(repoRoot, dir));
     if (relativeDir && isIgnoredPath(relativeDir)) return;
     const entries = await fs.readdir(dir, { withFileTypes: true }).catch((error: NodeJS.ErrnoException) => {
       if (error.code === "ENOENT") return [];
@@ -76,7 +77,7 @@ export class RepoSearch {
     for (const entry of entries.sort(compareSearchEntries)) {
       if (results.length >= maxResults) return;
       const full = path.join(dir, entry.name);
-      const relative = path.relative(repoRoot, full);
+      const relative = toPosixPath(path.relative(repoRoot, full));
       if (!isInsideRepo(repoRoot, full) || isIgnoredPath(relative)) continue;
       const stat = await fs.lstat(full);
       if (stat.isSymbolicLink()) continue;

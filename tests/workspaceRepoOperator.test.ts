@@ -61,11 +61,11 @@ describe("workspace repo operator evidence pack", () => {
     expect(pack.repoPath).toBe(repo);
     expect(pack.inspectedFiles).toContain("package.json");
     expect(pack.inspectedFiles).toContain("README.md");
-    expect(pack.sourceFiles).toContain(path.join("src", "index.ts"));
-    expect(pack.testFiles).toContain(path.join("tests", "index.test.ts"));
-    expect(pack.testFiles).toContain(path.join("src", "test", "unit", "ingest.test.ts"));
-    expect(pack.testFiles).toContain(path.join("scripts", "tests", "operator.test.ts"));
-    expect(pack.operationalFiles).toContain(path.join("docs", "ops", "ACTIVE_HANDOFF.md"));
+    expect(pack.sourceFiles).toContain("src/index.ts");
+    expect(pack.testFiles).toContain("tests/index.test.ts");
+    expect(pack.testFiles).toContain("src/test/unit/ingest.test.ts");
+    expect(pack.testFiles).toContain("scripts/tests/operator.test.ts");
+    expect(pack.operationalFiles).toContain("docs/ops/ACTIVE_HANDOFF.md");
     expect(pack.scripts).toContainEqual({ name: "test", command: "vitest run" });
     expect(pack.markdown).toContain("## Scripts / Test Commands Found");
     expect(pack.markdown).toContain("## Operational Files Checked");
@@ -78,22 +78,22 @@ describe("workspace repo operator evidence pack", () => {
     const repo = await createFixtureRepo();
     const outside = await tempRepo();
     await fs.writeFile(path.join(outside, "outside.txt"), "outside secret\n", "utf8");
-    await fs.symlink(path.join(outside, "outside.txt"), path.join(repo, "src", "outside-link.txt"));
+    const symlinkCreated = await trySymlink(path.join(outside, "outside.txt"), path.join(repo, "src", "outside-link.txt"));
 
     const pack = await new RepoEvidencePackBuilder().build({
       repoPath: repo,
       workspaceResolution: "current_repo"
     });
 
-    expect(pack.importantFiles).not.toContain(path.join("node_modules", "pkg", "index.js"));
-    expect(pack.importantFiles).not.toContain(path.join(".git", "config"));
-    expect(pack.importantFiles).not.toContain(path.join("src", ".DS_Store"));
-    expect(pack.importantFiles).not.toContain(path.join("src", "image.png"));
+    expect(pack.importantFiles).not.toContain("node_modules/pkg/index.js");
+    expect(pack.importantFiles).not.toContain(".git/config");
+    expect(pack.importantFiles).not.toContain("src/.DS_Store");
+    expect(pack.importantFiles).not.toContain("src/image.png");
     expect(pack.importantFiles).not.toContain(".env");
     expect(pack.importantFiles).not.toContain("private.key");
     expect(pack.skippedPaths.some((item) => item.path.includes(".DS_Store") && item.reason === "system metadata")).toBe(true);
     expect(pack.skippedPaths.some((item) => item.path.includes("image.png") && item.reason === "non-text or binary extension")).toBe(true);
-    expect(pack.skippedPaths.some((item) => item.path.includes("outside-link") && item.reason === "symlink")).toBe(true);
+    if (symlinkCreated) expect(pack.skippedPaths.some((item) => item.path.includes("outside-link") && item.reason === "symlink")).toBe(true);
     expect(pack.riskFlags).toContain("sensitive_or_unsafe_paths_skipped");
   });
 
@@ -160,3 +160,14 @@ describe("workspace repo operator evidence pack", () => {
     expect(noNumberIssueVerb.reasonCodes).toContain("issue_triage_request");
   });
 });
+
+async function trySymlink(target: string, linkPath: string): Promise<boolean> {
+  try {
+    await fs.symlink(target, linkPath);
+    return true;
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === "EPERM" || code === "EACCES") return false;
+    throw error;
+  }
+}

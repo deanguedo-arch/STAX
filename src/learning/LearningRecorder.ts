@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { RunLoggerPayload } from "../core/RunLogger.js";
 import { SelfAudit } from "../audit/SelfAudit.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import type { RunTrace } from "../schemas/RunLog.js";
 import type { LearningEvent, LearningEventStatus, LearningFailureType } from "./LearningEvent.js";
 import { LearningEventSchema } from "./LearningEvent.js";
@@ -31,7 +32,7 @@ export class LearningRecorder {
   async recordRun(payload: RunLoggerPayload, runDir: string): Promise<LearningEvent> {
     const existing = await this.existingRunEvent(runDir);
     if (existing) return existing;
-    const relativeRunDir = path.relative(this.rootDir, runDir);
+    const relativeRunDir = toPosixPath(path.relative(this.rootDir, runDir));
     const status = this.statusFor(payload);
     const generic = new GenericOutputDetector().analyze(payload.trace.mode, payload.final);
     const selfAudit = new SelfAudit().audit({ mode: payload.trace.mode, output: payload.final });
@@ -104,7 +105,7 @@ export class LearningRecorder {
     const commandId = input.commandId ?? `cmd-${this.hash([input.commandName, input.argsSummary, input.outputSummary].join("\n"))}`;
     const runId = input.runId ?? commandId;
     const eventId = this.eventIdForRun(runId);
-    const eventPath = path.join("learning", "events", "hot", `${eventId}.json`);
+    const eventPath = `learning/events/hot/${eventId}.json`;
     const existing = await this.readEventFile(path.join(this.rootDir, eventPath));
     if (existing) return existing;
     const status = this.statusForCommand(input);

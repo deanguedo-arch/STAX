@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { ReviewBatchSchema, type ReviewBatch, type ReviewRecord } from "./ReviewSchemas.js";
 import { ReviewQueue } from "./ReviewQueue.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 
 export class ReviewBatcher {
   constructor(private rootDir = process.cwd()) {}
@@ -22,7 +23,7 @@ export class ReviewBatcher {
     await fs.writeFile(file, JSON.stringify(batch, null, 2), "utf8");
     const markdown = this.format(batch, records);
     await fs.writeFile(path.join(dir, `${batch.batchId}.md`), markdown, "utf8");
-    return { path: path.relative(this.rootDir, file), batch, markdown };
+    return { path: toPosixPath(path.relative(this.rootDir, file)), batch, markdown };
   }
 
   format(batch: ReviewBatch, records: ReviewRecord[]): string {

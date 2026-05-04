@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { redactProofText } from "../audit/ProofRedactor.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import { matchesGlob } from "./AutonomyWindow.js";
 import { SandboxGuard } from "./SandboxGuard.js";
 import {
@@ -155,7 +156,7 @@ export class SandboxPatchWindow {
     const patchEvidenceId = `patch-ev-${createdAt.replace(/[^0-9]/g, "").slice(0, 17)}-${Math.random().toString(36).slice(2, 8)}`;
     const dir = path.join(this.rootDir, "evidence", "patches", date);
     await fs.mkdir(dir, { recursive: true });
-    const diffPath = path.join("evidence", "patches", date, `${patchEvidenceId}.diff.txt`);
+    const diffPath = toPosixPath(path.join("evidence", "patches", date, `${patchEvidenceId}.diff.txt`));
     const redactedDiff = redactProofText(input.diffText).text;
     await fs.writeFile(path.join(this.rootDir, diffPath), redactedDiff, "utf8");
     const evidence = SandboxPatchEvidenceSchema.parse({

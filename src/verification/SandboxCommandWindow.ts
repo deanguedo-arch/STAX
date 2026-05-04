@@ -255,9 +255,10 @@ function result(input: {
 async function defaultCommandRunner(input: { command: string; cwd: string }): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   const parts = input.command.split(/\s+/);
   if (parts[0] !== "npm") throw new Error(`Unsupported executable: ${parts[0]}`);
-  const executable = process.platform === "win32" ? "npm.cmd" : "npm";
+  const executable = process.platform === "win32" ? "cmd.exe" : "npm";
+  const args = process.platform === "win32" ? ["/d", "/s", "/c", "npm", ...parts.slice(1)] : parts.slice(1);
   try {
-    const { stdout, stderr } = await execFileAsync(executable, parts.slice(1), {
+    const { stdout, stderr } = await execFileAsync(executable, args, {
       cwd: input.cwd,
       timeout: 120000,
       maxBuffer: 1024 * 1024 * 8

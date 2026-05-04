@@ -37,6 +37,7 @@ import { LabOrchestrator } from "./lab/LabOrchestrator.js";
 import { LabRunner } from "./lab/LabRunner.js";
 import { PatchPlanner } from "./lab/PatchPlanner.js";
 import { RedTeamGenerator } from "./lab/RedTeamGenerator.js";
+import { toPosixPath } from "./workspace/RepoPathGuards.js";
 import { CodexHandoffWorker } from "./lab/CodexHandoffWorker.js";
 import { ReleaseGate } from "./lab/ReleaseGate.js";
 import { ScenarioGenerator } from "./lab/ScenarioGenerator.js";
@@ -191,7 +192,7 @@ async function runCommand(args: ParsedArgs): Promise<void> {
   logInfo(output.output);
   logInfo("");
   logInfo(`Run: ${output.runId}`);
-  logInfo(`Run folder: ${path.join("runs", output.createdAt.slice(0, 10), output.runId)}`);
+  logInfo(`Run folder: runs/${output.createdAt.slice(0, 10)}/${output.runId}`);
 }
 
 async function controlAuditCommand(args: ParsedArgs): Promise<void> {
@@ -229,7 +230,7 @@ async function controlAuditCommand(args: ParsedArgs): Promise<void> {
       run.result.output,
       "",
       `Run: ${run.result.runId}`,
-      `Run folder: ${path.join("runs", run.result.createdAt.slice(0, 10), run.result.runId)}`
+      `Run folder: runs/${run.result.createdAt.slice(0, 10)}/${run.result.runId}`
     ].join("\n");
     logInfo(stdout);
     await recordCommandEvent("control-audit", args, success, stdout, [], run.result.runId, workspace);
@@ -610,7 +611,7 @@ async function codexAuditLocalCommand(args: ParsedArgs): Promise<void> {
   logInfo(result.output);
   logInfo("");
   logInfo(`Run: ${result.runId}`);
-  logInfo(`Run folder: ${path.join("runs", result.createdAt.slice(0, 10), result.runId)}`);
+  logInfo(`Run folder: runs/${result.createdAt.slice(0, 10)}/${result.runId}`);
 }
 
 async function traceCommand(args: ParsedArgs): Promise<void> {
@@ -651,7 +652,7 @@ async function showCommand(args: ParsedArgs): Promise<void> {
       `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
       `LearningEvent: ${trace.learningEventId ?? "none"}`,
       `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
-      `Trace: ${path.relative(process.cwd(), path.join(runDir, "trace.json"))}`
+      `Trace: ${toPosixPath(path.relative(process.cwd(), path.join(runDir, "trace.json")))}`
     ].join("\n"));
     return;
   }
@@ -663,7 +664,7 @@ async function showCommand(args: ParsedArgs): Promise<void> {
     `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
     `LearningEvent: ${trace.learningEventId ?? "none"}`,
     `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
-    `Trace: ${path.relative(process.cwd(), path.join(runDir, "trace.json"))}`
+    `Trace: ${toPosixPath(path.relative(process.cwd(), path.join(runDir, "trace.json")))}`
   ].join("\n"));
 }
 

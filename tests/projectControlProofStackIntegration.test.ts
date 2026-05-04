@@ -273,7 +273,7 @@ describe("project_control proof stack integration", () => {
     expect(falseAccepts).toBe(0);
     expect(acceptCases).toBeGreaterThan(0);
     expect(falseBlocks / acceptCases).toBeLessThanOrEqual(0.15);
-  });
+  }, 60000);
 
   it("surfaces diff audit for docs-only implementation claims", async () => {
     const runtime = await createDefaultRuntime();

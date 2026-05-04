@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { RaxMode } from "../schemas/Config.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 
 export const LearningWorkerRoleSchema = z.enum([
   "curriculum",
@@ -292,5 +293,5 @@ export function resolveLabPath(rootDir: string, file: string): string {
 }
 
 export function relativeLabPath(rootDir: string, file: string): string {
-  return path.relative(rootDir, file);
+  return toPosixPath(path.relative(rootDir, file));
 }

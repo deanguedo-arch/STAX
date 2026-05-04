@@ -220,7 +220,7 @@ describe("SandboxPatchWindow", () => {
       "--file",
       "tmp/.gitkeep",
       "--content",
-      "patched-marker\n",
+      "patched-marker",
       "--approve"
     ]);
     const commandCli = cliInvocation([

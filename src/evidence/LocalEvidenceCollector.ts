@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { ModeRegistry, type ModeMaturityReport } from "../modes/ModeRegistry.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -179,7 +180,7 @@ async function readLatestEval(rootDir: string, errors: string[]): Promise<Latest
     if (!latest) return undefined;
     const parsed = JSON.parse(await fs.readFile(latest.fullPath, "utf8")) as Partial<LatestEvalEvidence>;
     return {
-      path: path.relative(rootDir, latest.fullPath),
+      path: toPosixPath(path.relative(rootDir, latest.fullPath)),
       total: parsed.total,
       passed: parsed.passed,
       failed: parsed.failed,
@@ -206,7 +207,7 @@ async function readLatestRunFolder(rootDir: string, errors: string[]): Promise<s
         const fullPath = path.join(dateDir, entry);
         const stat = await fs.stat(fullPath);
         if (stat.isDirectory()) {
-          candidates.push({ relativePath: path.relative(rootDir, fullPath), mtimeMs: stat.mtimeMs });
+          candidates.push({ relativePath: toPosixPath(path.relative(rootDir, fullPath)), mtimeMs: stat.mtimeMs });
         }
       }
     }

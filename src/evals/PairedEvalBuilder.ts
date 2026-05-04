@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 
 export type PairedEvalIssueType =
   | "over_refusal"
@@ -84,7 +85,7 @@ export class PairedEvalBuilder {
     await fs.mkdir(dir, { recursive: true });
     const file = path.join(dir, `${pairId}.json`);
     await fs.writeFile(file, JSON.stringify(candidate, null, 2), "utf8");
-    return { path: path.relative(this.rootDir, file), candidate };
+    return { path: toPosixPath(path.relative(this.rootDir, file)), candidate };
   }
 
   private defaultRequiredSections(mode: string): string[] {

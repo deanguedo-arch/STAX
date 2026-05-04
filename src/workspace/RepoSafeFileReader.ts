@@ -77,7 +77,7 @@ export class RepoSafeFileReader {
 
     const visit = async (dir: string, depth: number): Promise<void> => {
       if (depth > maxDepth) return;
-      const relative = path.relative(this.repoRoot, dir);
+      const relative = normalizeRepoRelativePath(path.relative(this.repoRoot, dir));
       if (relative && isIgnoredRepoPath(relative)) return;
       let entries: Dirent[];
       try {
@@ -87,7 +87,7 @@ export class RepoSafeFileReader {
         throw error;
       }
       for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
-        const entryRelative = normalizeRepoRelativePath(path.join(relative, entry.name));
+        const entryRelative = normalizeRepoRelativePath(relative ? `${relative}/${entry.name}` : entry.name);
         if (entry.name === ".DS_Store") {
           skipped.push({ path: entryRelative, reason: "system metadata" });
           continue;

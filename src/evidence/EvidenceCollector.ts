@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { CommandEvidenceStore } from "./CommandEvidenceStore.js";
 import { collectLocalEvidence } from "./LocalEvidenceCollector.js";
+import { toPosixPath } from "../workspace/RepoPathGuards.js";
 import { RepoSummary } from "../workspace/RepoSummary.js";
 import { WorkspaceContext } from "../workspace/WorkspaceContext.js";
 import type { ResolvedWorkspaceContext } from "../workspace/WorkspaceContext.js";
@@ -64,7 +65,7 @@ export class EvidenceCollector {
       items.push({
         evidenceId: `${collectionId}_trace`,
         sourceType: "trace",
-        path: path.join(local.latestRunFolder, "trace.json"),
+        path: `${local.latestRunFolder}/trace.json`,
         summary: "Trace path for the latest discovered run.",
         confidence: "high",
         createdAt
@@ -130,7 +131,7 @@ export class EvidenceCollector {
       items.push({
         evidenceId: command.commandEvidenceId,
         sourceType: "command_output",
-        path: path.join("evidence", "commands", command.createdAt.slice(0, 10), `${command.commandEvidenceId}.json`),
+        path: `evidence/commands/${command.createdAt.slice(0, 10)}/${command.commandEvidenceId}.json`,
         command: command.command,
         summary: command.summary,
         confidence: command.success ? "high" : "medium",
@@ -142,7 +143,7 @@ export class EvidenceCollector {
     await fs.mkdir(dir, { recursive: true });
     const file = path.join(dir, `${collectionId}.json`);
     await fs.writeFile(file, JSON.stringify(collection, null, 2), "utf8");
-    return { path: path.relative(this.rootDir, file), collection };
+    return { path: toPosixPath(path.relative(this.rootDir, file)), collection };
   }
 
   async list(): Promise<EvidenceCollection[]> {

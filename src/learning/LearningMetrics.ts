@@ -237,7 +237,7 @@ export class LearningMetricsStore {
     const target = path.join(metricsDir, "learning_metrics.json");
     const temp = path.join(metricsDir, `learning_metrics.${process.pid}.${Date.now()}.${randomUUID()}.tmp`);
     await fs.writeFile(temp, JSON.stringify(metrics, null, 2), "utf8");
-    await fs.rename(temp, target);
+    await renameWithRetry(temp, target);
   }
 
   private repeatFailureCount(events: LearningEvent[]): number {
@@ -249,5 +249,19 @@ export class LearningMetricsStore {
       }
     }
     return Array.from(seen.values()).filter((count) => count > 1).length;
+  }
+}
+
+async function renameWithRetry(source: string, target: string): Promise<void> {
+  const retryable = new Set(["EPERM", "EBUSY", "EACCES"]);
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    try {
+      await fs.rename(source, target);
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (!retryable.has(code ?? "") || attempt === 7) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 25 * (attempt + 1)));
+    }
   }
 }

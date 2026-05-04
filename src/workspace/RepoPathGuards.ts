@@ -43,8 +43,12 @@ export async function resolveEvidenceRepoRoot(repoPath: string): Promise<string>
   return repoRoot;
 }
 
+export function toPosixPath(relativePath: string): string {
+  return relativePath.replace(/\\/g, "/");
+}
+
 export function normalizeRepoRelativePath(relativePath: string): string {
-  return path.normalize(relativePath).replace(/^(\.\/)+/, "");
+  return toPosixPath(path.normalize(relativePath).replace(/^(\.\/|\.\\)+/, ""));
 }
 
 export function isInsideRepoRoot(repoRoot: string, fullPath: string): boolean {
@@ -65,7 +69,7 @@ export function safeJoinRepoPath(repoRoot: string, relativePath: string): { path
 
 export function isIgnoredRepoPath(relativePath: string): boolean {
   const normalized = normalizeRepoRelativePath(relativePath);
-  const parts = normalized.split(path.sep).filter(Boolean);
+  const parts = normalized.split(/[\\/]/).filter(Boolean);
   return parts.some((part) => REPO_EVIDENCE_IGNORED_DIRS.has(part)) || parts.some(isSecretLikeRepoPath);
 }
 
