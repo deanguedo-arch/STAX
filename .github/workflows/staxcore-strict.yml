@@ -7,6 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: staxcore-strict-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-staxcore-strict:
     runs-on: ubuntu-latest
