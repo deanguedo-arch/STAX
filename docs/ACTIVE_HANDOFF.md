@@ -1,138 +1,130 @@
 # Active Handoff
 
-Date: 2026-04-28
+Date: 2026-05-06
 
-## Current Repo State
+## Current Workstream
 
-- Repo: `/Users/deanguedo/Documents/GitHub/STAX`
-- Branch: `main`
-- Remote: `origin/main`
-- Latest pushed implementation commit: `19c6831 Add proof integrity gates`
-- Working tree before this handoff file was clean and aligned with `origin/main`.
+Resume the Brightspace Math 30 print-PDF to Microsoft Forms transfer work.
 
-## Why This Handoff Exists
+Primary handoff:
 
-The user wants to start a fresh Codex chat so the subagent/thread pool is reset, then run a strict independent red/blue/green review against commit `19c6831`.
+- `docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md`
 
-Important honesty note:
+Source repo:
 
-- Commit `19c6831` was reviewed locally using a documented red/blue/green consensus artifact.
-- It was **not** independently vetted by three live spawned subagents because the prior Codex thread hit the agent thread limit.
-- The next chat should not claim independent agent vetting until the agents actually run.
+- `/Users/deanguedo/Documents/GitHub/brightspacequizexporter`
 
-## What Just Landed
+STAX repo:
 
-Commit `19c6831 Add proof integrity gates` added the top-three slice from the no-BS playbook:
+- `/Users/deanguedo/Documents/GitHub/STAX`
 
-1. First-pass integrity:
-   - `src/compare/FirstPassIntegrityGate.ts`
-   - `src/compare/FirstPassIntegritySchemas.ts`
-   - `tests/firstPassIntegrityGate.test.ts`
-   - `docs/RAX_FIRST_PASS_INTEGRITY_REPORT.md`
+## Current State
 
-2. Proof-boundary classification:
-   - `src/evidence/ProofBoundaryClassifier.ts`
-   - `src/evidence/ProofBoundarySchemas.ts`
-   - `tests/proofBoundaryClassifier.test.ts`
-   - `evals/regression/proof_boundary_distinctions.json`
-   - `docs/RAX_PROOF_BOUNDARY_REPORT.md`
+The Brightspace repo has an uncommitted implementation stack for:
 
-3. Runtime evidence gate:
-   - `src/evidence/RuntimeEvidenceGate.ts`
-   - `src/evidence/RuntimeEvidenceSchemas.ts`
-   - `tests/runtimeEvidenceGate.test.ts`
-   - `docs/RAX_RUNTIME_EVIDENCE_REPORT.md`
+- `brightspaceexport convert`
+- Brightspace print-PDF region segmentation
+- glyph-geometry math recovery
+- Microsoft Forms Quick Import DOCX output
+- native Word math DOCX output
+- canonical `quiz.question_bank.json`
+- warnings/lint artifacts
+- governed math-region crop OCR/vision recovery
 
-Consensus artifact:
+Important transport note:
 
-- `docs/RAX_KNOWN_GAPS_CONSENSUS_REPORT.md`
+- The Brightspace implementation is currently in the local working tree, not a pushed remote commit.
+- To resume on another computer, first make the Brightspace working tree available there by committing/pushing an implementation branch or copying/applying a patch.
+- The STAX handoff preserves the exact state, commands, outputs, risks, and next action, but it does not by itself transfer uncommitted Brightspace files to another machine.
 
-## Validation From Prior Thread
+## Latest Verified Example
 
-The following passed after the implementation:
+Input PDF:
 
-```txt
-npm run typecheck
-npm test
-55 files / 265 tests passed
+- `/Users/deanguedo/Downloads/Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf`
 
-npm run rax -- eval
-16/16 passed
+Latest example output:
 
-npm run rax -- eval --regression
-47/47 passed
+- `/tmp/brightspace-msforms-example.lHnd2Y`
 
-npm run rax -- eval --redteam
-9/9 passed
+Generated:
 
-npm run smoke:stax
-smoke passed
-```
+- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.msforms.quickimport.docx`
+- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.msforms.native-math.docx`
+- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.question_bank.json`
+- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.extraction_warnings.json`
+- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.forms_lint.txt`
+- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.math_region_artifacts.json`
+
+Result:
+
+- 27 questions total
+- 16 multiple-choice
+- 8 numerical-response
+- 3 written-response
+- 7 safe glyph-math recoveries
+- 3 governed OCR attempts rejected
+
+## Key Finding
+
+Local OCR is too weak for Q9, Q10, and Q14:
+
+- Q9 rejected: confidence 0.71 below 0.90
+- Q10 rejected: confidence 0.77 below 0.90
+- Q14 rejected: no equation-shaped math candidate
+
+This is correct behavior. Weak OCR must not be attached as semantic math.
 
 ## Fresh Thread Prompt
 
-Use this exact prompt in the fresh Codex chat:
+Use this exact prompt on the next computer:
 
 ```txt
-We are in /Users/deanguedo/Documents/GitHub/STAX.
+docs/ACTIVE_HANDOFF.md
 
-First, pull origin/main and confirm the working tree is clean.
+We are resuming the Math 30 Brightspace print-PDF to Microsoft Forms transfer work.
 
-Review commit 19c6831 Add proof integrity gates.
+First read:
+- /Users/deanguedo/Documents/GitHub/STAX/docs/ACTIVE_HANDOFF.md
+- /Users/deanguedo/Documents/GitHub/STAX/docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md
 
-Spawn three independent agents:
+Then open:
+- /Users/deanguedo/Documents/GitHub/brightspacequizexporter
 
-Red Team:
-- Try to break/gamify the implementation.
-- Look for fake superiority, hidden first-pass failure, proof-boundary leakage, runtime proof overclaiming, unsafe autonomy, and proof theater.
-- Find missing negative tests.
+Goal:
+Continue from the exact current state of the Microsoft Forms converter. The current blocker is Q9/Q10/Q14 math recovery from rendered question-region crops. Do not weaken warning gates. Do not attach OCR/vision math unless it is equation-shaped and confidence is at least 0.90. Keep unresolved crops/warnings when confidence is weak.
 
-Blue Team:
-- Verify the implementation is the smallest safe patch.
-- Check schemas, deterministic logic, unit tests, regression eval, reports, and validation commands.
-- Identify concrete code bugs or missing integration points.
+Before coding:
+1. Confirm whether the Brightspace implementation files are present on this computer.
+2. If they are missing, stop and ask for the implementation branch, patch, or commit from the first machine.
+3. Run the latest example command from the handoff and inspect `quiz.forms_lint.txt`, `quiz.question_bank.json`, and `quiz.math_region_artifacts.json`.
 
-Green Team:
-- Judge whether this helps Dean solve repo/project problems faster.
-- Reject machinery that does not improve usefulness.
-- Check whether the reports are understandable and decision-useful.
+Next implementation target:
+Plug in a stronger equations-only vision recognizer for Q9/Q10/Q14 via `MSFORMS_MATH_REGION_VISION_CMD`, or add a governed recognizer adapter that produces `{ "equation": "...", "confidence": 0.xx, "engine": "..." }`.
 
-Then produce a consensus:
-- keep / modify / reject
-- bugs found
-- missing tests
-- safety/proof gaps
-- usefulness gaps
-- whether this actually improves STAX
-- whether this advances slice proof or broader superiority proof
-- what to patch next, if anything
+Validation:
+- run the exact Math 30 PDF conversion
+- verify Q9/Q10/Q14 decisions in `quiz.math_region_artifacts.json`
+- run `npm run build`
+- run `npm test`
+- run `npm run ingest:ci`
+- run `npm run lint` and report the known unrelated lint blockers if still present
 
-Do not implement until the three reviews and consensus are complete.
-Do not claim the prior implementation was agent-vetted unless the agents actually run in this fresh thread.
-Preserve STAX governance: no auto-promotion, no linked repo mutation, no weakened superiority gate, no hidden first-pass failures.
+Do not claim Microsoft Forms import success until the generated DOCX has actually been imported into Microsoft Forms.
+Do not promote any STAX learning candidate unless Dean explicitly approves it.
 ```
 
-## Expected Next Step
+## STAX Update
 
-In the fresh thread:
+This handoff also creates a pending STAX sidecar import candidate:
 
-1. Pull `origin/main`.
-2. Spawn the three reviewers.
-3. Review commit `19c6831`.
-4. Only patch if consensus finds a real gap.
-5. If patched, rerun:
+- `queues/sidecar_imports/pending/cand_brightspace_math30_msforms_transfer_2026_05_06.json`
 
-```txt
-npm run typecheck
-npm test
-npm run rax -- eval
-npm run rax -- eval --regression
-npm run rax -- eval --redteam
-```
+It is a `repo_memory` candidate and requires explicit human approval before promotion.
 
 ## Stop Condition
 
-The next thread can stop once it has either:
+The next session can stop once it has either:
 
-- confirmed `19c6831` passes independent red/blue/green review, or
-- patched any consensus-confirmed gap, validated it, and committed/pushed the fix.
+- recovered Q9/Q10/Q14 with governed high-confidence equation recognition and rerun the gates, or
+- proved that the current recognizer cannot recover them and left clear crop artifacts plus warnings for manual correction.

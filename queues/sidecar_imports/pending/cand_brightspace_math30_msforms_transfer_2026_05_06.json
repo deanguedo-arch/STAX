@@ -1,0 +1,56 @@
+{
+  "candidateId": "cand_brightspace_math30_msforms_transfer_2026_05_06",
+  "sourceEventId": "manual_handoff_brightspace_math30_msforms_transfer_2026_05_06",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "41a5547a9353f7003435528ff9a228d85a9fb667c048c1168db18f86360d79d1",
+    "branch": "main",
+    "commitSha": "ce9c37aa14047c770bb297ea74f0f4b22fd3e093"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Math 30 Brightspace print-PDF to Microsoft Forms transfer handoff: region-level parser works, 27-question package generated, 7 glyph math recoveries accepted, Q9/Q10/Q14 rendered OCR rejected under governed 0.90 confidence gate. Next action is stronger equations-only vision through MSFORMS_MATH_REGION_VISION_CMD.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "repo": "/Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+      "handoffDoc": "docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md",
+      "latestOutputDir": "/tmp/brightspace-msforms-example.lHnd2Y",
+      "sourcePdf": "/Users/deanguedo/Downloads/Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf",
+      "verifiedCommands": [
+        "npm run build",
+        "npm test",
+        "npm run ingest:ci",
+        "MSFORMS_MATH_REGION_OCR=1 npm run brightspaceexport -- convert <Math 30 PDF> --target msforms --math hybrid --diagram-mode flag --output-dir <tmp> --render-dpi 300 --equation-recovery glyphs-first --vision-fallback equations-only"
+      ],
+      "currentResults": {
+        "questionCount": 27,
+        "typeCounts": {
+          "multiple_choice": 16,
+          "numerical_response": 8,
+          "written_response": 3
+        },
+        "glyphMathRecovered": 7,
+        "mathRegionRecognitionRejected": 3,
+        "remainingQuestions": [
+          9,
+          10,
+          14
+        ]
+      },
+      "rules": [
+        "Do not attach OCR or vision math below confidence 0.90.",
+        "Do not hide remaining warnings.",
+        "Do not claim Microsoft Forms import success until the DOCX is actually imported."
+      ],
+      "nextAction": "Plug in a stronger equations-only vision recognizer for Q9/Q10/Q14 through MSFORMS_MATH_REGION_VISION_CMD and rerun the exact PDF conversion plus build/test/ingest gates."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-06T00:00:00.000Z"
+}
