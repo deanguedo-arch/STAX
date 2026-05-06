@@ -67,6 +67,27 @@ describe("STAX sidecar watch and collect", () => {
   it("accepts a clean attached repo only after fresh heartbeat and Codex turn capture", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-fresh-turn-");
     await attachStaxToRepo(repoPath);
+    const contract = JSON.parse(
+      await fs.readFile(path.join(repoPath, ".stax", "turn-contract.json"), "utf8")
+    ) as { requiredAcknowledgement: string };
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        `STAX acknowledgement: ${contract.requiredAcknowledgement}`,
+        "Objective: Verify clean sidecar.",
+        "Files changed: None.",
+        "Tests added: None.",
+        "Commands run: None.",
+        "Command output summary with exit codes: No commands run.",
+        "What is verified: STAX acknowledgement and fresh turn capture are present.",
+        "What is weak/provisional: No implementation proof was requested.",
+        "What is unverified: Nothing else verified.",
+        "Risks: None.",
+        "One next action: Continue.",
+        ""
+      ].join("\n"),
+      "utf8"
+    );
     await writeSidecarHeartbeat({
       repoPath,
       now: new Date("2026-05-04T18:00:00.000Z"),
@@ -85,7 +106,7 @@ describe("STAX sidecar watch and collect", () => {
             modifiedAt: "2026-05-04T18:00:00.000Z"
           },
           messageCount: 1,
-          messages: [{ role: "user", text: "Run STAX sidecar." }]
+          messages: [{ role: "assistant", text: `Run STAX sidecar. ${contract.requiredAcknowledgement}` }]
         },
         null,
         2

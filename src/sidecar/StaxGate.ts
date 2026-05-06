@@ -12,6 +12,8 @@ import type { ProjectControlCardStatus } from "../projectControl/ControlCard.js"
 import { validateProjectControlCardShape } from "../projectControl/ControlCard.js";
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import type { SidecarLearningEvent, SidecarLearningEventType } from "./SidecarLearningEvent.js";
+import { checkTurnCompliance, type TurnComplianceMode } from "./TurnCompliance.js";
+import { writeTurnContract, type StaxTurnContract } from "./TurnContract.js";
 import {
   collectGitSnapshot,
   ensureDirectory,
@@ -45,6 +47,7 @@ export type StaxGateStatus = {
   codexPrompt: string;
   statusMarkdown: string;
   cardShapeIssues: string[];
+  turnContract?: Pick<StaxTurnContract, "turnId" | "requiredAcknowledgement" | "statusHash" | "nextPromptHash">;
 };
 
 export type RunStaxGateOptions = {
@@ -113,6 +116,12 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     snapshot
   });
   const runtime = await deriveRuntimeFindings(repoPath, config, options.now ?? new Date());
+  const compliance = await deriveTurnComplianceFindings({
+    repoPath,
+    config,
+    codexReport,
+    hasDiff: auditableDiff
+  });
 
   const verified = dedupe([
       ...(!auditableDiff
@@ -120,11 +129,12 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
       : [`Working-tree diff detected with ${changedFiles.length} changed file(s).`]),
     ...proofStack.verified,
     ...extra.verified,
-    ...runtime.verified
+    ...runtime.verified,
+    ...compliance.verified
   ]);
-  const weak = dedupe([...proofStack.weak, ...extra.weak, ...runtime.weak]);
-  const unverified = dedupe([...proofStack.unverified, ...extra.unverified, ...runtime.unverified]);
-  const risk = dedupe([...proofStack.risk, ...extra.risk, ...runtime.risk]);
+  const weak = dedupe([...proofStack.weak, ...extra.weak, ...runtime.weak, ...compliance.weak]);
+  const unverified = dedupe([...proofStack.unverified, ...extra.unverified, ...runtime.unverified, ...compliance.unverified]);
+  const risk = dedupe([...proofStack.risk, ...extra.risk, ...runtime.risk, ...compliance.risk]);
   const verdict = deriveVerdict({
     hasDiff: auditableDiff,
     codexReport,
@@ -169,6 +179,13 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   };
 
   await writeSidecarStatus(repoPath, status);
+  const turnContract = await writeTurnContract({ repoPath });
+  status.turnContract = {
+    turnId: turnContract.turnId,
+    requiredAcknowledgement: turnContract.requiredAcknowledgement,
+    statusHash: turnContract.statusHash,
+    nextPromptHash: turnContract.nextPromptHash
+  };
   await updateTaskLedger(repoPath, status);
   if (options.writeLearningEvent ?? true) {
     await maybeWriteGateLearningEvent(repoPath, status, packet);
@@ -189,6 +206,7 @@ type SidecarConfig = {
   requireFreshCodexTurnCapture?: boolean;
   maxCodexTurnAgeMs?: number;
   maxSidecarHeartbeatAgeMs?: number;
+  turnComplianceMode?: TurnComplianceMode;
 };
 
 async function readSidecarConfig(repoPath: string): Promise<SidecarConfig> {
@@ -261,6 +279,43 @@ async function deriveRuntimeFindings(
   }
 
   return { verified, weak, unverified, risk };
+}
+
+async function deriveTurnComplianceFindings(input: {
+  repoPath: string;
+  config: SidecarConfig;
+  codexReport: string;
+  hasDiff: boolean;
+}): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
+  const mode = input.config.turnComplianceMode ?? (input.config.requireFreshCodexTurnCapture ? "strict" : "normal");
+  const compliance = await checkTurnCompliance({
+    repoPath: input.repoPath,
+    codexReportText: input.codexReport,
+    mode,
+    codexClaimsCompletion: /\b(done|complete|finished|ready)\b/i.test(input.codexReport),
+    hasDiff: input.hasDiff
+  });
+  if (compliance.pass) {
+    return {
+      verified: [`Codex acknowledged current STAX turn contract: ${compliance.acknowledgement}`],
+      weak: [],
+      unverified: [],
+      risk: []
+    };
+  }
+
+  const weak = compliance.issues.filter((issue) => issue.severity === "weak").map((issue) => issue.message);
+  const unverified = compliance.issues.filter((issue) => issue.severity === "reject").map((issue) => issue.message);
+  const risk =
+    unverified.length > 0
+      ? ["False Pass risk: Codex did not prove it read the current STAX turn contract."]
+      : [];
+  return {
+    verified: [],
+    weak,
+    unverified,
+    risk
+  };
 }
 
 function parseJsonObject(raw: string): Record<string, unknown> | undefined {

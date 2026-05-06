@@ -10,6 +10,7 @@ import {
   validateRepoPath,
   writeFileIfMissing
 } from "./SidecarRepo.js";
+import { writeTurnContract } from "./TurnContract.js";
 
 export const STAX_AGENTS_SECTION_MARKER = "<!-- STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
 export const STAX_AGENTS_SECTION_END_MARKER = "<!-- /STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
@@ -20,9 +21,12 @@ You are working under STAX project-control protocol.
 
 At the start of every Codex turn in this repo:
 
-1. Read \`.stax/status.json\` if it exists.
-2. If the verdict is \`Reject\`, \`Provisional\`, or \`Human review\`, read \`.stax/next-codex-prompt.md\` and treat it as the immediate correction task unless the user explicitly says to ignore STAX for this turn.
-3. If \`.stax/task.md\` is blank, write the user's current objective there before editing.
+1. Read \`.stax/turn-contract.json\` if it exists.
+2. Read \`.stax/status.json\` if it exists.
+3. If the verdict is \`Reject\`, \`Provisional\`, or \`Human review\`, read \`.stax/next-codex-prompt.md\` and treat it as the immediate correction task unless the user explicitly says to ignore STAX for this turn.
+4. Include the exact \`STAX_ACK ...\` line from \`.stax/turn-contract.json\` in \`.stax/codex-report.md\`.
+5. If \`.stax/turn-contract.json\` is missing, say so in \`.stax/codex-report.md\` and do not claim completion.
+6. If \`.stax/task.md\` is blank, write the user's current objective there before editing.
 
 Do not claim completion without proof.
 Do not claim tests passed without command output.
@@ -40,6 +44,7 @@ Before final response, write or update:
 
 Required report:
 
+- STAX acknowledgement
 - Objective
 - Files changed
 - Tests added
@@ -86,6 +91,7 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
           commitSha: snapshot.commitSha ?? null,
           requireCodexReportForDiff: true,
           requireFreshCodexTurnCapture: true,
+          turnComplianceMode: "strict",
           maxCodexTurnAgeMs: 300000,
           maxSidecarHeartbeatAgeMs: 300000,
           dangerousCommandsRequireAllowRisky: true
@@ -179,6 +185,7 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
   const appendedAgentsProtocol = !agentsBefore.includes(STAX_AGENTS_SECTION_MARKER);
   await fs.writeFile(agentsPath, `${upsertAgentsProtocolSection(agentsBefore).trimEnd()}\n`, "utf8");
   await upsertGeneratedArtifactIgnores(path.join(repoPath, ".gitignore"));
+  await writeTurnContract({ repoPath });
 
   return {
     repoPath,
@@ -191,7 +198,7 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
 
 async function upsertGeneratedArtifactIgnores(gitignorePath: string): Promise<void> {
   const existing = await readTextIfExists(gitignorePath);
-  const required = [".stax/current-turn.json", ".stax/runtime/", ".stax/turns/"];
+  const required = [".stax/turn-contract.json", ".stax/current-turn.json", ".stax/runtime/", ".stax/turns/"];
   const existingLines = new Set(existing.split(/\r?\n/).map((line) => line.trim()));
   const missing = required.filter((line) => !existingLines.has(line));
   if (missing.length === 0) return;

@@ -35,7 +35,9 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "events"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "runtime"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turns"))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "turn-contract.json"))).resolves.toBeTruthy();
     expect(config.requireFreshCodexTurnCapture).toBe(true);
+    expect(gitignore).toContain(".stax/turn-contract.json");
     expect(gitignore).toContain(".stax/current-turn.json");
     expect(gitignore).toContain(".stax/runtime/");
     expect(gitignore).toContain(".stax/turns/");

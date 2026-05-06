@@ -61,6 +61,7 @@
     "stax:attach": "tsx scripts/staxAttach.ts",
     "stax:status": "tsx scripts/staxStatus.ts",
     "stax:gate": "tsx scripts/staxGate.ts",
+    "stax:turn-contract": "tsx scripts/staxTurnContract.ts",
     "stax:next-prompt": "tsx scripts/staxNextPrompt.ts",
     "stax:watch": "tsx scripts/staxWatch.ts",
     "stax:collect": "tsx scripts/staxCollect.ts",

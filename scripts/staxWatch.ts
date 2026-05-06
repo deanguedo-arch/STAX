@@ -24,6 +24,9 @@ async function main(): Promise<void> {
     sourceFile: args.sourceFile,
     onVerdictChange(status) {
       process.stdout.write(`[STAX] Verdict changed: ${status.verdict}\nReason: ${status.why}\nNext: ${status.oneNextAction}\n`);
+      if (status.turnContract?.requiredAcknowledgement) {
+        process.stdout.write(`[STAX] Required acknowledgement: ${status.turnContract.requiredAcknowledgement}\n`);
+      }
     }
   });
 }
