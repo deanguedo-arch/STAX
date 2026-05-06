@@ -20,7 +20,16 @@ STAX repo:
 
 ## Current State
 
-The Brightspace repo has an uncommitted implementation stack for:
+The Brightspace repo now has the Microsoft Forms converter work committed and available from GitHub.
+
+Use this branch on a new computer:
+
+- repo: `deanguedo-arch/brightspacequizexporter`
+- branch: `codex/resume-math30-msforms-20260506`
+- current merged main commit: `d752119f7a3f8866f820afddfffc3c1c6964f664`
+- original converter commit: `4a806ef`
+
+The committed Brightspace implementation includes:
 
 - `brightspaceexport convert`
 - Brightspace print-PDF region segmentation
@@ -33,9 +42,9 @@ The Brightspace repo has an uncommitted implementation stack for:
 
 Important transport note:
 
-- The Brightspace implementation is currently in the local working tree, not a pushed remote commit.
-- To resume on another computer, first make the Brightspace working tree available there by committing/pushing an implementation branch or copying/applying a patch.
-- The STAX handoff preserves the exact state, commands, outputs, risks, and next action, but it does not by itself transfer uncommitted Brightspace files to another machine.
+- Do not look for the old feature branch if it was deleted after merge.
+- Use `origin/main` or `codex/resume-math30-msforms-20260506` in the Brightspace repo.
+- The STAX handoff branch only carries handoff/proof context. The executable converter code lives in the Brightspace repo.
 
 ## Latest Verified Example
 
@@ -95,8 +104,8 @@ Goal:
 Continue from the exact current state of the Microsoft Forms converter. The current blocker is Q9/Q10/Q14 math recovery from rendered question-region crops. Do not weaken warning gates. Do not attach OCR/vision math unless it is equation-shaped and confidence is at least 0.90. Keep unresolved crops/warnings when confidence is weak.
 
 Before coding:
-1. Confirm whether the Brightspace implementation files are present on this computer.
-2. If they are missing, stop and ask for the implementation branch, patch, or commit from the first machine.
+1. Fetch and switch the Brightspace resume branch `codex/resume-math30-msforms-20260506`, or pull current `origin/main`.
+2. Confirm `scripts/brightspaceexport.ts` and `src/ingest/msforms/` are present.
 3. Run the latest example command from the handoff and inspect `quiz.forms_lint.txt`, `quiz.question_bank.json`, and `quiz.math_region_artifacts.json`.
 
 Next implementation target:

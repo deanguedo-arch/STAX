@@ -23,21 +23,22 @@ Brightspace Print PDF
 STAX repo:
 
 - `/Users/deanguedo/Documents/GitHub/STAX`
-- branch at handoff time: `main`
-- commit at handoff time: `e95bce772516f44ab458faed4e7b1bdc0bec9770`
+- resume branch: `codex/resume-math30-msforms-20260506`
+- current main commit at correction time: `d6d1e1032a36ff77ef1fc6ec742cf7493335ace5`
 
 Brightspace repo:
 
 - `/Users/deanguedo/Documents/GitHub/brightspacequizexporter`
-- branch at handoff time: `main`
-- commit at handoff time: `ce9c37aa14047c770bb297ea74f0f4b22fd3e093`
-- working tree: dirty, with uncommitted converter/autopilot work
+- resume branch: `codex/resume-math30-msforms-20260506`
+- current main commit at correction time: `d752119f7a3f8866f820afddfffc3c1c6964f664`
+- original converter commit: `4a806ef`
 
 Important:
 
-- The converter implementation is not yet committed or pushed.
-- Another computer must receive the Brightspace implementation branch, commit, or patch before it can run the same converter.
-- This STAX handoff captures context and evidence; it is not a substitute for transferring uncommitted Brightspace files.
+- The converter implementation is committed in the Brightspace repo and is present on current `origin/main`.
+- A stable resume branch has also been created from that state: `codex/resume-math30-msforms-20260506`.
+- If the older `codex/math30-msforms-transfer` feature branch is gone after merge, that is expected. Use `main` or the resume branch instead.
+- This STAX handoff captures context and evidence only; executable converter code lives in `brightspacequizexporter`.
 
 ## Input PDF
 
@@ -146,7 +147,7 @@ This is the desired safety behavior. Weak OCR did not become semantic math.
 
 ## Implemented Brightspace Files
 
-The current Brightspace working tree includes these relevant new or changed areas:
+The committed Brightspace repo includes these relevant areas:
 
 - `scripts/brightspaceexport.ts`
 - `src/export/msforms/`
@@ -158,15 +159,7 @@ The current Brightspace working tree includes these relevant new or changed area
 - `src/test/unit/ingest/msFormsMathRegionRecovery.test.ts`
 - `src/test/unit/scripts/brightspaceExportScript.test.ts`
 
-There is also unrelated uncommitted autopilot work in the Brightspace tree:
-
-- `scripts/ingest-autopilot.ts`
-- `src/ingest/autopilot/`
-- `fixtures/benchmarks/learning/`
-- autopilot-related tests
-- changes to `package.json`, `scripts/promote-ingest-fix.mjs`, and `src/test/unit/scripts/promoteIngestFixScript.test.ts`
-
-Do not revert or overwrite those files. If creating a branch or commit for the Math 30 work, separate the MS Forms converter files from the autopilot files.
+The earlier unrelated autopilot work was intentionally kept out of the converter commit. Do not assume autopilot files are part of the Math 30 transfer branch.
 
 ## Verification Already Run
 
@@ -242,7 +235,7 @@ Read /Users/deanguedo/Documents/GitHub/STAX/docs/ACTIVE_HANDOFF.md and /Users/de
 
 Then open /Users/deanguedo/Documents/GitHub/brightspacequizexporter.
 
-Confirm whether the uncommitted MS Forms converter implementation is present. If it is missing, stop and ask for the implementation branch, commit, or patch from the first machine.
+Fetch and switch codex/resume-math30-msforms-20260506, or pull current origin/main. Confirm scripts/brightspaceexport.ts and src/ingest/msforms/ are present.
 
 Run the Math 30 example command from the handoff. Inspect:
 - quiz.forms_lint.txt
