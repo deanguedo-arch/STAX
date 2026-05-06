@@ -28,6 +28,8 @@ describe("STAX sidecar attach and gate", () => {
     expect(agents.match(new RegExp(STAX_AGENTS_SECTION_END_MARKER, "g"))?.length).toBe(1);
     const config = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "config.json"), "utf8")) as {
       requireFreshCodexTurnCapture?: boolean;
+      runtimeFreshnessMode?: string;
+      turnComplianceMode?: string;
     };
     const gitignore = await fs.readFile(path.join(repoPath, ".gitignore"), "utf8");
     await expect(fs.stat(path.join(repoPath, ".stax", "config.json"))).resolves.toBeTruthy();
@@ -36,11 +38,10 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "runtime"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turns"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turn-contract.json"))).resolves.toBeTruthy();
-    expect(config.requireFreshCodexTurnCapture).toBe(true);
-    expect(gitignore).toContain(".stax/turn-contract.json");
-    expect(gitignore).toContain(".stax/current-turn.json");
-    expect(gitignore).toContain(".stax/runtime/");
-    expect(gitignore).toContain(".stax/turns/");
+    expect(config.requireFreshCodexTurnCapture).toBe(false);
+    expect(config.runtimeFreshnessMode).toBe("normal");
+    expect(config.turnComplianceMode).toBe("normal");
+    expect(gitignore).toContain(".stax/");
   });
 
   it("updates an existing protocol section instead of appending duplicate stale protocol", () => {
@@ -76,15 +77,15 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "next-codex-prompt.md"))).resolves.toBeTruthy();
   });
 
-  it("rejects attached repos when Codex turn capture evidence is missing", async () => {
+  it("makes missing runtime capture provisional by default", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-missing-turn-");
     await attachStaxToRepo(repoPath);
 
     const status = await runStaxGate({ repoPath, writeLearningEvent: false });
 
-    expect(status.verdict).toBe("Reject");
-    expect(status.unverified.join("\n")).toContain("Fresh Codex turn capture is missing");
-    expect(status.risk.join("\n")).toContain("False Pass risk");
+    expect(status.verdict).toBe("Provisional");
+    expect(status.weak.join("\n")).toContain("Fresh Codex turn capture is missing");
+    expect(status.risk.join("\n")).not.toContain("False Pass risk");
   });
 
   it("returns the next Codex prompt after running the gate", async () => {

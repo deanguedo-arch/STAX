@@ -206,6 +206,7 @@ type SidecarConfig = {
   requireFreshCodexTurnCapture?: boolean;
   maxCodexTurnAgeMs?: number;
   maxSidecarHeartbeatAgeMs?: number;
+  runtimeFreshnessMode?: TurnComplianceMode;
   turnComplianceMode?: TurnComplianceMode;
 };
 
@@ -229,7 +230,17 @@ async function deriveRuntimeFindings(
   const weak: string[] = [];
   const unverified: string[] = [];
   const risk: string[] = [];
-  if (!config.requireFreshCodexTurnCapture) return { verified, weak, unverified, risk };
+  const mode = runtimeFreshnessModeForConfig(config);
+  if (mode === "manual") return { verified, weak, unverified, risk };
+
+  const recordFreshnessIssue = (message: string, riskMessage: string): void => {
+    if (mode === "strict") {
+      unverified.push(message);
+      risk.push(riskMessage);
+      return;
+    }
+    weak.push(message);
+  };
 
   const nowMs = now.getTime();
   const heartbeatMaxAge = config.maxSidecarHeartbeatAgeMs ?? 300000;
@@ -238,26 +249,34 @@ async function deriveRuntimeFindings(
   const currentTurnRaw = await readTextIfExists(path.join(sidecarDir(repoPath), "current-turn.json"));
 
   if (!heartbeatRaw.trim()) {
-    unverified.push("Fresh STAX sidecar heartbeat is missing.");
-    risk.push("False Pass risk: sidecar runtime is not proven alive for this turn.");
+    recordFreshnessIssue(
+      "Fresh STAX sidecar heartbeat is missing.",
+      "False Pass risk: sidecar runtime is not proven alive for this turn."
+    );
   } else {
     const heartbeat = parseJsonObject(heartbeatRaw);
     const updatedAt = parseTimestampMs(heartbeat?.updatedAt);
     const ageMs = updatedAt === undefined ? undefined : nowMs - updatedAt;
     if (ageMs === undefined) {
-      unverified.push("STAX sidecar heartbeat has invalid updatedAt.");
-      risk.push("False Pass risk: sidecar runtime freshness cannot be verified.");
+      recordFreshnessIssue(
+        "STAX sidecar heartbeat has invalid updatedAt.",
+        "False Pass risk: sidecar runtime freshness cannot be verified."
+      );
     } else if (ageMs < 0 || ageMs > heartbeatMaxAge) {
-      unverified.push("STAX sidecar heartbeat is stale.");
-      risk.push("False Pass risk: sidecar runtime heartbeat is stale.");
+      recordFreshnessIssue(
+        "STAX sidecar heartbeat is stale.",
+        "False Pass risk: sidecar runtime heartbeat is stale."
+      );
     } else {
       verified.push(`Fresh STAX sidecar heartbeat is present (${ageMs}ms old).`);
     }
   }
 
   if (!currentTurnRaw.trim()) {
-    unverified.push("Fresh Codex turn capture is missing.");
-    risk.push("False Pass risk: STAX has not captured the current Codex turn content.");
+    recordFreshnessIssue(
+      "Fresh Codex turn capture is missing.",
+      "False Pass risk: STAX has not captured the current Codex turn content."
+    );
   } else {
     const currentTurn = parseJsonObject(currentTurnRaw);
     const capturedAt = parseTimestampMs(currentTurn?.capturedAt);
@@ -265,20 +284,32 @@ async function deriveRuntimeFindings(
     const sessionId = typeof currentTurn?.sessionId === "string" ? currentTurn.sessionId : "";
     const messages = Array.isArray(currentTurn?.messages) ? currentTurn.messages : [];
     if (ageMs === undefined) {
-      unverified.push("Codex turn capture has invalid capturedAt.");
-      risk.push("False Pass risk: Codex turn capture freshness cannot be verified.");
+      recordFreshnessIssue(
+        "Codex turn capture has invalid capturedAt.",
+        "False Pass risk: Codex turn capture freshness cannot be verified."
+      );
     } else if (ageMs < 0 || ageMs > turnMaxAge) {
-      unverified.push("Codex turn capture is stale.");
-      risk.push("False Pass risk: Codex turn capture is stale.");
+      recordFreshnessIssue(
+        "Codex turn capture is stale.",
+        "False Pass risk: Codex turn capture is stale."
+      );
     } else if (!sessionId || messages.length === 0) {
-      unverified.push("Codex turn capture is malformed or empty.");
-      risk.push("False Pass risk: Codex turn capture has no usable session messages.");
+      recordFreshnessIssue(
+        "Codex turn capture is malformed or empty.",
+        "False Pass risk: Codex turn capture has no usable session messages."
+      );
     } else {
       verified.push(`Fresh Codex turn capture is present for session ${sessionId} with ${messages.length} message(s).`);
     }
   }
 
   return { verified, weak, unverified, risk };
+}
+
+function runtimeFreshnessModeForConfig(config: SidecarConfig): TurnComplianceMode {
+  if (config.runtimeFreshnessMode) return config.runtimeFreshnessMode;
+  if (config.requireFreshCodexTurnCapture) return "strict";
+  return "normal";
 }
 
 async function deriveTurnComplianceFindings(input: {
@@ -288,6 +319,14 @@ async function deriveTurnComplianceFindings(input: {
   hasDiff: boolean;
 }): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
   const mode = input.config.turnComplianceMode ?? (input.config.requireFreshCodexTurnCapture ? "strict" : "normal");
+  if (mode === "manual") {
+    return {
+      verified: [],
+      weak: [],
+      unverified: [],
+      risk: []
+    };
+  }
   const compliance = await checkTurnCompliance({
     repoPath: input.repoPath,
     codexReportText: input.codexReport,
@@ -396,7 +435,7 @@ function deriveVerdict(input: {
   if (input.unverified.length > 0 || input.risk.some((item) => /wrong repo|wrong branch|fake-complete|unsafe|unsupported|missing|malformed|docs-only|source-only/i.test(item))) {
     return "Reject";
   }
-  if (!input.hasDiff && input.codexReport.trim().length === 0) return "Accept";
+  if (!input.hasDiff && input.codexReport.trim().length === 0 && input.weak.length === 0) return "Accept";
   if (input.risk.length > 0) return "Human review";
   if (input.weak.length > 0) return "Provisional";
   return "Accept";

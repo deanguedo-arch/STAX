@@ -90,8 +90,9 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
           branch: snapshot.branch ?? null,
           commitSha: snapshot.commitSha ?? null,
           requireCodexReportForDiff: true,
-          requireFreshCodexTurnCapture: true,
-          turnComplianceMode: "strict",
+          requireFreshCodexTurnCapture: false,
+          runtimeFreshnessMode: "normal",
+          turnComplianceMode: "normal",
           maxCodexTurnAgeMs: 300000,
           maxSidecarHeartbeatAgeMs: 300000,
           dangerousCommandsRequireAllowRisky: true
@@ -198,12 +199,12 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
 
 async function upsertGeneratedArtifactIgnores(gitignorePath: string): Promise<void> {
   const existing = await readTextIfExists(gitignorePath);
-  const required = [".stax/turn-contract.json", ".stax/current-turn.json", ".stax/runtime/", ".stax/turns/"];
+  const required = [".stax/"];
   const existingLines = new Set(existing.split(/\r?\n/).map((line) => line.trim()));
   const missing = required.filter((line) => !existingLines.has(line));
   if (missing.length === 0) return;
 
-  const next = [existing.trimEnd(), "", "# STAX generated local capture artifacts", ...missing]
+  const next = [existing.trimEnd(), "", "# STAX generated local sidecar artifacts", ...missing]
     .filter((line, index) => line || index > 0)
     .join("\n");
   await fs.writeFile(gitignorePath, `${next.trimStart()}\n`, "utf8");

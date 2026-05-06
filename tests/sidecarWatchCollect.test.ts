@@ -14,6 +14,12 @@ import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
+async function updateSidecarConfig(repoPath: string, patch: Record<string, unknown>): Promise<void> {
+  const configPath = path.join(repoPath, ".stax", "config.json");
+  const config = JSON.parse(await fs.readFile(configPath, "utf8")) as Record<string, unknown>;
+  await fs.writeFile(configPath, `${JSON.stringify({ ...config, ...patch }, null, 2)}\n`, "utf8");
+}
+
 describe("STAX sidecar watch and collect", () => {
   it("collects Codex session content into current-turn and turn artifacts", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-codex-turn-");
@@ -127,6 +133,10 @@ describe("STAX sidecar watch and collect", () => {
   it("rejects stale heartbeat and Codex turn capture", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-stale-turn-");
     await attachStaxToRepo(repoPath);
+    await updateSidecarConfig(repoPath, {
+      runtimeFreshnessMode: "strict",
+      turnComplianceMode: "manual"
+    });
     await writeSidecarHeartbeat({
       repoPath,
       now: new Date("2026-05-04T17:00:00.000Z"),

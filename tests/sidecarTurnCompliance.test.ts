@@ -52,6 +52,12 @@ async function writeCurrentTurn(repoPath: string, text: string): Promise<void> {
   );
 }
 
+async function updateSidecarConfig(repoPath: string, patch: Record<string, unknown>): Promise<void> {
+  const configPath = path.join(repoPath, ".stax", "config.json");
+  const config = JSON.parse(await fs.readFile(configPath, "utf8")) as Record<string, unknown>;
+  await fs.writeFile(configPath, `${JSON.stringify({ ...config, ...patch }, null, 2)}\n`, "utf8");
+}
+
 describe("STAX turn compliance", () => {
   it("writeTurnContract creates .stax/turn-contract.json", async () => {
     const repoPath = await createTempGitRepo("stax-turn-contract-write-");
@@ -84,6 +90,10 @@ describe("STAX turn compliance", () => {
   it("gate rejects in strict mode when ACK is missing", async () => {
     const repoPath = await createTempGitRepo("stax-turn-gate-missing-ack-");
     await attachStaxToRepo(repoPath);
+    await updateSidecarConfig(repoPath, {
+      runtimeFreshnessMode: "manual",
+      turnComplianceMode: "strict"
+    });
 
     const status = await runStaxGate({
       repoPath,
@@ -93,6 +103,24 @@ describe("STAX turn compliance", () => {
 
     expect(status.verdict).toBe("Reject");
     expect(status.unverified.join("\n")).toContain("STAX acknowledgement");
+  });
+
+  it("gate ignores turn contract evidence in manual mode", async () => {
+    const repoPath = await createTempGitRepo("stax-turn-gate-manual-");
+    await attachStaxToRepo(repoPath);
+    await updateSidecarConfig(repoPath, {
+      runtimeFreshnessMode: "manual",
+      turnComplianceMode: "manual"
+    });
+
+    const status = await runStaxGate({
+      repoPath,
+      writeLearningEvent: false,
+      now: new Date("2026-05-05T18:23:00.000Z")
+    });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.unverified.join("\n")).not.toContain("STAX acknowledgement");
   });
 
   it("gate passes compliance when codex-report and current turn contain the correct ACK", async () => {
