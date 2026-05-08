@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_e163bcb27b71",
+  "sourceEventId": "codex_session_report_e163bcb27b71",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Record the updated Google Forms visual-prompt decision: keep all questions included, avoid broad crop changes for now, and handle weak/broken images as later manual review items.. Next: Proceed with the existing Google route as-is, keep Q17 included, and move to answer-key cleanup/review instead of modifying crop behavior now.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T15:07:25.682Z",
+      "reportHash": "e163bcb27b71c35b8ccd487d33a6fe2f92c5d3e1bc16f41108e366163e1344d5",
+      "sections": {
+        "objective": "Record the updated Google Forms visual-prompt decision: keep all questions included, avoid broad crop changes for now, and handle weak/broken images as later manual review items.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- `Select-String -Path C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md -Pattern \"Google Forms bridge|brightspacequizexporter\" -Context 0,1`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Git status: exit 0; branch `codex/resume-math30-msforms-20260506` is aligned with origin before this report update.\n- Memory search: exit 0; confirmed the repo has an existing Google Forms bridge workflow and prior preference for live end-to-end Google Forms delivery.",
+        "verified": "- The user prefers preserving every question in the Google Form even when a prompt image is imperfect.\n- The user does not want a broad cropper behavior change right now because it may affect questions that already look good.",
+        "weakProvisional": "- The current local report update is not committed.\n- Q17 remains a known visual-review item.",
+        "unverified": "- Whether every live Google Forms image displays exactly like the local PNG output.",
+        "risks": "- Keeping imperfect crops avoids missing questions, but manual review is still needed for weak image items.\n- Future batches may need a review report or per-question image override path if many images need adjustment.",
+        "oneNextAction": "Proceed with the existing Google route as-is, keep Q17 included, and move to answer-key cleanup/review instead of modifying crop behavior now."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.875Z"
+}

@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_73a900bea8f0",
+  "sourceEventId": "codex_session_report_73a900bea8f0",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Answer the current status question and restate the active Math 30 MS Forms task from the verified branch/handoff state.. Next: Reconcile the handoff mismatch by verifying the exact input PDF and comparing the current output artifacts against the handoff's expected 27-question/Q9-Q10-Q14 state before implementing the stronger recognizer.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T15:29:08.085Z",
+      "reportHash": "73a900bea8f0c95f3b285d562b93e80609d870c50125a32b98855e53348c5a35",
+      "sections": {
+        "objective": "Answer the current status question and restate the active Math 30 MS Forms task from the verified branch/handoff state.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `git branch --show-current`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; Brightspace is clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.\n- Branch check: exit 0; current branch is `codex/resume-math30-msforms-20260506`.",
+        "verified": "- We are on the new resume branch, not the old deleted `codex/math30-msforms-transfer` branch.\n- The working tree is clean.\n- The immediate blocker from the previous run is the mismatch between the STAX handoff example and the current Brightspace conversion output.",
+        "weakProvisional": "- No new conversion was run in this status-only turn.",
+        "unverified": "- The source of the 27-question vs 23-question mismatch has not yet been isolated.",
+        "risks": "- Coding against Q9/Q10/Q14 before reconciling the mismatch could target the wrong artifacts on this machine.",
+        "oneNextAction": "Reconcile the handoff mismatch by verifying the exact input PDF and comparing the current output artifacts against the handoff's expected 27-question/Q9-Q10-Q14 state before implementing the stronger recognizer."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

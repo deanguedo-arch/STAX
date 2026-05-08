@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_8114fdd2e8f9",
+  "sourceEventId": "codex_session_report_8114fdd2e8f9",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Generate a targeted hybrid Microsoft Forms QuickImport attempt that preserves formulas that imported acceptably while converting only Q4, Q6, Q12, Q13, and Q23 to safer plain text math.. Next: Import `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81\\quiz.msforms.quickimport.docx` into Microsoft Forms and print/inspect Q4, Q6, Q12, Q13, and Q23.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T20:32:28.860Z",
+      "reportHash": "8114fdd2e8f92709a50c590e549a09dd920c4acd7bf55a1214174eb6d44a6fca",
+      "sections": {
+        "objective": "Generate a targeted hybrid Microsoft Forms QuickImport attempt that preserves formulas that imported acceptably while converting only Q4, Q6, Q12, Q13, and Q23 to safer plain text math.",
+        "filesChanged": "- `src/export/msforms/formsDocx.ts`\n- `src/test/unit/export/msFormsDocx.test.ts`\n- `.stax/codex-report.md`\n- Local ignored review input: `tmp/math30-msforms-review/manual-question-checks.json`",
+        "testsAdded": "- Added DOCX rendering coverage that verifies QuickImport inserts a separator between prompt text and following math segments.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Get-Content -Raw C:\\Users\\dean.guedo\\.agents\\skills\\test-driven-development\\SKILL.md`\n- `Get-Content -Raw src\\export\\msforms\\formsDocx.ts`\n- `Get-Content -Raw src\\ingest\\msforms\\manualPatches.ts`\n- `Get-Content -Raw src\\test\\unit\\export\\msFormsDocx.test.ts`\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts` (red before separator fix)\n- Math 30 conversion command:\n  `npm run brightspaceexport -- convert \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81\" --render-dpi 300 --equation-recovery glyphs-first --vision-fallback equations-only --manual-patches tmp\\math30-msforms-review\\manual-question-checks.json`\n- Node inspection of `quiz.question_bank.json` for Q1, Q2, Q4, Q5, Q6, Q12, Q13, and Q23.\n- Node inspection of `quiz.msforms.quickimport.docx` XML for raw `\\binom`, raw `\\frac`, raw `\\in`, prompt/formula glue, and targeted hybrid formula text.\n- `Get-Content -Raw \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81\\quiz.forms_lint.txt\"`\n- `npm test -- src/test/unit/ingest/msFormsManualPatches.test.ts src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsMath.test.ts src/test/unit/scripts/brightspaceExportScript.test.ts src/test/unit/ingest/msFormsBrightspaceRegions.test.ts`\n- `npm run ingest:ci`\n- `git status --short --branch`\n- `git diff --stat`\n- `git diff --check`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Red test: exit 1; failed because QuickImport still glued text and math segments.\n- Green targeted DOCX test: exit 0; 1 test file passed, 6 tests passed.\n- Math 30 conversion: exit 0; generated DOCX/question-bank outputs in `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81`.\n- Question-bank inspection: exit 0; Q4, Q6, Q12, Q13, and Q23 use plain ASCII formula math segments, while Q1, Q2, and Q5 keep the existing reviewed math notation.\n- DOCX XML inspection: exit 0; no raw `\\binom`, raw `\\frac`, raw `\\in`, `Evaluate.` glue, or `Solve for n.` glue in QuickImport XML.\n- Lint read: exit 0; no missing-math errors for Q6 or Q23; remaining warning is missing answer keys plus manual patch/glyph recovery info.\n- Focused regression: exit 0; 5 test files passed, 22 tests passed.\n- `npm run ingest:ci`: exit 0; build, focused ingest suite, and 22 manual benchmark checks passed.\n- `git diff --check`: exit 0; only line-ending warnings from Git autocrlf.",
+        "verified": "- Latest QuickImport DOCX path: `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81\\quiz.msforms.quickimport.docx`.\n- Q4 renders as `Evaluate. C(6, 2)` in the DOCX text stream.\n- Q6 renders as `Solve for n, where n is an integer. ((n - 6)!) / ((n - 8)!) = n + 57`.\n- Q12 renders as `Evaluate. 10! / (5!2!)`.\n- Q13 renders as `Identify the expression that is equivalent to the following: ((n + 3)!) / ((n + 1)!) + (n!) / ((n - 2)!)`.\n- Q23 renders as `Algebraically solve for n in the following equation: n! / ((n - 2)!) = 72`.\n- Q1/Q2/Q5 are not flattened to the all-ASCII style in this attempt.",
+        "weakProvisional": "- Microsoft Forms browser import/rendering of this new DOCX has not been verified yet.\n- Multiple-choice answers remain mostly unkeyed because this pass is focused on formatting/import shape.",
+        "unverified": "- Whether this targeted hybrid DOCX imports better than the prior QuickImport PDF.\n- Whether Forms preserves the inserted separator as a visual space/newline exactly as expected.",
+        "risks": "- Microsoft Forms may still collapse or reflow prompt/math spacing after import.\n- `%TEMP%` cleanup can remove generated files later.\n- The branch has local uncommitted code/test changes.",
+        "oneNextAction": "Import `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81\\quiz.msforms.quickimport.docx` into Microsoft Forms and print/inspect Q4, Q6, Q12, Q13, and Q23."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.874Z"
+}

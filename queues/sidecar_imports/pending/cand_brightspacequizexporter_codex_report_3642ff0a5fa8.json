@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_3642ff0a5fa8",
+  "sourceEventId": "codex_session_report_3642ff0a5fa8",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Create two full Google Forms proofs for `(v2) Math 10C Ch.6 Exam - Linear Functions (online)` from the Common Cartridge: one question-image plus formatted choice-text style, and one choices-inside-image style.. Next: Compare the two live Chapter 6 forms and decide which style should become the default for batch conversion.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T16:24:42.633Z",
+      "reportHash": "3642ff0a5fa8ee996e073c8f492ce7d74a03d2f6c75929276b3b741e2c27012d",
+      "sections": {
+        "objective": "Create two full Google Forms proofs for `(v2) Math 10C Ch.6 Exam - Linear Functions (online)` from the Common Cartridge: one question-image plus formatted choice-text style, and one choices-inside-image style.",
+        "filesChanged": "- `scripts/send-cartridge-qti-google-visual-proof.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- `.stax/codex-report.md`\n- Generated ignored proof output:\n  - `tmp/cartridge-qti-google-visual-proof/ch6-linear-functions-choice-text-fixed/`\n  - `tmp/cartridge-qti-google-visual-proof/ch6-linear-functions-choices-in-image-fixed/`",
+        "testsAdded": "- Added regression coverage for `&nbsp;` entity cleanup in fallback prompt text so canvas-rendered prompt images do not show literal `&nbsp;`.\n- Kept existing regression coverage for D2L/WIRIS MathML choice text conversion and choices-inside-image mode.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- Memory lookup in `C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md`\n- PowerShell/.NET ZIP search for QTI assessment titles matching Chapter 6 / Linear Functions\n- PowerShell/.NET exact QTI path lookup for `(v2) Math 10C Ch.6 Exam - Linear Functions (online)`\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --qti-path \"quiz/i399c50da-3c35-45cb-b269-97f880c27c73/qti_46cc93af-4ceb-4fd4-9f93-adb164416e75.xml\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\ch6-linear-functions-choice-text --title \"Math 10C Ch.6 Linear Functions - Choice Text Proof\" --dry-run`\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --qti-path \"quiz/i399c50da-3c35-45cb-b269-97f880c27c73/qti_46cc93af-4ceb-4fd4-9f93-adb164416e75.xml\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\ch6-linear-functions-choices-in-image --title \"Math 10C Ch.6 Linear Functions - Choices In Image Proof\" --include-choices-in-image --dry-run`\n- Local image inspections for q1, q8, q9, and q13 in both proof styles\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts` (red)\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts` (green)\n- Fixed choice-text dry-run using `tmp\\cartridge-qti-google-visual-proof\\ch6-linear-functions-choice-text-fixed`\n- Local image inspection for fixed `q9.png`\n- Live send for choice-text style:\n  - `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --qti-path \"quiz/i399c50da-3c35-45cb-b269-97f880c27c73/qti_46cc93af-4ceb-4fd4-9f93-adb164416e75.xml\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\ch6-linear-functions-choice-text-fixed --title \"Math 10C Ch.6 Linear Functions - Choice Text Proof\"`\n- Live send for choices-inside-image style:\n  - `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --qti-path \"quiz/i399c50da-3c35-45cb-b269-97f880c27c73/qti_46cc93af-4ceb-4fd4-9f93-adb164416e75.xml\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\ch6-linear-functions-choices-in-image-fixed --title \"Math 10C Ch.6 Linear Functions - Choices In Image Proof\" --include-choices-in-image`\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts`\n- `git diff --check`\n- Published form HTML check for raw MathML leakage in the choice-text form\n- `npm run build`\n- `git diff --no-index --check -- NUL scripts\\send-cartridge-qti-google-visual-proof.ts`\n- `git diff --no-index --check -- NUL src\\test\\unit\\scripts\\sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- Final `git status --short --branch`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Initial git status: exit 0; branch aligned with origin and had two untracked proof files.\n- QTI title search: exit 0; found the closer exact match `(v2) Math 10C Ch.6 Exam - Linear Functions (online)` with 15 items at `quiz/i399c50da-3c35-45cb-b269-97f880c27c73/qti_46cc93af-4ceb-4fd4-9f93-adb164416e75.xml`.\n- Initial dry-runs: exit 0 for both styles; each rendered 15 prompt images and mapped 8 multiple-choice, 4 short-answer, and 3 written-response questions.\n- Local image inspection: caught literal `&nbsp;` in Q9 for the choice-text style canvas fallback.\n- Focused red test: exit 1; reproduced the non-breaking-space entity leak.\n- Focused green test: exit 0; 1 file, 6 tests passed.\n- Fixed choice-text dry-run: exit 0; fixed Q9 image rendered clean text.\n- Choice-text live send: exit 0; `SUCCESS qti_visual_1778170764228 [redacted-url] [redacted-url]\n- Choices-inside-image live send: exit 0; `SUCCESS qti_visual_1778170895541 [redacted-url] [redacted-url]\n- Focused tests plus bridge tests: exit 0; 2 files, 13 tests passed.\n- `git diff --check`: exit 0; no tracked whitespace errors.\n- Published choice-text form HTML check: exit 0; `ContainsRawMathTag: False`.\n- `npm run build`: exit 0; TypeScript and Vite build passed with the existing large-chunk warning.\n- No-index whitespace checks for the two untracked proof files: exit 0; only LF-to-CRLF warnings from Git.",
+        "verified": "- Both full Chapter 6 proof styles were generated and sent live.\n- The choice-text route no longer leaks raw MathML in the published form HTML.\n- The choice-text Q9 prompt image no longer shows literal `&nbsp;`.\n- The choices-inside-image route renders the answer options visually inside the prompt image and uses simple `A/B/C/D` controls underneath.\n- Tests and build pass.",
+        "weakProvisional": "- The proof script and test remain untracked and not committed.\n- I used the closer exact `(v2)` 15-question Chapter 6 exam. The cartridge also contains a similarly named 20-question `Math 10C Ch. 6 Exam -Linear Functions (online)`.\n- Full user-side visual review of both live forms is still needed.",
+        "unverified": "- Whether the user intended the non-v2 20-question Chapter 6 exam instead.\n- Every question as viewed in the Google Forms editor by a signed-in user.",
+        "risks": "- Complex answer choices may still be better with choices embedded in image rather than formatted text controls.\n- Very large future exams may need batching or Apps Script timing checks.",
+        "oneNextAction": "Compare the two live Chapter 6 forms and decide which style should become the default for batch conversion."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-08T15:58:40.876Z"
+}

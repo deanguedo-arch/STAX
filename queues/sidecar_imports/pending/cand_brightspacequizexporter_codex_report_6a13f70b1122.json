@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_6a13f70b1122",
+  "sourceEventId": "codex_session_report_6a13f70b1122",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Continue the Google Forms QTI visual pipeline by converting the Chemistry 30 Common Cartridge to Choices Inside Image style, while preserving converter fixes needed for large and image-heavy batches.. Next: Open a sample Chemistry chapter quiz, unit test part, and practice-bank part in Google Forms to visually confirm the Choices Inside Image layout before using the whole batch.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T23:27:05.105Z",
+      "reportHash": "6a13f70b1122df01accf61426b0adc6687cff3652d4c6b16fe2518eea932e9eb",
+      "sections": {
+        "objective": "Continue the Google Forms QTI visual pipeline by converting the Chemistry 30 Common Cartridge to Choices Inside Image style, while preserving converter fixes needed for large and image-heavy batches.",
+        "filesChanged": "- `scripts/send-cartridge-qti-google-visual-proof.ts`\n- `scripts/send-cartridge-qti-google-visual-batch.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualBatchScript.test.ts`\n- `.stax/codex-report.md`",
+        "testsAdded": "- Duplicate QTI choice text repair.\n- Image-only choice fallback to label-only Google controls.\n- Missing-choice fallback to written response.\n- Blank short-answer accepted-answer filtering.\n- `--question-range` parsing.\n- `--only-indexes` and `--max-questions-per-form` batch chunking.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- Chemistry cartridge QTI inventory with Node/JSZip.\n- Chemistry Choices Inside Image pass 1: indexes `1-17,20,24,26`, `--max-questions-per-form 25`.\n- Chemistry Choices Inside Image pass 2: indexes `18,19,21`, `--max-questions-per-form 25`.\n- Two fixed standalone sends for Equilibrium, Acids and Bases Practice Quiz Q76-100 and Q101-120.\n- Chemistry Choices Inside Image pass 3: indexes `22,23,25`, `--max-questions-per-form 25`.\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualBatchScript.test.ts src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts`\n- `npm run build`\n- `git diff --check`\n- `git commit -m \"Harden QTI visual batch exports\"`\n- `git push origin codex/resume-math30-msforms-20260506`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Chemistry inventory: exit 0; found 26 assessments and 1025 QTI items.\n- Chemistry pass 1: exit 0; created 26 Forms/parts, 0 failures.\n- Chemistry pass 2: exit 1; created 12 Forms/parts, 2 failures caused by blank short-answer keys.\n- Equilibrium Q76-100 standalone fix: exit 0; created `[redacted-url]\n- Equilibrium Q101-120 standalone fix: exit 0; created `[redacted-url]\n- Chemistry pass 3: exit 0; created 10 Forms/parts, 0 failures.\n- Targeted tests: exit 0; 3 files and 26 tests passed.\n- Build: exit 0; Vite reported the existing large chunk warning.\n- Staged whitespace check: exit 0.\n- Push: exit 0; pre-push `npm run ingest:ci` passed build, promotion check, focused ingest suite, and 22 manual benchmarks; pushed commit `42d9d23`.",
+        "verified": "- Chemistry 30 cartridge was converted to Choices Inside Image style as 50 Google Forms/parts covering all 26 source assessments.\n- Large assessments were split into 25-question part-Forms to avoid oversized bridge requests.\n- QTI image-only choices, duplicate choice text, blank short-answer keys, linebreak math, and chunked ranges are covered by tests.\n- Branch `codex/resume-math30-msforms-20260506` is pushed to origin at `42d9d23`.",
+        "weakProvisional": "- The generated Google Forms were created successfully, but not manually audited question-by-question in the browser.\n- Chemistry pass 2 summary still records the two initial failures; those were fixed by separate standalone sends after the parser fix.",
+        "unverified": "- Whether every Chemistry prompt image is visually perfect in the live Google editor.\n- Whether all answer keys should be retained; short-answer blanks are intentionally exported as unkeyed short answer fields.",
+        "risks": "- Choices Inside Image style creates many Forms for large banks, which is expected but can be harder to organize.\n- Existing Google Drive output may contain earlier duplicate attempts from previous Math retries.",
+        "oneNextAction": "Open a sample Chemistry chapter quiz, unit test part, and practice-bank part in Google Forms to visually confirm the Choices Inside Image layout before using the whole batch."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-08T15:58:40.876Z"
+}

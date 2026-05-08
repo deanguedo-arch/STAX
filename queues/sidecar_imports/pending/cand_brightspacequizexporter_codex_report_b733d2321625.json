@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_b733d2321625",
+  "sourceEventId": "codex_session_report_b733d2321625",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Answer whether fast mode or a lower model would materially speed up the planned full Common Cartridge Google Forms batch.. Next: Before the full batch, add or confirm the batch runner settings: choice-text style first, output summary, and optional Drive subfolder organization.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T16:29:17.509Z",
+      "reportHash": "b733d2321625d7b15ade488065fdf448f643dd58f0b56bfdbae16140c5c96cf8",
+      "sections": {
+        "objective": "Answer whether fast mode or a lower model would materially speed up the planned full Common Cartridge Google Forms batch.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Git status: exit 0; branch aligned with origin and still has the untracked proof script/test.",
+        "verified": "- No code execution was needed for the answer.",
+        "weakProvisional": "- The exact total batch runtime has not been measured for all quizzes.",
+        "unverified": "- Whether Apps Script quotas or Drive upload timing will become the main limiter during the full batch.",
+        "risks": "- Running the full batch without adding folder organization or a summary artifact first could make the output hard to audit.",
+        "oneNextAction": "Before the full batch, add or confirm the batch runner settings: choice-text style first, output summary, and optional Drive subfolder organization."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.876Z"
+}

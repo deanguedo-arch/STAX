@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_52ed447cf749",
+  "sourceEventId": "codex_session_report_52ed447cf749",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Remove \"visual prompt\" wording from the Google visual-form student-facing answer controls, regenerate the live Math 30 preview, commit, and push.. Next: Open the confirmed updated student-view form and verify the answer-control copy under several question images.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T15:22:22.478Z",
+      "reportHash": "52ed447cf74931c6e9d416999a34a638754b0f0279b8fec2d176af9f3f8ceae0",
+      "sections": {
+        "objective": "Remove \"visual prompt\" wording from the Google visual-form student-facing answer controls, regenerate the live Math 30 preview, commit, and push.",
+        "filesChanged": "- `src/export/googleFormsSheet/visualQuestionBank.ts`\n- `src/test/unit/export/googleFormsVisualQuestionBank.test.ts`\n- `.stax/codex-report.md`",
+        "testsAdded": "- Updated existing unit expectations in `src/test/unit/export/googleFormsVisualQuestionBank.test.ts`.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- `Select-String -Path src\\export\\googleFormsSheet\\visualQuestionBank.ts,src\\test\\unit\\export\\googleFormsVisualQuestionBank.test.ts -Pattern \"visual prompt|Visual prompt|Select the answer\" -Context 2,2`\n- Memory citation line read from `C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md`\n- `npm test -- src/test/unit/export/googleFormsVisualQuestionBank.test.ts` (red)\n- `npm test -- src/test/unit/export/googleFormsVisualQuestionBank.test.ts` (green)\n- `npx vite-node --script scripts\\send-question-bank-google-visual-form.ts -- --question-bank \"...quiz.question_bank.json\" --source-pdf \"...Print Quiz...\" --image-output-dir tmp\\math30-msforms-review\\google-visual-prompts --title \"Math 30 Visual Format Preview\" --dry-run`\n- `npx vite-node --script scripts\\send-question-bank-google-visual-form.ts -- --question-bank \"...quiz.question_bank.json\" --source-pdf \"...Print Quiz...\" --image-output-dir tmp\\math30-msforms-review\\google-visual-prompts --title \"Math 30 Visual Format Preview\"` (first live send timed out)\n- `Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,CPU,StartTime,Path`\n- `Get-CimInstance Win32_Process -Filter \"name = 'node.exe'\" | Select-Object ProcessId,CreationDate,CommandLine | Format-List`\n- `Wait-Process -Id 28616 -Timeout 240 -ErrorAction SilentlyContinue; Get-CimInstance Win32_Process -Filter \"ProcessId = 28616\" | Select-Object ProcessId,CommandLine`\n- `npx vite-node --script scripts\\send-question-bank-google-visual-form.ts -- --question-bank \"...quiz.question_bank.json\" --source-pdf \"...Print Quiz...\" --image-output-dir tmp\\math30-msforms-review\\google-visual-prompts --title \"Math 30 Visual Format Preview\"` (confirmed live send)\n- `npm test -- src/test/unit/export/googleFormsVisualQuestionBank.test.ts src/test/unit/scripts/sendQuestionBankGoogleVisualFormScript.test.ts`\n- `npm run build`\n- `git diff -- src\\export\\googleFormsSheet\\visualQuestionBank.ts src\\test\\unit\\export\\googleFormsVisualQuestionBank.test.ts`\n- `git diff --check`\n- `git add src\\export\\googleFormsSheet\\visualQuestionBank.ts src\\test\\unit\\export\\googleFormsVisualQuestionBank.test.ts`\n- `git commit -m \"chore: simplify Google visual form prompts\"`\n- `git push`\n- `git log -1 --oneline`\n- `git log origin/codex/resume-math30-msforms-20260506 -1 --oneline`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Initial git status: exit 0; branch was aligned with origin before the copy change.\n- Red test: exit 1; failed because code still emitted `Visual prompt for question 6`.\n- Green unit test: exit 0; 1 file, 2 tests passed.\n- Dry-run sender: exit 0; generated 23 images and confirmed prompts:\n  - MC: `Select the answer for the question above.`\n  - Short answer: `Enter the answer for the question above.`\n  - Written response: `Answer the question above.`\n- First live send: exit 124 due command timeout; background sender later exited, but output was not captured.\n- Confirmed live send: exit 0; `SUCCESS google_visual_1778167044892 [redacted-url] [redacted-url]\n- Focused tests: exit 0; 2 files, 3 tests passed.\n- `npm run build`: exit 0; TypeScript and Vite build passed with existing large-chunk warning.\n- `git diff --check`: exit 0; only Git autocrlf line-ending warnings.\n- Initial combined `git add && git commit` attempt: exit 1 because this PowerShell version does not accept `&&`.\n- `git add`: exit 0.\n- Commit: exit 0; `5563a73 chore: simplify Google visual form prompts`.\n- Push: exit 0; pre-push `npm run ingest:ci` passed, then branch pushed `66dd5cf..5563a73`.\n- Final git status: exit 0; branch is aligned with `origin/codex/resume-math30-msforms-20260506`.",
+        "verified": "- The generated Google visual-form answer controls no longer use the phrase \"visual prompt\".\n- The confirmed updated live form uses the new code path.\n- The code change is committed and pushed to the origin resume branch.\n- Focused tests, build, and the pre-push ingest promotion gate passed.",
+        "weakProvisional": "- The first live send may have created a duplicate form before timing out, but no output link was captured.\n- I did not visually inspect the confirmed live form in a browser during this turn.",
+        "unverified": "- Whether the user prefers `Enter the answer...` or `Select the answer...` for non-multiple-choice controls.\n- Final answer keys remain intentionally deferred.",
+        "risks": "- There may be an extra same-title Google Form from the timed-out sender in the destination folder.\n- Q17 remains included as-is and still needs manual visual review later.",
+        "oneNextAction": "Open the confirmed updated student-view form and verify the answer-control copy under several question images."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-08T15:58:40.875Z"
+}

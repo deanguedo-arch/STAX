@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_a5f9be025942",
+  "sourceEventId": "codex_session_report_a5f9be025942",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Provide the exact ChatGPT export format the user should request for manually reviewed Math 30 question corrections.. Next: Have the user ask ChatGPT for one question in the specified `QUESTION_PATCH_V1` format, paste it here, and validate that it can be applied cleanly.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T17:13:53.432Z",
+      "reportHash": "a5f9be0259424c2b6e3c0634c9d534b24070cfcfa83492650108975f70abed48",
+      "sections": {
+        "objective": "Provide the exact ChatGPT export format the user should request for manually reviewed Math 30 question corrections.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.",
+        "verified": "- The working tree is clean and still on the resume branch.",
+        "weakProvisional": "- No sample from the user's external ChatGPT run has been tested yet.",
+        "unverified": "- No generated DOCX or Microsoft Forms import was tested in this turn.",
+        "risks": "- If the requested format is too visual or uses Unicode-only math, it may not be durable enough to drive native DOCX math rendering.",
+        "oneNextAction": "Have the user ask ChatGPT for one question in the specified `QUESTION_PATCH_V1` format, paste it here, and validate that it can be applied cleanly."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

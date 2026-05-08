@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_185aee5a3d31",
+  "sourceEventId": "codex_session_report_185aee5a3d31",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Check whether the newly opened VS Code nightly/insiders environment is missing extensions needed for this repo.. Next: Open the nightly Extensions panel and confirm `ChatGPT - Work with Codex` or `openai.chatgpt` is enabled for this workspace.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-08T14:46:10.351Z",
+      "reportHash": "185aee5a3d3158942a4608c346e9956ac0a4c903a49852a6d8344bf575e7c3ca",
+      "sections": {
+        "objective": "Check whether the newly opened VS Code nightly/insiders environment is missing extensions needed for this repo.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- Memory lookup for `brightspacequizexporter` Google Forms bridge context.\n- `git status --short --branch`\n- `Get-Content -Raw .stax/task.md`\n- `Get-ChildItem .vscode`\n- `Get-Content -Raw .vscode\\extensions.json`\n- `Get-Command code, code-insiders -ErrorAction SilentlyContinue`\n- `code --list-extensions --show-versions`\n- Inspected common VS Code extension directories under `.vscode`, `.vscode-insiders`, and app data.\n- Read `.vscode\\extensions\\extensions.json`\n- Read `.vscode-insiders\\extensions\\extensions.json`\n- Checked for `Code - Insiders\\User\\settings.json`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Git status: exit 0; branch `codex/resume-math30-msforms-20260506`, with `docs/qti-google-forms-visual-export-runbook.md` still untracked from the previous docs task.\n- `.stax/task.md` read: exit 0; it was nonblank, so it was not overwritten.\n- Repo `.vscode` listing: exit 0; only `extensions.json` exists.\n- Repo extension recommendations read: exit 0; only `openai.chatgpt` is recommended.\n- VS Code command lookup: exit 1 because `code-insiders` was not found, but `code.cmd` was found.\n- Regular VS Code extension list: exit 0; installed `google.geminicodeassist@2.81.0` and `openai.chatgpt@26.506.21252`.\n- Extension directory inspection: exit 0; `.vscode-insiders\\extensions` exists and contains `openai.chatgpt-26.506.21252-win32-x64`.\n- Insiders extension registry read: exit 0; confirms `openai.chatgpt@26.506.21252`.\n- Insiders settings check: exit 0; no `Code - Insiders\\User\\settings.json` exists.",
+        "verified": "- The only repo-recommended extension, `openai.chatgpt`, is present in the regular VS Code install and in the common VS Code Insiders extension folder.\n- Gemini Code Assist is installed in regular VS Code but not in the common Insiders extension folder.\n- `code-insiders` is not available on PATH.",
+        "weakProvisional": "- I could not query the running nightly build directly through `code-insiders` because that CLI command is not on PATH.\n- If the build opened by the user is not the standard Insiders build, it may use a different extension directory than `.vscode-insiders`.",
+        "unverified": "- The exact extension list shown inside the running nightly UI.",
+        "risks": "- Nightly/Insiders may have separate settings and profiles, so installed extensions can differ from regular VS Code even when the repo opens normally.",
+        "oneNextAction": "Open the nightly Extensions panel and confirm `ChatGPT - Work with Codex` or `openai.chatgpt` is enabled for this workspace."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.877Z"
+}

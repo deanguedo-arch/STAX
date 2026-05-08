@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_fe8d25156853",
+  "sourceEventId": "codex_session_report_fe8d25156853",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Open/read the active handoff and fetch the `codex/math30-msforms-transfer` branch.. Next: Run the branch's targeted MS Forms converter tests or the handoff validation sequence, depending on whether the next objective is Math30 delivery or recovery-gate completion.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T14:35:50.323Z",
+      "reportHash": "fe8d25156853d75df748b000adc0167a7df42178f7d3248058ec59a7303e1f39",
+      "sections": {
+        "objective": "Open/read the active handoff and fetch the `codex/math30-msforms-transfer` branch.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "None.",
+        "commandsRun": "- `if (Test-Path .stax/status.json) { Get-Content .stax/status.json -Raw } else { 'NO_STAX_STATUS' }`\n- `if (Test-Path ACTIVE_HANDOFF.md) { Get-Content ACTIVE_HANDOFF.md -Raw } elseif (Test-Path docs/ACTIVE_HANDOFF.md) { Get-Content docs/ACTIVE_HANDOFF.md -Raw } elseif (Test-Path docs/SESSION_HANDOFF.md) { Get-Content docs/SESSION_HANDOFF.md -Raw } else { 'NO_ACTIVE_HANDOFF_FOUND' }`\n- `Select-String -Path C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md -Pattern 'brightspacequizexporter|MS Forms|Google Forms|math30|Math30|transfer' -Context 2,2`\n- `if (Test-Path .stax/task.md) { Get-Content .stax/task.md -Raw } else { 'NO_STAX_TASK' }`\n- `rg --files | rg -i \"handoff|active|session\"`\n- `rg -i \"math30|math 30|msforms|ms forms|microsoft forms|transfer\" .`\n- `git status --short --branch; git branch --all --verbose --no-abbrev`\n- `git fetch origin codex/math30-msforms-transfer`\n- `Get-Content HANDOFF.md -Raw`\n- `git log --oneline --decorate --max-count=12 --all --branches='*math30*'`\n- `if (Test-Path .stax/codex-report.md) { Get-Content .stax/codex-report.md -Raw } else { 'NO_CODEX_REPORT' }`\n- `git status --short --branch`\n- `git rev-parse HEAD; git rev-parse origin/codex/math30-msforms-transfer`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Obvious active handoff path check: exit 0; no `ACTIVE_HANDOFF.md`, `docs/ACTIVE_HANDOFF.md`, or `docs/SESSION_HANDOFF.md` found.\n- Memory lookup: exit 0; found prior Brightspace Google Forms bridge notes, not a Math30 MS Forms active handoff.\n- STAX task read: exit 0; existing task is stale from a prior STAX sidecar push request, so it was not changed because it was not blank.\n- Handoff file search: exit 0; found `HANDOFF.md` and `scripts/session-handoff.mjs`.\n- Math30/MS Forms search: exit 0; found current MS Forms converter/export code and Math30 sender scripts.\n- Branch/status check: exit 0; current branch is `codex/math30-msforms-transfer` tracking `origin/codex/math30-msforms-transfer`.\n- Fetch: exit 0; fetched `codex/math30-msforms-transfer` from origin to `FETCH_HEAD`.\n- Handoff read: exit 0; `HANDOFF.md` was read.\n- Branch log read: exit 0; latest Math30 branch commit is `4a806ef Add Math 30 Microsoft Forms converter`.\n- Final status read: exit 0; branch is clean and aligned with origin.\n- Revision comparison: exit 0; local `HEAD` and `origin/codex/math30-msforms-transfer` both resolve to `4a806ef0748f8725abe6a4f8c530c1927ea83b6c`.",
+        "verified": "- The repo STAX verdict is currently `Pass`.\n- The active handoff file in this checkout is `HANDOFF.md`.\n- The Math30 MS Forms transfer branch was fetched from origin.\n- Local `codex/math30-msforms-transfer` matches `origin/codex/math30-msforms-transfer` at `4a806ef0748f8725abe6a4f8c530c1927ea83b6c`.",
+        "weakProvisional": "- `HANDOFF.md` is a recovery/gate handoff, not a Math30-specific handoff.\n- `.stax/task.md` still contains a stale prior objective, but the protocol only required writing the current objective if the file was blank.",
+        "unverified": "- No build or tests were run for this read/fetch-only task.\n- No Microsoft Forms package generation was executed.",
+        "risks": "- The handoff content may not describe the latest Math30 MS Forms branch-specific intent.\n- The branch may need a fresh validation pass before any promotion or merge work.",
+        "oneNextAction": "Run the branch's targeted MS Forms converter tests or the handoff validation sequence, depending on whether the next objective is Math30 delivery or recovery-gate completion."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.871Z"
+}

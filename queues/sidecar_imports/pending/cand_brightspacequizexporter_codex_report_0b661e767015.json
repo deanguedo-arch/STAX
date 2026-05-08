@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_0b661e767015",
+  "sourceEventId": "codex_session_report_0b661e767015",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Confirm the current goal is live format review only, with answer-key cleanup intentionally deferred because the keyed source printout is not available.. Next: Use the live Google Form view link to inspect the student-facing format before doing any answer-key or cropper work.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T15:09:54.670Z",
+      "reportHash": "0b661e7670150947d22d6a9c834e846749141e8e61871f3b7b557d078af437f4",
+      "sections": {
+        "objective": "Confirm the current goal is live format review only, with answer-key cleanup intentionally deferred because the keyed source printout is not available.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- Memory citation line read from `C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Git status: exit 0; branch `codex/resume-math30-msforms-20260506` is aligned with origin before this report update.\n- Memory line read: exit 0; confirmed existing Google Forms bridge workflow context.",
+        "verified": "- The user wants to leave answer keys alone for now.\n- The immediate goal is to inspect the live Google Forms test format and decide formatting/layout next.\n- A live 23-question Google visual-prompt form already exists from the previous send.",
+        "weakProvisional": "- The local STAX report update is not committed.\n- The live form has not been visually inspected item-by-item in a browser during this turn.",
+        "unverified": "- Final answer keys for this test.\n- Whether the live form layout is acceptable on the user's device/browser.",
+        "risks": "- The preview form may look acceptable structurally while still needing answer-key work later.\n- Q17 remains a known image-review item, but it is included rather than skipped.",
+        "oneNextAction": "Use the live Google Form view link to inspect the student-facing format before doing any answer-key or cropper work."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.875Z"
+}

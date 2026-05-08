@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_c8b097733888",
+  "sourceEventId": "codex_session_report_c8b097733888",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Inspect the Math 10C Brightspace Common Cartridge ZIP and estimate whether quizzes can be recreated, especially using the current Google Forms visual-prompt strategy.. Next: Build a small proof from one low-risk Math 10C quiz: parse one QTI XML, render each item prompt as an image using its local ZIP assets, create real Google Forms answer controls from QTI choices, and send one live preview form.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T15:31:50.710Z",
+      "reportHash": "c8b09773388888a2f4a4d21f9c1d798a91ad29c617959b6a62d5b69661d3625b",
+      "sections": {
+        "objective": "Inspect the Math 10C Brightspace Common Cartridge ZIP and estimate whether quizzes can be recreated, especially using the current Google Forms visual-prompt strategy.",
+        "filesChanged": "- `.stax/codex-report.md`\n- Generated ignored inspection images under `tmp/cartridge-inspect/`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- Memory citation line reads from `C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md`\n- `Test-Path` and `Get-Item` for `c:\\Users\\dean.guedo\\Downloads\\D2LCCExport_151071_25-26 _ S2 _ Mathematics 10-C _ Per 1(A) _ Sec 2_20265741.zip`\n- ZIP listing via `[System.IO.Compression.ZipFile]::OpenRead(...)`\n- ZIP entry filtering for quiz/QTI/assessment/image/XML paths\n- ZIP extension count grouping\n- QTI parse for assessment count, item count, image references, response elements, and scored answer processing\n- QTI item profile count parse\n- QTI item scan for image refs, HTML, and math-like signals\n- Extracted three representative image assets to `tmp/cartridge-inspect/`\n- Viewed representative local assets:\n  - `Math 10C Section 6.2 Quiz #2a.png`\n  - `PastedImage_79b06m6frtwil75mbyraiwd5y1yhfaxb002.png`\n  - `mc050-1.jpg`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Git status: exit 0; branch was aligned with origin before this report update.\n- ZIP exists: exit 0; size is 24,401,776 bytes.\n- ZIP listing: exit 0; 2,127 entries.\n- Extension grouping: exit 0; 1,783 `.jpg`, 246 `.png`, 79 `.xml`, 19 `.jpeg`.\n- QTI assessment scan: exit 0; 78 `quiz/.../qti_*.xml` files.\n- QTI item totals: exit 0; 1,128 total items, 3,885 image references, 4,262 `varequal` entries.\n- QTI profile count: exit 0; 965 multiple-choice, 18 multiple-response, 78 fill-in-the-blank, 67 essay.\n- Image/math scan: exit 0; 686 items have image markup/references, 1,128 use HTML, 489 have math-like signals.\n- Answer processing scan: exit 0; 1,061 items have `varequal` and `setvar` score-100 processing, matching all non-essay items.\n- Representative image extraction: exit 0.",
+        "verified": "- The Common Cartridge contains real QTI quiz data, not only rendered course pages.\n- The archive has enough information to recreate quiz titles, item types, prompts, choices, many answer keys, and embedded images.\n- The current Google Forms bridge direction is compatible with this data: QTI can provide answer controls while QTI HTML/assets can provide prompt images.\n- A QTI visual-prompt path is likely safer than the PDF crop path because each question is already separated into an item with referenced assets.",
+        "weakProvisional": "- I did not implement or run a converter for this cartridge yet.\n- I did not inspect every QTI item individually.\n- Some image assets are diagrams inside a text question, while others are handwritten/full-question-style images, so rendering needs to handle both cases.",
+        "unverified": "- Exact Google Forms output quality for a live Math 10C cartridge-derived quiz.\n- How many QTI HTML math expressions render cleanly without converting the whole item to an image.\n- Whether quiz settings such as timing, attempts, randomization, and section behavior should be preserved.",
+        "risks": "- Google Forms may not support all D2L quiz settings or grading behaviors.\n- Multiple-response and fill-in-the-blank items need careful mapping to Google checkbox/short-answer behavior.\n- Essay/written-response items have no automatic answer key in the QTI scoring data.",
+        "oneNextAction": "Build a small proof from one low-risk Math 10C quiz: parse one QTI XML, render each item prompt as an image using its local ZIP assets, create real Google Forms answer controls from QTI choices, and send one live preview form."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.875Z"
+}

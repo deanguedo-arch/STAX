@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_c3be930a60ae",
+  "sourceEventId": "codex_session_report_c3be930a60ae",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Answer where a manually prepared Question 9 format should be entered for the Math 30 MS Forms conversion workflow.. Next: Have the user paste the Q9 format, then either wire it into a temporary `MSFORMS_MATH_REGION_VISION_CMD` recognizer map or edit the generated question bank for a one-off output.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T16:57:19.545Z",
+      "reportHash": "c3be930a60ae5e55320af3b5af197fe90b69b8c2cac15cb4fd73dbd799957e2a",
+      "sections": {
+        "objective": "Answer where a manually prepared Question 9 format should be entered for the Math 30 MS Forms conversion workflow.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `rg -n \"override|manual|correction|question_bank|questionBank|MSFORMS|math_region|vision|recognizer|forms_lint\" scripts src docs package.json -g \"!node_modules/**\"`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content -Raw src\\ingest\\msforms\\mathRegionRecovery.ts`\n- `Get-Content -Raw src\\ingest\\msforms\\questionBank.ts`\n- `Get-Content -Raw scripts\\brightspaceexport.ts`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Search: exit 0; found no current `brightspaceexport` CLI flag for a manual question override.\n- Git status: exit 0; clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.\n- Code reads: exit 0; converter supports external math recognition through `MSFORMS_MATH_REGION_VISION_CMD`; generated question content is in `quiz.question_bank.json`.",
+        "verified": "- There is no durable manual Q9 override file currently wired into the converter.\n- The external recognizer hook accepts crop path and returns JSON with `text`, `math`, or `equation`, plus optional `confidence` and `engine`.\n- Manual edits to `quiz.question_bank.json` are possible but are temp/generated and will be overwritten by reruns.",
+        "weakProvisional": "- The user may mean Q9 from the STAX handoff example, but the current local run does not have Q9 as an unresolved math crop.",
+        "unverified": "- No manual Q9 content was provided or tested.",
+        "risks": "- Putting manual data only in the generated temp output loses it on rerun.\n- Targeting Q9 without reconciling the 27-question vs 23-question mismatch may patch the wrong question.",
+        "oneNextAction": "Have the user paste the Q9 format, then either wire it into a temporary `MSFORMS_MATH_REGION_VISION_CMD` recognizer map or edit the generated question bank for a one-off output."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

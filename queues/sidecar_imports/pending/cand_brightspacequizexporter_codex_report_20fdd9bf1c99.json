@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_20fdd9bf1c99",
+  "sourceEventId": "codex_session_report_20fdd9bf1c99",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Merge the Math30 Microsoft Forms transfer work into `main`, validate it, push `main`, and clean up completed branches.. Next: Inspect `stash@{0}` separately if the goal is to clear all saved local work too.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T14:48:59.001Z",
+      "reportHash": "20fdd9bf1c9971e11c17b4e4ea78e90b9a0d74b33689ca078ae152383a29ecc2",
+      "sections": {
+        "objective": "Merge the Math30 Microsoft Forms transfer work into `main`, validate it, push `main`, and clean up completed branches.",
+        "filesChanged": "Merged into `main`:\n- package.json\n- scripts/brightspaceexport.ts\n- src/export/msforms/formsDocx.ts\n- src/ingest/msforms/brightspacePrintRegions.ts\n- src/ingest/msforms/convertBrightspacePdfToMsForms.ts\n- src/ingest/msforms/formsLint.ts\n- src/ingest/msforms/mathGlyphReconstruction.ts\n- src/ingest/msforms/mathRegionRecovery.ts\n- src/ingest/msforms/mathUnicode.ts\n- src/ingest/msforms/pdfGlyphMath.ts\n- src/ingest/msforms/questionBank.ts\n- src/test/unit/export/msFormsDocx.test.ts\n- src/test/unit/ingest/msFormsBrightspaceRegions.test.ts\n- src/test/unit/ingest/msFormsLint.test.ts\n- src/test/unit/ingest/msFormsMath.test.ts\n- src/test/unit/ingest/msFormsMathRegionRecovery.test.ts\n- src/test/unit/scripts/brightspaceExportScript.test.ts\n\nDirect fix made in this turn before merge:\n- src/test/unit/scripts/brightspaceExportScript.test.ts",
+        "testsAdded": "No new test files were added in this turn. Existing Math30 MS Forms CLI tests were made Windows-safe by using Node path resolution for output path expectations.",
+        "commandsRun": "- `Get-Content .stax/status.json -Raw`\n- `Select-String -Path C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md -Pattern 'brightspacequizexporter|git push|origin/main|pre-push|ingest:ci|math30-msforms-transfer|merge' -Context 1,2`\n- `git status --short --branch`\n- `node -e \"const p=require('./package.json'); console.log(JSON.stringify(p.scripts,null,2))\"`\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsBrightspaceRegions.test.ts src/test/unit/ingest/msFormsLint.test.ts src/test/unit/ingest/msFormsMath.test.ts src/test/unit/ingest/msFormsMathRegionRecovery.test.ts src/test/unit/scripts/brightspaceExportScript.test.ts`\n- `npm run build`\n- `npm run ingest:ci`\n- `git diff -- src/test/unit/scripts/brightspaceExportScript.test.ts`\n- `git ls-files .stax/codex-report.md; git check-ignore -v .stax/codex-report.md`\n- `git add src/test/unit/scripts/brightspaceExportScript.test.ts; git commit -m \"test: make Math30 MS Forms tests Windows-safe\"`\n- `git checkout main; git merge --ff-only codex/math30-msforms-transfer; git status --short --branch; git log --oneline --decorate --max-count=6`\n- `git push origin main`\n- `git branch -d codex/math30-msforms-transfer; git push origin --delete codex/math30-msforms-transfer; git fetch --prune origin; git status --short --branch; git branch -vv --all`\n- `git branch -d codex/math30-msforms-transfer; git status --short --branch; git branch -vv --all; git log --oneline --decorate --max-count=6`\n- `git rev-list --left-right --count main...backup/merge-recovery-20260312-1512; git merge-base main backup/merge-recovery-20260312-1512; git merge-base --is-ancestor backup/merge-recovery-20260312-1512 main`\n- `git log --oneline main..backup/merge-recovery-20260312-1512; git log --oneline backup/merge-recovery-20260312-1512..main --max-count=10`\n- `git diff --stat main...backup/merge-recovery-20260312-1512; git diff --name-status main...backup/merge-recovery-20260312-1512`\n- `git stash list`\n- `git branch -d backup/merge-recovery-20260312-1512; git status --short --branch; git branch -vv --all; git stash list`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict was `Pass`.\n- Memory lookup: exit 0; confirmed prior repo rule that pushing `main` runs the pre-push `ingest:ci` gate.\n- Initial focused MS Forms test run: exit 1; 5 files passed, `src/test/unit/scripts/brightspaceExportScript.test.ts` failed 3 Windows path expectations.\n- Patched the test file to resolve expected `/tmp/out` paths via Node path APIs.\n- Focused MS Forms retest: exit 0; 6 files passed, 19 tests passed.\n- `npm run build`: exit 0; TypeScript and Vite build passed. Vite emitted the existing large chunk warning.\n- `npm run ingest:ci`: exit 0; build passed, intake check validated 35 manifests, focused ingest suite passed 24 files/232 tests with 1 skipped file, and 22 manual gold benchmarks passed.\n- Commit: exit 0; created `d752119 test: make Math30 MS Forms tests Windows-safe`.\n- Fast-forward merge to `main`: exit 0; `main` moved from `ce9c37a` to `d752119`.\n- `git push origin main`: exit 0; pre-push `ingest:ci` passed again and `origin/main` moved from `ce9c37a` to `d752119`.\n- Initial local Math30 branch deletion in a combined cleanup command was refused by Git because its old upstream branch did not include the extra local test-fix commit. The same command then deleted remote `origin/codex/math30-msforms-transfer`, pruned, and ended with exit 0.\n- Second local Math30 branch deletion: exit 0; deleted local `codex/math30-msforms-transfer`.\n- Backup branch containment check: exit 0; `backup/merge-recovery-20260312-1512` was already an ancestor of `main`, with no diff from `main...backup`.\n- Backup branch deletion: exit 0; deleted local `backup/merge-recovery-20260312-1512`.\n- Final branch/status check: exit 0; only local `main`, `origin/main`, and `origin/HEAD` remain.",
+        "verified": "- `main` and `origin/main` both point to `d752119`.\n- The Math30 Microsoft Forms converter work is merged into `main`.\n- `origin/codex/math30-msforms-transfer` was deleted.\n- Local `codex/math30-msforms-transfer` was deleted.\n- Local `backup/merge-recovery-20260312-1512` was deleted after confirming it was already contained in `main`.\n- Final `git status --short --branch` reports `## main...origin/main`.\n- Focused MS Forms tests passed.\n- `npm run build` passed.\n- `npm run ingest:ci` passed before merge/push, and the pre-push hook ran `ingest:ci` successfully when pushing `main`.",
+        "weakProvisional": "- Vite still reports an existing large chunk warning; it does not fail the build.\n- Node still reports `DEP0040` punycode deprecation warnings during test runs; they do not fail the gate.",
+        "unverified": "- GitHub Actions status for `d752119` was not checked after push.\n- The saved stash `stash@{0}: On main: pre-merge local work` was not inspected or dropped.",
+        "risks": "- Dropping the stash without review could lose saved local work, so it was intentionally left intact.\n- The branch cleanup removed refs only after the commits were reachable from `main`.",
+        "oneNextAction": "Inspect `stash@{0}` separately if the goal is to clear all saved local work too."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.871Z"
+}

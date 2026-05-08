@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_cd67e63245ab",
+  "sourceEventId": "codex_session_report_cd67e63245ab",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Explain the current branch state for the Math30 Microsoft Forms transfer work.. Next: Run the targeted MS Forms tests and build on `codex/math30-msforms-transfer` before merging or promoting the branch.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T14:39:28.172Z",
+      "reportHash": "cd67e63245abcb3a6baa86c137dd988355c53d7ba021e006fd03b68da40979e4",
+      "sections": {
+        "objective": "Explain the current branch state for the Math30 Microsoft Forms transfer work.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "None.",
+        "commandsRun": "- `Get-Content .stax/status.json -Raw`\n- `git status --short --branch`\n- `git branch -vv --all`\n- `git log --oneline --decorate --graph --all --max-count=30`\n- `git rev-list --left-right --count main...codex/math30-msforms-transfer; git rev-list --left-right --count origin/main...origin/codex/math30-msforms-transfer`\n- `git merge-base main codex/math30-msforms-transfer; git merge-base --is-ancestor main codex/math30-msforms-transfer`\n- `git log --oneline main..codex/math30-msforms-transfer; git log --oneline codex/math30-msforms-transfer..main`\n- `git diff --name-status main..codex/math30-msforms-transfer`\n- `git show --stat --oneline --decorate --no-renames 4a806ef`\n- `git diff -- package.json main..codex/math30-msforms-transfer`\n- `git log --oneline --decorate --all --simplify-by-decoration --max-count=20`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Current branch status: exit 0; on `codex/math30-msforms-transfer` tracking `origin/codex/math30-msforms-transfer`.\n- Branch listing: exit 0; local and remote Math30 branch both at `4a806ef`, local and remote `main` both at `ce9c37a`.\n- Graph log: exit 0; Math30 branch is directly on top of `main`.\n- Ahead/behind counts: exit 0; `main...codex/math30-msforms-transfer` is `0 1`, and remote comparison is also `0 1`.\n- Merge-base check: exit 0; merge base is `ce9c37a`, and `main` is an ancestor of the Math30 branch.\n- Directional logs: exit 0; Math30 has one commit over main, `4a806ef Add Math 30 Microsoft Forms converter`; main has no commits missing from Math30.\n- Diff name/status: exit 0; Math30 changes 17 files: `package.json`, one CLI script, MS Forms ingest/export modules, and focused unit tests.\n- Commit stat: exit 0; `4a806ef` adds 3543 lines across 17 files.\n- Simplified branch/stash log: exit 0; also shows old `backup/merge-recovery-20260312-1512` branch and a stash `On main: pre-merge local work`.",
+        "verified": "- Current branch is clean and aligned with `origin/codex/math30-msforms-transfer`.\n- `main` is clean and aligned with `origin/main`.\n- The Math30 branch is not diverged; it is exactly one commit ahead of `main`.\n- The one feature commit is `4a806ef Add Math 30 Microsoft Forms converter`.",
+        "weakProvisional": "- The existing `HANDOFF.md` is not Math30-specific, so it does not explain the branch relationship.",
+        "unverified": "- No build or tests were run during this branch audit.\n- The stash content was not inspected.",
+        "risks": "- `main` does not yet contain the Math30 Microsoft Forms converter.\n- The stash may contain older local work, but it is not part of the current clean branch state.",
+        "oneNextAction": "Run the targeted MS Forms tests and build on `codex/math30-msforms-transfer` before merging or promoting the branch."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.871Z"
+}

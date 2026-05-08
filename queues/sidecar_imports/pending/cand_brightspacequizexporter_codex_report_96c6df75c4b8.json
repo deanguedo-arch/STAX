@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_96c6df75c4b8",
+  "sourceEventId": "codex_session_report_96c6df75c4b8",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Record the user's manual Q22 and Q23 Math 30 corrections into the local review intake files and validate the JSON.. Next: Confirm Q23 fraction orientation, provide Q6/Q12 answers, then implement the manual override application path.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T18:31:30.097Z",
+      "reportHash": "96c6df75c4b8e3bee9c7194c0bf62a9ec99f23c61d113025673480039bc44750",
+      "sections": {
+        "objective": "Record the user's manual Q22 and Q23 Math 30 corrections into the local review intake files and validate the JSON.",
+        "filesChanged": "- tmp/math30-msforms-review/manual-question-checks.json\n- tmp/math30-msforms-review/manual-question-checks.md\n- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.md`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.json`\n- `node -e \"<parse manual-question-checks.json and print Q22/Q23 correctedSource>\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; branch reports clean because the review files are under ignored `tmp/`.\n- Review files read: exit 0.\n- JSON parse/summary: exit 0; Q22 and Q23 correctedSource entries are valid JSON.",
+        "verified": "- Q22 is recorded as a written-response/composite item with the breakfast restaurant prompt, tree diagram context, and FCP result `3 x 4 x 2 = 24`.\n- Q23 is recorded as a short-answer item with prompt `Algebraically solve for n in the following equation:` and normalized equation `\\frac{n!}{(n - 2)!} = 72`.\n- Q23 expected answer is recorded as `n = 9`.",
+        "weakProvisional": "- Q23 fraction orientation is provisional because the pasted source was visually mangled. It was normalized to `n!` over `(n - 2)!` based on current generated output and solvable form.",
+        "unverified": "- Q6 and Q12 correct answers are still blank.\n- Q23 fraction orientation has not been visually confirmed against the source PDF.\n- The review intake is still not wired into converter output generation.",
+        "risks": "- Applying Q23 with inverted fraction orientation would create an incorrect formula.",
+        "oneNextAction": "Confirm Q23 fraction orientation, provide Q6/Q12 answers, then implement the manual override application path."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.873Z"
+}

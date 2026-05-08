@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_8165ef148148",
+  "sourceEventId": "codex_session_report_8165ef148148",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Explain the ideal export format for Math 30 questions so they can be imported into Microsoft Forms without losing formula meaning.. Next: Treat the ideal export as a two-track artifact: Forms-friendly Word layout plus canonical linear math source for durable formula rendering/fallback.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T17:12:23.669Z",
+      "reportHash": "8165ef1481489aa010fbd8d625828556d8528583658efa27ed3a74a282e2c8de",
+      "sections": {
+        "objective": "Explain the ideal export format for Math 30 questions so they can be imported into Microsoft Forms without losing formula meaning.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.",
+        "verified": "- The branch is clean and still on the resume branch.\n- Microsoft Forms Quick Import guidance was checked externally before answering.",
+        "weakProvisional": "- No live import into Microsoft Forms was tested in this turn.",
+        "unverified": "- Whether Microsoft Forms preserves Office native equation objects from the generated DOCX in this specific tenant/browser.",
+        "risks": "- Microsoft Forms Quick Import officially supports only simple math and basic symbols, so complex equations may still need manual review after import.",
+        "oneNextAction": "Treat the ideal export as a two-track artifact: Forms-friendly Word layout plus canonical linear math source for durable formula rendering/fallback."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

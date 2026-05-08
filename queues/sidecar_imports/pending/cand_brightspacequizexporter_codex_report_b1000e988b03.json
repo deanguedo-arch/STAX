@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_b1000e988b03",
+  "sourceEventId": "codex_session_report_b1000e988b03",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Clarify exactly what the user is checking in the original PDF and create a concrete local place to enter manual question corrections.. Next: Fill `tmp/math30-msforms-review/manual-question-checks.json` with the exact source text/equations/options/answers from the PDF, then wire accepted entries into the conversion pipeline.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T16:58:22.787Z",
+      "reportHash": "b1000e988b037f6a657430418e07060df88b7f8dbc9f66d0bfaf130005def805",
+      "sections": {
+        "objective": "Clarify exactly what the user is checking in the original PDF and create a concrete local place to enter manual question corrections.",
+        "filesChanged": "- tmp/math30-msforms-review/manual-question-checks.json\n- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content .gitignore | Select-String -Pattern 'tmp|Temp|output|out'`\n- `New-Item -ItemType Directory -Force tmp\\math30-msforms-review`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status before review file: exit 0; clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.\n- `.gitignore` check: exit 0; `tmp/*` is ignored except `.gitkeep`.\n- Directory creation: exit 0; `tmp\\math30-msforms-review` exists.\n- Review file creation: success via patch.",
+        "verified": "- `tmp/` is ignored, so the manual review intake file will not be accidentally committed.\n- The review file lists the current reproducible questions needing source checks: Q5, Q6, Q12, Q22, Q23, plus Q9 as an optional STAX-handoff mismatch item.",
+        "weakProvisional": "- This is an intake sheet, not yet wired as an automatic converter override.",
+        "unverified": "- No manual corrections have been entered yet.\n- No rerun has used the review data.",
+        "risks": "- If the user fills Q9 from a different numbering scheme, we must map it back to the current output before applying it.",
+        "oneNextAction": "Fill `tmp/math30-msforms-review/manual-question-checks.json` with the exact source text/equations/options/answers from the PDF, then wire accepted entries into the conversion pipeline."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_d6766c0ae20b",
+  "sourceEventId": "codex_session_report_d6766c0ae20b",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Answer how to open a browser from the Windows/VS Code/Codex workflow.. Next: Use `Start-Process \"<url>\"` or `start \"<url>\"` from PowerShell to open a browser.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-08T14:48:23.427Z",
+      "reportHash": "d6766c0ae20b579a3c8d02a125074cb8fb60b1a5ef65576525acad3616e61c4d",
+      "sections": {
+        "objective": "Answer how to open a browser from the Windows/VS Code/Codex workflow.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.",
+        "verified": "- STAX sidecar status is currently `Pass`.",
+        "weakProvisional": "- Browser commands were not executed because the user asked how, not to open a specific URL.",
+        "unverified": "- Whether the user's nightly VS Code has a specific browser preview extension enabled.",
+        "risks": "- Different VS Code builds can use different browser preview features, but normal Windows browser launching works from PowerShell.",
+        "oneNextAction": "Use `Start-Process \"<url>\"` or `start \"<url>\"` from PowerShell to open a browser."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.877Z"
+}

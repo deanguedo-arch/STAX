@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_495fb2178881",
+  "sourceEventId": "codex_session_report_495fb2178881",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Implement the Math 30 manual patch path so reviewed question text/formulas can be applied to the Microsoft Forms export, preserving formulas in native DOCX output and leaving unknown answers unkeyed.. Next: Open/import `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2\\quiz.msforms.quickimport.docx` into Microsoft Forms and inspect Q5/Q6/Q12/Q22/Q23 rendering before claiming Forms import success.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T18:44:27.548Z",
+      "reportHash": "495fb217888170f9628bcd0337942cc520bf0e7585b4e803786c1a7a0db96e6c",
+      "sections": {
+        "objective": "Implement the Math 30 manual patch path so reviewed question text/formulas can be applied to the Microsoft Forms export, preserving formulas in native DOCX output and leaving unknown answers unkeyed.",
+        "filesChanged": "- scripts/brightspaceexport.ts\n- src/ingest/msforms/convertBrightspacePdfToMsForms.ts\n- src/ingest/msforms/manualPatches.ts\n- src/ingest/msforms/mathUnicode.ts\n- src/export/msforms/formsDocx.ts\n- src/test/unit/ingest/msFormsManualPatches.test.ts\n- src/test/unit/export/msFormsDocx.test.ts\n- src/test/unit/scripts/brightspaceExportScript.test.ts\n- .stax/codex-report.md\n\nLocal ignored review/generated artifacts used:\n- tmp/math30-msforms-review/manual-question-checks.json\n- tmp/math30-msforms-review/manual-question-checks.md\n- C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2\\*",
+        "testsAdded": "- Added manual patch tests for skipping blank placeholders and suppressing false-positive diagram warnings after manual review.\n- Added DOCX rendering test for structured native math from linear formulas.\n- Added converter/CLI test for `--manual-patches`.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `npm test -- src/test/unit/scripts/brightspaceExportScript.test.ts` before implementation: failed as expected because manual patches were ignored.\n- `npm test -- src/test/unit/scripts/brightspaceExportScript.test.ts` after implementation.\n- `npm test -- src/test/unit/ingest/msFormsManualPatches.test.ts` before placeholder/diagram fixes: failed as expected.\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts` before structured math rendering: failed as expected.\n- `npm test -- src/test/unit/ingest/msFormsManualPatches.test.ts`\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts`\n- `npm test -- src/test/unit/ingest/msFormsManualPatches.test.ts src/test/unit/export/msFormsDocx.test.ts src/test/unit/scripts/brightspaceExportScript.test.ts`\n- `npm run brightspaceexport -- convert \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"<temp>\" --render-dpi 300 --equation-recovery glyphs-first --vision-fallback equations-only --manual-patches tmp\\math30-msforms-review\\manual-question-checks.json`\n- Inspected generated `quiz.forms_lint.txt`, `quiz.answer_key.json`, `quiz.question_bank.json`, and native DOCX `word/document.xml`.\n- `npm run build`\n- `npm test`\n- `npm run ingest:ci`\n- `git restore -- python_ingest\\...\\__pycache__\\*.pyc`\n- `git diff --stat`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Red test for manual patch application: exit 1; expected failure showed generated prompt stayed `Evaluate.` instead of applying reviewed patch.\n- Red test for blank placeholders: exit 1; expected failure showed blank optional Q9 became a patch.\n- Red test for structured math rendering: exit 1; expected failure showed native DOCX had raw linear math instead of `<m:sPre>`, `<m:sSub>`, and `<m:f>`.\n- Focused final suite: exit 0; 3 files passed, 11 tests passed.\n- Patched Math 30 conversion: exit 0; generated DOCX/JSON/lint/answer key under `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2`.\n- Patched output inspection: Q5/Q6/Q12/Q22/Q23 are patched; optional blank Q9 is ignored; native DOCX has `<m:f>`, `<m:sPre>`, `<m:sSub>`, and no raw `\\frac`.\n- Patched answer key contains Q5, Q22, and Q23 only. Q6 and Q12 remain unkeyed as requested.\n- Patched lint no longer has Q5/Q6/Q12/Q22/Q23 missing-math/diagram errors. Remaining warnings are expected: missing answer keys for some multiple choice items, region segmentation info, and earlier glyph recovery notices for Q1/Q2/Q3/Q16.\n- `npm run build`: exit 0.\n- Full `npm test`: exit 1; unrelated Windows/env tests failed:\n  - `trackPdfPathDriftScript.test.ts` path separator expectation.\n  - `buildIngestParityScoreboardScript.test.ts` path separator expectation.\n  - `ingestEnvCheckScript.test.ts` python bootstrap expectations.\n- `npm run ingest:ci`: exit 0; build, intake validation, focused ingest suite, and 22 manual benchmarks passed.",
+        "verified": "- `--manual-patches <json>` is accepted by `brightspaceexport convert`.\n- The reviewed Math 30 patch JSON is applied before lint and DOCX export.\n- Manual formulas are represented as math segments with source `manual`.\n- Native DOCX output uses structured OMML for reviewed fractions and permutation subscripts.\n- Quick Import output gets readable non-LaTeX fallback text.\n- Blank review placeholders are ignored.\n- Q6 and Q12 are left out of the answer key because the answers are unavailable.",
+        "weakProvisional": "- Q23 fraction orientation is still provisional because the pasted source was visually mangled; current patch uses `n! / (n - 2)! = 72`.\n- The generated DOCX has not yet been imported into Microsoft Forms.\n- Full `npm test` has unrelated failures that predate or sit outside this MS Forms patch path.",
+        "unverified": "- Microsoft Forms import success for `quiz.msforms.quickimport.docx`.\n- Visual rendering inside Microsoft Forms after import.\n- Q6 and Q12 correct answer keys.",
+        "risks": "- Microsoft Forms Quick Import may still flatten or alter some math despite the native DOCX carrying structured OMML.\n- If Q23 source fraction is actually inverted, the manual patch needs correction before using the output as final.",
+        "oneNextAction": "Open/import `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2\\quiz.msforms.quickimport.docx` into Microsoft Forms and inspect Q5/Q6/Q12/Q22/Q23 rendering before claiming Forms import success."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.873Z"
+}

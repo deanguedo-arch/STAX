@@ -46,6 +46,125 @@ describe("STAX sidecar harvest, review, promote, and dashboard", () => {
     expect(harvested.skippedPrivacyBlocked).toBe(1);
   });
 
+  it("harvests codex reports as repo-memory candidates without promoting", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-report-harvest-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-report-"));
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(path.join(repoPath, ".stax", "codex-report.md"), codexReport("Prefer QTI visual export"), "utf8");
+
+    const harvested = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+
+    expect(harvested.imported).toBe(1);
+    expect(pending).toHaveLength(1);
+    expect(pending[0]!.candidateType).toBe("repo_memory");
+    expect(pending[0]!.scope).toBe("repo");
+    expect(pending[0]!.summary).toContain("Prefer QTI visual export");
+    expect(pending[0]!.proposedArtifact?.destinationHint).toBe("memory/candidates/");
+    expect(pending[0]!.proposedArtifact?.payload).toMatchObject({
+      sourceKind: "codex_report",
+      sections: expect.objectContaining({
+        objective: "Prefer QTI visual export",
+        verified: "- QTI item structure produced real Google Forms controls.",
+        oneNextAction: "Use the QTI visual route before PDF crops when Common Cartridge data exists."
+      })
+    });
+    await expect(fs.readdir(path.join(staxRoot, "memory", "candidates"))).rejects.toThrow();
+  });
+
+  it("parses older bare-heading codex reports without section bleed", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-bare-report-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-bare-report-"));
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective",
+        "Reject script existence as proof.",
+        "",
+        "Files changed",
+        "- .stax/codex-report.md",
+        "",
+        "Tests added",
+        "- None.",
+        "",
+        "Commands run",
+        "- `npm run build`",
+        "",
+        "Command output summary with exit codes",
+        "- Build exit 0.",
+        "",
+        "What is verified",
+        "- Command output exists.",
+        "",
+        "What is weak/provisional",
+        "- Live form not opened.",
+        "",
+        "What is unverified",
+        "- Browser view.",
+        "",
+        "Risks",
+        "- Fake proof.",
+        "",
+        "One next action",
+        "Run the actual proof command."
+      ].join("\n"),
+      "utf8"
+    );
+
+    await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+    const sections = pending[0]!.proposedArtifact?.payload.sections as Record<string, string>;
+
+    expect(sections.objective).toBe("Reject script existence as proof.");
+    expect(sections.filesChanged).toBe("- .stax/codex-report.md");
+    expect(sections.verified).toBe("- Command output exists.");
+    expect(sections.objective).not.toContain("Files changed");
+  });
+
+  it("does not duplicate codex report candidates across repeated harvests", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-report-dedupe-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-report-dedupe-"));
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(path.join(repoPath, ".stax", "codex-report.md"), codexReport("Chunk large Google Forms batches"), "utf8");
+
+    const first = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const second = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+
+    expect(first.imported).toBe(1);
+    expect(second.imported).toBe(0);
+    expect(pending).toHaveLength(1);
+  });
+
+  it("backfills repo-matched codex report writes from session logs without raw transcript payloads", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-session-report-");
+    const otherRepoPath = await createTempGitRepo("stax-sidecar-other-report-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-session-report-"));
+    const sessionsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-sessions-"));
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(path.join(repoPath, ".stax", "codex-report.md"), "", "utf8");
+    await writeSessionLog(sessionsRoot, [
+      sessionMeta("session-brightspace"),
+      turnContext(repoPath),
+      assistantMessage("raw transcript text that should not be copied"),
+      reportPatch(repoPath, codexReport("Reject script existence as proof")),
+      turnContext(otherRepoPath),
+      reportPatch(otherRepoPath, codexReport("Ignore other repo report"))
+    ]);
+
+    const harvested = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot, sessionsRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+
+    expect(harvested.imported).toBe(1);
+    expect(pending).toHaveLength(1);
+    expect(pending[0]!.summary).toContain("Reject script existence as proof");
+    const payloadText = JSON.stringify(pending[0]!.proposedArtifact?.payload);
+    expect(payloadText).toContain("codex_session_report");
+    expect(payloadText).not.toContain("raw transcript text that should not be copied");
+    expect(payloadText).not.toContain("Ignore other repo report");
+  });
+
   it("promotes only with approval and keeps repo memory repo-scoped", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-promote-");
     const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-promote-"));
@@ -138,6 +257,97 @@ function baseEvent(
     privacy: {
       redactionStatus: "clean",
       redactionNotes: []
+    }
+  };
+}
+
+function codexReport(objective: string): string {
+  return [
+    "# Codex Report",
+    "",
+    "## Objective",
+    objective,
+    "",
+    "## Files changed",
+    "- `src/example.ts`",
+    "",
+    "## Tests added",
+    "- `tests/example.test.ts`",
+    "",
+    "## Commands run",
+    "- `npm run build`",
+    "",
+    "## Command output summary with exit codes",
+    "- `npm run build`: exit 0",
+    "",
+    "## What is verified",
+    "- QTI item structure produced real Google Forms controls.",
+    "",
+    "## What is weak/provisional",
+    "- Live editor visual inspection is still pending.",
+    "",
+    "## What is unverified",
+    "- Every generated form has not been manually opened.",
+    "",
+    "## Risks",
+    "- Large banks can exceed bridge limits.",
+    "",
+    "## One next action",
+    "Use the QTI visual route before PDF crops when Common Cartridge data exists.",
+    ""
+  ].join("\n");
+}
+
+async function writeSessionLog(sessionsRoot: string, events: unknown[]): Promise<void> {
+  const dayDir = path.join(sessionsRoot, "2026", "05", "08");
+  await fs.mkdir(dayDir, { recursive: true });
+  await fs.writeFile(
+    path.join(dayDir, "rollout-2026-05-08T00-00-00-session-brightspace.jsonl"),
+    events.map((event) => JSON.stringify(event)).join("\n") + "\n",
+    "utf8"
+  );
+}
+
+function sessionMeta(id: string): unknown {
+  return {
+    timestamp: "2026-05-08T00:00:00.000Z",
+    type: "session_meta",
+    payload: { id }
+  };
+}
+
+function turnContext(cwd: string): unknown {
+  return {
+    timestamp: "2026-05-08T00:00:01.000Z",
+    type: "turn_context",
+    payload: { cwd }
+  };
+}
+
+function assistantMessage(text: string): unknown {
+  return {
+    timestamp: "2026-05-08T00:00:02.000Z",
+    type: "response_item",
+    payload: {
+      type: "message",
+      role: "assistant",
+      content: [{ type: "output_text", text }]
+    }
+  };
+}
+
+function reportPatch(repoPath: string, content: string): unknown {
+  return {
+    timestamp: "2026-05-08T00:00:03.000Z",
+    type: "event_msg",
+    payload: {
+      type: "patch_apply_end",
+      changes: {
+        [path.join(repoPath, ".stax", "codex-report.md")]: {
+          type: "update",
+          content
+        }
+      }
     }
   };
 }

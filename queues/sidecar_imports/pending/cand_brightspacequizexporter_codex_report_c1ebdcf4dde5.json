@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_c1ebdcf4dde5",
+  "sourceEventId": "codex_session_report_c1ebdcf4dde5",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Apply the user's reviewed weird-format fixes for the Math 30 Microsoft Forms export, regenerate the DOCX, and verify the export no longer contains Brightspace print chrome or raw LaTeX math.. Next: Import `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-reviewed.717ccd\\quiz.msforms.quickimport.docx` into Microsoft Forms and inspect Q4, Q6, Q11, Q13, Q15, and Q19 first.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T19:43:25.301Z",
+      "reportHash": "c1ebdcf4dde5f38d7f5988a2d045c157af029ec911e2290c5973cb26facca6ef",
+      "sections": {
+        "objective": "Apply the user's reviewed weird-format fixes for the Math 30 Microsoft Forms export, regenerate the DOCX, and verify the export no longer contains Brightspace print chrome or raw LaTeX math.",
+        "filesChanged": "- `scripts/brightspaceexport.ts`\n- `src/ingest/msforms/convertBrightspacePdfToMsForms.ts`\n- `src/ingest/msforms/manualPatches.ts`\n- `src/ingest/msforms/brightspacePrintRegions.ts`\n- `src/ingest/msforms/mathUnicode.ts`\n- `src/export/msforms/formsDocx.ts`\n- `src/test/unit/scripts/brightspaceExportScript.test.ts`\n- `src/test/unit/ingest/msFormsManualPatches.test.ts`\n- `src/test/unit/ingest/msFormsBrightspaceRegions.test.ts`\n- `src/test/unit/ingest/msFormsMath.test.ts`\n- `src/test/unit/export/msFormsDocx.test.ts`\n- `.stax/codex-report.md`\n- Local ignored review input: `tmp/math30-msforms-review/manual-question-checks.json`",
+        "testsAdded": "- Manual patch parsing/application coverage for blank placeholders and reviewed diagram prompts.\n- Brightspace print-region coverage that rejects URL/header/page-counter/score-marker chrome.\n- DOCX math coverage for Alberta permutation notation, fractions, binomial notation, repeated fractions, and multiline prompt line breaks.\n- CLI coverage for `--manual-patches`.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Select-String -Path C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md -Pattern 'brightspacequizexporter|math30|msforms|manual patches'`\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsMath.test.ts` (red before binomial/repeated-fraction implementation)\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts` (red before multiline prompt line-break implementation)\n- `node -e \"const fs=require('fs'); const p='tmp/math30-msforms-review/manual-question-checks.json'; const data=JSON.parse(fs.readFileSync(p,'utf8')); console.log(data.questionsToCheck.map(q=>q.questionNumber).join(','));\"`\n- `npm test -- src/test/unit/ingest/msFormsManualPatches.test.ts src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsMath.test.ts`\n- Math 30 conversion command:\n  `npm run brightspaceexport -- convert \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-reviewed.717ccd\" --render-dpi 300 --equation-recovery glyphs-first --vision-fallback equations-only --manual-patches tmp\\math30-msforms-review\\manual-question-checks.json`\n- Node inspection of `quiz.question_bank.json` for Q4, Q6, Q11, Q13, Q15, and Q19.\n- Node inspection of `quiz.msforms.quickimport.docx` and `quiz.msforms.native-math.docx` XML for Brightspace URL/header/page-counter/score-marker leaks, raw `\\binom`, raw `\\frac`, OMML binomial/fraction output, and Word line breaks.\n- `Get-Content -Raw \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-reviewed.717ccd\\quiz.forms_lint.txt\"`\n- `npm test -- src/test/unit/ingest/msFormsManualPatches.test.ts src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsMath.test.ts src/test/unit/scripts/brightspaceExportScript.test.ts src/test/unit/ingest/msFormsBrightspaceRegions.test.ts`\n- `npm run ingest:ci`\n- `git status --short --branch`\n- `git diff --stat`\n- `git diff --check`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Red tests: exit 1; failed for missing `\\binom` quick import normalization, missing OMML binomial output, missing second native fraction, and missing Word line breaks.\n- JSON patch validation: exit 0; reviewed question list is `4,5,6,11,12,13,15,19,22,23,9`; Q9 remains blank and ignored by patch parsing.\n- Math 30 conversion: exit 0; generated DOCX/question-bank outputs in `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-reviewed.717ccd`.\n- Question-bank inspection: exit 0; Q4, Q6, Q11, Q13, Q15, and Q19 match the reviewed screenshot content.\n- DOCX XML inspection: exit 0; no Brightspace URL, page counter, standalone `/1`, raw `\\binom`, or raw `\\frac`; QuickImport has Word line breaks; native-math DOCX has binomial OMML and 5 fraction OMML nodes.\n- Focused tests: exit 0; 5 test files passed, 21 tests passed.\n- `npm run ingest:ci`: exit 0; build, focused ingest suite, and 22 manual benchmark checks passed.\n- `git diff --check`: exit 0; only line-ending warnings from Git autocrlf.",
+        "verified": "- The latest QuickImport DOCX contains corrected Q4, Q6, Q11, Q13, Q15, and Q19 text/options from the user's screenshots.\n- The latest QuickImport DOCX has no Brightspace print URL, page counters, or standalone `/1` score markers.\n- Q4 quick import renders as `C(6, 2)` instead of the broken `Evaluate ()` split.\n- Q13 quick import renders both factorial fractions as readable text instead of raw LaTeX or split choices.\n- Q15 and Q19 prompts use real Word line breaks instead of raw newline text.\n- The native-math DOCX contains structured OMML for binomial and fraction expressions.\n- Build and ingest promotion gate still pass.",
+        "weakProvisional": "- Multiple-choice answers remain mostly unkeyed because the user supplied formatting corrections, not answer-key review.\n- Q9 remains visibly mis-segmented in the generated output because no reviewed patch was supplied for Q9 in this turn.\n- QuickImport uses Forms-safe text for math; the native-math DOCX is the visual math review copy.",
+        "unverified": "- Microsoft Forms browser import/rendering has not been run in this turn.\n- Generated DOCX files are in `%TEMP%`, not a committed artifact directory.",
+        "risks": "- Microsoft Forms may still simplify some math during import.\n- `%TEMP%` cleanup can remove generated files later.\n- The branch has local uncommitted code/test changes.",
+        "oneNextAction": "Import `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-reviewed.717ccd\\quiz.msforms.quickimport.docx` into Microsoft Forms and inspect Q4, Q6, Q11, Q13, Q15, and Q19 first."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.873Z"
+}

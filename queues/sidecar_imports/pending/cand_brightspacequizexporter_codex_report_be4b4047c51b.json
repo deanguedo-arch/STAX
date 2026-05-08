@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_be4b4047c51b",
+  "sourceEventId": "codex_session_report_be4b4047c51b",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Provide the exact original Math 30 source PDF path used for the current conversion run.. Next: Open this PDF and inspect Q5/Q6/Q12/Q22/Q23 against the generated output.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T16:21:57.990Z",
+      "reportHash": "be4b4047c51b2fb303983196d03abd65bb79aea94debf59f4cdd8aa409c80d66",
+      "sections": {
+        "objective": "Provide the exact original Math 30 source PDF path used for the current conversion run.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Get-Item \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf\"`\n- `Get-FileHash \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf\" -Algorithm SHA256`\n- `git status --short --branch --untracked-files=all`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Source PDF item read: exit 0; file exists, length 152040 bytes, last write 2026-05-04 12:18:54 PM.\n- Source PDF hash: exit 0; SHA256 `2E70A236E3B107E7C4A7EBC74C6AC568BBF8C23A88BE1965E28B39C0E904FC30`.\n- Git status: exit 0; clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.",
+        "verified": "- The original PDF used for the current Math 30-2 conversion run is present in Downloads.",
+        "weakProvisional": "- None for the path lookup.",
+        "unverified": "- No PDF content was re-inspected in this turn.",
+        "risks": "- There are other Math 30 PDFs in Downloads; this is specifically the one used for the current 23-question run.",
+        "oneNextAction": "Open this PDF and inspect Q5/Q6/Q12/Q22/Q23 against the generated output."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

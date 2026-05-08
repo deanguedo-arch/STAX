@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_67d094dbb38d",
+  "sourceEventId": "codex_session_report_67d094dbb38d",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Mark Q6 and Q12 as intentionally unkeyed because the user does not currently have the correct answers.. Next: Proceed with formula/text override implementation while leaving Q6 and Q12 out of the answer key.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T18:33:08.089Z",
+      "reportHash": "67d094dbb38d50d9a34ca13c0f704d75a16790cd72aed716318da0cf700fabda",
+      "sections": {
+        "objective": "Mark Q6 and Q12 as intentionally unkeyed because the user does not currently have the correct answers.",
+        "filesChanged": "- tmp/math30-msforms-review/manual-question-checks.json\n- tmp/math30-msforms-review/manual-question-checks.md\n- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `node -e \"<parse manual-question-checks.json and print Q6/Q12 answer status>\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; branch reports clean because review files are under ignored `tmp/`.\n- JSON parse/summary: exit 0; Q6 and Q12 answers remain blank and notes say to leave unkeyed/do not infer.",
+        "verified": "- Q6 and Q12 are now explicitly recorded as unkeyed for now.\n- No answer was inferred.",
+        "weakProvisional": "- The manual review intake is not yet wired into converter output generation.",
+        "unverified": "- Q6 and Q12 correct answers remain unknown.",
+        "risks": "- Microsoft Forms quiz auto-grading will be incomplete for unkeyed questions.",
+        "oneNextAction": "Proceed with formula/text override implementation while leaving Q6 and Q12 out of the answer key."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.873Z"
+}

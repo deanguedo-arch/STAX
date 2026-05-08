@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_1ba21c128484",
+  "sourceEventId": "codex_session_report_1ba21c128484",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Correct the mistaken Math30 smoke context, identify the real Math test source, and report the actual current MS Forms conversion state.. Next: Start a focused TDD fix for the real Math 30-1 converter defects: first Q1/Q5 collapsed prompts, then Q17 missing exponent/math, then diagram/image attachment handling.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T15:04:21.367Z",
+      "reportHash": "1ba21c1284848817c16f904aa9c6c6a60bd8f971ef65f1bc39633010ab4d2cee",
+      "sections": {
+        "objective": "Correct the mistaken Math30 smoke context, identify the real Math test source, and report the actual current MS Forms conversion state.",
+        "filesChanged": "- .stax/codex-report.md\n\nExisting uncommitted source/test changes from the previous turn remain:\n- src/ingest/msforms/questionBank.ts\n- src/test/unit/ingest/msFormsQuestionBank.test.ts\n\nGenerated but ignored:\n- tmp/math30-msforms-smoke/*\n- tmp/math30-1-msforms-smoke/*",
+        "testsAdded": "No new tests were added in this turn.",
+        "commandsRun": "- `Get-Content .stax/status.json -Raw`\n- `rg -i \"math 30|math30|nxt math|chapter 1|ch\\\\.1|ch 1|chapter 8|ch\\\\.8|sinusoidal|transformations|ms forms|microsoft forms\" . -g \"!node_modules/**\" -g \"!dist/**\" -g \"!Refereences for code/**\"`\n- `rg --files -u -g \"*.pdf\" -g \"*.docx\" -g \"*.csv\" -g \"*.json\" -g \"!node_modules/**\" -g \"!dist/**\" -g \"!Refereences for code/**\" | rg -i \"math|nxt|30|ch|chapter|sinus|transform|print|quiz\"`\n- `Get-ChildItem -Path . -Recurse -File -Include *.pdf,*.docx,*.csv,*.json | Where-Object { $_.FullName -notmatch '\\\\node_modules\\\\|\\\\dist\\\\|\\\\Refereences for code\\\\' -and $_.Name -match 'Math|NXT|30|Ch|Chapter|Sinus|Transform|Print|Quiz' }`\n- `Get-ChildItem -Recurse -Force tmp\\google-forms-prompt-images,tmp\\math30-pdf-send-images,tmp\\math30-auto-images,tmp\\gemini-math30-test-pages -ErrorAction SilentlyContinue`\n- `Get-Content \"tmp\\google-forms-prompt-images\\Print Quiz - NXT Math 30-1 (Master)\\manifest.json\" -Raw`\n- `Get-Content \"tmp\\google-forms-prompt-images\\Print Quiz - NXT Math 30-1 (Master) 2\\manifest.json\" -Raw`\n- `Get-Content \"tmp\\google-forms-prompt-images\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2\\manifest.json\" -Raw`\n- `Get-Content tmp\\math30-pdf-send-images\\manifest.json -Raw`\n- `Get-Content tmp\\math30-auto-images\\manifest.json -Raw`\n- `Get-Content tmp\\gemini-math30-test-pages\\gemini-test-result.json -Raw`\n- `Get-Content scripts/send-math30-ch1-canonical-google-form.ts -Raw`\n- `Get-Content scripts/send-math30-2-ch8-canonical-google-form.ts -Raw`\n- `Get-ChildItem C:\\Users\\dean.guedo\\Downloads -File -Include *.pdf,*.docx,*.csv -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'Math|Mathematics|30|Quiz|Print|Ch|Chapter|Sinus|Transform|NXT' }`\n- `Test-Path \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - NXT Math 30-1 (Master) 2.pdf\"`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content tmp\\google-forms-prompt-images\\source\\manifest.json -Raw`\n- `npm run brightspaceexport -- convert \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - NXT Math 30-1 (Master) 2.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"tmp/math30-1-msforms-smoke\"`\n- `node -e \"<summarize tmp/math30-1-msforms-smoke/quiz.question_bank.json>\"`\n- `Get-Content tmp/math30-1-msforms-smoke/quiz.forms_lint.txt -Raw`\n- `Get-Content tmp/math30-1-msforms-smoke/quiz.extraction_warnings.json -Raw`\n- `Get-Content tmp/math30-1-msforms-smoke/quiz.math_region_artifacts.json -Raw`\n- `node -e \"<print tmp/math30-1-msforms-smoke generated question prompts>\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Repo search found Math30 canonical Google Forms scripts and temp Math30 image manifests.\n- Downloads search found the real Math 30-1 source PDF: `C:\\Users\\dean.guedo\\Downloads\\Print Quiz - NXT Math 30-1 (Master) 2.pdf`.\n- `Test-Path` for the real Math 30-1 source PDF: exit 0; file exists, length 257261 bytes, last write 2026-04-28.\n- Real Math 30-1 MS Forms converter smoke: exit 0; generated DOCX/JSON/lint outputs under `tmp/math30-1-msforms-smoke`.\n- Generated Math 30-1 bank summary: 17 questions, numbered `1..17`, types are 7 multiple-choice, 8 numerical-response, 2 written-response, answer key count 0, warning count 3.\n- Generated Math 30-1 lint: answer-key warning, region segmentation info, Q17 math-region crop warning, diagram warnings for Q3/Q4/Q6/Q7/Q8/Q10/Q11/Q13/Q15, and an error `Q17 missing_math_after_solve_for`.\n- Prompt inspection showed content fidelity issues: Q1 prompt collapsed to `2`, Q5 prompt collapsed to `2`, Q17 lost exponent/math in `f(x) = (x + 4)^2 - 2`, and several prompts include Brightspace footer/header text.",
+        "verified": "- The previous smoke used the wrong source file; `fixtures/benchmarks/sources/Question Booklet 30-2 Unit 1 Exam.pdf` is not the Math 30 test.\n- The real Math 30-1 source PDF is in Downloads.\n- The real Math 30-1 converter path runs and writes outputs.\n- The real Math 30-1 output is not import-ready because content fidelity defects remain.",
+        "weakProvisional": "- The uncommitted UUID question-numbering fix from the previous turn is still present. It is valid generally, but it came from the mistaken smoke path and has not been committed.\n- The real Math 30-1 run did not depend on the mistaken Social Studies source.",
+        "unverified": "- The Math 30-2 Ch.8 source PDF was found in Downloads but was not run in this turn.\n- The generated DOCX files were not opened or imported into Microsoft Forms.\n- No new code fix was made for the real Math 30-1 content fidelity failures.",
+        "risks": "- Treating generated question count as success would be misleading; the current blocker is prompt/math/diagram fidelity.\n- Generated temp outputs under `tmp/` should remain ignored and not be committed.",
+        "oneNextAction": "Start a focused TDD fix for the real Math 30-1 converter defects: first Q1/Q5 collapsed prompts, then Q17 missing exponent/math, then diagram/image attachment handling."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

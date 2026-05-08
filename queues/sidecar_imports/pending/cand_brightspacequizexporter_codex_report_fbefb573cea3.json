@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_fbefb573cea3",
+  "sourceEventId": "codex_session_report_fbefb573cea3",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Resume from the current handoff after merging Math30 MS Forms work and identify/execute the remaining validation test task.. Next: Run the actual Math30 MS Forms conversion test against the intended Brightspace Print Quiz PDF and inspect the generated DOCX/JSON package.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T14:54:29.533Z",
+      "reportHash": "fbefb573cea3000b5439381c1f5f47a52a1cae51c1c24378980c758b9a7eeb03",
+      "sections": {
+        "objective": "Resume from the current handoff after merging Math30 MS Forms work and identify/execute the remaining validation test task.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "None.",
+        "commandsRun": "- `Get-Content .stax/status.json -Raw`\n- `if (Test-Path .stax/task.md) { Get-Content .stax/task.md -Raw } else { 'NO_STAX_TASK' }`\n- `if (Test-Path HANDOFF.md) { Get-Content HANDOFF.md -Raw } else { 'NO_HANDOFF' }`\n- `git status --short --branch`\n- `npm test -- src/test/unit/app/homeWorkspace.test.ts src/test/unit/app/importWorkflow.test.ts src/test/unit/app/projectEditorReview.test.tsx src/test/unit/app/importMerge.test.ts src/test/unit/app/localPdfDevClient.test.ts`\n- `Get-Content scripts/config/frozen-manifests.json -Raw`\n- `Get-Content scripts/ingest-promotion-check.mjs -Raw`\n- `npm run ingest:promotion-check -- pp20-ab1-docx.json`\n- `npm run ingest:promotion-check`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- STAX task read: exit 0; `.stax/task.md` still contains stale prior STAX-sidecar push text.\n- Handoff read: exit 0; current `HANDOFF.md` task is the recovery validation plan.\n- Initial status: exit 0; `main` is aligned with `origin/main`.\n- App/import validation tests: exit 0; 5 files passed, 22 tests passed.\n- Frozen manifest list read: exit 0; reviewed manifest list contains 22 entries.\n- Promotion-check script read: exit 0; confirmed argv selects targeted manual benchmarks.\n- Targeted manifest promotion check: exit 0; intake validated 35 manifests, focused ingest suite passed 24 files/232 tests with 1 skipped file, and `pp20-ab1-docx.json` passed.\n- Full promotion check: exit 0; intake validated 35 manifests, focused ingest suite passed 24 files/232 tests with 1 skipped file, and all 22 manual benchmarks passed.",
+        "verified": "- The current repo task from `HANDOFF.md` is validation, not another merge.\n- App boot/import workflow tests are green.\n- Targeted reviewed-manifest promotion check is green.\n- Full promotion check is green.\n- `main` was aligned with `origin/main` before validation.",
+        "weakProvisional": "- `.stax/task.md` is stale and does not describe the current handoff task.\n- `npm run build` was not rerun in this turn, but it passed during the immediately preceding merge/push workflow and also passed in the pre-push `ingest:ci` gate.",
+        "unverified": "- No real Math30 PDF was converted to MS Forms outputs in this turn.\n- No GitHub Actions status was checked after the earlier push.\n- The remaining stash `stash@{0}: On main: pre-merge local work` was not inspected.",
+        "risks": "- If the next goal is the Math30 live conversion test, a specific source PDF path and expected output location need to be selected before running the converter.",
+        "oneNextAction": "Run the actual Math30 MS Forms conversion test against the intended Brightspace Print Quiz PDF and inspect the generated DOCX/JSON package."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.871Z"
+}

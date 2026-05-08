@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_9c1547418c87",
+  "sourceEventId": "codex_session_report_9c1547418c87",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Try option 1 on one Common Cartridge quiz: render QTI prompts as images from cartridge content/assets and place real Google Forms answer controls underneath.. Next: Open the live proof form and decide whether this cartridge-derived visual prompt route is good enough to turn into the batch converter.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T15:43:02.502Z",
+      "reportHash": "9c1547418c87c7b59e49a1411f246737d77c12f244fb03e28f8fc9e9a9d1b345",
+      "sections": {
+        "objective": "Try option 1 on one Common Cartridge quiz: render QTI prompts as images from cartridge content/assets and place real Google Forms answer controls underneath.",
+        "filesChanged": "- `scripts/send-cartridge-qti-google-visual-proof.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- `.stax/codex-report.md`\n- Generated ignored prompt images:\n  - `tmp/cartridge-qti-google-visual-proof/section-5-1/q1.png`\n  - `tmp/cartridge-qti-google-visual-proof/section-5-1/q2.png`",
+        "testsAdded": "- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- `.stax/task.md` read\n- Memory citation line reads from `C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md`\n- `Get-Content -Raw C:\\Users\\dean.guedo\\.agents\\skills\\test-driven-development\\SKILL.md`\n- Existing repo file inspections for Google Forms bridge/project schema code\n- Cartridge QTI inventory commands to select a small quiz with embedded images\n- QTI XML inspections for Section 1.1, Section 1.4, Section 2.3, Section 3.5, and Section 5.1 candidates\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts` (red)\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts` (green)\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\section-5-1 --title \"Math 10C Section 5.1 QTI Visual Proof\" --dry-run`\n- Local image inspections for generated `q1.png` and `q2.png`\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\section-5-1 --title \"Math 10C Section 5.1 QTI Visual Proof\"`\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts`\n- `npm run build`\n- `git diff --check`\n- Final `git status --short --branch`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Initial git status: exit 0; branch was aligned with origin.\n- Red test: exit 1; failed because `scripts/send-cartridge-qti-google-visual-proof.ts` did not exist.\n- Green parser test: exit 0; 1 file, 2 tests passed.\n- Dry-run: exit 0; parsed `Math 10C Section 5.1 Quiz - Representing Relations`, rendered 2 prompt images, mapped Q1 to `multi_select`, and mapped Q2 to `multiple_choice`.\n- Local image inspection: q1 and q2 prompt images are readable and include cartridge diagrams.\n- Live send: exit 0; `SUCCESS qti_visual_1778168481537 [redacted-url] [redacted-url]\n- Focused tests: exit 0; 2 files, 9 tests passed.\n- `npm run build`: exit 0; TypeScript and Vite build passed with existing large-chunk warning.\n- `git diff --check`: exit 0.\n- Final git status: exit 0; the proof script and test are untracked, not committed.",
+        "verified": "- Option 1 works as a live proof for at least one Common Cartridge quiz.\n- QTI prompt text plus embedded cartridge images can be rendered into prompt images.\n- QTI item structure can produce real Google Forms answer controls:\n  - Q1 became checkbox/multi-select.\n  - Q2 became multiple choice.\n- The existing Google Forms bridge can send the cartridge-derived prompt images and controls.",
+        "weakProvisional": "- This is a proof script, not a full batch cartridge converter.\n- The renderer handles simple QTI HTML plus images; it does not yet render complex MathML exactly.\n- The script targets one default QTI path unless another `--qti-path` is provided.\n- The proof changes are untracked and not pushed.",
+        "unverified": "- Full-course batch conversion across all 78 QTI assessments.\n- Complex QTI item types beyond multiple choice, multiple response, fill-in-the-blank, and essay basics.\n- Live browser visual inspection by the user.",
+        "risks": "- Some quizzes have math-heavy choices or MathML in prompts that may need stronger rendering.\n- Some QTI images are diagrams inside prompts, while others may be full handwritten question images.\n- If kept, this proof should be promoted into a cleaner module/script with a package command and broader tests.",
+        "oneNextAction": "Open the live proof form and decide whether this cartridge-derived visual prompt route is good enough to turn into the batch converter."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-08T15:58:40.875Z"
+}

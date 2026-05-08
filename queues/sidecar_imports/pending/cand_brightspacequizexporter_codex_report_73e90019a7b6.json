@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_73e90019a7b6",
+  "sourceEventId": "codex_session_report_73e90019a7b6",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Create a practical place for hard-to-type Math 30 question formatting and enter Q5 from the user's screenshot.. Next: Continue filling `tmp/math30-msforms-review/manual-question-checks.md` with screenshots or plain-text transcriptions, then wire the completed corrections into the converter output.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T17:05:56.605Z",
+      "reportHash": "73e90019a7b65ae493d6a5a346e6717ba904982fc3e15faf022d142c18e06cce",
+      "sections": {
+        "objective": "Create a practical place for hard-to-type Math 30 question formatting and enter Q5 from the user's screenshot.",
+        "filesChanged": "- tmp/math30-msforms-review/manual-question-checks.json\n- tmp/math30-msforms-review/manual-question-checks.md\n- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.json`\n- `node -e \"JSON.parse(require('fs').readFileSync('tmp/math30-msforms-review/manual-question-checks.json','utf8')); console.log('manual-question-checks.json valid')\"`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.md`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; branch is clean because the review files are under ignored `tmp/`.\n- Existing review JSON read: exit 0.\n- JSON parse check: exit 0; `manual-question-checks.json valid`.\n- Markdown review sheet read: exit 0; Q5 is filled and Q6/Q12/Q22/Q23/optional Q9 are ready for manual entries.",
+        "verified": "- There is now a human-friendly Markdown intake file for math that does not type cleanly.\n- Q5 from the screenshot was entered as prompt `Solve for n.`, equation `{}_nP_3 = 504`, options A-D, and correct answer `B. n = 9`.\n- The JSON intake remains valid.",
+        "weakProvisional": "- The Markdown/JSON review files are local ignored intake files, not yet wired into the converter automatically.",
+        "unverified": "- Q6, Q12, Q22, Q23, and optional Q9 still need manual source entries.",
+        "risks": "- If review entries remain only in `tmp/`, they are local working notes and can be deleted by temp cleanup.",
+        "oneNextAction": "Continue filling `tmp/math30-msforms-review/manual-question-checks.md` with screenshots or plain-text transcriptions, then wire the completed corrections into the converter output."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

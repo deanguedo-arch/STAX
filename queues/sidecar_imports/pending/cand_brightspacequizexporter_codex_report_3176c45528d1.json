@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_3176c45528d1",
+  "sourceEventId": "codex_session_report_3176c45528d1",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Create a reusable living runbook for the Common Cartridge QTI to Google Forms visual export workflow, covering both proof styles and the current lessons from Math and Chemistry batches without tracking live Google Form URLs.. Next: Review the runbook after the next real QTI batch export and add the result to the Experiment Log.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-08T14:37:19.181Z",
+      "reportHash": "3176c45528d1517f4443877fb3a890d259066c0aa5da099478bbbad300b3a25a",
+      "sections": {
+        "objective": "Create a reusable living runbook for the Common Cartridge QTI to Google Forms visual export workflow, covering both proof styles and the current lessons from Math and Chemistry batches without tracking live Google Form URLs.",
+        "filesChanged": "- `docs/qti-google-forms-visual-export-runbook.md`\n- `.stax/codex-report.md`",
+        "testsAdded": "- None. This was a docs-only change.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- Memory lookup for existing `brightspacequizexporter` Google Forms bridge context.\n- `Get-Content -Raw .stax/task.md`\n- `Get-ChildItem docs`\n- `rg \"include-choices-in-image|only-indexes|max-questions-per-form|question-range|qti-path|summary|image-output-dir|dry-run\" scripts -g \"send-cartridge-qti-google-visual-*.ts\"`\n- `Get-Content -Raw docs\\qti-google-forms-visual-export-runbook.md`\n- `rg \"https?://|docs\\.google\\.com\" docs\\qti-google-forms-visual-export-runbook.md`\n- `git add --intent-to-add -- docs\\qti-google-forms-visual-export-runbook.md`\n- `git diff --check`\n- `git diff --stat`\n- `git diff -- docs\\qti-google-forms-visual-export-runbook.md | Select-Object -First 60`\n- `git reset -- docs\\qti-google-forms-visual-export-runbook.md`\n- `git status --short`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Branch status: exit 0; on `codex/resume-math30-msforms-20260506`.\n- Memory lookup: exit 0; confirmed existing Google Forms bridge context and `vite-node` guardrail notes.\n- `.stax/task.md` read: exit 0; file was nonblank, so it was not overwritten.\n- Docs directory listing: exit 0.\n- Script flag search: exit 0; confirmed current visual export flags including `--include-choices-in-image`, `--only-indexes`, `--max-questions-per-form`, `--question-range`, `--qti-path`, `--summary`, `--image-output-dir`, and `--dry-run`.\n- Runbook readback: exit 0; Markdown content inspected.\n- Live URL search: exit 1 with no matches, which is expected for `rg` when no URL patterns are found.\n- Intent-to-add: exit 0; used only so `git diff --check` would include the new untracked doc.\n- Whitespace check: exit 0; no whitespace errors, with Git's normal LF-to-CRLF working-copy warning.\n- Diff stat: exit 0; new runbook is 185 inserted lines.\n- Diff preview: exit 0; verified the new file appears as expected.\n- Reset path from index: exit 0; restored the doc to untracked working-tree status.\n- Final status: exit 0; only `docs/qti-google-forms-visual-export-runbook.md` is untracked.",
+        "verified": "- The runbook exists under `docs/`, not `docs/plans/`.\n- The runbook includes Purpose, Current Best Workflow, Export Styles, Command Recipes, Known Issues And Fixes, Audit Checklist, and Experiment Log sections.\n- The documented commands match the current script flags.\n- The tracked runbook contains no live Google Form URLs.\n- `git diff --check` passed against the new runbook after intent-to-add.",
+        "weakProvisional": "- The command recipes were not executed against a cartridge in this turn.\n- Markdown rendering was inspected as source text, not through a rendered preview tool.",
+        "unverified": "- Whether future script behavior will stay exactly aligned with the runbook after more pipeline changes.",
+        "risks": "- Because this is a living document, it will need updates when flags, bridge behavior, or preferred export style changes.",
+        "oneNextAction": "Review the runbook after the next real QTI batch export and add the result to the Experiment Log."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.877Z"
+}

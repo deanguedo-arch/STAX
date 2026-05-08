@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_0f3408841e4c",
+  "sourceEventId": "codex_session_report_0f3408841e4c",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Clarify that manual Math 30 overrides must preserve semantic formulas, not just pretty screenshots or plain notes, and update the review intake format accordingly.. Next: Implement a manual override path that reads the canonical formulas and emits them as semantic math segments in the native-math DOCX, with a readable fallback for Quick Import.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T17:07:53.945Z",
+      "reportHash": "0f3408841e4cc30b53d7b3bd4408af9b70ecf986a959aee60658f751562333e4",
+      "sections": {
+        "objective": "Clarify that manual Math 30 overrides must preserve semantic formulas, not just pretty screenshots or plain notes, and update the review intake format accordingly.",
+        "filesChanged": "- tmp/math30-msforms-review/manual-question-checks.md\n- tmp/math30-msforms-review/manual-question-checks.json\n- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Get-Content -Raw src\\export\\msforms\\formsDocx.ts`\n- `Get-Content -Raw src\\ingest\\msforms\\mathUnicode.ts`\n- `git status --short --branch --untracked-files=all`\n- `node -e \"JSON.parse(require('fs').readFileSync('tmp/math30-msforms-review/manual-question-checks.json','utf8')); console.log('manual-question-checks.json valid')\"`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.md`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Exporter reads: exit 0; current DOCX exporter distinguishes quick import text fallback from native math runs, but manual overrides are not yet wired as a durable input.\n- Git status read: exit 0.\n- JSON parse check: exit 0; `manual-question-checks.json valid`.\n- Markdown read: exit 0; review sheet now tells the user to enter LaTeX-style linear formulas.",
+        "verified": "- The manual intake now uses a canonical formula form, for example `{}_{n}P_{3} = 504`.\n- Q5 was updated from `_nP_3 = 504` to `{}_{n}P_{3} = 504`.\n- The point of manual review is now stated explicitly: screenshots/source PDF are truth, and linear formulas are the machine-readable version to wire into converter output.",
+        "weakProvisional": "- The linear formula intake is not yet automatically applied by the converter.\n- Native math rendering still needs a proper formula-to-DOCX path for richer structures like fractions and subscripts.",
+        "unverified": "- The generated DOCX has not been regenerated from the manual override.\n- Microsoft Forms import has not been tested.",
+        "risks": "- If manual overrides remain only as notes, they do not solve the actual math-formula export goal.",
+        "oneNextAction": "Implement a manual override path that reads the canonical formulas and emits them as semantic math segments in the native-math DOCX, with a readable fallback for Quick Import."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}
