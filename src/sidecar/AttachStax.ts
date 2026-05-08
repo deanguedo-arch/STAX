@@ -14,6 +14,7 @@ import { writeTurnContract } from "./TurnContract.js";
 
 export const STAX_AGENTS_SECTION_MARKER = "<!-- STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
 export const STAX_AGENTS_SECTION_END_MARKER = "<!-- /STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
+export const STAX_SIDECAR_PROTOCOL_VERSION = "stax-project-control-protocol-v1";
 
 export const STAX_AGENT_PROTOCOL = `# STAX Project-Control Protocol
 
@@ -84,6 +85,7 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
       `${JSON.stringify(
         {
           schemaVersion: "stax-sidecar-config-v1",
+          sidecarProtocolVersion: STAX_SIDECAR_PROTOCOL_VERSION,
           attachedAt: nowIso(),
           repoName: snapshot.repoName,
           repoPath,
@@ -224,8 +226,8 @@ export function upsertAgentsProtocolSection(existing: string): string {
   const endIndex = existing.indexOf(STAX_AGENTS_SECTION_END_MARKER, markerIndex);
   if (endIndex >= 0) {
     const afterEnd = endIndex + STAX_AGENTS_SECTION_END_MARKER.length;
-    return `${existing.slice(0, markerIndex).trimEnd()}\n\n${section}${existing.slice(afterEnd)}`;
+    return [existing.slice(0, markerIndex).trimEnd(), `${section}${existing.slice(afterEnd)}`].filter(Boolean).join("\n\n");
   }
 
-  return `${existing.slice(0, markerIndex).trimEnd()}\n\n${section}`;
+  return [existing.slice(0, markerIndex).trimEnd(), section].filter(Boolean).join("\n\n");
 }

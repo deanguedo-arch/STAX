@@ -59,6 +59,7 @@
     "staxcore:status": "tsx scripts/staxcoreWorkflowStatus.ts",
     "staxcore:wait": "tsx scripts/staxcoreWorkflowWait.ts",
     "stax:attach": "tsx scripts/staxAttach.ts",
+    "stax:sidecar-upgrade": "tsx scripts/staxSidecarUpgrade.ts",
     "stax:status": "tsx scripts/staxStatus.ts",
     "stax:gate": "tsx scripts/staxGate.ts",
     "stax:turn-contract": "tsx scripts/staxTurnContract.ts",

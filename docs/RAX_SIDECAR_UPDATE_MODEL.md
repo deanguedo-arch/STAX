@@ -2,7 +2,7 @@
 
 Date: 2026-05-08
 
-Status: design recorded.
+Status: implemented.
 
 ## Model
 
@@ -51,6 +51,21 @@ An upgrade should:
 - Preserve repo-specific `.stax/task.md`, `.stax/codex-report.md`, evidence files, ledgers, imports, and review state.
 - Report every changed path.
 - Refuse destructive cleanup unless explicitly approved.
+
+## Implemented Command
+
+`stax:sidecar-upgrade` now performs the safe-sync path:
+
+- Refreshes `.stax/AGENT_PROTOCOL.md`.
+- Upserts the STAX protocol section in `AGENTS.md`.
+- Adds the sidecar protocol version and missing safe defaults to `.stax/config.json`.
+- Ensures sidecar directories exist.
+- Ensures `.stax/` is ignored.
+- Creates missing control files only when absent.
+- Preserves existing task, report, ledger, learning-ledger, and evidence files.
+- Reports changed paths and preserved files as JSON.
+
+`stax:attach -- --repo <path> --upgrade` routes to the same implementation.
 
 ## Non-Goals
 

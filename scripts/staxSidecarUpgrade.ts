@@ -1,17 +1,15 @@
-import { attachStaxToRepo } from "../src/sidecar/AttachStax.js";
 import { upgradeStaxSidecar } from "../src/sidecar/UpgradeSidecar.js";
 
 function repoArg(argv: string[]): string {
   const index = argv.indexOf("--repo");
   const eq = argv.find((arg) => arg.startsWith("--repo="));
   const repo = eq ? eq.slice("--repo=".length) : index >= 0 ? argv[index + 1] : undefined;
-  if (!repo) throw new Error("Usage: npm run stax:attach -- --repo <path>");
+  if (!repo) throw new Error("Usage: npm run stax:sidecar-upgrade -- --repo <path>");
   return repo;
 }
 
 async function main(): Promise<void> {
-  const argv = process.argv.slice(2);
-  const result = argv.includes("--upgrade") ? await upgradeStaxSidecar({ repoPath: repoArg(argv) }) : await attachStaxToRepo(repoArg(argv));
+  const result = await upgradeStaxSidecar({ repoPath: repoArg(process.argv.slice(2)) });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 
