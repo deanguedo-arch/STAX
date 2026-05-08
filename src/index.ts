@@ -11,6 +11,8 @@ export { PolicyCompiler } from "./policy/PolicyCompiler.js";
 export { PolicyLoader } from "./policy/PolicyLoader.js";
 export { PolicySelector } from "./policy/PolicySelector.js";
 export { TrainingExporter } from "./training/TrainingExporter.js";
+export { PatternPromotionGate } from "./learning/PatternPromotionGate.js";
+export * from "./learning/PatternPromotionSchemas.js";
 export { getAutonomyProfile } from "./lab/AutonomyProfile.js";
 export { CodexHandoffWorker } from "./lab/CodexHandoffWorker.js";
 export { CorrectionCandidateBuilder } from "./lab/CorrectionCandidateBuilder.js";

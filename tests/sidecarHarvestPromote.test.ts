@@ -24,6 +24,8 @@ describe("STAX sidecar harvest, review, promote, and dashboard", () => {
 
     expect(harvested.imported).toBe(1);
     expect(pending).toHaveLength(1);
+    expect(review).toContain("Pattern classification");
+    expect(review).toContain("Recommended queue");
     expect(review).toContain("Decision required");
     await expect(fs.readdir(path.join(staxRoot, "evals", "candidates"))).rejects.toThrow();
   });
