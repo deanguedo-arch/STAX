@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_6a2b464089a7",
+  "sourceEventId": "codex_session_report_6a2b464089a7",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Continue the Google Forms visual-prompt route and identify the next focused fix before modifying code.. Next: Get user approval to make the durable cropper fix: for non-multiple-choice or diagram-like questions, crop down to the next question marker or page boundary instead of stopping at the last detected text line, with a targeted regression test for Q17-style non-text content.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T15:01:49.185Z",
+      "reportHash": "6a2b464089a77f2060361ac906012143baf1f4b807bf506d5295c32cbd424e0b",
+      "sections": {
+        "objective": "Continue the Google Forms visual-prompt route and identify the next focused fix before modifying code.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- `Select-String -Path C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md -Pattern \"Google Forms bridge|visual prompt|brightspacequizexporter|send-brightspace-csv\" -Context 0,2`\n- `Get-Content -Raw C:\\Users\\dean.guedo\\.agents\\skills\\brainstorming\\SKILL.md`\n- `if (Test-Path docs/ACTIVE_HANDOFF.md) { Get-Content -Raw docs/ACTIVE_HANDOFF.md } elseif (Test-Path ACTIVE_HANDOFF.md) { Get-Content -Raw ACTIVE_HANDOFF.md } else { 'NO_ACTIVE_HANDOFF' }`\n- `Get-Content -Raw scripts\\send-question-bank-google-visual-form.ts`\n- `Get-Content -Raw src\\export\\googleFormsSheet\\visualQuestionBank.ts`\n- `Get-Content -Raw src\\test\\unit\\export\\googleFormsVisualQuestionBank.test.ts`\n- `Get-Content -Raw src\\test\\unit\\scripts\\sendQuestionBankGoogleVisualFormScript.test.ts`\n- `Get-Content -Raw package.json`\n- `Get-ChildItem -Force tmp\\math30-msforms-review\\google-visual-prompts | Sort-Object Name | Select-Object Name,Length,LastWriteTime`\n- `Get-ChildItem -Force tmp\\math30-msforms-review\\google-visual-prompts -Filter q*.png | Measure-Object | Select-Object Count`\n- Local image inspections for `q1.png`, `q2.png`, `q4.png`, `q6.png`, `q9.png`, `q10.png`, `q11.png`, `q12.png`, `q13.png`, `q14.png`, `q15.png`, `q17.png`, `q19.png`, `q22.png`, and `q23.png`.\n- Node summary of question bank answers and choices from `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-hybrid-safe.70ed81\\quiz.question_bank.json`.\n- `Get-Content -Raw C:\\Users\\dean.guedo\\.agents\\skills\\test-driven-development\\SKILL.md`\n- `Get-Content -Raw C:\\Users\\dean.guedo\\.agents\\skills\\writing-plans\\SKILL.md`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Git status: exit 0; branch `codex/resume-math30-msforms-20260506` is aligned with origin.\n- Handoff check: exit 0; no `docs/ACTIVE_HANDOFF.md` or root `ACTIVE_HANDOFF.md` exists in this repo.\n- Script and test inspections: exit 0.\n- Generated image list: exit 0; 23 `q*.png` prompt images exist.\n- Question bank summary: exit 0; only Q5, Q22, and Q23 currently have answer entries.\n- Skill reads: exit 0.",
+        "verified": "- The Google visual route already preserves the known hard math prompts: Q1, Q4, Q6, Q12, Q13, and Q23 look visually correct in the generated prompt images.\n- The long-text prompts that text import split into fake answer choices now crop correctly as images: Q2, Q9, Q10, Q11, Q14, Q15, Q19, and Q22 look readable.\n- The current generated output has one important crop defect: Q17 cuts off the route diagram because the cropper uses text lines to determine the bottom of each prompt.\n- The remaining grading-data gap is separate from formatting: answer entries are present only for Q5, Q22, and Q23.",
+        "weakProvisional": "- Image inspection was local, not a signed-in Google Forms browser inspection.\n- Q17 is the only confirmed crop defect from the spot check, but every image has not been visually audited one by one in the live form.",
+        "unverified": "- Whether the live Google Form displays every prompt image with the same clarity as the local PNG files.\n- Final answer keys for Q1-Q4 and Q6-Q21.",
+        "risks": "- A one-off Q17 image patch would fix this batch but leave the same crop bug for future diagram questions.\n- A broader crop fallback could include extra whitespace or answer-area content if not tested against the current Math 30 examples.",
+        "oneNextAction": "Get user approval to make the durable cropper fix: for non-multiple-choice or diagram-like questions, crop down to the next question marker or page boundary instead of stopping at the last detected text line, with a targeted regression test for Q17-style non-text content."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.875Z"
+}

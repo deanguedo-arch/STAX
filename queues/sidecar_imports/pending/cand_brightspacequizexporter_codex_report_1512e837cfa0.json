@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_1512e837cfa0",
+  "sourceEventId": "codex_session_report_1512e837cfa0",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Identify which Math 30 conversion questions need additional source information from the current reproducible output.. Next: Collect exact source text/equations and correct answers for Q5, Q6, Q12, Q23, plus the Q22 diagram context if this output is the run to repair.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T15:38:21.708Z",
+      "reportHash": "1512e837cfa015acf7d88eec517ef0e4dd5bc3367e229e7adc8e53ce0bbe973b",
+      "sections": {
+        "objective": "Identify which Math 30 conversion questions need additional source information from the current reproducible output.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content -Raw \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-example.6363ed\\quiz.forms_lint.txt\"`\n- `node -e \"<summarize Q5/Q6/Q12/Q23/Q9/Q10/Q14 from quiz.question_bank.json>\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; clean on `codex/resume-math30-msforms-20260506...origin/codex/resume-math30-msforms-20260506`.\n- Lint read: exit 0; current unresolved math-region questions are Q5, Q6, Q12, and Q23. Q22 is diagram-dependent.\n- Question-bank summary: exit 0; Q9/Q10/Q14 exist but are not the unresolved math-region questions in this current run.",
+        "verified": "- Current reproducible blockers needing source information are Q5, Q6, Q12, and Q23.\n- Q22 needs diagram/visual handling before import.\n- Q9/Q10/Q14 are from the STAX handoff example but do not match the current output's unresolved crop list.",
+        "weakProvisional": "- The exact source values for Q5/Q6/Q12/Q23 still need confirmation from the PDF/crops or manual source.",
+        "unverified": "- Correct answers are not available for the multiple-choice items.\n- Microsoft Forms import has not been tested.",
+        "risks": "- Asking for Q9/Q10/Q14 now would target the wrong current artifacts.\n- Ignoring the answer-key warning would leave the Forms output incomplete.",
+        "oneNextAction": "Collect exact source text/equations and correct answers for Q5, Q6, Q12, Q23, plus the Q22 diagram context if this output is the run to repair."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

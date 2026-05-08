@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_e06f1fe10e08",
+  "sourceEventId": "codex_session_report_e06f1fe10e08",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Inspect the user's printed Microsoft Forms QuickImport PDF and determine why the import is still only partially acceptable.. Next: Generate a more conservative Forms-safe QuickImport DOCX using plain ASCII math such as `C(8, r)`, `P(n, 3)`, `C(6, 2)`, and rewritten text prompts that avoid option-like subparts.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T20:14:40.612Z",
+      "reportHash": "e06f1fe10e08a9daa256511c253f9a15ea41982200ba3a7b600e594439565a9f",
+      "sections": {
+        "objective": "Inspect the user's printed Microsoft Forms QuickImport PDF and determine why the import is still only partially acceptable.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "No tests were added in this diagnostic turn.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Get-Item \"C:\\Users\\dean.guedo\\Downloads\\quiz.msforms.quickimport.pdf\"`\n- `Select-String -Path C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md -Pattern 'brightspacequizexporter|msforms|google forms|STAX'`\n- Node/pdfjs text extraction from `C:\\Users\\dean.guedo\\Downloads\\quiz.msforms.quickimport.pdf`\n- Local PDF page render using PyMuPDF into `%TEMP%\\forms-quickimport-pages.81b545`\n- Visual inspection of rendered pages 1, 2, 4, and 5",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- PDF file check: exit 0; file exists, length 96761, modified 2026-05-06 2:11:07 PM.\n- Memory lookup: exit 0; confirmed repo STAX sidecar workflow context.\n- Text extraction: exit 0; extracted six pages.\n- PDF render: exit 0; rendered six page PNGs.\n- Visual inspection: completed for pages 1, 2, 4, and 5.",
+        "verified": "- QuickImport is better than native-math import: question structure is mostly preserved and formulas are not catastrophically broken like the native-math import.\n- Remaining visible problems are from Microsoft Forms import behavior:\n  - Unicode lower-left combinatorics is still cramped or partially flattened.\n  - Text and formulas concatenate without spacing in several prompts.\n  - `\\in` shows literally in Q6.\n  - Longer written/blank prompts collapse into one line.\n  - Q22 is misread as multiple choice because its subparts look like answer options.",
+        "weakProvisional": "- Microsoft Forms browser import behavior cannot be fully controlled from DOCX XML alone.\n- The conclusion is based on the printed PDF and rendered page inspection, not a live Forms API export.",
+        "unverified": "- A newly generated plain-ASCII Forms-safe DOCX has not yet been created or imported.",
+        "risks": "- Continuing to use pretty Unicode math may keep producing borderline Forms output.\n- Native-math DOCX remains unsuitable for Quick Import.",
+        "oneNextAction": "Generate a more conservative Forms-safe QuickImport DOCX using plain ASCII math such as `C(8, r)`, `P(n, 3)`, `C(6, 2)`, and rewritten text prompts that avoid option-like subparts."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.874Z"
+}

@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_f2f3c24f5c9c",
+  "sourceEventId": "codex_session_report_f2f3c24f5c9c",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Fetch `codex/math30-msforms-transfer` and recover the most recent active handoff from the morning session without switching branches or disturbing current uncommitted work.. Next: Use the recovered handoff truth: continue from `main` with the Math30 MS Forms converter already merged, and treat the real current task as fixing content fidelity on `C:\\Users\\dean.guedo\\Downloads\\Print Quiz - NXT Math 30-1 (Master) 2.pdf`.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T15:13:27.248Z",
+      "reportHash": "f2f3c24f5c9cb63577d2a8174dbea19d6c12fb88227b6bc4dd958d99a89dcdb7",
+      "sections": {
+        "objective": "Fetch `codex/math30-msforms-transfer` and recover the most recent active handoff from the morning session without switching branches or disturbing current uncommitted work.",
+        "filesChanged": "- .stax/codex-report.md\n\nExisting uncommitted source/test changes remain untouched:\n- src/ingest/msforms/questionBank.ts\n- src/test/unit/ingest/msFormsQuestionBank.test.ts",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content -Raw .stax/task.md`\n- `git ls-remote --heads origin codex/math30-msforms-transfer`\n- `git fetch origin codex/math30-msforms-transfer`\n- `git branch -vv --all`\n- `git log --all --since=\"2026-05-06 00:00\" --date=iso --pretty=format:\"%h %ad %d %s\" --name-status`\n- `git reflog --all --date=iso | Select-String -Pattern \"math30-msforms-transfer|4a806ef|d752119\"`\n- `Get-ChildItem -Recurse -File -Exclude node_modules | Where-Object { $_.FullName -notmatch '\\\\node_modules\\\\' -and $_.Name -match 'handoff|active|session' }`\n- `Get-ChildItem C:\\Users\\dean.guedo\\.codex\\sessions\\2026\\05\\06 -File`\n- `git ls-tree -r --name-only 4a806ef | rg -i \"handoff|active|session\"`\n- `git show --name-status --format=medium 4a806ef -- HANDOFF.md SESSION_LOG.md SESSION_STATE.json scripts/session-handoff.mjs`\n- `git show 4a806ef:HANDOFF.md`\n- `git show --stat --oneline 4a806ef`\n- `node -e \"<extract matching handoff/math30/msforms messages from 2026-05-06 Codex session log>\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; current branch is `main...origin/main` with two uncommitted MS Forms files from the prior mistaken pass.\n- `.stax/task.md`: exit 0; content is stale from the earlier STAX sidecar objective, not this Math30 objective.\n- `git ls-remote --heads origin codex/math30-msforms-transfer`: exit 0 with no refs returned.\n- `git fetch origin codex/math30-msforms-transfer`: exit 1; `fatal: couldn't find remote ref codex/math30-msforms-transfer`.\n- Branch list: exit 0; only `main`, `origin/main`, and `origin/HEAD` remain.\n- May 6 git log: exit 0; Math30 work is already on `main` via `4a806ef Add Math 30 Microsoft Forms converter` and `d752119 test: make Math30 MS Forms tests Windows-safe`.\n- Reflog: exit 0; confirms `main` fast-forward merged `codex/math30-msforms-transfer` at 2026-05-06 08:45:37 -0600.\n- Repo handoff search: exit 0; only `HANDOFF.md`, `SESSION_STATE.json`, `SESSION_LOG.md`, and `scripts/session-handoff.mjs` exist, with no May 6 handoff file.\n- Commit tree for `4a806ef`: exit 0; only `HANDOFF.md` and `scripts/session-handoff.mjs` match handoff/session names.\n- `git show 4a806ef:HANDOFF.md`: exit 0; handoff is the old April recovery/gate handoff, not Math30-specific.\n- Codex session extraction: exit 0; confirms the morning session read `HANDOFF.md`, fetched the branch while it still existed, then later merged and deleted the branch.",
+        "verified": "- `origin/codex/math30-msforms-transfer` no longer exists, so it cannot be fetched now.\n- The branch did exist this morning and pointed at `4a806ef`.\n- Its work is already merged into `main` and pushed as `d752119` on `origin/main`.\n- There is no May 6 active handoff committed in the repo or in the Math30 commit.\n- The active handoff read this morning was root `HANDOFF.md`, last modified April 13, and it is a generic recovery/gate handoff.",
+        "weakProvisional": "- The only \"this morning\" handoff trail is the Codex session log, not a committed repo handoff artifact.\n- The exact user-intended handoff may have been expected to exist on the deleted branch, but git history does not show one.",
+        "unverified": "- No GitHub PR metadata was checked; local and remote git refs/history were checked.\n- No tests or build were run in this fetch/handoff recovery pass.",
+        "risks": "- Recreating or switching to a branch now could hide the truth that the remote branch was deleted after merge.\n- The current uncommitted files should not be committed until we explicitly decide whether to keep or discard the mistaken-smoke UUID numbering fix.",
+        "oneNextAction": "Use the recovered handoff truth: continue from `main` with the Math30 MS Forms converter already merged, and treat the real current task as fixing content fidelity on `C:\\Users\\dean.guedo\\Downloads\\Print Quiz - NXT Math 30-1 (Master) 2.pdf`."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

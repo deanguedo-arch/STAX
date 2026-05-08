@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_36651f59311f",
+  "sourceEventId": "codex_session_report_36651f59311f",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Fix the botched Section 3.5 Google Forms choice-text proof where MathML answer options appeared as raw `<math ...>` tag text in Google Forms.. Next: Open the corrected form and confirm whether the answer choices now show as readable math text instead of raw MathML.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-07T16:13:37.217Z",
+      "reportHash": "36651f59311fa77862f27ea6c92ba5dcfe02060602d2d63b013054e0d9dac970",
+      "sections": {
+        "objective": "Fix the botched Section 3.5 Google Forms choice-text proof where MathML answer options appeared as raw `<math ...>` tag text in Google Forms.",
+        "filesChanged": "- `scripts/send-cartridge-qti-google-visual-proof.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- `.stax/codex-report.md`\n- Generated ignored proof output:\n  - `tmp/cartridge-qti-google-visual-proof/section-3-5-math-choice-text-fixed/q1.png`\n  - `tmp/cartridge-qti-google-visual-proof/section-3-5-math-choice-text-fixed/q2.png`\n  - `tmp/cartridge-qti-google-visual-proof/section-3-5-math-choice-text-fixed/q1.html`\n  - `tmp/cartridge-qti-google-visual-proof/section-3-5-math-choice-text-fixed/q2.html`",
+        "testsAdded": "- Strengthened the MathML choice-text regression to match the actual D2L/WIRIS cartridge shape where the WIRIS annotation contains an embedded encoded `<math>` payload.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- Memory lookup in `C:\\Users\\dean.guedo\\.codex\\memories\\MEMORY.md`\n- `Get-Content -Raw src\\export\\googleFormsSheet\\sendToGoogleFormsBridge.ts`\n- `Get-Content -Raw src\\export\\googleFormsSheet\\buildGoogleFormsSheetRows.ts`\n- `Get-Content -Raw src\\test\\unit\\export\\sendToGoogleFormsBridge.test.ts`\n- PowerShell/.NET ZIP inspection of `quiz/i7272edcc-a069-4478-ab38-e2789e8735e3/qti_33df68b0-bf08-4ded-aa20-01ed501fd698.xml`\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts` (red)\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts` (green)\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --qti-path \"quiz/i7272edcc-a069-4478-ab38-e2789e8735e3/qti_33df68b0-bf08-4ded-aa20-01ed501fd698.xml\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\section-3-5-math-choice-text-fixed --title \"Math 10C Section 3.5 QTI Math Choice Text Proof FIXED\" --dry-run`\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...D2LCCExport...zip\" --qti-path \"quiz/i7272edcc-a069-4478-ab38-e2789e8735e3/qti_33df68b0-bf08-4ded-aa20-01ed501fd698.xml\" --image-output-dir tmp\\cartridge-qti-google-visual-proof\\section-3-5-math-choice-text-fixed --title \"Math 10C Section 3.5 QTI Math Choice Text Proof FIXED\"`\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts`\n- `git diff --check`\n- `npm run build`\n- `git diff --no-index --check -- NUL scripts\\send-cartridge-qti-google-visual-proof.ts`\n- `git diff --no-index --check -- NUL src\\test\\unit\\scripts\\sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- Final `git status --short --branch`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Initial git status: exit 0; branch aligned with origin and had two untracked proof files.\n- Bridge/export code inspection: exit 0; confirmed the bridge serializes `choice.text`, so the raw MathML came from upstream choice-text parsing.\n- QTI ZIP inspection: exit 0; confirmed actual choices use outer MathML plus a WIRIS annotation containing an encoded inner MathML payload.\n- Focused red test: exit 1; reproduced raw choice text like `math title=\"\" xmlns=\"[redacted-url]\n- Focused test after fix: exit 0; 1 file, 5 tests passed.\n- Fixed Section 3.5 dry-run: exit 0; rendered 2 prompt images.\n- Fixed live send: exit 0; `SUCCESS qti_visual_1778170308582 [redacted-url] [redacted-url]\n- Focused tests plus bridge tests: exit 0; 2 files, 12 tests passed.\n- `git diff --check`: exit 0; no tracked whitespace errors.\n- `npm run build`: exit 0; TypeScript and Vite build passed with the existing large-chunk warning.\n- No-index whitespace checks for the two untracked proof files: exit 0; only LF-to-CRLF warnings from Git.",
+        "verified": "- The root cause was parsing order: choice-text conversion tried to convert MathML before removing WIRIS annotations, and the annotation contained encoded nested MathML that broke the non-greedy `<math>...</math>` match.\n- The fix sanitizes/removes WIRIS annotation content before MathML is converted into readable Unicode text.\n- Regression coverage now matches the actual D2L/WIRIS cartridge shape.\n- A fresh corrected Section 3.5 choice-text Google Form was created.",
+        "weakProvisional": "- The old choice-text form is still bad and should be ignored.\n- The corrected form still needs user-side visual inspection in Google Forms.\n- The proof script and test are untracked and not committed.",
+        "unverified": "- Full-course batch conversion across all 78 QTI assessments.\n- All possible WIRIS/MathML variants beyond this actual reproduced shape.",
+        "risks": "- Complex MathML can still exceed what plain Google Forms option text can represent well.\n- For complex answer options, the safer fallback remains `--include-choices-in-image`.",
+        "oneNextAction": "Open the corrected form and confirm whether the answer choices now show as readable math text instead of raw MathML."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-08T15:58:40.876Z"
+}

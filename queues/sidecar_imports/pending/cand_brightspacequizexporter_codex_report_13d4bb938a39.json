@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_13d4bb938a39",
+  "sourceEventId": "codex_session_report_13d4bb938a39",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Use the new `codex/resume-math30-msforms-20260506` resume branches, read the current STAX handoff, confirm the Brightspace converter files, run `npm ci`, and run the Math 30 conversion from the Brightspace repo.. Next: Resolve the mismatch between the STAX handoff's 27-question/Q9-Q10-Q14 example and the current branch's 23-question/Q5-Q6-Q12-Q23 output before implementing the stronger equation-recognition adapter.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T15:27:21.084Z",
+      "reportHash": "13d4bb938a391b42dc9253f751a5bcc63ce467fc422c9ec6a15a6e4674379420",
+      "sections": {
+        "objective": "Use the new `codex/resume-math30-msforms-20260506` resume branches, read the current STAX handoff, confirm the Brightspace converter files, run `npm ci`, and run the Math 30 conversion from the Brightspace repo.",
+        "filesChanged": "- .stax/codex-report.md\n\nWorking tree protection:\n- Stashed prior uncommitted Brightspace files as `stash@{0}: On main: preserve pre-resume Math30 smoke changes`",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- In `C:\\Users\\dean.guedo\\Documents\\GitHub\\STAX`: `git fetch origin`\n- In `STAX`: `git switch --track origin/codex/resume-math30-msforms-20260506`\n- In `STAX`: `Get-Content -Raw docs/ACTIVE_HANDOFF.md`\n- In `STAX`: `Get-Content -Raw docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md`\n- In Brightspace: `git stash push --include-untracked -m \"preserve pre-resume Math30 smoke changes\" -- src/ingest/msforms/questionBank.ts src/test/unit/ingest/msFormsQuestionBank.test.ts`\n- In Brightspace: `git fetch origin`\n- In Brightspace: `git switch --track origin/codex/resume-math30-msforms-20260506`\n- In Brightspace: `Test-Path scripts/brightspaceexport.ts`\n- In Brightspace: `Get-ChildItem src/ingest/msforms`\n- In Brightspace: `npm ci`\n- In Brightspace: stopped stale Brightspace `node.exe`/`esbuild.exe` processes after initial `npm ci` failed on a locked `esbuild.exe`\n- In Brightspace: retried `npm ci`\n- In Brightspace: `MSFORMS_MATH_REGION_OCR=1 npm run brightspaceexport -- convert \"C:\\Users\\dean.guedo\\Downloads\\Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"<temp>\" --render-dpi 300 --equation-recovery glyphs-first --vision-fallback equations-only`\n- Inspected `quiz.forms_lint.txt`\n- Summarized `quiz.question_bank.json`\n- Summarized `quiz.math_region_artifacts.json`\n- Listed generated output files and crop files\n- Checked Brightspace and STAX `git status`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- STAX `git fetch origin`: exit 0; fetched `origin/codex/resume-math30-msforms-20260506`.\n- STAX branch switch: exit 0; now tracking `origin/codex/resume-math30-msforms-20260506`.\n- STAX active handoff reads: exit 0; handoff points to Brightspace resume branch and Math 30-2 conversion blocker.\n- Brightspace stash: exit 0; saved prior uncommitted source/test changes.\n- Brightspace `git fetch origin`: exit 0; fetched `origin/codex/resume-math30-msforms-20260506`.\n- Brightspace branch switch: exit 0; now tracking `origin/codex/resume-math30-msforms-20260506`.\n- Converter file check: exit 0; `scripts/brightspaceexport.ts` exists and `src/ingest/msforms` contains the converter modules.\n- First `npm ci`: exit 1; failed with Windows `EPERM` unlinking locked `node_modules\\@esbuild\\win32-x64\\esbuild.exe`.\n- Stale Brightspace process cleanup: exit 0; stopped Brightspace `node.exe`/`esbuild.exe` processes holding the install.\n- Second `npm ci`: exit 0; installed 300 packages, audited 301 packages, reported 5 vulnerabilities.\n- Math 30 conversion: exit 0; generated DOCX, question bank, warnings, lint, math-region artifacts, and crop files under `C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-example.6363ed`.\n- Output inspection: generated 23 questions: 15 multiple-choice, 5 numerical-response, 3 written-response.\n- Lint output includes glyph recoveries for Q1/Q2/Q3/Q5/Q16 and rejected math-region recognitions for Q5/Q6/Q12/Q23.\n- Generated crop files: `q5-math-region.png`, `q6-math-region.png`, `q12-math-region.png`, `q23-math-region.png`.",
+        "verified": "- The old `codex/math30-msforms-transfer` branch was not used or merged.\n- Both STAX and Brightspace are on `codex/resume-math30-msforms-20260506`.\n- Brightspace resume branch and `origin/main` both point to `d752119f7a3f8866f820afddfffc3c1c6964f664`.\n- The Brightspace converter files are present.\n- `npm ci` succeeds after clearing stale Brightspace dev-server locks.\n- The Math 30-2 conversion command runs successfully from the Brightspace repo and writes the expected artifact set.",
+        "weakProvisional": "- The current branch output does not match the STAX handoff's latest example: the handoff says 27 questions with Q9/Q10/Q14 rejected, but this run produced 23 questions with Q5/Q6/Q12/Q23 rejected.\n- This suggests either a source-PDF mismatch, a handoff/code-state mismatch, or a platform-dependent extraction difference.",
+        "unverified": "- The generated DOCX has not been imported into Microsoft Forms.\n- `npm run build`, `npm test`, `npm run ingest:ci`, and `npm run lint` were not run after this conversion.\n- No stronger `MSFORMS_MATH_REGION_VISION_CMD` recognizer was plugged in.",
+        "risks": "- Proceeding from the handoff's Q9/Q10/Q14 labels would target the wrong artifacts on this machine.\n- The current conversion still leaks Brightspace header/footer text into choices/prompts and has unresolved math-region warnings/errors.\n- The stashed earlier UUID numbering fix is preserved but not part of this resume branch state.",
+        "oneNextAction": "Resolve the mismatch between the STAX handoff's 27-question/Q9-Q10-Q14 example and the current branch's 23-question/Q5-Q6-Q12-Q23 output before implementing the stronger equation-recognition adapter."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.872Z"
+}

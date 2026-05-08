@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_c84cbd81aa07",
+  "sourceEventId": "codex_session_report_c84cbd81aa07",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Create the user-approved Google Forms visual-prompt pipeline for the Math 30 batch, verify it, commit it, and push the branch.. Next: Open the live Google Form and spot-check the first few prompt-image questions plus the known trouble questions Q4, Q6, Q12, Q13, and Q23.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T21:29:30.646Z",
+      "reportHash": "c84cbd81aa07d25b207cbf3f5d757908766108dba8ed7f74739f6d6eba79a126",
+      "sections": {
+        "objective": "Create the user-approved Google Forms visual-prompt pipeline for the Math 30 batch, verify it, commit it, and push the branch.",
+        "filesChanged": "- `package.json`\n- `scripts/send-question-bank-google-visual-form.ts`\n- `src/export/googleFormsSheet/visualQuestionBank.ts`\n- `src/test/unit/export/googleFormsVisualQuestionBank.test.ts`\n- `src/test/unit/scripts/sendQuestionBankGoogleVisualFormScript.test.ts`\n- Existing Math 30 MS Forms conversion files included in the same commit:\n  - `scripts/brightspaceexport.ts`\n  - `src/export/msforms/formsDocx.ts`\n  - `src/ingest/msforms/brightspacePrintRegions.ts`\n  - `src/ingest/msforms/convertBrightspacePdfToMsForms.ts`\n  - `src/ingest/msforms/manualPatches.ts`\n  - `src/ingest/msforms/mathUnicode.ts`\n  - related MS Forms unit tests\n- `.stax/codex-report.md`\n- Ignored/generated local artifacts under `tmp/math30-msforms-review/`, including the 23 prompt images.",
+        "testsAdded": "- `src/test/unit/export/googleFormsVisualQuestionBank.test.ts`\n- `src/test/unit/scripts/sendQuestionBankGoogleVisualFormScript.test.ts`",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- `git log -1 --oneline`\n- `git branch -vv`\n- `npx vite-node --script scripts\\send-question-bank-google-visual-form.ts -- --question-bank \"...quiz.question_bank.json\" --source-pdf \"...Print Quiz...\" --image-output-dir tmp\\math30-msforms-review\\google-visual-prompts --title \"Math 30 Visual Prompt Batch\"`\n- `npm test -- src/test/unit/export/googleFormsVisualQuestionBank.test.ts src/test/unit/scripts/sendQuestionBankGoogleVisualFormScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts`\n- `npm run build`\n- `npm test -- src/test/unit/export/googleFormsVisualQuestionBank.test.ts src/test/unit/scripts/sendQuestionBankGoogleVisualFormScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts src/test/unit/ingest/msFormsManualPatches.test.ts src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsMath.test.ts src/test/unit/scripts/brightspaceExportScript.test.ts src/test/unit/ingest/msFormsBrightspaceRegions.test.ts`\n- `git diff --check`\n- `npm run ingest:ci`\n- `git diff --cached --check`\n- `git commit -m \"feat: add visual Google Forms export for Math 30\"`\n- `git push`\n- `git log origin/codex/resume-math30-msforms-20260506 -1 --oneline`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Live Google visual batch send: exit 0; created 23 questions and 23 prompt images.\n- Live form output: `SUCCESS google_visual_1778102294344 [redacted-url] [redacted-url]\n- Focused Google bridge tests: exit 0; 3 files, 10 tests passed.\n- `npm run build`: exit 0; TypeScript and Vite build passed with the existing large-chunk warning.\n- Full focused regression command: exit 0; 8 files, 32 tests passed.\n- `git diff --check`: exit 0; only Git autocrlf line-ending warnings.\n- `npm run ingest:ci`: exit 0; build, focused ingest suite, and 22 manual benchmark checks passed.\n- `git diff --cached --check`: exit 0.\n- Commit: exit 0; `66dd5cf feat: add visual Google Forms export for Math 30`.\n- Push: exit 0; pre-push `npm run ingest:ci` passed again, then Git reported `Everything up-to-date`.\n- Final branch check: exit 0; `codex/resume-math30-msforms-20260506` is aligned with `origin/codex/resume-math30-msforms-20260506` at `66dd5cf`.",
+        "verified": "- The approved Google route is implemented: source question prompt image first, then a real Google Forms answer control below it.\n- The full Math 30 visual prompt batch was sent successfully to Google Forms.\n- The branch commit exists locally and on the origin resume branch.\n- Build, focused regression tests, diff whitespace check, and ingest promotion gate passed.\n- The pre-push hook also reran and passed the ingest promotion gate.",
+        "weakProvisional": "- I did not visually inspect every created Google Form item in a signed-in browser.\n- Prompt images are visually faithful but not editable inside Google Forms.",
+        "unverified": "- Whether every answer key is complete; several Math 30 questions were intentionally still missing answer data from the current review state.\n- Whether downstream Google Forms settings such as point values or required flags match the final classroom preferences.",
+        "risks": "- Any typo or crop issue in a prompt image requires regenerating/replacing that image.\n- Google Forms preserves the visual math because it is an image, but the math is not native/editable.\n- Local generated images are ignored artifacts; the durable artifact is the committed script and builder.",
+        "oneNextAction": "Open the live Google Form and spot-check the first few prompt-image questions plus the known trouble questions Q4, Q6, Q12, Q13, and Q23."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-08T15:58:40.874Z"
+}

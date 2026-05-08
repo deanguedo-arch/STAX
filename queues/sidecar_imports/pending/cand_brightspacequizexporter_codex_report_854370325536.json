@@ -1,0 +1,40 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_854370325536",
+  "sourceEventId": "codex_report_854370325536",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Answer whether VS Code/nightly has an integrated browser and how to open it.. Next: Use Command Palette and run `Simple Browser: Show`, then paste the URL.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_report",
+      "sourcePath": ".stax/codex-report.md",
+      "reportHash": "854370325536cc33f6e0b59eb2096cd17d9372c6f14389b9af5a131d07017938",
+      "sections": {
+        "objective": "Answer whether VS Code/nightly has an integrated browser and how to open it.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "- None.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Get-Content -Raw .stax/task.md`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- `.stax/task.md` read: exit 0; file was nonblank, so it was not overwritten.",
+        "verified": "- STAX sidecar status is currently `Pass`.",
+        "weakProvisional": "- VS Code UI commands were not executed in the user's running nightly window.",
+        "unverified": "- Whether the running nightly build exposes the Simple Browser command under exactly the same label.",
+        "risks": "- Simple Browser is a lightweight webview, not a full browser, so some Google/Microsoft auth-heavy pages may need Chrome or Edge.",
+        "oneNextAction": "Use Command Palette and run `Simple Browser: Show`, then paste the URL."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.866Z"
+}

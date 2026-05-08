@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_f934a81024c3",
+  "sourceEventId": "codex_session_report_f934a81024c3",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Provide the exact generated DOCX path for Microsoft Forms conversion.. Next: Import `quiz.msforms.quickimport.docx` into Microsoft Forms and inspect patched questions.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T18:47:36.258Z",
+      "reportHash": "f934a81024c3f13254fdd8189507c2dcb93a1d172442e2d2c63d9b5e258d2705",
+      "sections": {
+        "objective": "Provide the exact generated DOCX path for Microsoft Forms conversion.",
+        "filesChanged": "- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `Get-ChildItem \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2\"`\n- `Test-Path \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2\\quiz.msforms.quickimport.docx\"`\n- `Test-Path \"C:\\Users\\DEAN~1.GUE\\AppData\\Local\\Temp\\brightspace-msforms-manual.e8e6e2\\quiz.msforms.native-math.docx\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Output directory listing: exit 0; both DOCX files exist.\n- DOCX path checks: exit 0; both returned `True`.",
+        "verified": "- The Microsoft Forms Quick Import DOCX exists at the reported path.\n- The native math DOCX exists at the reported path.",
+        "weakProvisional": "- The DOCX has not been imported into Microsoft Forms yet.",
+        "unverified": "- Microsoft Forms import/rendering success.",
+        "risks": "- The files are in `%TEMP%`; copy/use them before temp cleanup if they need to persist.",
+        "oneNextAction": "Import `quiz.msforms.quickimport.docx` into Microsoft Forms and inspect patched questions."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.873Z"
+}

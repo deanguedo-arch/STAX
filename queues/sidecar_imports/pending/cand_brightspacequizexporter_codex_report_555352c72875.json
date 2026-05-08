@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_555352c72875",
+  "sourceEventId": "codex_session_report_555352c72875",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Normalize the user's `QUESTION_PATCH_V1` entries for Q5, Q6, and Q12 into the local Math 30 manual review intake files.. Next: Collect answers for Q6/Q12 and source entries for Q22/Q23, then wire the validated manual patches into the converter.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T18:24:55.983Z",
+      "reportHash": "555352c72875d79c2b838773ede34aa97867cbfff28dc30be588e49596e5e88d",
+      "sections": {
+        "objective": "Normalize the user's `QUESTION_PATCH_V1` entries for Q5, Q6, and Q12 into the local Math 30 manual review intake files.",
+        "filesChanged": "- tmp/math30-msforms-review/manual-question-checks.json\n- tmp/math30-msforms-review/manual-question-checks.md\n- .stax/codex-report.md",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch --untracked-files=all`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.md`\n- `Get-Content -Raw tmp\\math30-msforms-review\\manual-question-checks.json`\n- `node -e \"<parse manual-question-checks.json and print Q5/Q6/Q12 correctedSource>\"`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Git status: exit 0; branch reports clean because review files are under ignored `tmp/`.\n- Review files read: exit 0.\n- JSON parse/summary: exit 0; Q5, Q6, and Q12 correctedSource entries are valid.",
+        "verified": "- Q5 is recorded as `{}_{n}P_{3} = 504` with options A-D and answer `B. n = 9`.\n- Q6 is recorded as `\\frac{(n - 6)!}{(n - 8)!} = n + 57` with options A-D.\n- Q12 is recorded as `\\frac{10!}{5!2!}` with options A-D.\n- Q6 and Q12 answers are intentionally blank because the pasted patch did not include answers.",
+        "weakProvisional": "- The manual review intake is not yet wired into converter output generation.",
+        "unverified": "- Q6 and Q12 correct answers were not provided as source truth.\n- Q22 and Q23 still need manual entries.",
+        "risks": "- If we infer answers mathematically instead of using source truth, we may accidentally encode a wrong key.",
+        "oneNextAction": "Collect answers for Q6/Q12 and source entries for Q22/Q23, then wire the validated manual patches into the converter."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.873Z"
+}

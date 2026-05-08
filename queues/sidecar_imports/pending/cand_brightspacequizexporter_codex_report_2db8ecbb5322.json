@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_brightspacequizexporter_codex_report_2db8ecbb5322",
+  "sourceEventId": "codex_session_report_2db8ecbb5322",
+  "sourceRepo": {
+    "name": "brightspacequizexporter",
+    "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+    "branch": "codex/resume-math30-msforms-20260506",
+    "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from brightspacequizexporter: Answer whether there are better Microsoft Forms import strategies now that only Q4, Q6, Q12, Q13, and Q23 remain problematic.. Next: Generate a targeted hybrid QuickImport DOCX that keeps the formulas that imported acceptably and converts only Q4, Q6, Q12, Q13, and Q23 to the safest representation.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+      "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+      "eventTimestamp": "2026-05-06T20:19:23.397Z",
+      "reportHash": "2db8ecbb5322091fe35a4e1c3c26a3d2a6c77d2fb8c09fb9f1fa3655e39f9f6c",
+      "sections": {
+        "objective": "Answer whether there are better Microsoft Forms import strategies now that only Q4, Q6, Q12, Q13, and Q23 remain problematic.",
+        "filesChanged": "- `.stax/codex-report.md`",
+        "testsAdded": "No tests were added.",
+        "commandsRun": "- `Get-Content -Raw .stax/status.json`",
+        "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.",
+        "verified": "- STAX does not require an immediate correction prompt for this turn.",
+        "weakProvisional": "- No new DOCX was generated in this turn.\n- The recommendation is based on the previously inspected QuickImport and native-math printed PDFs.",
+        "unverified": "- Whether Microsoft Forms will preserve inline image formulas if used only for the five problem questions.\n- Whether a targeted hybrid QuickImport DOCX will import cleanly until regenerated and tested.",
+        "risks": "- Microsoft Forms import behavior is inconsistent across math representations.",
+        "oneNextAction": "Generate a targeted hybrid QuickImport DOCX that keeps the formulas that imported acceptably and converts only Q4, Q6, Q12, Q13, and Q23 to the safest representation."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-08T15:58:40.874Z"
+}
