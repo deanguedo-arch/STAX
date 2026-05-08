@@ -171,26 +171,25 @@ function aggregateGroup(
   };
 }
 
-function aggregateTextFor(classification: PatternPromotionClassification, items: ClassifiedCandidate[]): string {
-  const examples = items.map(({ candidate }) => candidate.summary).join("\n");
+function aggregateTextFor(classification: PatternPromotionClassification, _items: ClassifiedCandidate[]): string {
   switch (classification) {
     case "codex_handoff_rule":
-      return `Repeated Codex handoff prompt pattern: Codex handoff prompts should include repo path, files to inspect, exact commands, acceptance criteria, and stop condition.\n${examples}`;
+      return "Repeated Codex handoff prompt pattern: Codex handoff prompts should include repo path, files to inspect, exact commands, acceptance criteria, and stop condition.";
     case "proof_boundary_rule":
-      return `Repeated proof boundary pattern: wrong repo command output, weak command output, unsupported claim, or Codex report lacking file list, diff, and command output must not verify target repo work.\n${examples}`;
+      return "Repeated proof boundary pattern: wrong repo command output, weak command output, unsupported claim, or Codex report lacking file list, diff, and command output must not verify target repo work.";
     case "schema_contract_rule":
-      return `Repeated schema contract weakness: schema validation or validator contract should reject malformed output and not silently pass.\n${examples}`;
+      return "Repeated schema contract weakness: schema validation or validator contract should reject malformed output and not silently pass.";
     case "mode_behavior_rule":
-      return `Repeated mode behavior rule: visual/layout or workflow mode completion requires rendered evidence and mode-specific proof.\n${examples}`;
+      return "Repeated mode behavior rule: visual/layout or workflow mode completion requires rendered evidence and mode-specific proof.";
     case "policy_safety_rule":
-      return `Repeated policy safety rule: publish, sync, deploy, push, or release requires preflight, target validation, and scope validation.\n${examples}`;
+      return "Repeated policy safety rule: publish, sync, deploy, push, or release requires preflight, target validation, and scope validation.";
     case "cross_repo_pattern":
-      return `Repeated missing-specificity failures: Codex reports lacked file list, diff, command output, or bounded next action across repos.\n${examples}`;
+      return "Repeated missing-specificity failures: Codex reports lacked file list, diff, command output, or bounded next action across repos.";
     case "user_preference":
-      return `Repeated user preference candidates require explicit durable preference wording before memory promotion.\n${examples}`;
+      return "Repeated user preference candidates require explicit durable preference wording before memory promotion.";
     case "repo_specific_fact":
-      return `Repo-specific facts such as package-lock changes, exact files, exact tests, or temporary repo state remain evidence, not durable learning.\n${examples}`;
+      return "Repo-specific facts such as package-lock changes, exact files, exact tests, or temporary repo state remain evidence, not durable learning.";
     case "trace_fact":
-      return `Trace facts and one-off observations remain evidence until a reusable pattern is proven.\n${examples}`;
+      return "Trace facts and one-off observations remain evidence until a reusable pattern is proven.";
   }
 }

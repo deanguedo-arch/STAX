@@ -9,7 +9,7 @@ describe("sidecar import aggregation", () => {
   it("turns repeated single-event sidecar evidence into promotable aggregate patterns", () => {
     const aggregates = aggregateSidecarImportCandidates([
       candidate("handoff-1", "evt-1", "Codex handoff prompt should include repo path and exact commands."),
-      candidate("handoff-2", "evt-2", "Codex handoff prompt should include files to inspect and stop condition."),
+      candidate("handoff-2", "evt-2", "Codex handoff prompt should include files to inspect, schema validation notes, and stop condition."),
       candidate("proof-1", "evt-3", "wrong repo command output must not verify target repo."),
       candidate("proof-2", "evt-4", "Codex report lacks file list, diff, and command output."),
       candidate("fact-1", "evt-5", "package-lock.json changed after npm install."),
