@@ -14,8 +14,11 @@ The pattern promotion gate adds a reviewable classification layer between harves
 
 - `src/learning/PatternPromotionGate.ts`
 - `src/learning/PatternPromotionSchemas.ts`
+- `src/learning/SidecarImportAggregation.ts`
 - `src/learning/SidecarImportReview.ts`
+- `scripts/staxAggregateImports.ts`
 - `tests/patternPromotionGate.test.ts`
+- `tests/sidecarImportAggregation.test.ts`
 - `tests/sidecarHarvestPromote.test.ts`
 - Public exports from `src/index.ts`
 
@@ -68,6 +71,8 @@ Would this improve STAX on a future task from a different repo?
 If the answer is no, the candidate stays trace-only. If the answer is yes, the gate recommends the appropriate queue and promotion target, plus required evidence, expected future behavior change, and a suggested regression eval where possible.
 
 `stax:review-imports` now prints the pattern classification, promotability, recommended queue, promotion target, and reason for each pending sidecar import candidate. The review command still does not promote anything by itself.
+
+`stax:aggregate-imports` now groups pending sidecar import candidates by reusable pattern classification. This lets repeated one-off evidence become a reviewable aggregate recommendation without approving or promoting it.
 
 ## Validation
 

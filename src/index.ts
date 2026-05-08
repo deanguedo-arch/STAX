@@ -13,6 +13,7 @@ export { PolicySelector } from "./policy/PolicySelector.js";
 export { TrainingExporter } from "./training/TrainingExporter.js";
 export { PatternPromotionGate } from "./learning/PatternPromotionGate.js";
 export * from "./learning/PatternPromotionSchemas.js";
+export * from "./learning/SidecarImportAggregation.js";
 export { getAutonomyProfile } from "./lab/AutonomyProfile.js";
 export { CodexHandoffWorker } from "./lab/CodexHandoffWorker.js";
 export { CorrectionCandidateBuilder } from "./lab/CorrectionCandidateBuilder.js";

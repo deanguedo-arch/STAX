@@ -69,6 +69,7 @@
     "stax:codex-collect": "tsx scripts/staxCodexCollect.ts",
     "stax:harvest": "tsx scripts/staxHarvest.ts",
     "stax:review-imports": "tsx scripts/staxReviewImports.ts",
+    "stax:aggregate-imports": "tsx scripts/staxAggregateImports.ts",
     "stax:promote-import": "tsx scripts/staxPromoteImport.ts",
     "stax:learning-dashboard": "tsx scripts/staxLearningDashboard.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
