@@ -1,0 +1,10 @@
+{
+  "promotionId": "agg_codex_handoff_rule-mode_contract_patch",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-08T18:08:24.709Z",
+  "approvalReason": "Approve promotion of agg_codex_handoff_rule as a mode_contract_patch / codex_prompt_candidate. Promote only the reusable bounded handoff structure.",
+  "sourceEventId": "agg_codex_handoff_rule",
+  "sourceRunId": "sidecar-import-aggregation-2026-05-08T17-20-03-274Z",
+  "promotionTarget": "mode_contract_patch",
+  "targetArtifactPath": "learning/proposals/mode_contract_patch_candidates/agg_codex_handoff_rule.json"
+}

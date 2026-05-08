@@ -1,0 +1,10 @@
+{
+  "promotionId": "agg_schema_contract_rule-schema_patch",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-08T18:08:24.709Z",
+  "approvalReason": "Approve promotion of agg_schema_contract_rule as a schema_patch_candidate. Promote only the reusable contract for external/import/render/live-form proof artifacts.",
+  "sourceEventId": "agg_schema_contract_rule",
+  "sourceRunId": "sidecar-import-aggregation-2026-05-08T17-20-03-274Z",
+  "promotionTarget": "schema_patch",
+  "targetArtifactPath": "learning/proposals/schema_patch_candidates/agg_schema_contract_rule.json"
+}

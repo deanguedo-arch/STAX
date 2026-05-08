@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "sidecar-aggregate-promotion-decisions-v1",
+  "decidedAt": "2026-05-08T18:08:24.709Z",
+  "decidedBy": "Dean via Codex chat",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-08T17-20-03-274Z.json",
+  "decisions": [
+    {
+      "aggregateId": "agg_codex_handoff_rule",
+      "decision": "promote",
+      "queueType": "codex_prompt_candidate",
+      "promotionTarget": "mode_contract_patch",
+      "targetArtifactPath": "learning/proposals/mode_contract_patch_candidates/agg_codex_handoff_rule.json",
+      "promoteOnly": "Reusable bounded handoff structure: repo path, task objective, files/surfaces, allowed commands, forbidden actions, acceptance criteria, stop condition, and required proof return.",
+      "doNotPromote": [
+        "Brightspace-specific file names",
+        "question numbers",
+        "branch names",
+        "live URLs",
+        "one-off task facts"
+      ]
+    },
+    {
+      "aggregateId": "agg_schema_contract_rule",
+      "decision": "promote_narrowly",
+      "queueType": "schema_patch_candidate",
+      "promotionTarget": "schema_patch",
+      "targetArtifactPath": "learning/proposals/schema_patch_candidates/agg_schema_contract_rule.json",
+      "promoteOnly": "External/import/render/live-form success requires explicit proof artifact, inspection target, required checks, pass/fail status, unverified remainder, and stop condition.",
+      "doNotPromote": [
+        "specific Math 30 question IDs",
+        "temporary file paths",
+        "live form URLs",
+        "one-off batch details"
+      ]
+    },
+    {
+      "aggregateId": "agg_proof_boundary_rule",
+      "decision": "hold_for_source_review",
+      "queueTypeIfApprovedLater": "eval_candidate",
+      "promotionTargetIfApprovedLater": "eval",
+      "requiredReview": "Inspect the 5 source candidates and confirm they truly support target-repo proof-boundary behavior before promoting an eval.",
+      "candidateEvalIfSupported": "Command output from repo A must not verify repo B."
+    },
+    {
+      "aggregateId": "agg_repo_specific_fact",
+      "decision": "keep_trace_only"
+    },
+    {
+      "aggregateId": "agg_trace_fact",
+      "decision": "keep_trace_only"
+    }
+  ]
+}

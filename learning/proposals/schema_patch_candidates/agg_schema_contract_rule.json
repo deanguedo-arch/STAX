@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "stax-reviewed-aggregate-promotion-v1",
+  "aggregateId": "agg_schema_contract_rule",
+  "classification": "schema_contract_rule",
+  "queueType": "schema_patch_candidate",
+  "promotionTarget": "schema_patch",
+  "status": "approved_for_promotion",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-08T18:08:24.709Z",
+  "approvalReason": "Repeated across 6 Brightspace sidecar candidates; promotes only the reusable proof-artifact contract for external/import/render/live-form success claims.",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-08T17-20-03-274Z.json",
+  "sourceCandidateCount": 6,
+  "promotedPattern": {
+    "name": "external_artifact_success_requires_explicit_proof",
+    "summary": "When output requires external, import, render, live-form, or manual visual verification, STAX must require an explicit proof artifact before claiming success.",
+    "requiredFields": [
+      "artifact path or URL",
+      "inspection target",
+      "required checks",
+      "pass/fail status",
+      "unverified remainder",
+      "stop condition"
+    ],
+    "appliesWhen": [
+      "external import success is claimed",
+      "rendered artifact success is claimed",
+      "live form or hosted artifact success is claimed",
+      "manual visual verification is required before completion"
+    ],
+    "forbiddenPromotionContent": [
+      "specific Math 30 question IDs",
+      "temporary file paths",
+      "live form URLs",
+      "one-off batch details",
+      "raw Codex report wording"
+    ]
+  },
+  "expectedFutureBehaviorChange": "Future external/import/render/live-form completion claims include an explicit proof artifact, inspection target, required checks, pass/fail status, unverified remainder, and stop condition.",
+  "approvalRequiredForFurtherPromotion": true
+}

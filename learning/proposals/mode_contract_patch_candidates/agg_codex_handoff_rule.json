@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "stax-reviewed-aggregate-promotion-v1",
+  "aggregateId": "agg_codex_handoff_rule",
+  "classification": "codex_handoff_rule",
+  "queueType": "codex_prompt_candidate",
+  "promotionTarget": "mode_contract_patch",
+  "status": "approved_for_promotion",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-08T18:08:24.709Z",
+  "approvalReason": "Repeated across 29 Brightspace sidecar candidates; high-value operating pattern for bounded Codex delegation.",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-08T17-20-03-274Z.json",
+  "sourceCandidateCount": 29,
+  "promotedPattern": {
+    "name": "bounded_codex_handoff",
+    "summary": "A bounded Codex handoff must give the receiving agent enough scope, evidence requirements, and stop conditions to act without inventing context or broadening the task.",
+    "requiredFields": [
+      "exact repo/workspace path",
+      "current task objective",
+      "files or surfaces to inspect",
+      "allowed commands",
+      "forbidden commands or actions",
+      "acceptance criteria",
+      "stop condition",
+      "required evidence to return"
+    ],
+    "forbiddenPromotionContent": [
+      "Brightspace-specific file names",
+      "question numbers",
+      "branch names",
+      "live URLs",
+      "one-off task facts",
+      "raw Codex report wording"
+    ]
+  },
+  "expectedFutureBehaviorChange": "Future Codex prompts include repo path, task objective, inspection targets, allowed and forbidden actions, acceptance criteria, stop condition, and proof return requirements.",
+  "approvalRequiredForFurtherPromotion": true
+}
