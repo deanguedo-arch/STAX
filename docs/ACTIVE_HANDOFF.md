@@ -1,139 +1,208 @@
 # Active Handoff
 
-Date: 2026-05-06
+Date: 2026-05-10
 
 ## Current Workstream
 
-Resume the Brightspace Math 30 print-PDF to Microsoft Forms transfer work.
+Continue STAX Core hardening after the kernel-authority and sealed-truth phases.
 
-Primary handoff:
+This handoff is for the STAX repo only:
 
-- `docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md`
+- repo: `/Users/deanguedo/Documents/GitHub/STAX`
+- branch: `main`
+- remote state at handoff: `main...origin/main [ahead 3]`
 
-Source repo:
+Do not route this handoff into DWG, commerce, Brightspace implementation work, or new agent/mode expansion.
 
-- `/Users/deanguedo/Documents/GitHub/brightspacequizexporter`
+## Current Local Commits
 
-STAX repo:
+These commits are local on `main` and have not been pushed yet:
 
-- `/Users/deanguedo/Documents/GitHub/STAX`
+```txt
+07a2c80 Harden kernel truth sealing
+e06aba3 Add STAX kernel truth API and adapter contract
+e3052a4 Route STAX output through kernel ledger
+```
 
-## Current State
+## What Changed
 
-The Brightspace repo now has the Microsoft Forms converter work committed and available from GitHub.
+### `e3052a4` Kernel Authority
 
-Use this branch on a new computer:
+- `processObservation` now routes through kernel ledger authority.
+- `validateEventHorizon` remains only as compatibility API and delegates to the kernel.
+- Stable hashing is canonicalized for object-key order and special values.
+- Replay-dependent IDs are deterministic.
+- Audit traces include `ledger` plus `ledgerRecordIds` and `ledgerHashes`.
+- Replay signatures include ledger authority fields.
+- Strict CI now runs `validate:hardened`.
 
-- repo: `deanguedo-arch/brightspacequizexporter`
-- branch: `codex/resume-math30-msforms-20260506`
-- current merged main commit: `d752119f7a3f8866f820afddfffc3c1c6964f664`
-- original converter commit: `4a806ef`
+### `e06aba3` Kernel Truth API
 
-The committed Brightspace implementation includes:
+- Added sealed `KernelTruth`.
+- Added `evaluateCandidate` public kernel API.
+- Added `TruthSnapshot` scaffold with latest/conflict/rejection indexes.
+- Added generic STAX Core adapter contract for `external_repo`, `sidecar`, `manual`, and `import` batches.
+- Kept the adapter generic; no domain-specific assumptions.
 
-- `brightspaceexport convert`
-- Brightspace print-PDF region segmentation
-- glyph-geometry math recovery
-- Microsoft Forms Quick Import DOCX output
-- native Word math DOCX output
-- canonical `quiz.question_bank.json`
-- warnings/lint artifacts
-- governed math-region crop OCR/vision recovery
+### `07a2c80` Truth-Sealing Red-Team Fix
 
-Important transport note:
+- Red-team found that symbol-branded truth could be forged by copying the hidden symbol.
+- Added a failing adversarial test for copied-symbol forgery.
+- Fixed `assertKernelTruth` with a private `WeakSet` of kernel-issued objects.
 
-- Do not look for the old feature branch if it was deleted after merge.
-- Use `origin/main` or `codex/resume-math30-msforms-20260506` in the Brightspace repo.
-- The STAX handoff branch only carries handoff/proof context. The executable converter code lives in the Brightspace repo.
+## Latest Validation Evidence
 
-## Latest Verified Example
+The following commands passed after `07a2c80`:
 
-Input PDF:
+```bash
+npm run typecheck
+npm test
+npm run smoke:stax
+npm run rax -- eval
+npm run validate:hardened
+npm run validate:staxcore:strict
+```
 
-- `/Users/deanguedo/Downloads/Print Quiz - 25-26 _ S2 _ Mathematics 30-2 _ Per 1(A) _ Sec SPO2.pdf`
+Latest observed full test count:
 
-Latest example output:
+```txt
+182 test files passed
+891 tests passed
+```
 
-- `/tmp/brightspace-msforms-example.lHnd2Y`
+Strict STAX Core release gate result:
 
-Generated:
+```txt
+canRelease: true
+doctrine score: 100/A
+replay deterministic: true
+replay chain valid: true
+```
 
-- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.msforms.quickimport.docx`
-- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.msforms.native-math.docx`
-- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.question_bank.json`
-- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.extraction_warnings.json`
-- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.forms_lint.txt`
-- `/tmp/brightspace-msforms-example.lHnd2Y/quiz.math_region_artifacts.json`
+Latest strict release artifact:
 
-Result:
+```txt
+runs/staxcore_release/2026-05-10/staxcore_release_3745ae0a-d47d-405c-a70c-46b3345fae60.json
+runs/staxcore_release/2026-05-10/staxcore_release_3745ae0a-d47d-405c-a70c-46b3345fae60.md
+```
 
-- 27 questions total
-- 16 multiple-choice
-- 8 numerical-response
-- 3 written-response
-- 7 safe glyph-math recoveries
-- 3 governed OCR attempts rejected
+## Red/Blue/Purple Result
 
-## Key Finding
+### Red Team
 
-Local OCR is too weak for Q9, Q10, and Q14:
+- `KernelTruth` was overclaimed before `07a2c80`; copied-symbol forgery was possible.
+- Durable persistent ledger/tip-hash enforcement is still missing.
+- `generateSignals` still accepts plain `ValidatedEvent[]`, so direct signal generation can bypass sealed truth.
+- `TruthSnapshot` is not yet full replay authority: no explicit replay signature field, supersession invariant, or history-aware conflict detection.
+- Adapter batches validate shape but do not yet run through shared durable ledger history.
 
-- Q9 rejected: confidence 0.71 below 0.90
-- Q10 rejected: confidence 0.77 below 0.90
-- Q14 rejected: no equation-shaped math candidate
+### Blue Team
 
-This is correct behavior. Weak OCR must not be attached as semantic math.
+- Main output now routes through kernel authority.
+- Audit output carries ledger IDs and hashes.
+- Replay is deterministic.
+- Kernel-issued truth is materially harder to forge.
+- Generic adapters exist without polluting STAX Core with domain assumptions.
 
-## Fresh Thread Prompt
+### Purple Team Next Work
 
-Use this exact prompt on the next computer:
+Implement in this order:
+
+1. Durable ledger adapter with expected tip-hash enforcement.
+2. `replayLedger(records)` with explicit replay signature.
+3. Supersession/correction invariants.
+4. Kernel-issued signal API so signals cannot be built from arbitrary `ValidatedEvent`.
+5. Adapter batch processing against shared ledger history.
+
+## Immediate Next Target
+
+Start with durable ledger.
+
+Minimum new code shape:
+
+```txt
+src/staxcore/kernel/durableLedger.ts
+tests/staxcore/kernel/durableLedgerAdapter.test.ts
+tests/staxcore/kernel/ledgerTipEnforcement.test.ts
+```
+
+Minimum behavior:
+
+```txt
+- ledger records persist across load/save boundaries
+- append requires expected current tip hash
+- first append requires expected tip null
+- stale tip append fails
+- non-tip append fails
+- duplicate record id is rejected or idempotently ignored by exact same record
+- sequence cannot skip
+- sequence cannot reorder
+- stored record hash recomputes exactly
+```
+
+Do not start with UI. Do not add agents. Do not add domain modules.
+
+## Fresh Chat Startup Prompt
+
+Use this exact prompt in the next Codex chat:
 
 ```txt
 docs/ACTIVE_HANDOFF.md
 
-We are resuming the Math 30 Brightspace print-PDF to Microsoft Forms transfer work.
+We are continuing STAX Core hardening in /Users/deanguedo/Documents/GitHub/STAX.
 
 First read:
 - /Users/deanguedo/Documents/GitHub/STAX/docs/ACTIVE_HANDOFF.md
-- /Users/deanguedo/Documents/GitHub/STAX/docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md
+- /Users/deanguedo/Documents/GitHub/STAX/AGENTS.md
 
-Then open:
-- /Users/deanguedo/Documents/GitHub/brightspacequizexporter
+Then verify:
+- git status --short --branch
+- git log -5 --oneline
+
+Current known state:
+- main is ahead of origin/main by 3 local commits:
+  - 07a2c80 Harden kernel truth sealing
+  - e06aba3 Add STAX kernel truth API and adapter contract
+  - e3052a4 Route STAX output through kernel ledger
+- These commits are not pushed yet unless the current repo state says otherwise.
 
 Goal:
-Continue from the exact current state of the Microsoft Forms converter. The current blocker is Q9/Q10/Q14 math recovery from rendered question-region crops. Do not weaken warning gates. Do not attach OCR/vision math unless it is equation-shaped and confidence is at least 0.90. Keep unresolved crops/warnings when confidence is weak.
+Continue with the next STAX-only phase: durable ledger adapter with tip-hash enforcement.
 
-Before coding:
-1. Fetch and switch the Brightspace resume branch `codex/resume-math30-msforms-20260506`, or pull current `origin/main`.
-2. Confirm `scripts/brightspaceexport.ts` and `src/ingest/msforms/` are present.
-3. Run the latest example command from the handoff and inspect `quiz.forms_lint.txt`, `quiz.question_bank.json`, and `quiz.math_region_artifacts.json`.
+Do not work on DWG, commerce, Brightspace implementation, UI, or new agents.
+Do not push or promote anything without Dean explicitly approving it.
 
-Next implementation target:
-Plug in a stronger equations-only vision recognizer for Q9/Q10/Q14 via `MSFORMS_MATH_REGION_VISION_CMD`, or add a governed recognizer adapter that produces `{ "equation": "...", "confidence": 0.xx, "engine": "..." }`.
+Implementation target:
+- src/staxcore/kernel/durableLedger.ts
+- tests/staxcore/kernel/durableLedgerAdapter.test.ts
+- tests/staxcore/kernel/ledgerTipEnforcement.test.ts
 
-Validation:
-- run the exact Math 30 PDF conversion
-- verify Q9/Q10/Q14 decisions in `quiz.math_region_artifacts.json`
-- run `npm run build`
-- run `npm test`
-- run `npm run ingest:ci`
-- run `npm run lint` and report the known unrelated lint blockers if still present
+Required behavior:
+- ledger records persist across load/save boundaries
+- append requires expected current tip hash
+- first append requires expected tip null
+- stale tip append fails
+- non-tip append fails
+- duplicate record id is rejected or idempotently ignored by exact same record
+- sequence cannot skip
+- sequence cannot reorder
+- stored record hash recomputes exactly
 
-Do not claim Microsoft Forms import success until the generated DOCX has actually been imported into Microsoft Forms.
-Do not promote any STAX learning candidate unless Dean explicitly approves it.
+After changes, run:
+- npm run typecheck
+- npm test
+- npm run smoke:stax
+- npm run rax -- eval
+
+If integrity-path code changed, also run:
+- npm run validate:hardened
+- npm run validate:staxcore:strict
+
+Commit clean local work only after gates pass. Keep the final answer short and evidence-backed.
 ```
-
-## STAX Update
-
-This handoff also creates a pending STAX sidecar import candidate:
-
-- `queues/sidecar_imports/pending/cand_brightspace_math30_msforms_transfer_2026_05_06.json`
-
-It is a `repo_memory` candidate and requires explicit human approval before promotion.
 
 ## Stop Condition
 
-The next session can stop once it has either:
+The next session can stop once durable ledger tip enforcement is implemented, tested, validated, and committed locally.
 
-- recovered Q9/Q10/Q14 with governed high-confidence equation recognition and rerun the gates, or
-- proved that the current recognizer cannot recover them and left clear crop artifacts plus warnings for manual correction.
+Only push after Dean explicitly says to push.
