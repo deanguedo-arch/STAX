@@ -68,6 +68,17 @@ export function stableOutputSignature(output: OutputEnvelope<unknown>): string {
     status: output.status,
     warnings: output.warnings,
     confidence: output.confidence,
+    auditTrace: {
+      layerPath: output.auditTrace.layerPath,
+      inputId: output.auditTrace.inputId,
+      candidateIds: output.auditTrace.candidateIds,
+      validationIds: output.auditTrace.validationIds,
+      signalIds: output.auditTrace.signalIds,
+      ledgerRecordIds: output.auditTrace.ledgerRecordIds,
+      ledgerHashes: output.auditTrace.ledgerHashes,
+      warnings: output.auditTrace.warnings,
+      doctrineVersion: output.auditTrace.doctrineVersion
+    },
     validation: payload.data?.data?.validation
       ? {
           claim: payload.data.data.validation.claim,

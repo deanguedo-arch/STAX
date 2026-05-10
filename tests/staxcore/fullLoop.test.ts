@@ -13,6 +13,7 @@ describe("staxcore full loop", () => {
       "ingest",
       "structure",
       "validate",
+      "ledger",
       "signal",
       "confidence",
       "frame",
@@ -21,6 +22,8 @@ describe("staxcore full loop", () => {
     ]);
     expect(output.auditTrace.candidateIds).toHaveLength(1);
     expect(output.auditTrace.validationIds).toHaveLength(1);
+    expect(output.auditTrace.ledgerRecordIds).toHaveLength(1);
+    expect(output.auditTrace.ledgerHashes).toHaveLength(1);
     expect(output.auditTrace.signalIds).toHaveLength(1);
     expect(output.confidence).toBeGreaterThan(0);
   });

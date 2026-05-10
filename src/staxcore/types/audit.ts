@@ -9,6 +9,8 @@ export interface AuditTrace {
   candidateIds: string[];
   validationIds: string[];
   signalIds: string[];
+  ledgerRecordIds: string[];
+  ledgerHashes: string[];
   warnings: WarningCode[];
 }
 

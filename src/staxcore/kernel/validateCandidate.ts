@@ -72,7 +72,11 @@ function rejectionReasonsFor(candidate: EventCandidate): CandidateRejectionReaso
   if (candidate.claim.trim().length === 0) {
     reasons.push("malformedInput");
   }
-  if (!evidenceChainValid(candidate) || candidate.provenance.sourceType === "unknown") {
+  if (!evidenceChainValid(candidate)) {
+    reasons.push("insufficientEvidence");
+    reasons.push("invalidSource");
+  }
+  if (candidate.provenance.sourceType === "unknown") {
     reasons.push("invalidSource");
   }
   if (candidate.provenance.trustLevel < 0.5 || candidate.missingData.length > 0) {

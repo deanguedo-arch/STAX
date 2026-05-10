@@ -20,6 +20,7 @@ describe("staxcore complete loop", () => {
       "ingest",
       "structure",
       "validate",
+      "ledger",
       "signal",
       "confidence",
       "frame",

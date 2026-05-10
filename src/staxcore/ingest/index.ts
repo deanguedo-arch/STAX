@@ -1,5 +1,5 @@
 import type { Provenance, RawObservation } from "../types/index.js";
-import { assertSafeInput, createId, normalizeInput, nowIso } from "../shared/index.js";
+import { assertSafeInput, normalizeInput, nowIso, stableHash } from "../shared/index.js";
 
 export function ingestRawObservation(content: string, provenance: Provenance): RawObservation {
   assertSafeInput(content);
@@ -9,7 +9,10 @@ export function ingestRawObservation(content: string, provenance: Provenance): R
   const normalized = normalizeInput(content);
 
   return {
-    id: createId("raw"),
+    id: `raw_${stableHash({
+      content: normalized.normalizedContent,
+      provenance
+    }).slice(0, 20)}`,
     content: normalized.normalizedContent,
     provenance,
     receivedAt: nowIso()

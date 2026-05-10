@@ -17,6 +17,8 @@ export function createOutputEnvelope<T>(args: {
   candidateIds: string[];
   validationIds: string[];
   signalIds: string[];
+  ledgerRecordIds?: string[];
+  ledgerHashes?: string[];
 }): OutputEnvelope<T> {
   const hasHardUncertainty =
     args.uncertainty.missingData.length > 0 ||
@@ -36,6 +38,7 @@ export function createOutputEnvelope<T>(args: {
         "ingest",
         "structure",
         "validate",
+        "ledger",
         "signal",
         "confidence",
         "frame",
@@ -46,6 +49,8 @@ export function createOutputEnvelope<T>(args: {
       candidateIds: args.candidateIds,
       validationIds: args.validationIds,
       signalIds: args.signalIds,
+      ledgerRecordIds: args.ledgerRecordIds,
+      ledgerHashes: args.ledgerHashes,
       warnings: args.warnings
     })
   };

@@ -9,6 +9,8 @@ export function buildAuditTrace(args: {
   candidateIds?: string[];
   validationIds?: string[];
   signalIds?: string[];
+  ledgerRecordIds?: string[];
+  ledgerHashes?: string[];
   warnings?: WarningCode[];
 }): AuditTrace {
   return {
@@ -20,6 +22,8 @@ export function buildAuditTrace(args: {
     candidateIds: args.candidateIds ?? [],
     validationIds: args.validationIds ?? [],
     signalIds: args.signalIds ?? [],
+    ledgerRecordIds: args.ledgerRecordIds ?? [],
+    ledgerHashes: args.ledgerHashes ?? [],
     warnings: args.warnings ?? []
   };
 }

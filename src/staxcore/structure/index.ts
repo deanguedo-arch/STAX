@@ -1,5 +1,5 @@
 import type { EventCandidate, RawObservation } from "../types/index.js";
-import { createId } from "../shared/index.js";
+import { stableHash } from "../shared/index.js";
 
 export function structureCandidate(raw: RawObservation): EventCandidate {
   const uncertaintyReason: string[] = [];
@@ -23,7 +23,15 @@ export function structureCandidate(raw: RawObservation): EventCandidate {
   }
 
   return {
-    id: createId("candidate"),
+    id: `candidate_${stableHash({
+      rawId: raw.id,
+      claim: raw.content,
+      provenance: raw.provenance,
+      uncertaintyReason,
+      missingData,
+      confidenceCaps,
+      unresolvedConflicts
+    }).slice(0, 20)}`,
     rawId: raw.id,
     claim: raw.content,
     state: "CANDIDATE",

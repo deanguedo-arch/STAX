@@ -40,6 +40,9 @@ jobs:
           npm test -- tests/githubPrArtifactAdapter.test.ts
           GITHUB_TOKEN= STAX_GITHUB_TOKEN= npm test -- tests/githubPrArtifactAdapter.test.ts
 
+      - name: Validate hardened STAX gates
+        run: npm run validate:hardened
+
       - name: Validate STAX Core strict release gate
         run: npm run validate:staxcore:strict:ci
 

@@ -9,19 +9,33 @@ import type {
   SignalTrend,
   ValidatedEvent
 } from "../types/index.js";
-import { createId } from "../shared/index.js";
+import { stableHash } from "../shared/index.js";
+
+function deterministicId(prefix: string, value: unknown): string {
+  return `${prefix}_${stableHash(value).slice(0, 20)}`;
+}
 
 export function generateSignals(events: ValidatedEvent[]): Signal[] {
-  return events.map((event) => ({
-    id: createId("signal"),
-    type: event.state === "VALIDATED" ? "recurrence" : "conflict",
-    description:
+  return events.map((event) => {
+    const type = event.state === "VALIDATED" ? "recurrence" : "conflict";
+    const description =
       event.state === "VALIDATED"
         ? `Validated event available: ${event.claim}`
-        : `Rejected/conflicted event: ${event.claim}`,
-    sourceValidationIds: [event.id],
-    provisional: event.state !== "VALIDATED"
-  }));
+        : `Rejected/conflicted event: ${event.claim}`;
+    const provisional = event.state !== "VALIDATED";
+    return {
+      id: deterministicId("signal", {
+        type,
+        description,
+        sourceValidationIds: [event.id],
+        provisional
+      }),
+      type,
+      description,
+      sourceValidationIds: [event.id],
+      provisional
+    };
+  });
 }
 
 export function generateSignalPacket(input: {
@@ -74,7 +88,10 @@ function buildPatterns(events: ValidatedEvent[], signals: Signal[]): SignalPatte
   if (events.length < 2) {
     return [
       {
-        id: createId("pattern"),
+        id: deterministicId("pattern", {
+          kind: "insufficient-validated-count",
+          sourceValidationIds: events.map((event) => event.id)
+        }),
         description: "Insufficient validated event count for a durable pattern.",
         sourceValidationIds: events.map((event) => event.id),
         provisional: true
@@ -88,8 +105,13 @@ function buildPatterns(events: ValidatedEvent[], signals: Signal[]): SignalPatte
         events.some((event) => event.id === id)
       )
     )
-    .map((signal) => ({
-      id: createId("pattern"),
+    .map((signal, index) => ({
+      id: deterministicId("pattern", {
+        index,
+        description: signal.description,
+        sourceValidationIds: signal.sourceValidationIds,
+        provisional: signal.provisional
+      }),
       description: signal.description,
       sourceValidationIds: signal.sourceValidationIds,
       provisional: signal.provisional
@@ -102,16 +124,24 @@ function buildGaps(
 ): SignalGap[] {
   const gaps: SignalGap[] = [];
   for (const event of events) {
-    for (const missing of event.missingData) {
+    for (const [index, missing] of event.missingData.entries()) {
       gaps.push({
-        id: createId("gap"),
+        id: deterministicId("gap", {
+          kind: "missing-data",
+          index,
+          missing,
+          sourceValidationIds: [event.id]
+        }),
         description: `Missing data: ${missing}`,
         sourceValidationIds: [event.id]
       });
     }
     if (!event.evidenceChainValid) {
       gaps.push({
-        id: createId("gap"),
+        id: deterministicId("gap", {
+          kind: "incomplete-evidence-chain",
+          sourceValidationIds: [event.id]
+        }),
         description: "Evidence chain is incomplete.",
         sourceValidationIds: [event.id]
       });
@@ -119,7 +149,10 @@ function buildGaps(
   }
   if (rejectionReasons.includes("insufficientEvidence") && gaps.length === 0) {
     gaps.push({
-      id: createId("gap"),
+      id: deterministicId("gap", {
+        kind: "insufficient-evidence",
+        sourceValidationIds: events.map((event) => event.id)
+      }),
       description: "Insufficient evidence for full validation.",
       sourceValidationIds: events.map((event) => event.id)
     });
@@ -135,7 +168,10 @@ function buildRisks(
   for (const event of events) {
     if (event.warnings.includes("RECOMMENDATION_DETECTED")) {
       risks.push({
-        id: createId("risk"),
+        id: deterministicId("risk", {
+          kind: "recommendation-quarantine",
+          sourceValidationIds: [event.id]
+        }),
         description: "Recommendation source is quarantined from truth issuance.",
         sourceValidationIds: [event.id],
         severity: "high"
@@ -143,7 +179,10 @@ function buildRisks(
     }
     if (event.warnings.includes("OPINION_DETECTED")) {
       risks.push({
-        id: createId("risk"),
+        id: deterministicId("risk", {
+          kind: "opinion-quarantine",
+          sourceValidationIds: [event.id]
+        }),
         description: "Opinion source is quarantined from truth issuance.",
         sourceValidationIds: [event.id],
         severity: "high"
@@ -151,7 +190,10 @@ function buildRisks(
     }
     if (event.warnings.includes("CONFLICT_DETECTED")) {
       risks.push({
-        id: createId("risk"),
+        id: deterministicId("risk", {
+          kind: "conflict-resolution-required",
+          sourceValidationIds: [event.id]
+        }),
         description: "Conflicting evidence requires explicit resolution.",
         sourceValidationIds: [event.id],
         severity: "medium"
@@ -159,7 +201,10 @@ function buildRisks(
     }
     if (event.warnings.includes("PROMPT_INJECTION_DETECTED")) {
       risks.push({
-        id: createId("risk"),
+        id: deterministicId("risk", {
+          kind: "prompt-injection-untrusted",
+          sourceValidationIds: [event.id]
+        }),
         description: "Prompt injection text was treated as untrusted input.",
         sourceValidationIds: [event.id],
         severity: "high"
@@ -168,7 +213,10 @@ function buildRisks(
   }
   if (rejectionReasons.includes("invalidSource")) {
     risks.push({
-      id: createId("risk"),
+      id: deterministicId("risk", {
+        kind: "invalid-provenance",
+        sourceValidationIds: events.map((event) => event.id)
+      }),
       description: "Invalid or missing provenance prevents trusted truth issuance.",
       sourceValidationIds: events.map((event) => event.id),
       severity: "high"
@@ -183,7 +231,10 @@ function buildTrends(events: ValidatedEvent[]): SignalTrend[] {
       ? []
       : [
           {
-            id: createId("trend"),
+            id: deterministicId("trend", {
+              kind: "insufficient-trend-count",
+              sourceValidationIds: events.map((event) => event.id)
+            }),
             description: "Trend unavailable until multiple validated events exist.",
             sourceValidationIds: events.map((event) => event.id),
             direction: "unknown",
@@ -194,7 +245,10 @@ function buildTrends(events: ValidatedEvent[]): SignalTrend[] {
 
   return [
     {
-      id: createId("trend"),
+      id: deterministicId("trend", {
+        kind: "multiple-trusted-events",
+        sourceValidationIds: events.map((event) => event.id)
+      }),
       description: "Multiple trusted events are available for trend analysis.",
       sourceValidationIds: events.map((event) => event.id),
       direction: "unknown",
