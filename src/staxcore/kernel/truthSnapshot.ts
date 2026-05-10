@@ -1,5 +1,5 @@
 import { stableHash } from "../shared/index.js";
-import { hashExistingLedgerRecord } from "./hashLedgerRecord.js";
+import { replayLedger } from "./replayLedger.js";
 import type { KernelLedgerEvent, KernelLedgerRecord } from "./types.js";
 
 export interface TruthSnapshotRecord {
@@ -19,6 +19,7 @@ export interface TruthSnapshotRecord {
 export interface TruthSnapshot {
   doctrineVersion: string;
   rootHash: string | null;
+  replaySignature: string;
   recordCount: number;
   records: TruthSnapshotRecord[];
   latestByCandidateId: Record<string, string>;
@@ -70,6 +71,7 @@ function eventRecord(
 export function buildTruthSnapshot(
   records: readonly KernelLedgerRecord<KernelLedgerEvent>[]
 ): TruthSnapshot {
+  const replay = replayLedger(records);
   const snapshotRecords = records.map(eventRecord);
   const latestByCandidateId: Record<string, string> = {};
   const conflictIndex: Record<string, string[]> = {};
@@ -90,7 +92,8 @@ export function buildTruthSnapshot(
 
   return {
     doctrineVersion: records.at(-1)?.doctrineVersion ?? "core-v1",
-    rootHash: records.at(-1)?.hash ?? null,
+    rootHash: replay.rootHash,
+    replaySignature: replay.replaySignature,
     recordCount: records.length,
     records: snapshotRecords,
     latestByCandidateId,
@@ -102,20 +105,8 @@ export function buildTruthSnapshot(
 export function verifyTruthSnapshotRecords(
   records: readonly KernelLedgerRecord<KernelLedgerEvent>[]
 ): TruthSnapshotVerification {
-  const issues: string[] = [];
-
-  for (let i = 0; i < records.length; i += 1) {
-    const record = records[i];
-    const previous = i === 0 ? null : records[i - 1];
-    if ((previous?.hash ?? null) !== record.previousHash) {
-      issues.push(`entry ${record.sequence}: previousHash mismatch`);
-    }
-    if (hashExistingLedgerRecord(record) !== record.hash) {
-      issues.push(`entry ${record.sequence}: ledger hash mismatch`);
-    }
-  }
-
-  return { valid: issues.length === 0, issues };
+  const replay = replayLedger(records);
+  return { valid: replay.valid, issues: replay.issues };
 }
 
 export function hashTruthSnapshot(snapshot: TruthSnapshot): string {

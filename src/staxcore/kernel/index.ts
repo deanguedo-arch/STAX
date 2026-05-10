@@ -3,6 +3,7 @@ export * from "./validateCandidate.js";
 export * from "./hashLedgerRecord.js";
 export * from "./appendOnlyLedger.js";
 export * from "./durableLedger.js";
+export * from "./replayLedger.js";
 export * from "./processCandidate.js";
 export * from "./truth.js";
 export * from "./publicApi.js";

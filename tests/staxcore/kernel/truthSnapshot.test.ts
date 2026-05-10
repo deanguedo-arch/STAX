@@ -9,6 +9,7 @@ import {
   hashTruthSnapshot,
   KernelAppendOnlyLedger,
   processCandidate,
+  replayLedger,
   verifyTruthSnapshotRecords
 } from "../../../src/staxcore/index.js";
 import { measurementProvenance } from "../helpers.js";
@@ -61,6 +62,9 @@ describe("truth snapshot", () => {
 
     expect(snapshot.recordCount).toBe(3);
     expect(snapshot.rootHash).toBe(ledger.all().at(-1)?.hash);
+    expect(snapshot.replaySignature).toBe(
+      replayLedger(ledger.all()).replaySignature
+    );
     expect(snapshot.latestByCandidateId["candidate-accepted"]).toBe(
       accepted.ledgerRecord.id
     );

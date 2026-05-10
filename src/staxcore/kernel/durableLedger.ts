@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { stableHash } from "../shared/id.js";
 import { hashExistingLedgerRecord, hashLedgerRecord } from "./hashLedgerRecord.js";
+import { replayLedger } from "./replayLedger.js";
 import {
   STAX_KERNEL_DOCTRINE_VERSION,
   type KernelLedgerRecord
@@ -203,15 +204,8 @@ export class KernelDurableLedger<
   }
 
   verifyChain(): { valid: boolean; issues: string[] } {
-    const issues: string[] = [];
-
-    try {
-      this.assertValidChain(this.entries);
-    } catch (error) {
-      issues.push(error instanceof Error ? error.message : String(error));
-    }
-
-    return { valid: issues.length === 0, issues };
+    const replay = replayLedger(this.entries);
+    return { valid: replay.valid, issues: replay.issues };
   }
 
   private assertExpectedTip(expectedTipHash: string | null | undefined): void {
@@ -230,36 +224,7 @@ export class KernelDurableLedger<
   }
 
   private assertValidChain(records: readonly KernelLedgerRecord<T>[]): void {
-    const ids = new Set<string>();
-
-    for (let index = 0; index < records.length; index += 1) {
-      const record = records[index];
-      const expectedSequence = index + 1;
-      const previous = index === 0 ? null : records[index - 1];
-
-      if (ids.has(record.id)) {
-        throw new Error(`Duplicate kernel ledger record id: ${record.id}`);
-      }
-      ids.add(record.id);
-
-      if (record.sequence !== expectedSequence) {
-        throw new Error(
-          `Kernel ledger record ${record.id} sequence must be ${expectedSequence}.`
-        );
-      }
-
-      if (record.previousHash !== (previous?.hash ?? null)) {
-        throw new Error(
-          `Kernel ledger record ${record.id} previousHash does not match prior tip.`
-        );
-      }
-
-      const recomputedHash = hashExistingLedgerRecord(record);
-      if (record.hash !== recomputedHash) {
-        throw new Error(
-          `Kernel ledger record ${record.id} hash does not match stored content.`
-        );
-      }
-    }
+    const replay = replayLedger(records);
+    if (!replay.valid) throw new Error(replay.issues.join("; "));
   }
 }

@@ -74,6 +74,6 @@ describe("staxcore kernel durable ledger adapter", () => {
 
     await expect(
       KernelDurableLedger.load<Record<string, unknown>>(filePath)
-    ).rejects.toThrow(/hash does not match stored content/);
+    ).rejects.toThrow(/stored hash mismatch/);
   });
 });
