@@ -1,10 +1,9 @@
 import type { EventCandidate, EventHorizonResult } from "../types/index.js";
-import { KernelAppendOnlyLedger } from "./appendOnlyLedger.js";
 import {
   eventHorizonFromProcessCandidateResult,
   processCandidate
 } from "./processCandidate.js";
-import type { KernelLedgerEvent } from "./types.js";
+import type { KernelLedgerEvent, KernelLedgerWriter } from "./types.js";
 import {
   readKernelTruth,
   sealKernelTruth,
@@ -22,7 +21,7 @@ export interface KernelEvaluation {
 
 export function evaluateCandidate(
   candidate: EventCandidate,
-  ledger?: KernelAppendOnlyLedger<KernelLedgerEvent>
+  ledger?: KernelLedgerWriter<KernelLedgerEvent>
 ): KernelEvaluation {
   const result = processCandidate(candidate, ledger);
   const truth = sealKernelTruth(result);

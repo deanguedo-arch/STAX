@@ -8,6 +8,7 @@ import type {
 import { KernelAppendOnlyLedger } from "./appendOnlyLedger.js";
 import { validateCandidate } from "./validateCandidate.js";
 import type {
+  KernelLedgerWriter,
   KernelValidationDecision,
   KernelLedgerEvent,
   ProcessCandidateResult
@@ -83,7 +84,8 @@ export function eventHorizonFromProcessCandidateResult(
 
 export function processCandidate(
   candidate: EventCandidate,
-  ledger = new KernelAppendOnlyLedger<KernelLedgerEvent>()
+  ledger: KernelLedgerWriter<KernelLedgerEvent> =
+    new KernelAppendOnlyLedger<KernelLedgerEvent>()
 ): ProcessCandidateResult {
   const decision = validateCandidate(candidate);
   const ledgerEvent = ledgerEventFromDecision(decision);

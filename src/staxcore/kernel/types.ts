@@ -86,6 +86,18 @@ export interface KernelLedgerRecord<T> {
   event: T;
 }
 
+export interface KernelLedgerAppendOptions {
+  doctrineVersion?: string;
+  id?: string;
+  recordedAt?: string;
+}
+
+export interface KernelLedgerWriter<T> {
+  append(event: T, options?: KernelLedgerAppendOptions): KernelLedgerRecord<T>;
+  all(): readonly KernelLedgerRecord<T>[];
+  verifyChain(): { valid: boolean; issues: string[] };
+}
+
 export interface ProcessCandidateResult {
   decision: KernelValidationDecision;
   ledgerRecord: KernelLedgerRecord<KernelLedgerEvent>;

@@ -3,6 +3,8 @@ import { ingestRawObservation } from "../../ingest/index.js";
 import { structureCandidate } from "../../structure/index.js";
 import {
   evaluateCandidate,
+  type KernelLedgerEvent,
+  type KernelLedgerWriter,
   readKernelEvaluationTruth
 } from "../../kernel/index.js";
 import { generateSignalPacket, generateSignals } from "../../signal/index.js";
@@ -14,11 +16,14 @@ import { createOutputEnvelope } from "../../exchange/index.js";
 export function processObservation(
   content: string,
   provenance: Provenance,
-  options: { allowRecommendations?: boolean } = {}
+  options: {
+    allowRecommendations?: boolean;
+    ledger?: KernelLedgerWriter<KernelLedgerEvent>;
+  } = {}
 ): OutputEnvelope<unknown> {
   const raw = ingestRawObservation(content, provenance);
   const candidate = structureCandidate(raw);
-  const kernelEvaluation = evaluateCandidate(candidate);
+  const kernelEvaluation = evaluateCandidate(candidate, options.ledger);
   const kernelTruth = readKernelEvaluationTruth(kernelEvaluation);
   const horizon = kernelEvaluation.eventHorizon;
   const validation = horizon.validation;

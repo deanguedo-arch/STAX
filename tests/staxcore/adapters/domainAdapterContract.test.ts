@@ -34,6 +34,11 @@ describe("generic STAX Core adapter contract", () => {
     expect(result.outputs).toHaveLength(1);
     expect(result.outputs[0].externalId).toBe("obs-1");
     expect(result.outputs[0].output.auditTrace.ledgerHashes).toHaveLength(1);
+    expect(result.outputs[0].ledgerHash).toBe(
+      result.outputs[0].output.auditTrace.ledgerHashes[0]
+    );
+    expect(result.ledgerHistory.recordCount).toBe(1);
+    expect(result.ledgerHistory.valid).toBe(true);
   });
 
   it("fails loud when required adapter evidence is missing", () => {
