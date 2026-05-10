@@ -2,7 +2,7 @@ import type { OutputEnvelope, Provenance } from "../../types/index.js";
 import { ingestRawObservation } from "../../ingest/index.js";
 import { structureCandidate } from "../../structure/index.js";
 import { validateEventHorizon } from "../../validate/index.js";
-import { generateSignals } from "../../signal/index.js";
+import { generateSignalPacket, generateSignals } from "../../signal/index.js";
 import { scoreConfidence } from "../../confidence/index.js";
 import { frameOutput } from "../../frame/index.js";
 import { attachContext } from "../../context/index.js";
@@ -10,7 +10,8 @@ import { createOutputEnvelope } from "../../exchange/index.js";
 
 export function processObservation(
   content: string,
-  provenance: Provenance
+  provenance: Provenance,
+  options: { allowRecommendations?: boolean } = {}
 ): OutputEnvelope<unknown> {
   const raw = ingestRawObservation(content, provenance);
   const candidate = structureCandidate(raw);
@@ -18,7 +19,19 @@ export function processObservation(
   const validation = horizon.validation;
   const signals = generateSignals([validation]);
   const confidence = scoreConfidence([validation], signals);
-  const framed = frameOutput({ validation, signals, eventHorizon: horizon });
+  const signalPacket = generateSignalPacket({
+    events: [validation],
+    signals,
+    confidence,
+    rejectionReasons: horizon.rejectionReasons,
+    allowRecommendations: options.allowRecommendations
+  });
+  const framed = frameOutput({
+    validation,
+    signals,
+    signalPacket,
+    eventHorizon: horizon
+  });
   const contextualized = attachContext(framed);
   const uncertainty = {
     reasons: [

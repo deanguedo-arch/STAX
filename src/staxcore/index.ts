@@ -5,6 +5,7 @@ export * from "./structure/index.js";
 export * from "./validate/index.js";
 export * from "./signal/index.js";
 export * from "./confidence/index.js";
+export * from "./kernel/index.js";
 export * from "./frame/index.js";
 export * from "./context/index.js";
 export * from "./exchange/index.js";

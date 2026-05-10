@@ -1,11 +1,12 @@
-import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
 import { ModeRegistry, type ModeMaturityReport } from "../modes/ModeRegistry.js";
+import {
+  gitCommand,
+  renderStructuredCommand,
+  runStructuredCommand
+} from "../security/StructuredCommand.js";
 import { toPosixPath } from "../workspace/RepoPathGuards.js";
-
-const execFileAsync = promisify(execFile);
 
 export type LatestEvalEvidence = {
   path: string;
@@ -145,19 +146,22 @@ export function formatLocalEvidence(evidence: LocalEvidence): string {
 }
 
 async function runGit(rootDir: string, args: string[], errors: string[]): Promise<string> {
+  const command = gitCommand(rootDir, ["-C", rootDir, ...args], {
+    timeoutMs: 5000,
+    maxBufferBytes: 1024 * 1024
+  });
   try {
-    const { stdout, stderr } = await execFileAsync("git", ["-C", rootDir, ...args], {
-      timeout: 5000,
-      maxBuffer: 1024 * 1024
-    });
-    if (stderr.trim()) errors.push(`git ${args.join(" ")} stderr: ${stderr.trim()}`);
+    const { stdout, stderr } = await runStructuredCommand(command);
+    if (stderr.trim()) {
+      errors.push(`${renderStructuredCommand(command)} stderr: ${stderr.trim()}`);
+    }
     return stdout;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     errors.push(
       message.includes("not a git repository")
-        ? `git ${args.join(" ")} failed: not a git repository`
-        : `git ${args.join(" ")} failed: ${message.split("\n")[0]}`
+        ? `${renderStructuredCommand(command)} failed: not a git repository`
+        : `${renderStructuredCommand(command)} failed: ${message.split("\n")[0]}`
     );
     return "";
   }

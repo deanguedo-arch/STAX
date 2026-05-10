@@ -116,7 +116,7 @@ export function validateModeOutput(mode: Mode, output: string): ValidationResult
       mode === "stax_fitness" &&
       staxForbiddenPhrases.some((phrase) => claimText.includes(phrase))
     ) {
-      issues.push("STAX fitness output contains forbidden unsupported phrasing.");
+      issues.push("Domain signal output contains forbidden unsupported phrasing.");
     }
   }
 

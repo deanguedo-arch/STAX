@@ -1,8 +1,11 @@
-import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
 import { CommandEvidenceStore } from "../evidence/CommandEvidenceStore.js";
+import {
+  npmCommand,
+  renderStructuredCommand,
+  runStructuredCommand
+} from "../security/StructuredCommand.js";
 import { WorkspaceContext } from "../workspace/WorkspaceContext.js";
 import {
   VerificationResultSchema,
@@ -11,8 +14,6 @@ import {
   relativeLabPath,
   type VerificationResult
 } from "./LearningWorker.js";
-
-const execFileAsync = promisify(execFile);
 
 const exactAllowedCommands = new Set([
   "npm run typecheck",
@@ -93,12 +94,14 @@ export class VerificationWorker {
     if (parts[0] !== "npm") {
       throw new Error(`Unsupported executable: ${parts[0]}`);
     }
-    const executable = process.platform === "win32" ? "npm.cmd" : "npm";
-    const { stdout, stderr } = await execFileAsync(executable, parts.slice(1), {
-      cwd: this.rootDir,
-      timeout: 120000,
-      maxBuffer: 1024 * 1024 * 8
+    const structured = npmCommand(this.rootDir, parts.slice(1), {
+      timeoutMs: 120000,
+      maxBufferBytes: 1024 * 1024 * 8
     });
+    if (renderStructuredCommand(structured) !== command) {
+      throw new Error(`Structured command mismatch: ${command}`);
+    }
+    const { stdout, stderr } = await runStructuredCommand(structured);
     return { stdout, stderr };
   }
 }

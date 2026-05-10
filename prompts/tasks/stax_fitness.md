@@ -1,6 +1,7 @@
-# STAX Fitness Task
+# Legacy Domain Signal Task
 
-This task structures fitness-related inputs into evidence-bound signals.
+This compatibility task structures one fitness-related input stream into
+evidence-bound signals. It is not the STAX product identity.
 
 Scope:
 - training

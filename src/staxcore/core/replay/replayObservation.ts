@@ -22,6 +22,35 @@ export function stableOutputSignature(output: OutputEnvelope<unknown>): string {
           description: string;
           provisional: boolean;
         }>;
+        signalPacket?: {
+          observations: Array<{
+            state: string;
+            claim: string;
+            sourceType: string;
+            warnings: string[];
+          }>;
+          patterns: Array<{
+            description: string;
+            provisional: boolean;
+          }>;
+          gaps: Array<{ description: string }>;
+          risks: Array<{ description: string; severity: string }>;
+          trends: Array<{
+            description: string;
+            direction: string;
+            provisional: boolean;
+          }>;
+          recommendationPolicy: {
+            allowed: boolean;
+            withheld: boolean;
+            reason: string;
+          };
+          confidence: {
+            score: number;
+            rationale: string;
+            caps: string[];
+          };
+        };
         eventHorizon?: {
           rejectionReasons: string[];
           evidenceChainValid: boolean;
@@ -51,6 +80,37 @@ export function stableOutputSignature(output: OutputEnvelope<unknown>): string {
       description: signal.description,
       provisional: signal.provisional
     })),
+    signalPacket: payload.data?.data?.signalPacket
+      ? {
+          observations: payload.data.data.signalPacket.observations.map(
+            (observation) => ({
+              state: observation.state,
+              claim: observation.claim,
+              sourceType: observation.sourceType,
+              warnings: observation.warnings
+            })
+          ),
+          patterns: payload.data.data.signalPacket.patterns.map((pattern) => ({
+            description: pattern.description,
+            provisional: pattern.provisional
+          })),
+          gaps: payload.data.data.signalPacket.gaps.map((gap) => ({
+            description: gap.description
+          })),
+          risks: payload.data.data.signalPacket.risks.map((risk) => ({
+            description: risk.description,
+            severity: risk.severity
+          })),
+          trends: payload.data.data.signalPacket.trends.map((trend) => ({
+            description: trend.description,
+            direction: trend.direction,
+            provisional: trend.provisional
+          })),
+          recommendationPolicy:
+            payload.data.data.signalPacket.recommendationPolicy,
+          confidence: payload.data.data.signalPacket.confidence
+        }
+      : null,
     eventHorizon: payload.data?.data?.eventHorizon
       ? {
           rejectionReasons: payload.data.data.eventHorizon.rejectionReasons,

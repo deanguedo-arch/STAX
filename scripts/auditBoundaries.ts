@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 const coreRoot = join(process.cwd(), "src", "staxcore");
 const required = [
+  "kernel",
   "ingest",
   "structure",
   "validate",
@@ -36,6 +37,11 @@ function files(dir: string): string[] {
 }
 
 const forbidden = [
+  {
+    layer: "kernel",
+    pattern:
+      /from ['"].*(agents|chat|providers|modes|rax|sidecar|domain|network|workspace|project-specific)/
+  },
   {
     layer: "ingest",
     pattern:

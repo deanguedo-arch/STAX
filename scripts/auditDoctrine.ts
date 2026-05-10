@@ -18,12 +18,14 @@ const doctrine = readFileSync(doctrinePath, "utf8");
 const migration = readFileSync(migrationPath, "utf8");
 
 const doctrineRequired = [
-  "Immutable Flow",
+  "Layer Boundary",
   "Validate (Event Horizon)",
   "No layer may bypass a preceding layer.",
+  "Forbidden Core Imports",
   "Truth States",
   "Provenance Minimum",
-  "Uncertainty Minimum"
+  "Uncertainty Minimum",
+  "Enforcement Standard"
 ];
 
 const migrationRequired = [

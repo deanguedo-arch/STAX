@@ -304,11 +304,11 @@ export class AnalystAgent implements Agent {
               ]
             : []),
           "## Current Objective",
-          "- Advance the repo from Behavior System v0.1 toward project governance modes while preserving STAX fitness behavior.",
+          "- Advance the repo from Behavior System v0.1 toward project governance modes while preserving explicit domain-signal compatibility.",
           "",
           "## Proven Working",
           "- ev_001: Behavior System v0.1 proof report records typecheck, test, eval, replay, correction, and training-export evidence.",
-          "- ev_002: STAX atomic extraction proof covers messy training, sleep, recovery, strain, injury, and nutrition signals.",
+          "- ev_002: Atomic signal extraction proof covers messy training, sleep, recovery, strain, injury, and nutrition signals as a legacy domain fixture.",
           "",
           "## Unproven Claims",
           "- Any newly added governance mode remains unproven until its schema, validator, evals, and CLI smoke output pass.",

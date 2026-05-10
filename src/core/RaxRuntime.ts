@@ -711,7 +711,7 @@ export class RaxRuntime {
     }
 
     if (hasStaxForbiddenPhrase) {
-      return "STAX fitness forbidden phrasing detected.";
+      return "Domain signal forbidden phrasing detected.";
     }
 
     return message;

@@ -92,7 +92,7 @@ describe("100 percent proof gates", () => {
     expect(trace.repairPasses).toBe(0);
     expect(trace.validation.valid).toBe(false);
     expect(trace.modelCalls.map((call) => call.role)).toEqual(["generator", "critic"]);
-    expect(trace.errors.join(" ")).toContain("STAX fitness forbidden phrasing detected");
+    expect(trace.errors.join(" ")).toContain("Domain signal forbidden phrasing detected");
     expect(repairLog).toContain("not_attempted_due_to_critical");
   });
 
