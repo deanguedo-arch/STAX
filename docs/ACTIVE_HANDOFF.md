@@ -4,55 +4,84 @@ Date: 2026-05-10
 
 ## Current Workstream
 
-Continue STAX Core hardening after the kernel-authority and sealed-truth phases.
+STAX Core hardening after the kernel-authority and sealed-truth phases.
 
 This handoff is for the STAX repo only:
 
 - repo: `/Users/deanguedo/Documents/GitHub/STAX`
 - branch: `main`
-- remote state at handoff: `main...origin/main [ahead 3]`
+- current code state before this handoff refresh: `main...origin/main [ahead 9]`
+- expected state if this handoff refresh is committed: `main...origin/main [ahead 10]`
 
-Do not route this handoff into DWG, commerce, Brightspace implementation work, or new agent/mode expansion.
+Do not route this handoff into DWG, commerce, Brightspace implementation work,
+UI, or new agent/mode expansion.
+
+Only push after Dean explicitly says to push.
 
 ## Current Local Commits
 
-These commits are local on `main` and have not been pushed yet:
+These implementation commits are local on `main` and have not been pushed yet:
 
 ```txt
+3f5bca1 Process adapter batches through shared ledger history
+6077259 Require kernel truth for signal generation
+2d7f043 Add truth snapshot supersession invariants
+bfa74b9 Add kernel ledger replay signatures
+b2b6dfd Add durable kernel ledger tip enforcement
+c86b4da Refresh active handoff for STAX core
 07a2c80 Harden kernel truth sealing
 e06aba3 Add STAX kernel truth API and adapter contract
 e3052a4 Route STAX output through kernel ledger
 ```
 
-## What Changed
+## What Changed In This Session
 
-### `e3052a4` Kernel Authority
+### `b2b6dfd` Durable Ledger Tip Enforcement
 
-- `processObservation` now routes through kernel ledger authority.
-- `validateEventHorizon` remains only as compatibility API and delegates to the kernel.
-- Stable hashing is canonicalized for object-key order and special values.
-- Replay-dependent IDs are deterministic.
-- Audit traces include `ledger` plus `ledgerRecordIds` and `ledgerHashes`.
-- Replay signatures include ledger authority fields.
-- Strict CI now runs `validate:hardened`.
+- Added `KernelDurableLedger`.
+- Persisted kernel ledger records across load/save boundaries.
+- Required `expectedTipHash` for every append.
+- Rejected stale tip appends, non-tip appends, duplicate record ids, sequence
+  gaps/reordering, and stored hash mismatches.
 
-### `e06aba3` Kernel Truth API
+### `bfa74b9` Kernel Ledger Replay Signatures
 
-- Added sealed `KernelTruth`.
-- Added `evaluateCandidate` public kernel API.
-- Added `TruthSnapshot` scaffold with latest/conflict/rejection indexes.
-- Added generic STAX Core adapter contract for `external_repo`, `sidecar`, `manual`, and `import` batches.
-- Kept the adapter generic; no domain-specific assumptions.
+- Added `replayLedger(records)`.
+- Replay verifies the kernel ledger chain and returns an explicit deterministic
+  `replaySignature`.
+- `TruthSnapshot` now includes `replaySignature`.
+- Durable ledger verification now routes through replay verification.
 
-### `07a2c80` Truth-Sealing Red-Team Fix
+### `2d7f043` Supersession And Correction Invariants
 
-- Red-team found that symbol-branded truth could be forged by copying the hidden symbol.
-- Added a failing adversarial test for copied-symbol forgery.
-- Fixed `assertKernelTruth` with a private `WeakSet` of kernel-issued objects.
+- Added `correction_event` to kernel ledger events.
+- `TruthSnapshot` now tracks corrections, supersession indexes,
+  superseded truth ids, and active truth ids.
+- Added invariant checks for correction request/approval/apply ordering,
+  rejected correction application, missing truth references, future references,
+  self-replacement, and double supersession.
+
+### `6077259` Kernel-Issued Signal Boundary
+
+- `generateSignals` now requires sealed `KernelTruth[]`.
+- `generateSignalPacket` now requires sealed `KernelTruth[]`.
+- Main `processObservation` path builds signals from `kernelEvaluation.truth`,
+  not plain validation objects.
+- Added an adversarial test proving unsealed truth-shaped objects are rejected.
+
+### `3f5bca1` Adapter Batch Shared Ledger History
+
+- `processObservation`, `evaluateCandidate`, and `processCandidate` now accept a
+  shared `KernelLedgerWriter`.
+- `processAdapterBatch` processes all observations against one shared ledger and
+  returns ledger history with replay signature, root hash, record ids, hashes,
+  and validity.
+- Added `processAdapterBatchWithDurableLedger` for durable ledger backed adapter
+  batches with load/save persistence and tip enforcement.
 
 ## Latest Validation Evidence
 
-The following commands passed after `07a2c80`:
+The following commands passed after `3f5bca1`:
 
 ```bash
 npm run typecheck
@@ -66,11 +95,11 @@ npm run validate:staxcore:strict
 Latest observed full test count:
 
 ```txt
-182 test files passed
-891 tests passed
+187 test files passed
+911 tests passed
 ```
 
-Strict STAX Core release gate result:
+Latest strict STAX Core release gate result:
 
 ```txt
 canRelease: true
@@ -82,65 +111,31 @@ replay chain valid: true
 Latest strict release artifact:
 
 ```txt
-runs/staxcore_release/2026-05-10/staxcore_release_3745ae0a-d47d-405c-a70c-46b3345fae60.json
-runs/staxcore_release/2026-05-10/staxcore_release_3745ae0a-d47d-405c-a70c-46b3345fae60.md
+runs/staxcore_release/2026-05-10/staxcore_release_32259bae-1078-4b23-b84a-da9ef73b76a0.json
+runs/staxcore_release/2026-05-10/staxcore_release_32259bae-1078-4b23-b84a-da9ef73b76a0.md
 ```
 
-## Red/Blue/Purple Result
+## Purple Team Sequence Status
 
-### Red Team
-
-- `KernelTruth` was overclaimed before `07a2c80`; copied-symbol forgery was possible.
-- Durable persistent ledger/tip-hash enforcement is still missing.
-- `generateSignals` still accepts plain `ValidatedEvent[]`, so direct signal generation can bypass sealed truth.
-- `TruthSnapshot` is not yet full replay authority: no explicit replay signature field, supersession invariant, or history-aware conflict detection.
-- Adapter batches validate shape but do not yet run through shared durable ledger history.
-
-### Blue Team
-
-- Main output now routes through kernel authority.
-- Audit output carries ledger IDs and hashes.
-- Replay is deterministic.
-- Kernel-issued truth is materially harder to forge.
-- Generic adapters exist without polluting STAX Core with domain assumptions.
-
-### Purple Team Next Work
-
-Implement in this order:
+Completed in order:
 
 1. Durable ledger adapter with expected tip-hash enforcement.
 2. `replayLedger(records)` with explicit replay signature.
 3. Supersession/correction invariants.
-4. Kernel-issued signal API so signals cannot be built from arbitrary `ValidatedEvent`.
-5. Adapter batch processing against shared ledger history.
+4. Kernel-issued signal API so signals cannot be built from arbitrary
+   `ValidatedEvent`.
+5. Adapter batch processing against shared durable ledger history.
 
-## Immediate Next Target
+## Remaining Caution
 
-Start with durable ledger.
-
-Minimum new code shape:
-
-```txt
-src/staxcore/kernel/durableLedger.ts
-tests/staxcore/kernel/durableLedgerAdapter.test.ts
-tests/staxcore/kernel/ledgerTipEnforcement.test.ts
-```
-
-Minimum behavior:
-
-```txt
-- ledger records persist across load/save boundaries
-- append requires expected current tip hash
-- first append requires expected tip null
-- stale tip append fails
-- non-tip append fails
-- duplicate record id is rejected or idempotently ignored by exact same record
-- sequence cannot skip
-- sequence cannot reorder
-- stored record hash recomputes exactly
-```
-
-Do not start with UI. Do not add agents. Do not add domain modules.
+- These commits are still local and not pushed.
+- Default single-observation `processObservation` still uses an in-memory ledger
+  unless a shared ledger writer is supplied.
+- Durable adapter processing exists, but no CLI/control surface has been added
+  for selecting a durable ledger file. That is intentional: do not add UI before
+  CLI/runtime policy is stable.
+- History-aware conflict resolution can now use correction/supersession indexes,
+  but no broad new conflict-resolution policy was promoted in this session.
 
 ## Fresh Chat Startup Prompt
 
@@ -157,38 +152,28 @@ First read:
 
 Then verify:
 - git status --short --branch
-- git log -5 --oneline
+- git log -10 --oneline
 
-Current known state:
-- main is ahead of origin/main by 3 local commits:
-  - 07a2c80 Harden kernel truth sealing
-  - e06aba3 Add STAX kernel truth API and adapter contract
-  - e3052a4 Route STAX output through kernel ledger
-- These commits are not pushed yet unless the current repo state says otherwise.
+Known local implementation commits:
+- 3f5bca1 Process adapter batches through shared ledger history
+- 6077259 Require kernel truth for signal generation
+- 2d7f043 Add truth snapshot supersession invariants
+- bfa74b9 Add kernel ledger replay signatures
+- b2b6dfd Add durable kernel ledger tip enforcement
+
+These commits are not pushed unless current repo state says otherwise.
 
 Goal:
-Continue with the next STAX-only phase: durable ledger adapter with tip-hash enforcement.
+Review the completed STAX Core hardening sequence and decide the next bounded
+phase. Do not add UI. Do not add agents. Do not push or promote anything without
+Dean explicitly approving it.
 
-Do not work on DWG, commerce, Brightspace implementation, UI, or new agents.
-Do not push or promote anything without Dean explicitly approving it.
+Recommended next bounded options:
+1. Add a CLI/runtime control for selecting a durable kernel ledger file.
+2. Add history-aware conflict-resolution policy using truth snapshot indexes.
+3. Prepare a push/PR handoff only if Dean explicitly asks to publish.
 
-Implementation target:
-- src/staxcore/kernel/durableLedger.ts
-- tests/staxcore/kernel/durableLedgerAdapter.test.ts
-- tests/staxcore/kernel/ledgerTipEnforcement.test.ts
-
-Required behavior:
-- ledger records persist across load/save boundaries
-- append requires expected current tip hash
-- first append requires expected tip null
-- stale tip append fails
-- non-tip append fails
-- duplicate record id is rejected or idempotently ignored by exact same record
-- sequence cannot skip
-- sequence cannot reorder
-- stored record hash recomputes exactly
-
-After changes, run:
+Before claiming anything, run:
 - npm run typecheck
 - npm test
 - npm run smoke:stax
@@ -198,11 +183,12 @@ If integrity-path code changed, also run:
 - npm run validate:hardened
 - npm run validate:staxcore:strict
 
-Commit clean local work only after gates pass. Keep the final answer short and evidence-backed.
+Keep the final answer short and evidence-backed.
 ```
 
 ## Stop Condition
 
-The next session can stop once durable ledger tip enforcement is implemented, tested, validated, and committed locally.
+The purple-team hardening list from the previous handoff has been implemented,
+tested, validated, and committed locally.
 
 Only push after Dean explicitly says to push.
