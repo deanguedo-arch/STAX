@@ -1,5 +1,6 @@
 import type {
   CandidateRejectionReason,
+  CorrectionEvent,
   EventCandidate,
   SourceType,
   ValidatedEvent,
@@ -65,6 +66,12 @@ export type KernelLedgerEvent =
   | {
       type: "rejected_candidate";
       rejection: RejectedCandidate;
+      doctrineVersion: string;
+      auditRefs: string[];
+    }
+  | {
+      type: "correction_event";
+      correction: CorrectionEvent;
       doctrineVersion: string;
       auditRefs: string[];
     };
