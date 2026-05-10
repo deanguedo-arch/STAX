@@ -4,25 +4,28 @@ Date: 2026-05-10
 
 ## Current Workstream
 
-STAX Core hardening after the kernel-authority and sealed-truth phases.
+STAX Core release-candidate cleanup after the kernel-authority and sealed-truth
+hardening phases.
 
 This handoff is for the STAX repo only:
 
 - repo: `/Users/deanguedo/Documents/GitHub/STAX`
 - branch: `main`
-- current code state before this handoff refresh: `main...origin/main [ahead 9]`
-- expected state if this handoff refresh is committed: `main...origin/main [ahead 10]`
+- GitHub state verified on 2026-05-10: `main` == `origin/main` at `1bbdecf`
+- release-candidate cleanup work is committed locally and not pushed until
+  explicitly approved
 
 Do not route this handoff into DWG, commerce, Brightspace implementation work,
 UI, or new agent/mode expansion.
 
 Only push after Dean explicitly says to push.
 
-## Current Local Commits
+## Published Hardening Commits
 
-These implementation commits are local on `main` and have not been pushed yet:
+These implementation commits are present on GitHub `main` as of `1bbdecf`:
 
 ```txt
+1bbdecf Refresh active handoff after core hardening
 3f5bca1 Process adapter batches through shared ledger history
 6077259 Require kernel truth for signal generation
 2d7f043 Add truth snapshot supersession invariants
@@ -35,6 +38,18 @@ e3052a4 Route STAX output through kernel ledger
 ```
 
 ## What Changed In This Session
+
+### Release-Candidate Cleanup
+
+- Updated package identity to `stax@1.0.0` while preserving the existing `rax`
+  and `stax` CLI bin aliases.
+- Expanded `audit:security` from a narrow STAX Core/doc subset to scan `src/`,
+  `scripts/`, `tests/`, `docs/`, and package files, while excluding generated
+  release archives.
+- Kept intentional fake-secret fixtures explicit and counted separately instead
+  of allowing broad blind spots.
+- Removed stale local-only handoff language now that the hardening commits are
+  on GitHub `main`.
 
 ### `b2b6dfd` Durable Ledger Tip Enforcement
 
@@ -81,9 +96,10 @@ e3052a4 Route STAX output through kernel ledger
 
 ## Latest Validation Evidence
 
-The following commands passed after `3f5bca1`:
+The following commands passed after the release-candidate cleanup:
 
 ```bash
+npm ci
 npm run typecheck
 npm test
 npm run smoke:stax
@@ -111,8 +127,8 @@ replay chain valid: true
 Latest strict release artifact:
 
 ```txt
-runs/staxcore_release/2026-05-10/staxcore_release_32259bae-1078-4b23-b84a-da9ef73b76a0.json
-runs/staxcore_release/2026-05-10/staxcore_release_32259bae-1078-4b23-b84a-da9ef73b76a0.md
+runs/staxcore_release/2026-05-10/staxcore_release_4c683129-f182-4b66-a5e2-00f745fcb407.json
+runs/staxcore_release/2026-05-10/staxcore_release_4c683129-f182-4b66-a5e2-00f745fcb407.md
 ```
 
 ## Purple Team Sequence Status
@@ -128,7 +144,9 @@ Completed in order:
 
 ## Remaining Caution
 
-- These commits are still local and not pushed.
+- The hardening sequence above is published on GitHub `main`.
+- The release-candidate cleanup commit is local until Dean explicitly approves
+  a push.
 - Default single-observation `processObservation` still uses an in-memory ledger
   unless a shared ledger writer is supplied.
 - Durable adapter processing exists, but no CLI/control surface has been added
@@ -154,24 +172,26 @@ Then verify:
 - git status --short --branch
 - git log -10 --oneline
 
-Known local implementation commits:
+Known published implementation commits:
+- 1bbdecf Refresh active handoff after core hardening
 - 3f5bca1 Process adapter batches through shared ledger history
 - 6077259 Require kernel truth for signal generation
 - 2d7f043 Add truth snapshot supersession invariants
 - bfa74b9 Add kernel ledger replay signatures
 - b2b6dfd Add durable kernel ledger tip enforcement
 
-These commits are not pushed unless current repo state says otherwise.
+These commits are on GitHub `main` as of the 2026-05-10 verification.
 
 Goal:
-Review the completed STAX Core hardening sequence and decide the next bounded
-phase. Do not add UI. Do not add agents. Do not push or promote anything without
+Review the completed STAX Core hardening and release-candidate cleanup, then
+decide whether Dean wants to tag/push the release or do one more bounded phase.
+Do not add UI. Do not add agents. Do not push, tag, or promote anything without
 Dean explicitly approving it.
 
 Recommended next bounded options:
-1. Add a CLI/runtime control for selecting a durable kernel ledger file.
-2. Add history-aware conflict-resolution policy using truth snapshot indexes.
-3. Prepare a push/PR handoff only if Dean explicitly asks to publish.
+1. Tag and push `stax-v1.0.0` only if Dean explicitly approves release publish.
+2. Add a CLI/runtime control for selecting a durable kernel ledger file.
+3. Add history-aware conflict-resolution policy using truth snapshot indexes.
 
 Before claiming anything, run:
 - npm run typecheck
@@ -189,6 +209,7 @@ Keep the final answer short and evidence-backed.
 ## Stop Condition
 
 The purple-team hardening list from the previous handoff has been implemented,
-tested, validated, and committed locally.
+tested, validated, committed, and published to GitHub `main`. The
+release-candidate cleanup is committed locally and not pushed.
 
 Only push after Dean explicitly says to push.
