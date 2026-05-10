@@ -9,13 +9,20 @@ import type {
   SignalTrend,
   ValidatedEvent
 } from "../types/index.js";
+import { readKernelTruth, type KernelTruth } from "../kernel/index.js";
 import { stableHash } from "../shared/index.js";
 
 function deterministicId(prefix: string, value: unknown): string {
   return `${prefix}_${stableHash(value).slice(0, 20)}`;
 }
 
-export function generateSignals(events: ValidatedEvent[]): Signal[] {
+function eventsFromKernelTruth(
+  truths: readonly KernelTruth[]
+): ValidatedEvent[] {
+  return truths.map((truth) => readKernelTruth(truth).validation);
+}
+
+function buildSignals(events: readonly ValidatedEvent[]): Signal[] {
   return events.map((event) => {
     const type = event.state === "VALIDATED" ? "recurrence" : "conflict";
     const description =
@@ -38,25 +45,30 @@ export function generateSignals(events: ValidatedEvent[]): Signal[] {
   });
 }
 
+export function generateSignals(truths: readonly KernelTruth[]): Signal[] {
+  return buildSignals(eventsFromKernelTruth(truths));
+}
+
 export function generateSignalPacket(input: {
-  events: ValidatedEvent[];
-  signals: Signal[];
+  truths: readonly KernelTruth[];
   confidence: ConfidenceResult;
   rejectionReasons?: CandidateRejectionReason[];
   allowRecommendations?: boolean;
 }): SignalPacket {
-  const trustedEvents = input.events.filter((event) =>
+  const events = eventsFromKernelTruth(input.truths);
+  const signals = buildSignals(events);
+  const trustedEvents = events.filter((event) =>
     event.state === "VALIDATED" || event.state === "CONFLICTED"
   );
-  const rejectedEvents = input.events.filter((event) => event.state === "REJECTED");
-  const gaps = buildGaps(input.events, input.rejectionReasons ?? []);
-  const risks = buildRisks(input.events, input.rejectionReasons ?? []);
-  const patterns = buildPatterns(trustedEvents, input.signals);
+  const rejectedEvents = events.filter((event) => event.state === "REJECTED");
+  const gaps = buildGaps(events, input.rejectionReasons ?? []);
+  const risks = buildRisks(events, input.rejectionReasons ?? []);
+  const patterns = buildPatterns(trustedEvents, signals);
   const trends = buildTrends(trustedEvents);
   const allowRecommendations = input.allowRecommendations === true;
 
   return {
-    observations: input.events.map((event) => ({
+    observations: events.map((event) => ({
       validationId: event.id,
       state: event.state as "VALIDATED" | "CONFLICTED" | "REJECTED" | "SUPERSEDED",
       claim: event.claim,
@@ -64,10 +76,10 @@ export function generateSignalPacket(input: {
       sourceType: event.sourceType,
       warnings: event.warnings
     })),
-    patterns: rejectedEvents.length === input.events.length ? [] : patterns,
+    patterns: rejectedEvents.length === events.length ? [] : patterns,
     gaps,
     risks,
-    trends: rejectedEvents.length === input.events.length ? [] : trends,
+    trends: rejectedEvents.length === events.length ? [] : trends,
     recommendationPolicy: {
       allowed: allowRecommendations,
       withheld: !allowRecommendations,

@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
+  evaluateCandidate,
   generateSignalPacket,
   generateSignals,
   processObservation,
-  scoreConfidence,
-  validateEventHorizon
+  readKernelEvaluationTruth,
+  scoreConfidence
 } from "../../src/staxcore/index.js";
-import type { EventCandidate, SignalPacket, ValidatedEvent } from "../../src/staxcore/index.js";
+import type {
+  EventCandidate,
+  KernelTruth,
+  SignalPacket
+} from "../../src/staxcore/index.js";
 import { measurementProvenance } from "./helpers.js";
 
 function packetFrom(output: unknown): SignalPacket {
@@ -51,18 +56,19 @@ describe("staxcore signal packet", () => {
   });
 
   it("surfaces missing data as gaps instead of silently treating it as truth", () => {
-    const horizon = validateEventHorizon(
+    const evaluation = evaluateCandidate(
       candidate({
         missingData: ["occurredAt", "source-baseline"],
         confidenceCaps: ["missing-occurredAt-cap"]
       })
     );
-    const events = [horizon.validation];
-    const signals = generateSignals(events);
+    const horizon = evaluation.eventHorizon;
+    const events = [readKernelEvaluationTruth(evaluation).validation];
+    const truths = [evaluation.truth];
+    const signals = generateSignals(truths);
     const confidence = scoreConfidence(events, signals);
     const packet = generateSignalPacket({
-      events,
-      signals,
+      truths,
       confidence,
       rejectionReasons: horizon.rejectionReasons
     });
@@ -74,6 +80,22 @@ describe("staxcore signal packet", () => {
       ])
     );
     expect(packet.confidence.caps).toContain("missing-critical-data-cap");
+  });
+
+  it("rejects unsealed truth-shaped objects at the signal boundary", () => {
+    const evaluation = evaluateCandidate(candidate());
+    const forgedTruth = readKernelEvaluationTruth(evaluation) as unknown as KernelTruth;
+
+    expect(() => generateSignals([forgedTruth])).toThrow(/not sealed kernel truth/);
+    expect(() =>
+      generateSignalPacket({
+        truths: [forgedTruth],
+        confidence: scoreConfidence(
+          [readKernelEvaluationTruth(evaluation).validation],
+          []
+        )
+      })
+    ).toThrow(/not sealed kernel truth/);
   });
 
   it("does not derive patterns or trends from rejected recommendation events", () => {
@@ -108,37 +130,39 @@ describe("staxcore signal packet", () => {
   });
 
   it("derives multi-event patterns only from trusted validation states", () => {
-    const validated: ValidatedEvent = {
-      id: "validation-valid",
-      candidateId: "candidate-valid",
-      claim: "Measured event.",
-      state: "VALIDATED",
-      sourceId: "source-1",
-      sourceType: "measurement",
-      evidenceChainValid: true,
-      missingData: [],
-      confidenceCaps: [],
-      warnings: []
-    };
-    const rejected: ValidatedEvent = {
-      ...validated,
-      id: "validation-rejected",
-      candidateId: "candidate-rejected",
-      claim: "Recommendation event.",
-      state: "REJECTED",
-      sourceType: "recommendation",
-      warnings: ["RECOMMENDATION_DETECTED"]
-    };
-    const events = [validated, rejected];
-    const signals = generateSignals(events);
+    const validated = evaluateCandidate(
+      candidate({
+        id: "candidate-valid",
+        rawId: "raw-candidate-valid",
+        claim: "Measured event."
+      })
+    );
+    const rejected = evaluateCandidate(
+      candidate({
+        id: "candidate-rejected",
+        rawId: "raw-candidate-rejected",
+        claim: "Recommendation event.",
+        provenance: {
+          ...measurementProvenance,
+          sourceType: "recommendation"
+        }
+      })
+    );
+    const events = [
+      readKernelEvaluationTruth(validated).validation,
+      readKernelEvaluationTruth(rejected).validation
+    ];
+    const truths = [validated.truth, rejected.truth];
+    const signals = generateSignals(truths);
     const confidence = scoreConfidence(events, signals);
-    const packet = generateSignalPacket({ events, signals, confidence });
+    const packet = generateSignalPacket({ truths, confidence });
+    const trustedValidationId = events[0].id;
 
     expect(packet.patterns.flatMap((pattern) => pattern.sourceValidationIds)).toEqual([
-      "validation-valid"
+      trustedValidationId
     ]);
     expect(packet.patterns.flatMap((pattern) => pattern.sourceValidationIds)).not.toContain(
-      "validation-rejected"
+      events[1].id
     );
   });
 });

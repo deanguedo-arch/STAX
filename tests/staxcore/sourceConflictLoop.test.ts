@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  evaluateCandidate,
   generateSignals,
   ingestRawObservation,
+  readKernelEvaluationTruth,
   scoreConfidence,
-  structureCandidate,
-  validateEventHorizon
+  structureCandidate
 } from "../../src/staxcore/index.js";
 import { measurementProvenance } from "./helpers.js";
 
@@ -18,9 +19,11 @@ describe("staxcore source conflict loop", () => {
     candidate.unresolvedConflicts.push("sourceA:complete");
     candidate.unresolvedConflicts.push("sourceB:incomplete");
 
-    const horizon = validateEventHorizon(candidate);
-    const signals = generateSignals([horizon.validation]);
-    const confidence = scoreConfidence([horizon.validation], signals);
+    const evaluation = evaluateCandidate(candidate);
+    const horizon = evaluation.eventHorizon;
+    const validation = readKernelEvaluationTruth(evaluation).validation;
+    const signals = generateSignals([evaluation.truth]);
+    const confidence = scoreConfidence([validation], signals);
 
     expect(horizon.conflict).not.toBeNull();
     expect(horizon.validation.state).toBe("CONFLICTED");

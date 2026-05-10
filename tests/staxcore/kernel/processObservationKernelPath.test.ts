@@ -39,7 +39,10 @@ describe("processObservation kernel path", () => {
 
     expect(source).toContain("evaluateCandidate");
     expect(source).toContain("readKernelEvaluationTruth");
+    expect(source).toContain("generateSignals([kernelEvaluation.truth])");
+    expect(source).toContain("truths: [kernelEvaluation.truth]");
     expect(source).not.toContain("validateEventHorizon");
+    expect(source).not.toContain("generateSignals([validation])");
   });
 
   it("emits kernel ledger authority in the output and audit trace", () => {

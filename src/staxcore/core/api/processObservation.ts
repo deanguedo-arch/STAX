@@ -22,11 +22,10 @@ export function processObservation(
   const kernelTruth = readKernelEvaluationTruth(kernelEvaluation);
   const horizon = kernelEvaluation.eventHorizon;
   const validation = horizon.validation;
-  const signals = generateSignals([validation]);
+  const signals = generateSignals([kernelEvaluation.truth]);
   const confidence = scoreConfidence([validation], signals);
   const signalPacket = generateSignalPacket({
-    events: [validation],
-    signals,
+    truths: [kernelEvaluation.truth],
     confidence,
     rejectionReasons: horizon.rejectionReasons,
     allowRecommendations: options.allowRecommendations
