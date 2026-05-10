@@ -53,6 +53,21 @@ describe("kernel public API", () => {
     ).toThrow(/not sealed kernel truth/);
   });
 
+  it("rejects objects forged by copying the hidden truth symbol", () => {
+    const evaluation = evaluateCandidate(candidate());
+    const [brand] = Object.getOwnPropertySymbols(evaluation.truth);
+
+    expect(() =>
+      assertKernelTruth({
+        [brand]: true,
+        decision: readKernelTruth(evaluation.truth).decision,
+        validation: readKernelTruth(evaluation.truth).validation,
+        ledgerRecord: readKernelTruth(evaluation.truth).ledgerRecord,
+        ledgerValid: true
+      })
+    ).toThrow(/not sealed kernel truth/);
+  });
+
   it("keeps recommendation candidates rejected at the public API boundary", () => {
     const evaluation = evaluateCandidate(
       candidate({

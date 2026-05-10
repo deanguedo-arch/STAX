@@ -7,6 +7,7 @@ import type {
 } from "./types.js";
 
 const kernelTruthBrand: unique symbol = Symbol("staxcore.kernel.truth");
+const issuedKernelTruth = new WeakSet<object>();
 
 function cloneJson<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
@@ -42,20 +43,23 @@ export interface KernelTruthView {
 }
 
 export function sealKernelTruth(result: ProcessCandidateResult): KernelTruth {
-  return deepFreeze({
-    [kernelTruthBrand]: true,
+  const truth = deepFreeze({
+    [kernelTruthBrand]: true as const,
     decision: cloneJson(result.decision),
     validation: cloneJson(validationFromDecision(result.decision)),
     ledgerRecord: cloneJson(result.ledgerRecord),
     ledgerValid: result.ledgerValid
   });
+  issuedKernelTruth.add(truth);
+  return truth;
 }
 
 export function assertKernelTruth(value: unknown): asserts value is KernelTruth {
   if (
     !value ||
     typeof value !== "object" ||
-    (value as Partial<KernelTruth>)[kernelTruthBrand] !== true
+    (value as Partial<KernelTruth>)[kernelTruthBrand] !== true ||
+    !issuedKernelTruth.has(value)
   ) {
     throw new Error("BOUNDARY_VIOLATION: value is not sealed kernel truth.");
   }
