@@ -26,7 +26,7 @@ describe("staxcore main path architecture guard", () => {
       "utf8"
     );
 
-    expect(source).toContain("processCandidate");
+    expect(source).toContain("evaluateCandidate");
     expect(source).not.toContain("validateEventHorizon");
   });
 

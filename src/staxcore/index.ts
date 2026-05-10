@@ -13,3 +13,4 @@ export * from "./corrections/index.js";
 export * from "./core/api/index.js";
 export * from "./core/replay/index.js";
 export * from "./core/release/index.js";
+export * from "./adapters/index.js";

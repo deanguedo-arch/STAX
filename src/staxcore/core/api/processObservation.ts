@@ -2,8 +2,8 @@ import type { OutputEnvelope, Provenance } from "../../types/index.js";
 import { ingestRawObservation } from "../../ingest/index.js";
 import { structureCandidate } from "../../structure/index.js";
 import {
-  eventHorizonFromProcessCandidateResult,
-  processCandidate
+  evaluateCandidate,
+  readKernelEvaluationTruth
 } from "../../kernel/index.js";
 import { generateSignalPacket, generateSignals } from "../../signal/index.js";
 import { scoreConfidence } from "../../confidence/index.js";
@@ -18,8 +18,9 @@ export function processObservation(
 ): OutputEnvelope<unknown> {
   const raw = ingestRawObservation(content, provenance);
   const candidate = structureCandidate(raw);
-  const kernelResult = processCandidate(candidate);
-  const horizon = eventHorizonFromProcessCandidateResult(candidate, kernelResult);
+  const kernelEvaluation = evaluateCandidate(candidate);
+  const kernelTruth = readKernelEvaluationTruth(kernelEvaluation);
+  const horizon = kernelEvaluation.eventHorizon;
   const validation = horizon.validation;
   const signals = generateSignals([validation]);
   const confidence = scoreConfidence([validation], signals);
@@ -35,8 +36,8 @@ export function processObservation(
     signals,
     signalPacket,
     eventHorizon: horizon,
-    kernelDecision: kernelResult.decision,
-    kernelLedgerRecord: kernelResult.ledgerRecord
+    kernelDecision: kernelTruth.decision,
+    kernelLedgerRecord: kernelTruth.ledgerRecord
   });
   const contextualized = attachContext(framed);
   const uncertainty = {
@@ -61,7 +62,7 @@ export function processObservation(
     candidateIds: [candidate.id],
     validationIds: [validation.id],
     signalIds: signals.map((signal) => signal.id),
-    ledgerRecordIds: [kernelResult.ledgerRecord.id],
-    ledgerHashes: [kernelResult.ledgerRecord.hash]
+    ledgerRecordIds: [kernelEvaluation.ledgerRecordId],
+    ledgerHashes: [kernelEvaluation.ledgerHash]
   });
 }

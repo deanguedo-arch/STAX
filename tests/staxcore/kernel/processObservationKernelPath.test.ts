@@ -31,13 +31,14 @@ function framedPayload(output: unknown): {
 }
 
 describe("processObservation kernel path", () => {
-  it("routes the main STAX output path through processCandidate, not validateEventHorizon", () => {
+  it("routes the main STAX output path through the public kernel API, not validateEventHorizon", () => {
     const source = readFileSync(
       join(process.cwd(), "src", "staxcore", "core", "api", "processObservation.ts"),
       "utf8"
     );
 
-    expect(source).toContain("processCandidate");
+    expect(source).toContain("evaluateCandidate");
+    expect(source).toContain("readKernelEvaluationTruth");
     expect(source).not.toContain("validateEventHorizon");
   });
 
