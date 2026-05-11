@@ -167,6 +167,7 @@ describe("STAX sidecar watch and collect", () => {
       ),
       "utf8"
     );
+    await fs.writeFile(path.join(repoPath, ".stax", "proof_strength.json"), "{\"stale\":true}\n", "utf8");
 
     const status = await runStaxGate({
       repoPath,
@@ -176,6 +177,7 @@ describe("STAX sidecar watch and collect", () => {
 
     expect(status.verdict).toBe("Accept");
     expect(status.verified.join("\n")).toContain("Fresh Codex turn capture is present");
+    await expect(fs.stat(path.join(repoPath, ".stax", "proof_strength.json"))).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("rejects stale heartbeat and Codex turn capture", async () => {

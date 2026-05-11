@@ -446,6 +446,8 @@ async function writeSidecarStatus(
   if (status.proofStrength) {
     await fs.writeFile(path.join(staxPath, "proof_strength.json"), `${JSON.stringify(status.proofStrength, null, 2)}\n`, "utf8");
     await writeCodexReportProofStrengthSection(repoPath, status.proofStrength);
+  } else {
+    await fs.rm(path.join(staxPath, "proof_strength.json"), { force: true });
   }
   await writeLatestProofReport(repoPath, status, commandEvidenceEntries);
   await writeLatestConfidenceReport(repoPath, status);
