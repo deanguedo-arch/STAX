@@ -1060,12 +1060,28 @@ function deriveNextAction(
   if (commandEvidenceEntries.length === 0 && /test|command|proof|exit code|passed/i.test(combined)) {
     return `Run npm run stax:collect -- --repo ${repoPath} -- npm test, or collect the repo's canonical proof command.`;
   }
+  if (unverified.length === 0 && risk.length > 0) {
+    return `Review this STAX risk and either accept it explicitly or rerun cleaner proof: ${risk[0]}`;
+  }
   return "Ask Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.";
 }
 
 function deriveCodexPrompt(verdict: StaxGateVerdict, nextAction: string, unverified: string[], risk: string[]): string {
   if (verdict === "Accept") {
     return `Report the STAX sidecar Accept as proof-gate status only. ${STAX_ACCEPT_BOUNDARY} Keep the scope unchanged, and stop.`;
+  }
+  if (unverified.length === 0 && risk.length > 0) {
+    return [
+      "STAX Sidecar held this task for human review.",
+      "",
+      "Do not broaden scope or make unrelated changes.",
+      nextAction,
+      "",
+      "Review these risks:",
+      ...renderBullets(risk.slice(0, 5), "No specific risk item was recorded."),
+      "",
+      "If the risk is acceptable, record explicit approval or rerun a cleaner proof command through STAX command evidence."
+    ].join("\n");
   }
   return [
     "STAX Sidecar rejected or held this task because proof is incomplete.",
