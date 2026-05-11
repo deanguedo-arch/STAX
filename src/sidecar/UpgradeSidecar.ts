@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  defaultConfidenceReportMarkdown,
   STAX_AGENT_PROTOCOL,
+  STAX_CONFIDENCE_REPORT_RELATIVE_PATH,
   STAX_PROOF_REPORT_RELATIVE_PATH,
   STAX_SIDECAR_PROTOCOL_VERSION,
   upsertAgentsProtocolSection,
@@ -87,6 +89,11 @@ export async function upgradeStaxSidecar(options: UpgradeStaxSidecarOptions): Pr
   await writeTextIfMissing(
     path.join(repoPath, STAX_PROOF_REPORT_RELATIVE_PATH),
     defaultProofReportMarkdown(snapshot.repoName, snapshot.branch, snapshot.commitSha),
+    changedFiles
+  );
+  await writeTextIfMissing(
+    path.join(repoPath, STAX_CONFIDENCE_REPORT_RELATIVE_PATH),
+    defaultConfidenceReportMarkdown(snapshot.repoName, snapshot.branch, snapshot.commitSha),
     changedFiles
   );
   await writeTurnContractIfMissing(repoPath, changedFiles);
@@ -226,6 +233,7 @@ function defaultProofReportMarkdown(repoName: string, branch?: string, commitSha
     "## Evidence Artifacts",
     "- Status JSON: .stax/status.json",
     "- Proof strength JSON: .stax/proof_strength.json",
+    `- Confidence report: ${STAX_CONFIDENCE_REPORT_RELATIVE_PATH}`,
     "- Next Codex prompt: .stax/next-codex-prompt.md",
     "- Raw Codex working report: .stax/codex-report.md (local sidecar input)",
     "",

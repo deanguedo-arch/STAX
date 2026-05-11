@@ -41,6 +41,7 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "turns"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turn-contract.json"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-confidence-report.md"))).resolves.toBeTruthy();
     expect(config.requireFreshCodexTurnCapture).toBe(false);
     expect(config.runtimeFreshnessMode).toBe("normal");
     expect(config.turnComplianceMode).toBe("normal");
@@ -48,6 +49,7 @@ describe("STAX sidecar attach and gate", () => {
     expect(gitignore).toContain("!.stax/status.json");
     expect(gitignore).toContain("!.stax/proof_strength.json");
     expect(gitignore).toContain("!.stax/reports/latest-proof-report.md");
+    expect(gitignore).toContain("!.stax/reports/latest-confidence-report.md");
   });
 
   it("updates an existing protocol section instead of appending duplicate stale protocol", () => {
@@ -157,6 +159,14 @@ describe("STAX sidecar attach and gate", () => {
     expect(latestProofReport).toContain("- Caps Applied: missing_command_evidence");
     expect(latestProofReport).toContain("- Proof strength JSON: .stax/proof_strength.json");
     expect(latestProofReport).not.toContain("STAX_ACK");
+    const latestConfidenceReport = await fs.readFile(path.join(repoPath, ".stax", "reports", "latest-confidence-report.md"), "utf8");
+    expect(latestConfidenceReport).toContain("# STAX Confidence Strength Report");
+    expect(latestConfidenceReport).toContain("- Label: Missing");
+    expect(latestConfidenceReport).toContain("- Raw Score:");
+    expect(latestConfidenceReport).toContain("- Final Score:");
+    expect(latestConfidenceReport).toContain("- Caps Applied: missing_command_evidence");
+    expect(latestConfidenceReport).toContain("- Proof strength JSON: .stax/proof_strength.json");
+    expect(latestConfidenceReport).not.toContain("STAX_ACK");
 
     const secondStatus = await runStaxGate({ repoPath });
     expect(secondStatus.proofStrength?.claimText).not.toContain("## STAX Proof Strength");
@@ -229,7 +239,7 @@ describe("STAX sidecar attach and gate", () => {
     );
 
     await runStaxGate({ repoPath, writeLearningEvent: false });
-    execFileSync("git", ["add", ".stax/status.json", ".stax/proof_strength.json", ".stax/reports/latest-proof-report.md"], {
+    execFileSync("git", ["add", ".stax/status.json", ".stax/proof_strength.json", ".stax/reports/latest-proof-report.md", ".stax/reports/latest-confidence-report.md"], {
       cwd: repoPath
     });
     execFileSync("git", ["commit", "-m", "track proof report"], { cwd: repoPath });
