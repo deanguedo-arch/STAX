@@ -93,6 +93,7 @@ The gate writes:
 ```txt
 .stax/status.md
 .stax/status.json
+.stax/proof_strength.json
 .stax/next-codex-prompt.md
 ```
 

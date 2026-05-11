@@ -76,6 +76,12 @@ Repo-facing runtime runs can persist:
 runs/YYYY-MM-DD/<run-id>/proof_strength.json
 ```
 
+Sidecar gate runs persist the same artifact shape at:
+
+```txt
+.stax/proof_strength.json
+```
+
 The run trace also includes a compact summary:
 
 ```json

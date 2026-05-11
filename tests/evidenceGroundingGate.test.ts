@@ -81,6 +81,22 @@ describe("EvidenceGroundingGate", () => {
     expect(result.supportedClaims.some((claim) => claim.kind === "test_pass")).toBe(true);
     expect(result.pass).toBe(true);
   });
+
+  it("does not absorb report prose into command claims", () => {
+    const result = new EvidenceGroundingGate().evaluate({
+      output: [
+        "Commands run: npm test.",
+        "Command output summary with exit codes: STAX collected npm test with exit code 0 in <repo>.",
+        "What is verified: npm test passed."
+      ].join("\n"),
+      repoEvidence,
+      commandEvidence: [commandEvidence("local_stax_command_output")]
+    });
+
+    expect(new Set(result.claims.filter((claim) => claim.kind === "command").map((claim) => claim.text))).toEqual(new Set(["npm test"]));
+    expect(result.weakClaims.filter((claim) => claim.kind === "command")).toEqual([]);
+    expect(result.unsupportedClaims).toEqual([]);
+  });
 });
 
 function commandEvidence(source: CommandEvidence["source"]): CommandEvidence {

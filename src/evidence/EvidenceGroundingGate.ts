@@ -7,7 +7,7 @@ import {
   type GroundedClaimKind
 } from "./EvidenceGroundingSchemas.js";
 
-const COMMAND_PATTERN = /\b(?:npm|pnpm|yarn|npx)\s+(?:run\s+)?[a-z0-9:_@./-]+(?:\s+[a-z0-9:_@./=-]+)*/gi;
+const COMMAND_PATTERN = /\b(?:npm|pnpm|yarn|npx)[ \t]+(?:run[ \t]+)?[a-z0-9:_@./-]+(?:[ \t]+[a-z0-9:_@./=-]+)*/gi;
 const FILE_PATTERN = /\b(?:[A-Za-z0-9_.-]+\/)+(?:[A-Za-z0-9_.-]+)(?:\.[A-Za-z0-9]+)?\b|\b[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|json|md|css|html|yml|yaml)\b/g;
 const HARD_PROOF_PATTERN = /\b(?:tests?|typecheck|build|eval|regression|redteam|ingest:ci)\b[^\n.]*\b(?:pass(?:ed|es)?|green|succeed(?:ed|s)?|verified)\b/i;
 const COMPLETION_PATTERN = /\b(?:fixed|complete|completed|done|verified|ready to apply|ready for apply)\b/i;
@@ -101,7 +101,45 @@ function unique<T>(items: T[]): T[] {
 }
 
 function normalizeCommand(command: string): string {
-  return command.trim().replace(/[`'".,;:]+$/g, "").replace(/\s+/g, " ").toLowerCase();
+  const tokens = command
+    .trim()
+    .replace(/[`'".,;:]+$/g, "")
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((token) => token.replace(/[`'".,;:]+$/g, ""))
+    .filter(Boolean);
+  if (tokens.length === 0) return "";
+
+  const tool = tokens[0].toLowerCase();
+  const keep: string[] = [tool];
+  let index = 1;
+  if (tokens[index]?.toLowerCase() === "run" && tokens[index + 1]) {
+    keep.push("run", tokens[index + 1].toLowerCase());
+    index += 2;
+  } else if (tokens[index]) {
+    keep.push(tokens[index].toLowerCase());
+    index += 1;
+  }
+
+  for (; index < tokens.length; index += 1) {
+    const token = tokens[index].toLowerCase();
+    const previous = keep.at(-1);
+    if (isNaturalLanguageCommandTail(token)) break;
+    if (previous === "--" || isLikelyCommandArgument(token)) {
+      keep.push(token);
+      continue;
+    }
+    break;
+  }
+  return keep.join(" ");
+}
+
+function isNaturalLanguageCommandTail(token: string): boolean {
+  return /^(?:passed|passes|pass|green|succeeded|succeeds|verified|with|and|in|from|because|after|before)$/i.test(token);
+}
+
+function isLikelyCommandArgument(token: string): boolean {
+  return token.startsWith("-") || token.includes("=") || token.includes("/") || token.startsWith(".") || token.startsWith("@");
 }
 
 function normalizePath(filePath: string): string {

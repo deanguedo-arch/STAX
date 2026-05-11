@@ -2,6 +2,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { classifyFileRole } from "../diffAudit/DiffAudit.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
+import { commandFamilyFor, type CommandEvidence } from "../evidence/CommandEvidenceStore.js";
+import { EvidenceGroundingGate } from "../evidence/EvidenceGroundingGate.js";
+import {
+  ProofStrengthGate,
+  inferProofStrengthClaimType
+} from "../evidence/ProofStrengthGate.js";
+import type { ProofStrengthResult } from "../evidence/ProofStrengthSchemas.js";
 import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
 import type {
   ProjectControlChangedFile,
@@ -10,6 +17,7 @@ import type {
 } from "../projectControl/ProjectControlEvidencePacket.js";
 import type { ProjectControlCardStatus } from "../projectControl/ControlCard.js";
 import { validateProjectControlCardShape } from "../projectControl/ControlCard.js";
+import type { RepoEvidencePack } from "../workspace/RepoEvidenceSchemas.js";
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import type { SidecarLearningEvent, SidecarLearningEventType } from "./SidecarLearningEvent.js";
 import { checkTurnCompliance, type TurnComplianceMode } from "./TurnCompliance.js";
@@ -45,6 +53,7 @@ export type StaxGateStatus = {
   risk: string[];
   oneNextAction: string;
   codexPrompt: string;
+  proofStrength?: ProofStrengthResult;
   statusMarkdown: string;
   cardShapeIssues: string[];
   turnContract?: Pick<StaxTurnContract, "turnId" | "requiredAcknowledgement" | "statusHash" | "nextPromptHash">;
@@ -115,6 +124,15 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     repoPath,
     snapshot
   });
+  const proofStrength = await deriveSidecarProofStrength({
+    task,
+    codexReport,
+    changedFiles,
+    commandEvidenceEntries,
+    repoPath,
+    snapshot,
+    generatedAt: nowIso()
+  });
   const runtime = await deriveRuntimeFindings(repoPath, config, options.now ?? new Date());
   const compliance = await deriveTurnComplianceFindings({
     repoPath,
@@ -122,6 +140,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     codexReport,
     hasDiff: auditableDiff
   });
+  const proofStrengthSections = proofStrengthFindings(proofStrength);
 
   const verified = dedupe([
       ...(!auditableDiff
@@ -129,12 +148,13 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
       : [`Working-tree diff detected with ${changedFiles.length} changed file(s).`]),
     ...proofStack.verified,
     ...extra.verified,
+    ...proofStrengthSections.verified,
     ...runtime.verified,
     ...compliance.verified
   ]);
-  const weak = dedupe([...proofStack.weak, ...extra.weak, ...runtime.weak, ...compliance.weak]);
-  const unverified = dedupe([...proofStack.unverified, ...extra.unverified, ...runtime.unverified, ...compliance.unverified]);
-  const risk = dedupe([...proofStack.risk, ...extra.risk, ...runtime.risk, ...compliance.risk]);
+  const weak = dedupe([...proofStack.weak, ...extra.weak, ...proofStrengthSections.weak, ...runtime.weak, ...compliance.weak]);
+  const unverified = dedupe([...proofStack.unverified, ...extra.unverified, ...proofStrengthSections.unverified, ...runtime.unverified, ...compliance.unverified]);
+  const risk = dedupe([...proofStack.risk, ...extra.risk, ...proofStrengthSections.risk, ...runtime.risk, ...compliance.risk]);
   const verdict = deriveVerdict({
     hasDiff: auditableDiff,
     codexReport,
@@ -154,7 +174,8 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     unverified,
     risk,
     oneNextAction,
-    codexPrompt
+    codexPrompt,
+    proofStrength
   });
   const cardShapeIssues = validateProjectControlCardShape(statusMarkdown);
   const status: StaxGateStatus = {
@@ -174,6 +195,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     risk,
     oneNextAction,
     codexPrompt,
+    proofStrength,
     statusMarkdown,
     cardShapeIssues
   };
@@ -378,6 +400,9 @@ async function writeSidecarStatus(repoPath: string, status: StaxGateStatus): Pro
   await fs.writeFile(path.join(staxPath, "status.md"), status.statusMarkdown, "utf8");
   const { statusMarkdown, ...jsonStatus } = status;
   await fs.writeFile(path.join(staxPath, "status.json"), `${JSON.stringify(jsonStatus, null, 2)}\n`, "utf8");
+  if (status.proofStrength) {
+    await fs.writeFile(path.join(staxPath, "proof_strength.json"), `${JSON.stringify(status.proofStrength, null, 2)}\n`, "utf8");
+  }
   await fs.writeFile(
     path.join(staxPath, "next-codex-prompt.md"),
     status.verdict === "Accept" ? "No correction prompt needed; the current sidecar gate is accepted.\n" : `${status.codexPrompt}\n`,
@@ -394,6 +419,7 @@ function renderStatusMarkdown(input: {
   risk: string[];
   oneNextAction: string;
   codexPrompt: string;
+  proofStrength?: ProofStrengthResult;
 }): string {
   return [
     "## Verdict",
@@ -412,6 +438,9 @@ function renderStatusMarkdown(input: {
     "## Risk",
     ...renderBullets(input.risk, "No active risk recorded."),
     "",
+    "## Proof Strength",
+    ...renderProofStrength(input.proofStrength),
+    "",
     "## One Next Action",
     `- ${input.oneNextAction}`,
     "",
@@ -420,9 +449,242 @@ function renderStatusMarkdown(input: {
   ].join("\n") + "\n";
 }
 
+function renderProofStrength(proofStrength?: ProofStrengthResult): string[] {
+  if (!proofStrength) return ["- No proof-strength artifact was generated for this gate run."];
+  return [
+    `- Label: ${proofStrength.label}`,
+    `- Raw Score: ${proofStrength.rawScore}`,
+    `- Final Score: ${proofStrength.finalScore}`,
+    `- Primary Limiter: ${proofStrength.primaryLimiter}`,
+    `- Caps Applied: ${proofStrength.capApplied.map((cap) => cap.id).join(", ") || "none"}`,
+    "- Artifact: .stax/proof_strength.json"
+  ];
+}
+
 function renderBullets(items: string[], fallback: string): string[] {
   const source = items.length > 0 ? items : [fallback];
   return source.map((item) => `- ${item}`);
+}
+
+async function deriveSidecarProofStrength(input: {
+  task: string;
+  codexReport: string;
+  changedFiles: ProjectControlChangedFile[];
+  commandEvidenceEntries: ProjectControlCommandEvidenceEntry[];
+  repoPath: string;
+  snapshot: { repoName: string; branch?: string; commitSha?: string; gitStatusShort?: string };
+  generatedAt: string;
+}): Promise<ProofStrengthResult | undefined> {
+  const claimText = [input.task, input.codexReport].filter((item) => item.trim()).join("\n\n");
+  const claimType = inferProofStrengthClaimType(claimText);
+  if (!claimType) return undefined;
+  const evidenceFiles = mergeChangedFiles(input.changedFiles, await existingMentionedFiles(input.repoPath, claimText));
+  const repoEvidence = sidecarRepoEvidencePack({
+    repoPath: input.repoPath,
+    snapshot: input.snapshot,
+    changedFiles: evidenceFiles,
+    createdAt: input.generatedAt
+  });
+  const commandEvidence = input.commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
+  const groundingResult = new EvidenceGroundingGate().evaluate({
+    output: claimTextForGrounding(claimText, input.repoPath),
+    repoEvidence,
+    commandEvidence
+  });
+  return new ProofStrengthGate().evaluate({
+    claimType,
+    claimText,
+    groundingResult,
+    commandEvidence,
+    repoEvidence,
+    expectedRepoPath: input.repoPath,
+    evidenceFlags: sidecarEvidenceFlags(input.codexReport)
+  });
+}
+
+const CLAIM_FILE_PATTERN =
+  /\b(?:[A-Za-z0-9_.-]+\/)+(?:[A-Za-z0-9_.-]+)(?:\.[A-Za-z0-9]+)?\b|\b[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|json|md|css|html|yml|yaml)\b/g;
+
+async function existingMentionedFiles(repoPath: string, text: string): Promise<ProjectControlChangedFile[]> {
+  const mentionedPaths = [...new Set([...text.matchAll(CLAIM_FILE_PATTERN)].map((match) => normalizeMentionedPath(match[0])).filter(Boolean))];
+  const files: ProjectControlChangedFile[] = [];
+  for (const mentionedPath of mentionedPaths) {
+    if (mentionedPath.startsWith(".stax/") || path.isAbsolute(mentionedPath) || mentionedPath.includes("..")) continue;
+    const absolutePath = path.join(repoPath, mentionedPath);
+    const stat = await fs.stat(absolutePath).catch(() => undefined);
+    if (!stat?.isFile()) continue;
+    files.push({
+      path: mentionedPath,
+      changeType: "modified",
+      fileRole: classifyFileRole(mentionedPath)
+    });
+  }
+  return files;
+}
+
+function normalizeMentionedPath(value: string): string {
+  return value
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\.?\//, "")
+    .replace(/[.,;:)]+$/g, "");
+}
+
+function claimTextForGrounding(claimText: string, repoPath: string): string {
+  const repoPathPattern = new RegExp(escapeRegex(path.resolve(repoPath)).replace(/\//g, "/+"), "g");
+  return claimText
+    .replace(repoPathPattern, "<repo>")
+    .replace(/(^|[\s(])\/[^\s`'")]+/g, "$1<path>")
+    .replace(/\bweak\/provisional\b/gi, "weak or provisional");
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function mergeChangedFiles(
+  changedFiles: ProjectControlChangedFile[],
+  mentionedFiles: ProjectControlChangedFile[]
+): ProjectControlChangedFile[] {
+  const byPath = new Map<string, ProjectControlChangedFile>();
+  for (const file of changedFiles) byPath.set(file.path, file);
+  for (const file of mentionedFiles) {
+    if (!byPath.has(file.path)) byPath.set(file.path, file);
+  }
+  return [...byPath.values()];
+}
+
+function sidecarRepoEvidencePack(input: {
+  repoPath: string;
+  snapshot: { repoName: string; branch?: string; commitSha?: string; gitStatusShort?: string };
+  changedFiles: ProjectControlChangedFile[];
+  createdAt: string;
+}): RepoEvidencePack {
+  const evidencePaths = input.changedFiles.map((file) => file.path);
+  const sourceFiles = input.changedFiles
+    .filter((file) => file.fileRole === "source" || file.fileRole === "script")
+    .map((file) => file.path);
+  const testFiles = input.changedFiles.filter((file) => file.fileRole === "test").map((file) => file.path);
+  const docsFiles = input.changedFiles.filter((file) => file.fileRole === "docs").map((file) => file.path);
+  const configFiles = input.changedFiles.filter((file) => file.fileRole === "config").map((file) => file.path);
+  return {
+    repoPath: input.repoPath,
+    workspaceResolution: "current_repo",
+    createdAt: input.createdAt,
+    gitStatus: input.snapshot.gitStatusShort,
+    inspectedFiles: evidencePaths,
+    importantFiles: evidencePaths,
+    configFiles,
+    sourceFiles,
+    testFiles,
+    docsFiles,
+    operationalFiles: [],
+    scripts: [],
+    missingExpectedFiles: [],
+    riskFlags: [],
+    skippedPaths: [],
+    redactions: [],
+    snippets: [],
+    markdown: [
+      "## Sidecar Repo Evidence",
+      `- RepoPath: ${input.repoPath}`,
+      input.snapshot.branch ? `- Branch: ${input.snapshot.branch}` : "",
+      input.snapshot.commitSha ? `- Commit: ${input.snapshot.commitSha}` : "",
+      ...evidencePaths.map((file) => `- Evidence file: ${file}`)
+    ].filter(Boolean).join("\n")
+  };
+}
+
+function sidecarCommandEvidence(entry: ProjectControlCommandEvidenceEntry, repoPath: string): CommandEvidence {
+  const exitCode = typeof entry.exitCode === "number" ? entry.exitCode : -1;
+  const success = exitCode === 0;
+  const createdAt = entry.finishedAt ?? entry.startedAt ?? new Date(0).toISOString();
+  return {
+    commandEvidenceId: `sidecar-${shortHash(`${entry.command}:${createdAt}:${entry.cwd ?? repoPath}`)}`,
+    command: entry.command,
+    args: [entry.command],
+    exitCode,
+    success,
+    source: sidecarCommandSource(entry.source),
+    status: success ? "passed" : exitCode === -1 ? "unknown" : "failed",
+    commandFamily: commandFamilyFor(entry.command),
+    stdoutPath: ".stax/command-evidence/stdout.txt",
+    stderrPath: ".stax/command-evidence/stderr.txt",
+    stdoutTruncated: false,
+    stderrTruncated: false,
+    redactionCount: 0,
+    summary: compactCommandSummary(entry),
+    createdAt,
+    hash: sha256(JSON.stringify({
+      command: entry.command,
+      cwd: entry.cwd,
+      repo: entry.repo,
+      branch: entry.branch,
+      commitSha: entry.commitSha,
+      exitCode: entry.exitCode,
+      source: entry.source
+    })),
+    cwd: entry.cwd,
+    linkedRepoPath: entry.cwd
+  };
+}
+
+function sidecarCommandSource(source: ProjectControlCommandEvidenceEntry["source"]): CommandEvidence["source"] {
+  if (source === "local_stax_command_output" || source === "human_pasted_command_output" || source === "codex_reported_command_output") {
+    return source;
+  }
+  return "human_pasted_command_output";
+}
+
+function compactCommandSummary(entry: ProjectControlCommandEvidenceEntry): string {
+  const text = [entry.stdout, entry.stderr].filter(Boolean).join("\n").replace(/\s+/g, " ").trim();
+  return text.slice(0, 2400) || `${entry.command} exited ${entry.exitCode ?? "unknown"}.`;
+}
+
+function sidecarEvidenceFlags(codexReport: string): {
+  visualProof: boolean;
+  releasePreflight: boolean;
+  releaseGate: boolean;
+  rollbackPlan: boolean;
+  securityProof: boolean;
+} {
+  return {
+    visualProof: /\b(screenshot|playwright trace|rendered preview|visual proof|browser proof)\b/i.test(codexReport),
+    releasePreflight: /\b(preflight|dry run|staging validated|build passed)\b/i.test(codexReport),
+    releaseGate: /\brelease gate\b/i.test(codexReport),
+    rollbackPlan: /\brollback\b/i.test(codexReport),
+    securityProof: /\b(security test|security scan|secret scan|vulnerability scan|npm audit|prompt injection test|xss test|csrf test)\b/i.test(codexReport)
+  };
+}
+
+function proofStrengthFindings(
+  proofStrength?: ProofStrengthResult
+): Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk"> {
+  if (!proofStrength) return { verified: [], weak: [], unverified: [], risk: [] };
+  const summary = `Proof strength: ${proofStrength.label} (${proofStrength.finalScore}) - ${proofStrength.primaryLimiter}`;
+  const capLines = proofStrength.capApplied.map((cap) => `Proof-strength cap applied: ${cap.id} - ${cap.reason}`);
+  if (proofStrength.label === "Reject") {
+    return {
+      verified: [],
+      weak: [],
+      unverified: [summary, ...proofStrength.rejectReasons.map((reason) => `Proof-strength reject: ${reason}`)],
+      risk: proofStrength.rejectReasons.map((reason) => `Proof-strength blocker: ${reason}`)
+    };
+  }
+  if (proofStrength.label === "Strong" || proofStrength.label === "Audit-grade") {
+    return {
+      verified: [summary],
+      weak: capLines,
+      unverified: [],
+      risk: []
+    };
+  }
+  return {
+    verified: [],
+    weak: [summary, ...capLines],
+    unverified: [],
+    risk: []
+  };
 }
 
 function deriveVerdict(input: {

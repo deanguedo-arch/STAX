@@ -22,6 +22,16 @@ stax status --repo <path>
 stax next --repo <path>
 ```
 
+`stax gate` writes the status card, next prompt, and deterministic proof-strength
+artifact:
+
+```txt
+.stax/status.md
+.stax/status.json
+.stax/proof_strength.json
+.stax/next-codex-prompt.md
+```
+
 ## Validation
 
 Core repo validation:

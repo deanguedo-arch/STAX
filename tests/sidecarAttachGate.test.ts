@@ -127,6 +127,14 @@ describe("STAX sidecar attach and gate", () => {
 
     expect(status.verdict).toBe("Reject");
     expect(status.unverified.join("\n")).toMatch(/completion without local STAX command evidence|Tests-passed claim/);
+    expect(status.proofStrength?.capApplied.map((cap) => cap.id)).toContain("missing_command_evidence");
+    expect(status.statusMarkdown).toContain("## Proof Strength");
+    expect(status.statusMarkdown).toContain("- Artifact: .stax/proof_strength.json");
+    const proofStrengthArtifact = JSON.parse(
+      await fs.readFile(path.join(repoPath, ".stax", "proof_strength.json"), "utf8")
+    ) as { label: string; capApplied: Array<{ id: string }> };
+    expect(proofStrengthArtifact.label).toBe(status.proofStrength?.label);
+    expect(proofStrengthArtifact.capApplied.map((cap) => cap.id)).toContain("missing_command_evidence");
   });
 
   it("rejects docs-only implementation claims", async () => {
