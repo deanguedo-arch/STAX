@@ -1,6 +1,6 @@
 # STAX Trial League Failure Report
 
-Generated: 2026-05-11T21:18:55Z
+Generated: 2026-05-11T22:18:00.625Z
 
 ## Summary
 
@@ -9,13 +9,14 @@ Fixture set: stax_trials_phase1_v1
 Expanded cases: 50
 Critical false accepts: 0
 False rejects: 0
+False reject rate: 0
 Next prompt actionable rate: 100%
 Status: Pass
 ```
 
 ## Failure Classes
 
-No failing Phase 1 fixture classes are recorded for the initial league.
+No failing Phase 1 fixture classes are recorded for this league run.
 
 ## Coverage Notes
 

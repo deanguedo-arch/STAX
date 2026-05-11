@@ -77,6 +77,7 @@
     "stax:aggregate-imports": "tsx scripts/staxAggregateImports.ts",
     "stax:promote-import": "tsx scripts/staxPromoteImport.ts",
     "stax:learning-dashboard": "tsx scripts/staxLearningDashboard.ts",
+    "stax:trials:phase1": "tsx scripts/staxTrialLeague.ts",
     "campaign:phaseB:prepare": "tsx scripts/preparePhaseBStatefulRun.ts",
     "campaign:phaseB:next": "tsx scripts/phaseBNextPrompt.ts",
     "campaign:phaseB:capture": "tsx scripts/phaseBCaptureClipboard.ts",
