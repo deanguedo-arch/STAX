@@ -267,6 +267,7 @@ function nextActionFor(
   missingProof: string[]
 ): string {
   const combined = [primaryLimiter, ...rejectReasons, ...capApplied.map((cap) => cap.id), ...missingProof].join("\n").toLowerCase();
+  if (combined.includes("available proof is strong enough")) return "No proof-strength correction is needed for this claim.";
   if (combined.includes("failed command")) return "Fix the failing command, rerun it through STAX command evidence, then re-gate the claim.";
   if (combined.includes("wrong repo") || combined.includes("wrong workspace") || combined.includes("wrong linked repo")) {
     return "Collect command evidence from the correct repo/workspace and discard the mismatched proof.";

@@ -487,7 +487,7 @@ async function deriveSidecarProofStrength(input: {
   });
   const commandEvidence = input.commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
   const groundingResult = new EvidenceGroundingGate().evaluate({
-    output: claimTextForGrounding(claimText, input.repoPath),
+    output: claimTextForGrounding(claimText, input.repoPath, input.snapshot.branch),
     repoEvidence,
     commandEvidence
   });
@@ -509,7 +509,7 @@ async function existingMentionedFiles(repoPath: string, text: string): Promise<P
   const mentionedPaths = [...new Set([...text.matchAll(CLAIM_FILE_PATTERN)].map((match) => normalizeMentionedPath(match[0])).filter(Boolean))];
   const files: ProjectControlChangedFile[] = [];
   for (const mentionedPath of mentionedPaths) {
-    if (mentionedPath.startsWith(".stax/") || path.isAbsolute(mentionedPath) || mentionedPath.includes("..")) continue;
+    if (isSidecarManagedPath(mentionedPath) || path.isAbsolute(mentionedPath) || mentionedPath.includes("..")) continue;
     const absolutePath = path.join(repoPath, mentionedPath);
     const stat = await fs.stat(absolutePath).catch(() => undefined);
     if (!stat?.isFile()) continue;
@@ -530,12 +530,17 @@ function normalizeMentionedPath(value: string): string {
     .replace(/[.,;:)]+$/g, "");
 }
 
-function claimTextForGrounding(claimText: string, repoPath: string): string {
+function claimTextForGrounding(claimText: string, repoPath: string, branch?: string): string {
   const repoPathPattern = new RegExp(escapeRegex(path.resolve(repoPath)).replace(/\//g, "/+"), "g");
-  return claimText
+  const withoutRepoPaths = claimText
     .replace(repoPathPattern, "<repo>")
+    .replace(/(^|[\s`'("])\.?stax\/[^\s`'")]+/gi, "$1<sidecar-file>")
+    .replace(/\b(?:AGENTS\.md|\.gitignore)\b/g, "<sidecar-file>")
     .replace(/(^|[\s(])\/[^\s`'")]+/g, "$1<path>")
+    .replace(/\bbranch\/head\b/gi, "branch and head")
     .replace(/\bweak\/provisional\b/gi, "weak or provisional");
+  if (!branch?.includes("/")) return withoutRepoPaths;
+  return withoutRepoPaths.replace(new RegExp(escapeRegex(branch), "g"), "<branch>");
 }
 
 function escapeRegex(value: string): string {
@@ -815,8 +820,8 @@ function parseStatusChangedFiles(gitStatusShort: string): ProjectControlChangedF
 }
 
 function isSidecarManagedPath(filePath: string): boolean {
-  const normalized = filePath.replace(/\\/g, "/");
-  return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/");
+  const normalized = filePath.replace(/\\/g, "/").replace(/^\.?\//, "");
+  return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/") || normalized.startsWith("stax/");
 }
 
 function deriveSidecarFindings(input: {

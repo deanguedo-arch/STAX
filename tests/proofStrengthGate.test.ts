@@ -26,6 +26,7 @@ describe("ProofStrengthGate", () => {
     expect(result.rejectReasons).toEqual([]);
     expect(result.capApplied).toEqual([]);
     expect(result.strongProof.join("\n")).toContain("Local STAX command evidence passed: npm test exited 0.");
+    expect(result.oneNextAction).toBe("No proof-strength correction is needed for this claim.");
   });
 
   it("caps Codex-reported command output at Provisional", () => {

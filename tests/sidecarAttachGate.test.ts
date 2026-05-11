@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import {
   attachStaxToRepo,
@@ -103,6 +104,7 @@ describe("STAX sidecar attach and gate", () => {
 
   it("rejects fake-complete reports without local command evidence", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-fake-complete-");
+    execFileSync("git", ["checkout", "-b", "codex/resume-test-branch"], { cwd: repoPath });
     await attachStaxToRepo(repoPath);
     await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
     await fs.writeFile(path.join(repoPath, "src/app.ts"), "export const value = 3;\n", "utf8");
@@ -110,12 +112,13 @@ describe("STAX sidecar attach and gate", () => {
       path.join(repoPath, ".stax", "codex-report.md"),
       [
         "Objective: update app",
-        "Files changed: src/app.ts",
+        "Branch: codex/resume-test-branch",
+        "Files changed: src/app.ts, .stax/status.json, AGENTS.md",
         "Tests added: none",
         "Commands run: npm test",
         "Command output summary with exit codes: tests passed",
         "What is verified: done and complete",
-        "What is weak/provisional: none",
+        "What is weak/provisional: same branch/head",
         "What is unverified: none",
         "Risks: none",
         "One next action: accept"
@@ -128,6 +131,7 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.verdict).toBe("Reject");
     expect(status.unverified.join("\n")).toMatch(/completion without local STAX command evidence|Tests-passed claim/);
     expect(status.proofStrength?.capApplied.map((cap) => cap.id)).toContain("missing_command_evidence");
+    expect(status.proofStrength?.missingProof.join("\n")).not.toMatch(/stax\/status\.json|AGENTS\.md|codex\/resume-test-branch|branch\/head/);
     expect(status.statusMarkdown).toContain("## Proof Strength");
     expect(status.statusMarkdown).toContain("- Artifact: .stax/proof_strength.json");
     const proofStrengthArtifact = JSON.parse(
