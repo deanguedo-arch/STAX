@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { attachStaxToRepo } from "../src/sidecar/AttachStax.js";
 import {
   collectCodexTurn,
@@ -10,6 +10,7 @@ import {
   collectCommandEvidence,
   isDangerousSidecarCommand
 } from "../src/sidecar/CommandEvidenceCollector.js";
+import { externalCommandEvidenceStoreForRepo } from "../src/sidecar/ExternalCommandEvidenceStore.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
@@ -42,6 +43,7 @@ async function writeProofClaimReport(repoPath: string, evidenceId = "cmd") {
 
 async function prepareCommandProofRepo(prefix: string): Promise<string> {
   const repoPath = await createTempGitRepo(prefix);
+  useTestExternalEvidenceRoot(repoPath);
   await attachStaxToRepo(repoPath);
   await updateSidecarConfig(repoPath, {
     runtimeFreshnessMode: "manual",
@@ -56,7 +58,17 @@ async function prepareCommandProofRepo(prefix: string): Promise<string> {
   return repoPath;
 }
 
+function useTestExternalEvidenceRoot(repoPath: string): string {
+  const root = path.join(repoPath, "..", `${path.basename(repoPath)}-external-evidence`);
+  process.env.STAX_EVIDENCE_ROOT = root;
+  return root;
+}
+
 describe("STAX sidecar watch and collect", () => {
+  afterEach(() => {
+    delete process.env.STAX_EVIDENCE_ROOT;
+  });
+
   it("collects Codex session content into current-turn and turn artifacts", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-codex-turn-");
     await attachStaxToRepo(repoPath);
@@ -212,6 +224,7 @@ describe("STAX sidecar watch and collect", () => {
 
   it("collects successful and failed command evidence", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-collect-");
+    useTestExternalEvidenceRoot(repoPath);
     await attachStaxToRepo(repoPath);
 
     const pass = await collectCommandEvidence({
@@ -232,9 +245,12 @@ describe("STAX sidecar watch and collect", () => {
     expect(pass.stderrHash).toHaveLength(64);
     expect(pass.canonicalEvidenceHash).toHaveLength(64);
     expect(fail.exitCode).toBe(3);
-    await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence", pass.stdoutPath))).resolves.toBeTruthy();
-    await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence", fail.stderrPath))).resolves.toBeTruthy();
-    const ledger = await fs.readFile(path.join(repoPath, ".stax", "command-evidence", "ledger.jsonl"), "utf8");
+    const store = externalCommandEvidenceStoreForRepo(repoPath);
+    await expect(fs.stat(path.join(store.commandEvidenceDir, pass.stdoutPath))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(store.commandEvidenceDir, fail.stderrPath))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence", `${pass.evidenceId}.pointer.json`))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence", `${pass.evidenceId}.json`))).rejects.toMatchObject({ code: "ENOENT" });
+    const ledger = await fs.readFile(pass.externalLedgerPath, "utf8");
     expect(ledger.trim().split(/\r?\n/)).toHaveLength(2);
   });
 
@@ -311,7 +327,7 @@ describe("STAX sidecar watch and collect", () => {
       command: ["npm", "test"],
       writeLearningEvent: false
     });
-    await fs.writeFile(path.join(repoPath, ".stax", "command-evidence", evidence.stdoutPath), "forged output\n", "utf8");
+    await fs.writeFile(path.join(path.dirname(evidence.externalEvidencePath), evidence.stdoutPath), "forged output\n", "utf8");
     await writeProofClaimReport(repoPath, evidence.evidenceId);
 
     const status = await runStaxGate({ repoPath, writeLearningEvent: false });
@@ -328,7 +344,7 @@ describe("STAX sidecar watch and collect", () => {
       command: ["npm", "test"],
       writeLearningEvent: false
     });
-    const evidencePath = path.join(repoPath, ".stax", "command-evidence", `${evidence.evidenceId}.json`);
+    const evidencePath = evidence.externalEvidencePath;
     const parsed = JSON.parse(await fs.readFile(evidencePath, "utf8")) as Record<string, unknown>;
     parsed.tampered = true;
     await fs.writeFile(evidencePath, `${JSON.stringify(parsed, null, 2)}\n`, "utf8");
@@ -347,7 +363,7 @@ describe("STAX sidecar watch and collect", () => {
       command: ["npm", "test"],
       writeLearningEvent: false
     });
-    const ledgerPath = path.join(repoPath, ".stax", "command-evidence", "ledger.jsonl");
+    const ledgerPath = evidence.externalLedgerPath;
     const ledger = await fs.readFile(ledgerPath, "utf8");
     await fs.writeFile(ledgerPath, ledger.replace(evidence.evidenceId, `${evidence.evidenceId}_edited`), "utf8");
     await writeProofClaimReport(repoPath, evidence.evidenceId);
@@ -361,6 +377,7 @@ describe("STAX sidecar watch and collect", () => {
 
   it("blocks dangerous command collection unless allow-risky is explicit", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-risky-");
+    useTestExternalEvidenceRoot(repoPath);
     await attachStaxToRepo(repoPath);
 
     expect(isDangerousSidecarCommand(["git", "push"])).toBe(true);
@@ -407,6 +424,7 @@ describe("STAX sidecar watch and collect", () => {
 
   it("uses latest rerun evidence instead of permanently blocking on an older failure", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-rerun-");
+    useTestExternalEvidenceRoot(repoPath);
     await attachStaxToRepo(repoPath);
     await commitFile(repoPath, "check.js", "process.exit(2);\n");
     await collectCommandEvidence({

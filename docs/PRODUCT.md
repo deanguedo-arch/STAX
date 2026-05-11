@@ -82,7 +82,7 @@ while legacy `rax` routing remains available for internal commands.
 .stax/status.json
 .stax/next-codex-prompt.md
 .stax/turn-contract.json
-.stax/command-evidence/
+.stax/command-evidence/   # repo-local pointers to external command proof
 ```
 
 Runtime-only accountability files can remain local and ignored:

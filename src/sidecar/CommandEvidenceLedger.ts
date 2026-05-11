@@ -30,7 +30,8 @@ export type CommandEvidenceLedgerVerification = {
 };
 
 export async function appendCommandEvidenceLedgerRecord(input: {
-  repoPath: string;
+  repoPath?: string;
+  commandEvidenceDir?: string;
   evidenceId: string;
   evidencePath: string;
   stdoutPath: string;
@@ -42,9 +43,13 @@ export async function appendCommandEvidenceLedgerRecord(input: {
   worktreeAfterHash: string;
   recordedAt?: string;
 }): Promise<CommandEvidenceLedgerRecord> {
-  const ledgerPath = commandEvidenceLedgerPath(input.repoPath);
+  const ledgerPath = input.commandEvidenceDir
+    ? commandEvidenceLedgerPathForDir(input.commandEvidenceDir)
+    : commandEvidenceLedgerPath(requiredRepoPath(input.repoPath));
   await ensureDirectory(path.dirname(ledgerPath));
-  const records = await readCommandEvidenceLedger(input.repoPath);
+  const records = input.commandEvidenceDir
+    ? await readCommandEvidenceLedgerFromDir(input.commandEvidenceDir)
+    : await readCommandEvidenceLedger(requiredRepoPath(input.repoPath));
   const previous = records.at(-1);
   const recordWithoutHash: Omit<CommandEvidenceLedgerRecord, "ledgerHash"> = {
     schemaVersion: COMMAND_EVIDENCE_LEDGER_SCHEMA_VERSION,
@@ -71,6 +76,15 @@ export async function appendCommandEvidenceLedgerRecord(input: {
 
 export async function readCommandEvidenceLedger(repoPath: string): Promise<CommandEvidenceLedgerRecord[]> {
   const raw = await readTextIfExists(commandEvidenceLedgerPath(repoPath));
+  return parseCommandEvidenceLedger(raw);
+}
+
+export async function readCommandEvidenceLedgerFromDir(commandEvidenceDir: string): Promise<CommandEvidenceLedgerRecord[]> {
+  const raw = await readTextIfExists(commandEvidenceLedgerPathForDir(commandEvidenceDir));
+  return parseCommandEvidenceLedger(raw);
+}
+
+function parseCommandEvidenceLedger(raw: string): CommandEvidenceLedgerRecord[] {
   return raw
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -113,6 +127,15 @@ export function verifyCommandEvidenceLedger(records: CommandEvidenceLedgerRecord
 
 export function commandEvidenceLedgerPath(repoPath: string): string {
   return path.join(sidecarDir(repoPath), "command-evidence", COMMAND_EVIDENCE_LEDGER_FILE);
+}
+
+export function commandEvidenceLedgerPathForDir(commandEvidenceDir: string): string {
+  return path.join(commandEvidenceDir, COMMAND_EVIDENCE_LEDGER_FILE);
+}
+
+function requiredRepoPath(repoPath: string | undefined): string {
+  if (!repoPath) throw new Error("repoPath or commandEvidenceDir is required for command evidence ledger access.");
+  return repoPath;
 }
 
 function ledgerRecordHash(record: Omit<CommandEvidenceLedgerRecord, "ledgerHash">): string {

@@ -37,6 +37,11 @@ export type SidecarCommandEvidenceWithProvenance = ProjectControlCommandEvidence
   stderrHash?: string;
   canonicalEvidenceHash?: string;
   collectorVersion?: string;
+  evidenceStore?: "external_user_store" | "repo_local_legacy";
+  externalRepoId?: string;
+  externalEvidencePath?: string;
+  externalLedgerPath?: string;
+  repoPointerPath?: string;
   provenanceStatus: CommandEvidenceProvenanceStatus;
   provenanceIssues: string[];
   ledgerHash?: string;

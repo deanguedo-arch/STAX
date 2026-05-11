@@ -86,11 +86,15 @@ Run relevant proof commands through STAX:
 npm run stax:collect -- --repo ../my-project -- npm test
 ```
 
-STAX records command evidence under:
+STAX stores raw command evidence outside the attached repo:
 
 ```txt
-../my-project/.stax/command-evidence/
+~/.stax/evidence/<repo-id>/command-evidence/
 ```
+
+The attached repo keeps only `.stax/command-evidence/*.pointer.json` files. A
+pointer is not proof by itself; `stax gate` verifies the external ledger and
+worktree fingerprint before accepting the command as strong local evidence.
 
 This matters because a report saying "tests passed" is weaker than a captured
 command with cwd, exit code, output, and repo context.

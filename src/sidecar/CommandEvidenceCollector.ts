@@ -2,11 +2,15 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { ProjectControlCommandEvidenceEntry } from "../projectControl/ProjectControlEvidencePacket.js";
-import { appendCommandEvidenceLedgerRecord } from "./CommandEvidenceLedger.js";
+import { appendCommandEvidenceLedgerRecord, commandEvidenceLedgerPathForDir } from "./CommandEvidenceLedger.js";
 import {
   canonicalCommandEvidenceHash,
   COMMAND_EVIDENCE_COLLECTOR_VERSION
 } from "./CommandEvidenceVerifier.js";
+import {
+  ensureExternalCommandEvidenceStore,
+  writeCommandEvidencePointer
+} from "./ExternalCommandEvidenceStore.js";
 import type { SidecarLearningEvent } from "./SidecarLearningEvent.js";
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import {
@@ -16,7 +20,6 @@ import {
   sanitizeId,
   sha256,
   shortHash,
-  sidecarDir,
   validateRepoPath
 } from "./SidecarRepo.js";
 import type { WorktreeFingerprint } from "./WorktreeFingerprint.js";
@@ -40,6 +43,11 @@ export type CollectedCommandEvidence = ProjectControlCommandEvidenceEntry & {
   stderrHash: string;
   canonicalEvidenceHash: string;
   collectorVersion: typeof COMMAND_EVIDENCE_COLLECTOR_VERSION;
+  evidenceStore: "external_user_store";
+  externalRepoId: string;
+  externalEvidencePath: string;
+  externalLedgerPath: string;
+  repoPointerPath: string;
 };
 
 const DANGEROUS_COMMAND_PATTERNS = [
@@ -81,11 +89,14 @@ export async function collectCommandEvidence(
   const snapshotAfter = await collectGitSnapshot(repoPath);
   const worktreeAfter = await collectWorktreeFingerprint(repoPath);
   const evidenceId = `cmd_${sanitizeId(`${startedAt}_${shortHash(options.command.join(" "))}`)}`;
-  const commandDir = path.join(sidecarDir(repoPath), "command-evidence");
+  const store = await ensureExternalCommandEvidenceStore(repoPath);
+  const commandDir = store.commandEvidenceDir;
   await ensureDirectory(commandDir);
   const stdoutName = `${evidenceId}.stdout.txt`;
   const stderrName = `${evidenceId}.stderr.txt`;
   const jsonName = `${evidenceId}.json`;
+  const evidencePath = path.join(commandDir, jsonName);
+  const ledgerPath = commandEvidenceLedgerPathForDir(commandDir);
   await fs.writeFile(path.join(commandDir, stdoutName), stdout, "utf8");
   await fs.writeFile(path.join(commandDir, stderrName), stderr, "utf8");
 
@@ -109,15 +120,20 @@ export async function collectCommandEvidence(
     source: "local_stax_command_output" as const,
     stdout: "",
     stderr: "",
-    warning: risky ? "allow-risky used for dangerous command collection" : undefined
+    warning: risky ? "allow-risky used for dangerous command collection" : undefined,
+    evidenceStore: "external_user_store",
+    externalRepoId: store.repoId,
+    externalEvidencePath: evidencePath,
+    externalLedgerPath: ledgerPath,
+    repoPointerPath: path.join(repoPath, ".stax", "command-evidence", `${evidenceId}.pointer.json`)
   };
   const evidence: CollectedCommandEvidence = {
     ...evidenceWithoutHash,
     canonicalEvidenceHash: canonicalCommandEvidenceHash(evidenceWithoutHash)
   };
-  await fs.writeFile(path.join(commandDir, jsonName), `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
+  await fs.writeFile(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
   await appendCommandEvidenceLedgerRecord({
-    repoPath,
+    commandEvidenceDir: commandDir,
     evidenceId,
     evidencePath: jsonName,
     stdoutPath: stdoutName,
@@ -127,6 +143,18 @@ export async function collectCommandEvidence(
     stderrHash: evidence.stderrHash,
     worktreeBeforeHash: evidence.worktreeBefore.fingerprintHash,
     worktreeAfterHash: evidence.worktreeAfter.fingerprintHash,
+    recordedAt: finishedAt
+  });
+  await writeCommandEvidencePointer({
+    repoPath,
+    store,
+    evidenceId,
+    evidencePath,
+    stdoutPath: path.join(commandDir, stdoutName),
+    stderrPath: path.join(commandDir, stderrName),
+    ledgerPath,
+    worktreeAfterHash: evidence.worktreeAfter.fingerprintHash,
+    canonicalEvidenceHash: evidence.canonicalEvidenceHash,
     recordedAt: finishedAt
   });
 

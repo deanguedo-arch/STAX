@@ -103,8 +103,10 @@ It also appends or updates a generated `## STAX Proof Strength` section in
 ignored as input on the next gate run.
 
 `.stax/reports/latest-proof-report.md` is the stable repo-tracked summary for
-humans and handoffs. The raw Codex report, command logs, runtime heartbeat, and
-turn capture stay local sidecar evidence.
+humans and handoffs. The raw Codex report, runtime heartbeat, and turn capture
+stay local sidecar evidence. Raw command logs are kept in the external STAX
+evidence store at `~/.stax/evidence/<repo-id>/command-evidence/`; the attached
+repo keeps pointer files only.
 
 The status card is organized around:
 
@@ -152,7 +154,7 @@ Attached repos use a local `.stax/` folder:
 .stax/status.json
 .stax/next-codex-prompt.md
 .stax/turn-contract.json
-.stax/command-evidence/
+.stax/command-evidence/   # pointers to external command proof
 ```
 
 Runtime accountability files can also exist locally:

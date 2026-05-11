@@ -73,23 +73,24 @@ Hard caps and reject conditions are the product.
 
 ## Persistence
 
-For sidecar command evidence, `stax collect` records a provenance packet beside
-the command output:
+For sidecar command evidence, `stax collect` records the raw provenance packet
+outside the attached repo by default:
 
 ```txt
-.stax/command-evidence/<evidence-id>.json
-.stax/command-evidence/<evidence-id>.stdout.txt
-.stax/command-evidence/<evidence-id>.stderr.txt
-.stax/command-evidence/ledger.jsonl
+~/.stax/evidence/<repo-id>/command-evidence/<evidence-id>.json
+~/.stax/evidence/<repo-id>/command-evidence/<evidence-id>.stdout.txt
+~/.stax/evidence/<repo-id>/command-evidence/<evidence-id>.stderr.txt
+~/.stax/evidence/<repo-id>/command-evidence/ledger.jsonl
 ```
 
-The packet includes before/after auditable-worktree fingerprints, stdout/stderr
-hashes, a canonical evidence hash, and a same-repo ledger hash chain. `stax gate`
-only treats the command as strong local proof when the ledger, stream hashes,
-JSON hash, repo/cwd/branch/commit context, and current auditable-worktree
-fingerprint verify. Generated `.stax` proof/status artifacts are excluded from
-the auditable-worktree fingerprint so sidecar report updates do not stale valid
-command proof.
+The attached repo may contain `.stax/command-evidence/*.pointer.json` files, but
+those are pointers only. The packet includes before/after auditable-worktree
+fingerprints, stdout/stderr hashes, a canonical evidence hash, and an external
+ledger hash chain. `stax gate` only treats the command as strong local proof when
+the external ledger, stream hashes, JSON hash, repo/cwd/branch/commit context,
+and current auditable-worktree fingerprint verify. Generated `.stax`
+proof/status artifacts are excluded from the auditable-worktree fingerprint so
+sidecar report updates do not stale valid command proof.
 
 Repo-facing runtime runs can persist:
 

@@ -18,11 +18,19 @@ import type {
 import type { ProjectControlCardStatus } from "../projectControl/ControlCard.js";
 import { validateProjectControlCardShape } from "../projectControl/ControlCard.js";
 import type { RepoEvidencePack } from "../workspace/RepoEvidenceSchemas.js";
-import { readCommandEvidenceLedger, verifyCommandEvidenceLedger } from "./CommandEvidenceLedger.js";
+import {
+  readCommandEvidenceLedgerFromDir,
+  verifyCommandEvidenceLedger,
+  type CommandEvidenceLedgerVerification
+} from "./CommandEvidenceLedger.js";
 import {
   verifySidecarCommandEvidence,
   type SidecarCommandEvidenceWithProvenance
 } from "./CommandEvidenceVerifier.js";
+import {
+  displayExternalEvidencePath,
+  externalCommandEvidenceStoreForRepo
+} from "./ExternalCommandEvidenceStore.js";
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import type { SidecarLearningEvent, SidecarLearningEventType } from "./SidecarLearningEvent.js";
 import { STAX_CONFIDENCE_REPORT_RELATIVE_PATH, STAX_PROOF_REPORT_RELATIVE_PATH } from "./AttachStax.js";
@@ -84,6 +92,11 @@ type CommandEvidenceFile = ProjectControlCommandEvidenceEntry & {
   stderrHash?: string;
   canonicalEvidenceHash?: string;
   collectorVersion?: string;
+  evidenceStore?: "external_user_store" | "repo_local_legacy";
+  externalRepoId?: string;
+  externalEvidencePath?: string;
+  externalLedgerPath?: string;
+  repoPointerPath?: string;
 };
 
 type SidecarCommandEvidenceEntry = SidecarCommandEvidenceWithProvenance;
@@ -604,7 +617,7 @@ function renderLatestProofReport(
     `- Confidence report: ${STAX_CONFIDENCE_REPORT_RELATIVE_PATH}`,
     "- Next Codex prompt: .stax/next-codex-prompt.md",
     "- Raw Codex working report: .stax/codex-report.md (local sidecar input)",
-    "- Command evidence logs: .stax/command-evidence/ (local sidecar evidence)",
+    "- Command evidence proof: external STAX evidence store; .stax/command-evidence/ contains repo-local pointers only.",
     "",
     "## One Next Action",
     `- ${sanitizeProofReportText(status.oneNextAction, status.repoPath)}`,
@@ -676,7 +689,15 @@ function renderCommandEvidenceReportLines(commandEvidenceEntries: SidecarCommand
     const commit = entry.commitSha ? `, commit ${entry.commitSha.slice(0, 12)}` : "";
     const branch = entry.branch ? `, branch ${entry.branch}` : "";
     const provenance = entry.provenanceStatus ? `, provenance ${entry.provenanceStatus}` : "";
-    return `- ${evidenceId}: \`${entry.command}\` exited ${exit} (${entry.source ?? "unknown_source"}${branch}${commit}${provenance})`;
+    const store = entry.evidenceStore === "external_user_store"
+      ? ", store external_user_store"
+      : entry.evidenceStore === "repo_local_legacy"
+        ? ", store repo_local_legacy"
+        : "";
+    const externalPath = entry.externalEvidencePath
+      ? `, evidence ${displayExternalEvidencePath(entry.externalEvidencePath)}`
+      : "";
+    return `- ${evidenceId}: \`${entry.command}\` exited ${exit} (${entry.source ?? "unknown_source"}${branch}${commit}${provenance}${store}${externalPath})`;
   });
 }
 
@@ -854,8 +875,8 @@ function sidecarCommandEvidence(entry: SidecarCommandEvidenceEntry, repoPath: st
     source: sidecarCommandSource(entry.source),
     status: success ? "passed" : exitCode === -1 ? "unknown" : "failed",
     commandFamily: commandFamilyFor(entry.command),
-    stdoutPath: ".stax/command-evidence/stdout.txt",
-    stderrPath: ".stax/command-evidence/stderr.txt",
+    stdoutPath: entry.stdoutPath ?? ".stax/command-evidence/stdout.txt",
+    stderrPath: entry.stderrPath ?? ".stax/command-evidence/stderr.txt",
     stdoutTruncated: false,
     stderrTruncated: false,
     redactionCount: 0,
@@ -1207,29 +1228,61 @@ async function readCommandEvidenceEntries(
   snapshot: { repoName: string; branch?: string; commitSha?: string },
   currentFingerprint: WorktreeFingerprint
 ): Promise<SidecarCommandEvidenceEntry[]> {
-  const dir = path.join(sidecarDir(repoPath), "command-evidence");
-  const names = await fs.readdir(dir).catch(() => []);
-  const ledgerRecords = await readCommandEvidenceLedger(repoPath);
-  const ledgerVerification = verifyCommandEvidenceLedger(ledgerRecords);
+  const externalStore = externalCommandEvidenceStoreForRepo(repoPath);
+  const externalLedgerRecords = await readCommandEvidenceLedgerFromDir(externalStore.commandEvidenceDir);
+  const externalEntries = await readCommandEvidenceEntriesFromDir({
+    repoPath,
+    snapshot,
+    currentFingerprint,
+    dir: externalStore.commandEvidenceDir,
+    evidenceStore: "external_user_store",
+    externalRepoId: externalStore.repoId,
+    ledgerVerification: verifyCommandEvidenceLedger(externalLedgerRecords)
+  });
+  const externalEvidenceIds = new Set(externalEntries.map((entry) => entry.evidenceId).filter(Boolean));
+  const legacyEntries = await readCommandEvidenceEntriesFromDir({
+    repoPath,
+    snapshot,
+    currentFingerprint,
+    dir: path.join(sidecarDir(repoPath), "command-evidence"),
+    evidenceStore: "repo_local_legacy",
+    ledgerVerification: verifyCommandEvidenceLedger([])
+  });
+  return sortCommandEvidenceNewestFirst([
+    ...externalEntries,
+    ...legacyEntries.filter((entry) => !entry.evidenceId || !externalEvidenceIds.has(entry.evidenceId))
+  ]);
+}
+
+async function readCommandEvidenceEntriesFromDir(input: {
+  repoPath: string;
+  snapshot: { repoName: string; branch?: string; commitSha?: string };
+  currentFingerprint: WorktreeFingerprint;
+  dir: string;
+  evidenceStore: "external_user_store" | "repo_local_legacy";
+  externalRepoId?: string;
+  ledgerVerification: CommandEvidenceLedgerVerification;
+}): Promise<SidecarCommandEvidenceEntry[]> {
+  const names = await fs.readdir(input.dir).catch(() => []);
   const entries: SidecarCommandEvidenceEntry[] = [];
-  for (const name of names.filter((item) => item.endsWith(".json")).sort()) {
-    const filePath = path.join(dir, name);
+  for (const name of names.filter((item) => item.endsWith(".json") && !item.endsWith(".pointer.json")).sort()) {
+    const filePath = path.join(input.dir, name);
     const raw = await readTextIfExists(filePath);
     if (!raw.trim()) continue;
     const parsed = JSON.parse(raw) as CommandEvidenceFile;
     const stdout = parsed.stdoutPath
-      ? await readTextIfExists(path.isAbsolute(parsed.stdoutPath) ? parsed.stdoutPath : path.join(dir, parsed.stdoutPath))
+      ? await readTextIfExists(path.isAbsolute(parsed.stdoutPath) ? parsed.stdoutPath : path.join(input.dir, parsed.stdoutPath))
       : parsed.stdout ?? "";
     const stderr = parsed.stderrPath
-      ? await readTextIfExists(path.isAbsolute(parsed.stderrPath) ? parsed.stderrPath : path.join(dir, parsed.stderrPath))
+      ? await readTextIfExists(path.isAbsolute(parsed.stderrPath) ? parsed.stderrPath : path.join(input.dir, parsed.stderrPath))
       : parsed.stderr ?? "";
     const evidenceId = parsed.evidenceId ?? name.replace(/\.json$/i, "");
     const provenance = await verifySidecarCommandEvidence({
-      repoPath,
-      currentRepoName: snapshot.repoName,
-      currentBranch: snapshot.branch,
-      currentCommitSha: snapshot.commitSha,
-      currentFingerprint,
+      repoPath: input.repoPath,
+      currentRepoName: input.snapshot.repoName,
+      currentBranch: input.snapshot.branch,
+      currentCommitSha: input.snapshot.commitSha,
+      currentFingerprint: input.currentFingerprint,
       parsed: parsed as Record<string, unknown> & ProjectControlCommandEvidenceEntry,
       evidenceId,
       evidenceFileName: name,
@@ -1237,7 +1290,7 @@ async function readCommandEvidenceEntries(
       stderrFileName: parsed.stderrPath,
       stdout,
       stderr,
-      ledgerVerification
+      ledgerVerification: input.ledgerVerification
     });
     entries.push({
       evidenceId,
@@ -1261,12 +1314,17 @@ async function readCommandEvidenceEntries(
       stderrHash: parsed.stderrHash,
       canonicalEvidenceHash: parsed.canonicalEvidenceHash,
       collectorVersion: parsed.collectorVersion,
+      evidenceStore: input.evidenceStore,
+      externalRepoId: parsed.externalRepoId ?? input.externalRepoId,
+      externalEvidencePath: parsed.externalEvidencePath ?? (input.evidenceStore === "external_user_store" ? filePath : undefined),
+      externalLedgerPath: parsed.externalLedgerPath,
+      repoPointerPath: parsed.repoPointerPath,
       provenanceStatus: provenance.provenanceStatus,
       provenanceIssues: provenance.provenanceIssues,
       ledgerHash: provenance.ledgerRecord?.ledgerHash
     });
   }
-  return sortCommandEvidenceNewestFirst(entries);
+  return entries;
 }
 
 function renderCommandEvidence(entries: ProjectControlCommandEvidenceEntry[]): string {

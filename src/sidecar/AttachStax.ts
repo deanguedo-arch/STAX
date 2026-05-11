@@ -10,6 +10,11 @@ import {
   validateRepoPath,
   writeFileIfMissing
 } from "./SidecarRepo.js";
+import {
+  displayExternalEvidencePath,
+  externalCommandEvidenceRepoId,
+  externalEvidenceRoot
+} from "./ExternalCommandEvidenceStore.js";
 import { writeTurnContract } from "./TurnContract.js";
 
 export const STAX_AGENTS_SECTION_MARKER = "<!-- STAX_PROJECT_CONTROL_PROTOCOL_V1 -->";
@@ -111,6 +116,9 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
           requireFreshCodexTurnCapture: false,
           runtimeFreshnessMode: "normal",
           turnComplianceMode: "normal",
+          commandEvidenceStore: "external_user_store",
+          commandEvidenceRepoId: externalCommandEvidenceRepoId(repoPath),
+          commandEvidenceRoot: displayExternalEvidencePath(externalEvidenceRoot()),
           maxCodexTurnAgeMs: 300000,
           maxSidecarHeartbeatAgeMs: 300000,
           dangerousCommandsRequireAllowRisky: true

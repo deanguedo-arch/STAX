@@ -37,6 +37,19 @@ It also appends or refreshes a generated `## STAX Proof Strength` section in
 `.stax/codex-report.md`. STAX strips that generated section before the next
 score, so the audit does not grade itself.
 
+`stax collect` stores raw command proof outside the attached repo:
+
+```txt
+~/.stax/evidence/<repo-id>/command-evidence/
+```
+
+The attached repo only gets `.stax/command-evidence/*.pointer.json` files. Those
+pointers are not proof; `stax gate` verifies the external ledger, command output
+hashes, evidence JSON hash, repo/cwd/branch/commit context, and current
+auditable-worktree fingerprint before treating a command as strong local proof.
+Set `STAX_EVIDENCE_ROOT` to override the evidence root for tests or isolated
+workspaces.
+
 `stax attach` also updates the repo `.gitignore` so the safe durable sidecar
 artifacts can be tracked while raw runtime files remain ignored:
 

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   attachStaxToRepo,
   STAX_AGENTS_SECTION_END_MARKER,
@@ -13,7 +13,15 @@ import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
+function useTestExternalEvidenceRoot(repoPath: string): void {
+  process.env.STAX_EVIDENCE_ROOT = path.join(repoPath, "..", `${path.basename(repoPath)}-external-evidence`);
+}
+
 describe("STAX sidecar attach and gate", () => {
+  afterEach(() => {
+    delete process.env.STAX_EVIDENCE_ROOT;
+  });
+
   it("attaches idempotently and does not overwrite existing AGENTS.md", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-attach-");
     await fs.writeFile(path.join(repoPath, "AGENTS.md"), "# Existing Instructions\n\nKeep this.\n", "utf8");
@@ -32,6 +40,8 @@ describe("STAX sidecar attach and gate", () => {
       requireFreshCodexTurnCapture?: boolean;
       runtimeFreshnessMode?: string;
       turnComplianceMode?: string;
+      commandEvidenceStore?: string;
+      commandEvidenceRepoId?: string;
     };
     const gitignore = await fs.readFile(path.join(repoPath, ".gitignore"), "utf8");
     await expect(fs.stat(path.join(repoPath, ".stax", "config.json"))).resolves.toBeTruthy();
@@ -46,6 +56,8 @@ describe("STAX sidecar attach and gate", () => {
     expect(config.requireFreshCodexTurnCapture).toBe(false);
     expect(config.runtimeFreshnessMode).toBe("normal");
     expect(config.turnComplianceMode).toBe("normal");
+    expect(config.commandEvidenceStore).toBe("external_user_store");
+    expect(config.commandEvidenceRepoId).toMatch(/^stax-sidecar-attach-/);
     expect(gitignore).toContain(".stax/*");
     expect(gitignore).toContain("!.stax/status.json");
     expect(gitignore).toContain("!.stax/proof_strength.json");
@@ -178,6 +190,7 @@ describe("STAX sidecar attach and gate", () => {
 
   it("does not mark command evidence stale when only tracked sidecar proof artifacts advanced HEAD", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-proof-report-head-");
+    useTestExternalEvidenceRoot(repoPath);
     await attachStaxToRepo(repoPath);
     await fs.writeFile(
       path.join(repoPath, ".stax", "config.json"),

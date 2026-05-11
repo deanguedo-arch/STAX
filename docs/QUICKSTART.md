@@ -80,6 +80,11 @@ npm run stax:collect -- --repo ../my-project -- npm run build
 npm run stax:collect -- --repo ../my-project -- npm run lint
 ```
 
+Raw command evidence is stored outside the attached repo at
+`~/.stax/evidence/<repo-id>/command-evidence/`. The repo-local
+`.stax/command-evidence/` directory contains pointers only, so edited sidecar
+JSON cannot become strong proof by itself.
+
 ## 6. Run The Gate
 
 ```bash
