@@ -21,6 +21,9 @@ describe("STAX sidecar upgrade", () => {
       sidecarProtocolVersion?: string;
       requireFreshCodexTurnCapture?: boolean;
       runtimeFreshnessMode?: string;
+      commandEvidenceStore?: string;
+      commandEvidenceRepoId?: string;
+      commandEvidenceRoot?: string;
     };
     const task = await fs.readFile(path.join(repoPath, ".stax", "task.md"), "utf8");
     const report = await fs.readFile(path.join(repoPath, ".stax", "codex-report.md"), "utf8");
@@ -56,6 +59,9 @@ describe("STAX sidecar upgrade", () => {
     expect(config.sidecarProtocolVersion).toBe(STAX_SIDECAR_PROTOCOL_VERSION);
     expect(config.requireFreshCodexTurnCapture).toBe(true);
     expect(config.runtimeFreshnessMode).toBe("strict");
+    expect(config.commandEvidenceStore).toBe("external_user_store");
+    expect(config.commandEvidenceRepoId).toMatch(/^stax-sidecar-upgrade-/);
+    expect(config.commandEvidenceRoot).toContain(".stax/evidence");
     expect(task).toBe("do not overwrite task\n");
     expect(report).toBe("do not overwrite report\n");
     expect(ledger).toContain("do-not-overwrite");

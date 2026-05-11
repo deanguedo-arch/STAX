@@ -18,6 +18,11 @@ import {
   sidecarDir,
   validateRepoPath
 } from "./SidecarRepo.js";
+import {
+  displayExternalEvidencePath,
+  externalCommandEvidenceRepoId,
+  externalEvidenceRoot
+} from "./ExternalCommandEvidenceStore.js";
 import { writeTurnContract } from "./TurnContract.js";
 
 export { STAX_SIDECAR_PROTOCOL_VERSION } from "./AttachStax.js";
@@ -132,6 +137,9 @@ async function mergedConfig(configPath: string, snapshot: Awaited<ReturnType<typ
     maxCodexTurnAgeMs: 300000,
     maxSidecarHeartbeatAgeMs: 300000,
     dangerousCommandsRequireAllowRisky: true,
+    commandEvidenceStore: "external_user_store",
+    commandEvidenceRepoId: externalCommandEvidenceRepoId(snapshot.repoPath),
+    commandEvidenceRoot: displayExternalEvidencePath(externalEvidenceRoot()),
     ...existing,
     sidecarProtocolVersion: STAX_SIDECAR_PROTOCOL_VERSION,
     repoName: snapshot.repoName,
