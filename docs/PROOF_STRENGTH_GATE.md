@@ -82,6 +82,17 @@ Sidecar gate runs persist the same artifact shape at:
 .stax/proof_strength.json
 ```
 
+They also write a stable repo-tracked proof report:
+
+```txt
+.stax/reports/latest-proof-report.md
+```
+
+That report is sanitized for repo history: it contains verdict, proof-strength
+score, caps, durable findings, command evidence IDs, artifact paths, and the
+next action. It does not use raw command logs, runtime heartbeat details, or
+turn-capture transcripts as the human-facing report.
+
 Sidecar gates also append or refresh a generated report section:
 
 ```txt

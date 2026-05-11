@@ -94,12 +94,17 @@ The gate writes:
 .stax/status.md
 .stax/status.json
 .stax/proof_strength.json
+.stax/reports/latest-proof-report.md
 .stax/next-codex-prompt.md
 ```
 
 It also appends or updates a generated `## STAX Proof Strength` section in
 `.stax/codex-report.md`. That section is marked as STAX audit output and is
 ignored as input on the next gate run.
+
+`.stax/reports/latest-proof-report.md` is the stable repo-tracked summary for
+humans and handoffs. The raw Codex report, command logs, runtime heartbeat, and
+turn capture stay local sidecar evidence.
 
 The status card is organized around:
 

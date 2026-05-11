@@ -33,6 +33,7 @@ describe("STAX sidecar upgrade", () => {
       expect.arrayContaining([
         path.join(repoPath, ".stax", "AGENT_PROTOCOL.md"),
         path.join(repoPath, ".stax", "config.json"),
+        path.join(repoPath, ".stax", "reports", "latest-proof-report.md"),
         path.join(repoPath, ".gitignore"),
         path.join(repoPath, "AGENTS.md")
       ])
@@ -58,7 +59,10 @@ describe("STAX sidecar upgrade", () => {
     expect(report).toBe("do not overwrite report\n");
     expect(ledger).toContain("do-not-overwrite");
     expect(event).toContain("evidence");
-    expect(gitignore).toContain(".stax/");
+    expect(gitignore).toContain(".stax/*");
+    expect(gitignore).toContain("!.stax/proof_strength.json");
+    expect(gitignore).toContain("!.stax/reports/latest-proof-report.md");
+    await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"))).resolves.toBeTruthy();
   });
 
   it("is idempotent after the sidecar is current", async () => {
@@ -71,6 +75,7 @@ describe("STAX sidecar upgrade", () => {
     expect(second.changedFiles).toEqual([]);
     await expect(fs.stat(path.join(repoPath, ".stax", "runtime"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turns"))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"))).resolves.toBeTruthy();
   });
 });
 

@@ -29,12 +29,23 @@ artifact:
 .stax/status.md
 .stax/status.json
 .stax/proof_strength.json
+.stax/reports/latest-proof-report.md
 .stax/next-codex-prompt.md
 ```
 
 It also appends or refreshes a generated `## STAX Proof Strength` section in
 `.stax/codex-report.md`. STAX strips that generated section before the next
 score, so the audit does not grade itself.
+
+`stax attach` also updates the repo `.gitignore` so the safe durable sidecar
+artifacts can be tracked while raw runtime files remain ignored:
+
+```txt
+.stax/status.json
+.stax/proof_strength.json
+.stax/next-codex-prompt.md
+.stax/reports/latest-proof-report.md
+```
 
 ## Validation
 

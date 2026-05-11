@@ -36,13 +36,18 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "config.json"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "events"))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "reports"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "runtime"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turns"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "turn-contract.json"))).resolves.toBeTruthy();
+    await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"))).resolves.toBeTruthy();
     expect(config.requireFreshCodexTurnCapture).toBe(false);
     expect(config.runtimeFreshnessMode).toBe("normal");
     expect(config.turnComplianceMode).toBe("normal");
-    expect(gitignore).toContain(".stax/");
+    expect(gitignore).toContain(".stax/*");
+    expect(gitignore).toContain("!.stax/status.json");
+    expect(gitignore).toContain("!.stax/proof_strength.json");
+    expect(gitignore).toContain("!.stax/reports/latest-proof-report.md");
   });
 
   it("updates an existing protocol section instead of appending duplicate stale protocol", () => {
@@ -145,6 +150,13 @@ describe("STAX sidecar attach and gate", () => {
     expect(reportWithProofStrength).toContain("- Label: Missing");
     expect(reportWithProofStrength).toContain("- Caps Applied: missing_command_evidence");
     expect(reportWithProofStrength).toContain("- Artifact: .stax/proof_strength.json");
+    const latestProofReport = await fs.readFile(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"), "utf8");
+    expect(latestProofReport).toContain("# STAX Proof Report");
+    expect(latestProofReport).toContain("- Status: Reject");
+    expect(latestProofReport).toContain("- Label: Missing");
+    expect(latestProofReport).toContain("- Caps Applied: missing_command_evidence");
+    expect(latestProofReport).toContain("- Proof strength JSON: .stax/proof_strength.json");
+    expect(latestProofReport).not.toContain("STAX_ACK");
 
     const secondStatus = await runStaxGate({ repoPath });
     expect(secondStatus.proofStrength?.claimText).not.toContain("## STAX Proof Strength");

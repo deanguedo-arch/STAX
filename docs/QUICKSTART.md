@@ -92,8 +92,12 @@ STAX writes:
 ../my-project/.stax/status.md
 ../my-project/.stax/status.json
 ../my-project/.stax/proof_strength.json
+../my-project/.stax/reports/latest-proof-report.md
 ../my-project/.stax/next-codex-prompt.md
 ```
+
+Track `.stax/reports/latest-proof-report.md` when you want the repo to carry a
+sanitized proof summary. Keep raw command evidence and runtime files local.
 
 ## 7. Read The Result
 

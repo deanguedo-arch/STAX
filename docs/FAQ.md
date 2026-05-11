@@ -64,6 +64,10 @@ task -> Codex work -> codex-report.md -> command evidence -> gate -> next prompt
 For normal coding, the main difference is that "done" now means the report and
 local evidence agree.
 
+The repo can track the stable proof summary at
+`.stax/reports/latest-proof-report.md`. Raw command logs, runtime heartbeat, and
+turn captures stay local sidecar evidence.
+
 ## Is the fitness signal pipeline the product?
 
 No. `stax_fitness` is an explicit legacy domain mode. General `STAX` should mean

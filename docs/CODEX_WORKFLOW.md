@@ -69,6 +69,15 @@ section in this report. Codex should not edit that generated section. It is the
 audit result, not Codex's own claim, and STAX strips it before the next proof
 score.
 
+STAX also writes a stable repo-tracked proof report for humans and handoffs:
+
+```txt
+../my-project/.stax/reports/latest-proof-report.md
+```
+
+That report is the durable summary. The raw Codex report remains the working
+input Codex edits during a turn.
+
 ## Command Evidence
 
 Run relevant proof commands through STAX:
