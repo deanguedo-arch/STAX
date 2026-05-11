@@ -20,6 +20,7 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("npm test")).toBe("test");
     expect(commandFamilyForIntelligence("npm run test:e2e")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run build")).toBe("build");
+    expect(commandFamilyForIntelligence("npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --dry-run")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run rax -- eval --redteam")).toBe("redteam");
     expect(commandFamilyForIntelligence("gh run view 200")).toBe("ci");
     expect(commandFamilyForIntelligence("SYNC_ALL.cmd")).toBe("deploy");
@@ -107,6 +108,33 @@ describe("command evidence intelligence", () => {
     });
 
     expect(result.proofStrength).toBe("ci_proof");
+    expect(result.status).toBe("passed");
+  });
+
+  it("treats repo exporter dry runs as executable local proof", () => {
+    const result = classifyCommandEvidence({
+      command: "cmd.exe /d /s /c npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --cartridge course.zip --include-choices-in-image --max-questions-per-form 25 --dry-run",
+      cwd: "C:\\Users\\dean.guedo\\Documents\\GitHub\\brightspacequizexporter",
+      repo: "brightspacequizexporter",
+      branch: "codex/resume-math30-msforms-20260506",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: [
+        "START\t1/2\titems=25\tModule 1 Assessment",
+        "SUCCESS\t1/2\tModule 1 Assessment",
+        "START\t2/2\titems=23\tModule 2 Assessment",
+        "SUCCESS\t2/2\tModule 2 Assessment",
+        "SUMMARY\t2\t0\tC:\\tmp\\summary.md"
+      ].join("\n"),
+      expectedRepo: "brightspacequizexporter",
+      expectedBranch: "codex/resume-math30-msforms-20260506",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.commandFamily).toBe("e2e");
+    expect(result.proofStrength).toBe("strong_local_proof");
     expect(result.status).toBe("passed");
   });
 });

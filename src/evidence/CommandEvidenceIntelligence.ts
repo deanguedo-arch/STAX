@@ -67,6 +67,9 @@ export function commandFamilyForIntelligence(command: string): CommandEvidenceFa
   if (/\b(eval --regression|--regression)\b/.test(normalized)) return "regression";
   if (/\b(rax -- eval|eval)\b/.test(normalized)) return "eval";
   if (/\b(playwright|cypress|test:e2e|e2e:project|e2e)\b/.test(normalized)) return "e2e";
+  if (/\bvite-node --script scripts\/send-(?:cartridge-qti-google-visual|question-bank-google-visual|print-quiz-pdf-to-google-forms|brightspace-csv-to-google-forms)/.test(normalized)) {
+    return "e2e";
+  }
   if (/\b(typecheck|tsc --noemit|tsc -noemit|cargo check|go vet|mypy|pyright)\b/.test(normalized)) return "typecheck";
   if (/\b(lint|eslint|clippy|rubocop|ruff check)\b/.test(normalized)) return "lint";
   if (/\b(build|webpack|vite build|next build|cargo build|go build|gradle assemble|mvn package|mvnw package)\b/.test(normalized)) return "build";
