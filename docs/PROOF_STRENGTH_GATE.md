@@ -58,6 +58,9 @@ Hard caps and reject conditions are the product.
 - No command evidence caps implementation, test, release, and security claims at
   `Provisional`.
 - Codex-reported command output only caps the result at `Provisional`.
+- A `local_stax_command_output` label is not strong proof by itself. Sidecar
+  command evidence must verify as `verified_local_stax_command`; otherwise it is
+  capped at `Provisional` and surfaced as untrusted provenance.
 - Failed command evidence returns `Reject`.
 - Wrong repo, cwd, linked repo, or workspace evidence returns `Reject` when the
   expected context is available.
@@ -69,6 +72,24 @@ Hard caps and reject conditions are the product.
   `Provisional`.
 
 ## Persistence
+
+For sidecar command evidence, `stax collect` records a provenance packet beside
+the command output:
+
+```txt
+.stax/command-evidence/<evidence-id>.json
+.stax/command-evidence/<evidence-id>.stdout.txt
+.stax/command-evidence/<evidence-id>.stderr.txt
+.stax/command-evidence/ledger.jsonl
+```
+
+The packet includes before/after auditable-worktree fingerprints, stdout/stderr
+hashes, a canonical evidence hash, and a same-repo ledger hash chain. `stax gate`
+only treats the command as strong local proof when the ledger, stream hashes,
+JSON hash, repo/cwd/branch/commit context, and current auditable-worktree
+fingerprint verify. Generated `.stax` proof/status artifacts are excluded from
+the auditable-worktree fingerprint so sidecar report updates do not stale valid
+command proof.
 
 Repo-facing runtime runs can persist:
 

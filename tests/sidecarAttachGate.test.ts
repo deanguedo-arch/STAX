@@ -8,6 +8,7 @@ import {
   STAX_AGENTS_SECTION_MARKER,
   upsertAgentsProtocolSection
 } from "../src/sidecar/AttachStax.js";
+import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
 import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
@@ -195,32 +196,17 @@ describe("STAX sidecar attach and gate", () => {
       cwd: repoPath
     });
     execFileSync("git", ["commit", "-m", "attach stax"], { cwd: repoPath });
-    await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
-    const evidenceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoPath }).toString().trim();
-    const evidenceBranch = execFileSync("git", ["branch", "--show-current"], { cwd: repoPath }).toString().trim();
-    const evidenceId = "cmd_sidecar_only_head_advance";
-    await fs.writeFile(
-      path.join(repoPath, ".stax", "command-evidence", `${evidenceId}.json`),
-      `${JSON.stringify(
-        {
-          evidenceId,
-          command: "npm test",
-          cwd: repoPath,
-          repo: path.basename(repoPath),
-          branch: evidenceBranch,
-          commitSha: evidenceCommit,
-          exitCode: 0,
-          stdout: "tests passed",
-          stderr: "",
-          startedAt: "2026-05-11T00:00:00.000Z",
-          finishedAt: "2026-05-11T00:00:01.000Z",
-          source: "local_stax_command_output"
-        },
-        null,
-        2
-      )}\n`,
-      "utf8"
+    await commitFile(
+      repoPath,
+      "package.json",
+      `${JSON.stringify({ scripts: { test: "node -e \"console.log('tests passed')\"" } }, null, 2)}\n`
     );
+    await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
     await fs.writeFile(
       path.join(repoPath, ".stax", "codex-report.md"),
       [
@@ -228,7 +214,7 @@ describe("STAX sidecar attach and gate", () => {
         "Files changed: src/app.ts",
         "Tests added: none",
         "Commands run: npm test",
-        `Command output summary with exit codes: ${evidenceId} exit code 0`,
+        `Command output summary with exit codes: ${evidence.evidenceId} exit code 0`,
         "What is verified: implementation complete with local command proof",
         "What is weak/provisional: none",
         "What is unverified: none",

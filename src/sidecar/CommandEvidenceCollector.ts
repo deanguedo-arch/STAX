@@ -2,6 +2,11 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { ProjectControlCommandEvidenceEntry } from "../projectControl/ProjectControlEvidencePacket.js";
+import { appendCommandEvidenceLedgerRecord } from "./CommandEvidenceLedger.js";
+import {
+  canonicalCommandEvidenceHash,
+  COMMAND_EVIDENCE_COLLECTOR_VERSION
+} from "./CommandEvidenceVerifier.js";
 import type { SidecarLearningEvent } from "./SidecarLearningEvent.js";
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import {
@@ -14,6 +19,8 @@ import {
   sidecarDir,
   validateRepoPath
 } from "./SidecarRepo.js";
+import type { WorktreeFingerprint } from "./WorktreeFingerprint.js";
+import { collectWorktreeFingerprint } from "./WorktreeFingerprint.js";
 
 export type CommandEvidenceCollectorOptions = {
   repoPath: string;
@@ -27,6 +34,12 @@ export type CollectedCommandEvidence = ProjectControlCommandEvidenceEntry & {
   stdoutPath: string;
   stderrPath: string;
   warning?: string;
+  worktreeBefore: WorktreeFingerprint;
+  worktreeAfter: WorktreeFingerprint;
+  stdoutHash: string;
+  stderrHash: string;
+  canonicalEvidenceHash: string;
+  collectorVersion: typeof COMMAND_EVIDENCE_COLLECTOR_VERSION;
 };
 
 const DANGEROUS_COMMAND_PATTERNS = [
@@ -61,10 +74,12 @@ export async function collectCommandEvidence(
   }
 
   const snapshotBefore = await collectGitSnapshot(repoPath);
+  const worktreeBefore = await collectWorktreeFingerprint(repoPath);
   const startedAt = nowIso();
   const { stdout, stderr, exitCode } = await runCommand(repoPath, options.command);
   const finishedAt = nowIso();
   const snapshotAfter = await collectGitSnapshot(repoPath);
+  const worktreeAfter = await collectWorktreeFingerprint(repoPath);
   const evidenceId = `cmd_${sanitizeId(`${startedAt}_${shortHash(options.command.join(" "))}`)}`;
   const commandDir = path.join(sidecarDir(repoPath), "command-evidence");
   await ensureDirectory(commandDir);
@@ -74,7 +89,7 @@ export async function collectCommandEvidence(
   await fs.writeFile(path.join(commandDir, stdoutName), stdout, "utf8");
   await fs.writeFile(path.join(commandDir, stderrName), stderr, "utf8");
 
-  const evidence: CollectedCommandEvidence = {
+  const evidenceWithoutHash: Omit<CollectedCommandEvidence, "canonicalEvidenceHash"> = {
     evidenceId,
     command: options.command.join(" "),
     cwd: repoPath,
@@ -84,14 +99,36 @@ export async function collectCommandEvidence(
     exitCode,
     stdoutPath: stdoutName,
     stderrPath: stderrName,
+    worktreeBefore,
+    worktreeAfter,
+    stdoutHash: sha256(stdout),
+    stderrHash: sha256(stderr),
+    collectorVersion: COMMAND_EVIDENCE_COLLECTOR_VERSION,
     startedAt,
     finishedAt,
-    source: "local_stax_command_output",
+    source: "local_stax_command_output" as const,
     stdout: "",
     stderr: "",
     warning: risky ? "allow-risky used for dangerous command collection" : undefined
   };
+  const evidence: CollectedCommandEvidence = {
+    ...evidenceWithoutHash,
+    canonicalEvidenceHash: canonicalCommandEvidenceHash(evidenceWithoutHash)
+  };
   await fs.writeFile(path.join(commandDir, jsonName), `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
+  await appendCommandEvidenceLedgerRecord({
+    repoPath,
+    evidenceId,
+    evidencePath: jsonName,
+    stdoutPath: stdoutName,
+    stderrPath: stderrName,
+    evidenceHash: evidence.canonicalEvidenceHash,
+    stdoutHash: evidence.stdoutHash,
+    stderrHash: evidence.stderrHash,
+    worktreeBeforeHash: evidence.worktreeBefore.fingerprintHash,
+    worktreeAfterHash: evidence.worktreeAfter.fingerprintHash,
+    recordedAt: finishedAt
+  });
 
   if (options.writeLearningEvent ?? true) {
     await writeSidecarLearningEvent(repoPath, commandEvidenceLearningEvent(repoPath, evidence, snapshotBefore.repoName));

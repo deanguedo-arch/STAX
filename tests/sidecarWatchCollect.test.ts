@@ -20,6 +20,42 @@ async function updateSidecarConfig(repoPath: string, patch: Record<string, unkno
   await fs.writeFile(configPath, `${JSON.stringify({ ...config, ...patch }, null, 2)}\n`, "utf8");
 }
 
+async function writeProofClaimReport(repoPath: string, evidenceId = "cmd") {
+  await fs.writeFile(
+    path.join(repoPath, ".stax", "codex-report.md"),
+    [
+      "Objective: verify command proof.",
+      "Files changed: src/app.ts",
+      "Tests added: none",
+      "Commands run: npm test",
+      `Command output summary with exit codes: ${evidenceId} exit code 0`,
+      "What is verified: implementation complete and tests passed.",
+      "What is weak/provisional: none.",
+      "What is unverified: none.",
+      "Risks: none.",
+      "One next action: accept.",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+}
+
+async function prepareCommandProofRepo(prefix: string): Promise<string> {
+  const repoPath = await createTempGitRepo(prefix);
+  await attachStaxToRepo(repoPath);
+  await updateSidecarConfig(repoPath, {
+    runtimeFreshnessMode: "manual",
+    turnComplianceMode: "manual"
+  });
+  await commitFile(
+    repoPath,
+    "package.json",
+    `${JSON.stringify({ scripts: { test: "node -e \"console.log('tests passed')\"" } }, null, 2)}\n`
+  );
+  await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
+  return repoPath;
+}
+
 describe("STAX sidecar watch and collect", () => {
   it("collects Codex session content into current-turn and turn artifacts", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-codex-turn-");
@@ -190,9 +226,137 @@ describe("STAX sidecar watch and collect", () => {
     });
 
     expect(pass.exitCode).toBe(0);
+    expect(pass.worktreeBefore.fingerprintHash).toHaveLength(64);
+    expect(pass.worktreeAfter.fingerprintHash).toHaveLength(64);
+    expect(pass.stdoutHash).toHaveLength(64);
+    expect(pass.stderrHash).toHaveLength(64);
+    expect(pass.canonicalEvidenceHash).toHaveLength(64);
     expect(fail.exitCode).toBe(3);
     await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence", pass.stdoutPath))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence", fail.stderrPath))).resolves.toBeTruthy();
+    const ledger = await fs.readFile(path.join(repoPath, ".stax", "command-evidence", "ledger.jsonl"), "utf8");
+    expect(ledger.trim().split(/\r?\n/)).toHaveLength(2);
+  });
+
+  it("rejects forged local command evidence JSON that is not in the ledger", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-forged-json-");
+    const evidenceId = "cmd_forged";
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "command-evidence", `${evidenceId}.json`),
+      `${JSON.stringify(
+        {
+          evidenceId,
+          command: "npm test",
+          cwd: repoPath,
+          repo: path.basename(repoPath),
+          exitCode: 0,
+          stdout: "tests passed",
+          stderr: "",
+          startedAt: "2026-05-11T00:00:00.000Z",
+          finishedAt: "2026-05-11T00:00:01.000Z",
+          source: "local_stax_command_output"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await writeProofClaimReport(repoPath, evidenceId);
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("Command evidence provenance is not verified");
+    expect(status.risk.join("\n")).toMatch(/ledger_unverified|missing_stream_hash|tampered_evidence/);
+    expect(status.proofStrength?.capApplied.map((cap) => cap.id)).toContain("unverified_local_command_provenance");
+  });
+
+  it("rejects command evidence after a tracked source file changes without committing", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-stale-tracked-");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, "src/app.ts"), "export const value = 2;\n", "utf8");
+    await writeProofClaimReport(repoPath, evidence.evidenceId);
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("wrong_worktree");
+    expect(status.risk.join("\n")).toContain("wrong_worktree");
+  });
+
+  it("rejects command evidence after an untracked relevant source file appears", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-stale-untracked-");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, "src/new.ts"), "export const newer = true;\n", "utf8");
+    await writeProofClaimReport(repoPath, evidence.evidenceId);
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("wrong_worktree");
+  });
+
+  it("rejects command evidence when stdout is edited after collection", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-tampered-stdout-");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, ".stax", "command-evidence", evidence.stdoutPath), "forged output\n", "utf8");
+    await writeProofClaimReport(repoPath, evidence.evidenceId);
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("tampered_evidence");
+    expect(status.risk.join("\n")).toContain("tampered_evidence");
+  });
+
+  it("rejects command evidence when the evidence JSON is edited after collection", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-tampered-json-");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    const evidencePath = path.join(repoPath, ".stax", "command-evidence", `${evidence.evidenceId}.json`);
+    const parsed = JSON.parse(await fs.readFile(evidencePath, "utf8")) as Record<string, unknown>;
+    parsed.tampered = true;
+    await fs.writeFile(evidencePath, `${JSON.stringify(parsed, null, 2)}\n`, "utf8");
+    await writeProofClaimReport(repoPath, evidence.evidenceId);
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("tampered_evidence");
+  });
+
+  it("rejects command evidence when the ledger chain is edited after collection", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-tampered-ledger-");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    const ledgerPath = path.join(repoPath, ".stax", "command-evidence", "ledger.jsonl");
+    const ledger = await fs.readFile(ledgerPath, "utf8");
+    await fs.writeFile(ledgerPath, ledger.replace(evidence.evidenceId, `${evidence.evidenceId}_edited`), "utf8");
+    await writeProofClaimReport(repoPath, evidence.evidenceId);
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("Command evidence provenance is not verified");
+    expect(status.risk.join("\n")).toMatch(/ledger_unverified|tampered_evidence|missing_stream_hash/);
   });
 
   it("blocks dangerous command collection unless allow-risky is explicit", async () => {

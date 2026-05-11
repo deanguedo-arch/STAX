@@ -40,6 +40,18 @@ describe("ProofStrengthGate", () => {
     expect(result.label).toBe("Provisional");
   });
 
+  it("caps a local STAX command label without verified provenance at Provisional", () => {
+    const result = evaluate({
+      claimType: "tests_passed",
+      claimText: "npm test passed.",
+      commandEvidence: [commandEvidence({ source: "local_stax_command_output", provenanceStatus: undefined })]
+    });
+
+    expect(result.capApplied.map((cap) => cap.id)).toContain("unverified_local_command_provenance");
+    expect(result.strongProof.join("\n")).not.toContain("Local STAX command evidence passed");
+    expect(scoreRank(result.label)).toBeLessThanOrEqual(scoreRank("Provisional"));
+  });
+
   it("rejects failed command evidence", () => {
     const result = evaluate({
       claimType: "tests_passed",
@@ -173,13 +185,19 @@ function evaluate(input: {
 
 function commandEvidence(patch: Partial<CommandEvidence> = {}): CommandEvidence {
   const exitCode = patch.exitCode ?? 0;
+  const source = patch.source ?? "local_stax_command_output";
+  const provenanceStatus = "provenanceStatus" in patch
+    ? patch.provenanceStatus
+    : source === "local_stax_command_output"
+      ? "verified_local_stax_command"
+      : undefined;
   return {
-    commandEvidenceId: patch.commandEvidenceId ?? `cmd-${patch.source ?? "local"}`,
+    commandEvidenceId: patch.commandEvidenceId ?? `cmd-${source}`,
     command: patch.command ?? "npm test",
     args: patch.args ?? ["test"],
     exitCode,
     success: patch.success ?? exitCode === 0,
-    source: patch.source ?? "local_stax_command_output",
+    source,
     status: patch.status ?? (exitCode === 0 ? "passed" : "failed"),
     commandFamily: patch.commandFamily ?? "test",
     stdoutPath: patch.stdoutPath ?? "stdout.txt",
@@ -192,7 +210,9 @@ function commandEvidence(patch: Partial<CommandEvidence> = {}): CommandEvidence 
     hash: patch.hash ?? "hash",
     cwd: patch.cwd,
     workspace: patch.workspace,
-    linkedRepoPath: patch.linkedRepoPath
+    linkedRepoPath: patch.linkedRepoPath,
+    provenanceStatus,
+    provenanceIssues: patch.provenanceIssues
   };
 }
 

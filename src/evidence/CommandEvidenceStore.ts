@@ -34,7 +34,21 @@ export const CommandEvidenceSchema = z.object({
   hash: z.string().min(1),
   cwd: z.string().optional(),
   workspace: z.string().optional(),
-  linkedRepoPath: z.string().optional()
+  linkedRepoPath: z.string().optional(),
+  provenanceStatus: z.enum([
+    "verified_local_stax_command",
+    "unverified_sidecar_json",
+    "tampered_evidence",
+    "stale_evidence",
+    "wrong_repo",
+    "wrong_branch",
+    "wrong_cwd",
+    "wrong_commit",
+    "wrong_worktree",
+    "missing_stream_hash",
+    "ledger_unverified"
+  ]).optional(),
+  provenanceIssues: z.array(z.string()).optional()
 });
 
 export type CommandEvidence = z.infer<typeof CommandEvidenceSchema>;

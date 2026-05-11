@@ -34,7 +34,8 @@ export class ProofStrengthGate {
     const rejectReasons: string[] = [];
 
     const localPassingCommands = parsed.commandEvidence.filter((item) => isLocalPassingCommand(item));
-    const provisionalCommands = parsed.commandEvidence.filter((item) => item.success && item.source !== "local_stax_command_output");
+    const unverifiedLocalCommands = parsed.commandEvidence.filter((item) => item.source === "local_stax_command_output" && !isVerifiedLocalStaxCommand(item));
+    const provisionalCommands = parsed.commandEvidence.filter((item) => item.success && (item.source !== "local_stax_command_output" || unverifiedLocalCommands.includes(item)));
     const commandEvidenceExists = parsed.commandEvidence.length > 0;
     const onlyCodexReportedCommands =
       parsed.commandEvidence.length > 0 && parsed.commandEvidence.every((item) => item.source === "codex_reported_command_output");
@@ -51,6 +52,11 @@ export class ProofStrengthGate {
 
     for (const command of localPassingCommands) {
       strongProof.push(`Local STAX command evidence passed: ${command.command} exited ${command.exitCode}.`);
+    }
+    for (const command of unverifiedLocalCommands) {
+      weakProof.push(
+        `Local STAX command evidence label is unverified for ${command.command}${command.provenanceStatus ? ` (${command.provenanceStatus})` : ""}.`
+      );
     }
     for (const command of provisionalCommands) {
       weakProof.push(`${command.source} is provisional command evidence for ${command.command}.`);
@@ -77,6 +83,13 @@ export class ProofStrengthGate {
         id: "codex_reported_command_only",
         maxLabel: "Provisional",
         reason: "Codex-reported command output is provisional until captured locally."
+      });
+    }
+    if (unverifiedLocalCommands.length > 0 && COMMAND_REQUIRED_CLAIMS.has(parsed.claimType)) {
+      capApplied.push({
+        id: "unverified_local_command_provenance",
+        maxLabel: "Provisional",
+        reason: "A local STAX command label is only strong proof after provenance verification."
       });
     }
 
@@ -195,7 +208,11 @@ export function summarizeProofStrength(result: ProofStrengthResult | undefined):
 }
 
 function isLocalPassingCommand(command: CommandEvidence): boolean {
-  return command.source === "local_stax_command_output" && command.success && command.exitCode === 0 && command.status !== "failed";
+  return isVerifiedLocalStaxCommand(command) && command.success && command.exitCode === 0 && command.status !== "failed";
+}
+
+function isVerifiedLocalStaxCommand(command: CommandEvidence): boolean {
+  return command.source === "local_stax_command_output" && command.provenanceStatus === "verified_local_stax_command";
 }
 
 function isDocsOnlyImplementationProof(input: ReturnType<typeof ProofStrengthInputSchema.parse>): boolean {

@@ -18,6 +18,11 @@ import type {
 import type { ProjectControlCardStatus } from "../projectControl/ControlCard.js";
 import { validateProjectControlCardShape } from "../projectControl/ControlCard.js";
 import type { RepoEvidencePack } from "../workspace/RepoEvidenceSchemas.js";
+import { readCommandEvidenceLedger, verifyCommandEvidenceLedger } from "./CommandEvidenceLedger.js";
+import {
+  verifySidecarCommandEvidence,
+  type SidecarCommandEvidenceWithProvenance
+} from "./CommandEvidenceVerifier.js";
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import type { SidecarLearningEvent, SidecarLearningEventType } from "./SidecarLearningEvent.js";
 import { STAX_CONFIDENCE_REPORT_RELATIVE_PATH, STAX_PROOF_REPORT_RELATIVE_PATH } from "./AttachStax.js";
@@ -35,6 +40,7 @@ import {
   sidecarDir,
   validateRepoPath
 } from "./SidecarRepo.js";
+import { collectWorktreeFingerprint, type WorktreeFingerprint } from "./WorktreeFingerprint.js";
 
 export type StaxGateVerdict = ProjectControlCardStatus;
 
@@ -72,11 +78,15 @@ type CommandEvidenceFile = ProjectControlCommandEvidenceEntry & {
   stdoutPath?: string;
   stderrPath?: string;
   warning?: string;
+  worktreeBefore?: WorktreeFingerprint;
+  worktreeAfter?: WorktreeFingerprint;
+  stdoutHash?: string;
+  stderrHash?: string;
+  canonicalEvidenceHash?: string;
+  collectorVersion?: string;
 };
 
-type SidecarCommandEvidenceEntry = ProjectControlCommandEvidenceEntry & {
-  evidenceId?: string;
-};
+type SidecarCommandEvidenceEntry = SidecarCommandEvidenceWithProvenance;
 
 const STAX_PROOF_STRENGTH_SECTION_START = "<!-- STAX:proof-strength:start -->";
 const STAX_PROOF_STRENGTH_SECTION_END = "<!-- STAX:proof-strength:end -->";
@@ -89,10 +99,11 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   const config = await readSidecarConfig(repoPath);
   const task = (await readTextIfExists(path.join(staxPath, "task.md"))).trim() || `STAX sidecar audit for ${snapshot.repoName}.`;
   const codexReport = stripGeneratedProofStrengthSection(await readTextIfExists(path.join(staxPath, "codex-report.md"))).trim();
-  const commandEvidenceEntries = await readCommandEvidenceEntries(repoPath);
+  const currentFingerprint = await collectWorktreeFingerprint(repoPath);
+  const commandEvidenceEntries = await readCommandEvidenceEntries(repoPath, snapshot, currentFingerprint);
   const proofStackCommandEvidenceEntries = await normalizeSidecarOnlyCommandEvidence(
     repoPath,
-    commandEvidenceEntries,
+    demoteUnverifiedCommandEvidence(commandEvidenceEntries),
     snapshot.commitSha
   );
   const commandEvidence = renderCommandEvidence(proofStackCommandEvidenceEntries);
@@ -664,7 +675,8 @@ function renderCommandEvidenceReportLines(commandEvidenceEntries: SidecarCommand
     const exit = entry.exitCode === undefined || entry.exitCode === null ? "unknown" : String(entry.exitCode);
     const commit = entry.commitSha ? `, commit ${entry.commitSha.slice(0, 12)}` : "";
     const branch = entry.branch ? `, branch ${entry.branch}` : "";
-    return `- ${evidenceId}: \`${entry.command}\` exited ${exit} (${entry.source ?? "unknown_source"}${branch}${commit})`;
+    const provenance = entry.provenanceStatus ? `, provenance ${entry.provenanceStatus}` : "";
+    return `- ${evidenceId}: \`${entry.command}\` exited ${exit} (${entry.source ?? "unknown_source"}${branch}${commit}${provenance})`;
   });
 }
 
@@ -699,7 +711,7 @@ async function deriveSidecarProofStrength(input: {
   task: string;
   codexReport: string;
   changedFiles: ProjectControlChangedFile[];
-  commandEvidenceEntries: ProjectControlCommandEvidenceEntry[];
+  commandEvidenceEntries: SidecarCommandEvidenceEntry[];
   repoPath: string;
   snapshot: { repoName: string; branch?: string; commitSha?: string; gitStatusShort?: string };
   generatedAt: string;
@@ -829,7 +841,7 @@ function sidecarRepoEvidencePack(input: {
   };
 }
 
-function sidecarCommandEvidence(entry: ProjectControlCommandEvidenceEntry, repoPath: string): CommandEvidence {
+function sidecarCommandEvidence(entry: SidecarCommandEvidenceEntry, repoPath: string): CommandEvidence {
   const exitCode = typeof entry.exitCode === "number" ? entry.exitCode : -1;
   const success = exitCode === 0;
   const createdAt = entry.finishedAt ?? entry.startedAt ?? new Date(0).toISOString();
@@ -859,7 +871,9 @@ function sidecarCommandEvidence(entry: ProjectControlCommandEvidenceEntry, repoP
       source: entry.source
     })),
     cwd: entry.cwd,
-    linkedRepoPath: entry.cwd
+    linkedRepoPath: entry.cwd,
+    provenanceStatus: entry.provenanceStatus,
+    provenanceIssues: entry.provenanceIssues
   };
 }
 
@@ -1057,7 +1071,7 @@ async function deriveSidecarFindings(input: {
   hasDiff: boolean;
   changedFiles: ProjectControlChangedFile[];
   codexReport: string;
-  commandEvidenceEntries: ProjectControlCommandEvidenceEntry[];
+  commandEvidenceEntries: SidecarCommandEvidenceEntry[];
   repoPath: string;
   snapshot: { repoName: string; branch?: string; commitSha?: string };
 }): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
@@ -1106,6 +1120,16 @@ async function deriveSidecarFindings(input: {
   }
 
   for (const entry of latestCommandEvidenceByCommand(input.commandEvidenceEntries)) {
+    if (entry.provenanceStatus === "verified_local_stax_command") {
+      verified.push(`Command evidence provenance verified: ${entry.evidenceId ?? entry.command}.`);
+    } else {
+      const status = entry.provenanceStatus ?? "unverified_sidecar_json";
+      unverified.push(`Command evidence provenance is not verified for ${entry.command}: ${status}.`);
+      risk.push(`Untrusted command evidence cannot prove Codex claims: ${status}.`);
+      for (const issue of entry.provenanceIssues.slice(0, 3)) {
+        weak.push(issue);
+      }
+    }
     if (entry.repo && entry.repo !== input.snapshot.repoName) {
       unverified.push(`Command evidence repo mismatch: ${entry.repo} does not match ${input.snapshot.repoName}.`);
       risk.push("Wrong repo command proof blocked.");
@@ -1153,11 +1177,11 @@ async function evidenceCommitDiffIsSidecarManaged(repoPath: string, evidenceComm
 
 async function normalizeSidecarOnlyCommandEvidence(
   repoPath: string,
-  entries: SidecarCommandEvidenceEntry[],
+  entries: ProjectControlCommandEvidenceEntry[],
   currentCommitSha?: string
-): Promise<SidecarCommandEvidenceEntry[]> {
+): Promise<ProjectControlCommandEvidenceEntry[]> {
   if (!currentCommitSha) return entries;
-  const normalized: SidecarCommandEvidenceEntry[] = [];
+  const normalized: ProjectControlCommandEvidenceEntry[] = [];
   for (const entry of entries) {
     if (entry.commitSha && entry.commitSha !== currentCommitSha && await evidenceCommitDiffIsSidecarManaged(repoPath, entry.commitSha)) {
       normalized.push({ ...entry, commitSha: currentCommitSha });
@@ -1168,9 +1192,25 @@ async function normalizeSidecarOnlyCommandEvidence(
   return normalized;
 }
 
-async function readCommandEvidenceEntries(repoPath: string): Promise<SidecarCommandEvidenceEntry[]> {
+function demoteUnverifiedCommandEvidence(entries: SidecarCommandEvidenceEntry[]): ProjectControlCommandEvidenceEntry[] {
+  return entries.map((entry) => {
+    if (entry.provenanceStatus === "verified_local_stax_command") return entry;
+    return {
+      ...entry,
+      source: entry.source === "codex_reported_command_output" ? "codex_reported_command_output" : "human_pasted_command_output"
+    };
+  });
+}
+
+async function readCommandEvidenceEntries(
+  repoPath: string,
+  snapshot: { repoName: string; branch?: string; commitSha?: string },
+  currentFingerprint: WorktreeFingerprint
+): Promise<SidecarCommandEvidenceEntry[]> {
   const dir = path.join(sidecarDir(repoPath), "command-evidence");
   const names = await fs.readdir(dir).catch(() => []);
+  const ledgerRecords = await readCommandEvidenceLedger(repoPath);
+  const ledgerVerification = verifyCommandEvidenceLedger(ledgerRecords);
   const entries: SidecarCommandEvidenceEntry[] = [];
   for (const name of names.filter((item) => item.endsWith(".json")).sort()) {
     const filePath = path.join(dir, name);
@@ -1183,8 +1223,24 @@ async function readCommandEvidenceEntries(repoPath: string): Promise<SidecarComm
     const stderr = parsed.stderrPath
       ? await readTextIfExists(path.isAbsolute(parsed.stderrPath) ? parsed.stderrPath : path.join(dir, parsed.stderrPath))
       : parsed.stderr ?? "";
+    const evidenceId = parsed.evidenceId ?? name.replace(/\.json$/i, "");
+    const provenance = await verifySidecarCommandEvidence({
+      repoPath,
+      currentRepoName: snapshot.repoName,
+      currentBranch: snapshot.branch,
+      currentCommitSha: snapshot.commitSha,
+      currentFingerprint,
+      parsed: parsed as Record<string, unknown> & ProjectControlCommandEvidenceEntry,
+      evidenceId,
+      evidenceFileName: name,
+      stdoutFileName: parsed.stdoutPath,
+      stderrFileName: parsed.stderrPath,
+      stdout,
+      stderr,
+      ledgerVerification
+    });
     entries.push({
-      evidenceId: parsed.evidenceId ?? name.replace(/\.json$/i, ""),
+      evidenceId,
       command: parsed.command,
       cwd: parsed.cwd,
       repo: parsed.repo,
@@ -1195,7 +1251,19 @@ async function readCommandEvidenceEntries(repoPath: string): Promise<SidecarComm
       stderr,
       startedAt: parsed.startedAt,
       finishedAt: parsed.finishedAt,
-      source: parsed.source ?? "local_stax_command_output"
+      source: parsed.source ?? "local_stax_command_output",
+      stdoutPath: parsed.stdoutPath,
+      stderrPath: parsed.stderrPath,
+      warning: parsed.warning,
+      worktreeBefore: parsed.worktreeBefore,
+      worktreeAfter: parsed.worktreeAfter,
+      stdoutHash: parsed.stdoutHash,
+      stderrHash: parsed.stderrHash,
+      canonicalEvidenceHash: parsed.canonicalEvidenceHash,
+      collectorVersion: parsed.collectorVersion,
+      provenanceStatus: provenance.provenanceStatus,
+      provenanceIssues: provenance.provenanceIssues,
+      ledgerHash: provenance.ledgerRecord?.ledgerHash
     });
   }
   return sortCommandEvidenceNewestFirst(entries);
