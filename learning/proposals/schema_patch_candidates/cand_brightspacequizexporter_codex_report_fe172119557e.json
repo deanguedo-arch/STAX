@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "sidecar-promoted-candidate-v1",
+  "promotedAt": "2026-05-11T20:44:32.188Z",
+  "candidate": {
+    "candidateId": "cand_brightspacequizexporter_codex_report_fe172119557e",
+    "sourceEventId": "codex_session_report_fe172119557e",
+    "sourceRepo": {
+      "name": "brightspacequizexporter",
+      "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+      "branch": "codex/resume-math30-msforms-20260506",
+      "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+    },
+    "candidateType": "repo_memory",
+    "scope": "repo",
+    "summary": "Codex report from brightspacequizexporter: Resume the Math30/MS Forms test work, identify the exact current task, run the validation tests, run a real converter smoke, and fix the discovered invalid question-numbering bug.. Next: Review or import `tmp/math30-msforms-smoke/quiz.msforms.quickimport.docx` in Microsoft Forms and decide how to handle diagrams for Q21 and Q26.",
+    "proposedArtifact": {
+      "destinationHint": "memory/candidates/",
+      "payload": {
+        "sourceKind": "codex_session_report",
+        "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+        "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+        "eventTimestamp": "2026-05-06T14:59:21.153Z",
+        "reportHash": "fe172119557ed577036b3655f07ce2c036d0495c2231c45123dc8342c037713f",
+        "sections": {
+          "objective": "Resume the Math30/MS Forms test work, identify the exact current task, run the validation tests, run a real converter smoke, and fix the discovered invalid question-numbering bug.",
+          "filesChanged": "- src/ingest/msforms/questionBank.ts\n- src/test/unit/ingest/msFormsQuestionBank.test.ts\n- .stax/codex-report.md\n\nGenerated but ignored:\n- tmp/math30-msforms-smoke/quiz.msforms.quickimport.docx\n- tmp/math30-msforms-smoke/quiz.msforms.native-math.docx\n- tmp/math30-msforms-smoke/quiz.question_bank.json\n- tmp/math30-msforms-smoke/quiz.extraction_warnings.json\n- tmp/math30-msforms-smoke/quiz.forms_lint.txt",
+          "testsAdded": "- `src/test/unit/ingest/msFormsQuestionBank.test.ts` verifies UUID-based parser question IDs fall back to sequential MS Forms question numbers.",
+          "commandsRun": "- `Get-Content .stax/status.json -Raw`\n- `if (Test-Path .stax/task.md) { Get-Content .stax/task.md -Raw } else { 'NO_STAX_TASK' }`\n- `if (Test-Path HANDOFF.md) { Get-Content HANDOFF.md -Raw } else { 'NO_HANDOFF' }`\n- `git status --short --branch`\n- `npm test -- src/test/unit/app/homeWorkspace.test.ts src/test/unit/app/importWorkflow.test.ts src/test/unit/app/projectEditorReview.test.tsx src/test/unit/app/importMerge.test.ts src/test/unit/app/localPdfDevClient.test.ts`\n- `Get-Content scripts/config/frozen-manifests.json -Raw`\n- `Get-Content scripts/ingest-promotion-check.mjs -Raw`\n- `npm run ingest:promotion-check -- pp20-ab1-docx.json`\n- `npm run ingest:promotion-check`\n- `rg --files | rg -i \"(math|30|print|quiz|unit 1|question booklet).*\\\\.(pdf|docx)$|\\\\.(pdf|docx)$\"`\n- `rg --files -u -g \"*.pdf\" -g \"*.docx\" -g \"!node_modules/**\" -g \"!dist/**\" -g \"!coverage/**\"`\n- `npm run brightspaceexport -- convert \"fixtures/benchmarks/sources/Question Booklet 30-2 Unit 1 Exam.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"tmp/math30-msforms-smoke\"`\n- `node -e \"<summarize tmp/math30-msforms-smoke/quiz.question_bank.json>\"`\n- `Get-Content tmp/math30-msforms-smoke/quiz.forms_lint.txt -Raw`\n- `Get-Content tmp/math30-msforms-smoke/quiz.extraction_warnings.json -Raw`\n- `Get-ChildItem tmp/math30-msforms-smoke | Select-Object Name,Length | Format-Table -AutoSize | Out-String`\n- `node -e \"<print generated question numbers/prompts>\"`\n- `Get-Content C:\\Users\\dean.guedo\\.agents\\skills\\test-driven-development\\SKILL.md -Raw`\n- `Get-Content src/ingest/msforms/brightspacePrintRegions.ts -Raw`\n- `Get-Content src/test/unit/ingest/msFormsBrightspaceRegions.test.ts -Raw`\n- `npx vite-node --script -e \"<attempt region inspection>\"`\n- `Get-Content src/ingest/msforms/questionBank.ts -Raw`\n- `Get-Content src/test/unit/ingest/msFormsMath.test.ts -Raw`\n- `rg \"buildMsFormsQuestionBank|sourceQuestionId|questionNumber\" src/test/unit/ingest src/test/unit/export -n`\n- `npm test -- src/test/unit/ingest/msFormsQuestionBank.test.ts`\n- `npm test -- src/test/unit/export/msFormsDocx.test.ts src/test/unit/ingest/msFormsBrightspaceRegions.test.ts src/test/unit/ingest/msFormsLint.test.ts src/test/unit/ingest/msFormsMath.test.ts src/test/unit/ingest/msFormsMathRegionRecovery.test.ts src/test/unit/ingest/msFormsQuestionBank.test.ts src/test/unit/scripts/brightspaceExportScript.test.ts`\n- `npm run brightspaceexport -- convert \"fixtures/benchmarks/sources/Question Booklet 30-2 Unit 1 Exam.pdf\" --target msforms --math hybrid --diagram-mode flag --output-dir \"tmp/math30-msforms-smoke\"`\n- `node -e \"<summarize fixed tmp/math30-msforms-smoke/quiz.question_bank.json>\"`\n- `Get-Content tmp/math30-msforms-smoke/quiz.forms_lint.txt -Raw`\n- `Get-Content tmp/math30-msforms-smoke/quiz.extraction_warnings.json -Raw`\n- `npm run build`\n- `git diff -- src/ingest/msforms/questionBank.ts src/test/unit/ingest/msFormsQuestionBank.test.ts`\n- `git status --short --branch --untracked-files=all`\n- `git check-ignore -v tmp/math30-msforms-smoke/quiz.question_bank.json tmp/math30-msforms-smoke/quiz.msforms.quickimport.docx`",
+          "commandOutputSummary": "- STAX status read: exit 0; verdict is `Pass`.\n- Handoff read: exit 0; current repo task is validation from `HANDOFF.md`.\n- App/import validation tests: exit 0; 5 files passed, 22 tests passed.\n- Targeted promotion check `pp20-ab1-docx.json`: exit 0; intake passed, focused ingest suite passed 24 files/232 tests with 1 skipped file, and 1 manual benchmark passed.\n- Full promotion check: exit 0; intake passed, focused ingest suite passed 24 files/232 tests with 1 skipped file, and 22 manual benchmarks passed.\n- First Math30 converter smoke: exit 0; generated 30-question package, but question numbers included invalid UUID fragments such as `73334`, `6762`, and `16317`.\n- Initial new regression test: exit 1; failed as expected because UUID IDs produced `[73334, 67]` instead of `[1, 2]`.\n- Fixed `questionNumberFromId` to only parse deliberate `q9` / `question_9` style IDs and otherwise use the sequential fallback.\n- Regression retest: exit 0; 1 file passed, 1 test passed.\n- MS Forms focused suite: exit 0; 7 files passed, 20 tests passed.\n- Second Math30 converter smoke: exit 0; generated 30-question package with question numbers `1..30`.\n- Fixed smoke lint output: answer key warning plus diagram warnings for `Q21` and `Q26`; no bogus `Q16317`.\n- `npm run build`: exit 0; TypeScript and Vite build passed. Vite emitted the existing large chunk warning.\n- Final status: exit 0; `main` is aligned with `origin/main` and has two uncommitted source/test changes.\n- Ignore check: exit 0; `tmp/math30-msforms-smoke` outputs are ignored by `.gitignore`.",
+          "verified": "- The handoff validation sequence is green.\n- The actual Math30 source PDF at `fixtures/benchmarks/sources/Question Booklet 30-2 Unit 1 Exam.pdf` converts successfully to MS Forms package outputs.\n- The generated Math30 question bank contains 30 questions numbered `1..30`.\n- The invalid UUID-fragment question numbering bug is covered by a failing-first regression test and fixed.\n- The generated smoke artifacts are ignored under `tmp/`.\n- Build passes after the fix.",
+          "weakProvisional": "- The converter emits PDF.js `standardFontDataUrl` warnings during smoke conversion; command still exits 0.\n- Vite emits the existing large chunk warning during build.\n- Node emits `DEP0040` punycode warnings during some test/script runs.",
+          "unverified": "- Generated DOCX files were not visually opened or imported into Microsoft Forms.\n- The answer key remains absent from the source PDF output; lint correctly warns `answer_key_required_for_multiple_choice`.\n- Diagram-dependent questions Q21 and Q26 still need diagram handling/review before treating the package as import-ready.\n- The two source/test changes are not committed or pushed.",
+          "risks": "- Without visual/import review, the DOCX package is only smoke-verified, not instructor-ready.\n- Diagram-dependent questions may need image/crop handling beyond the current text package.",
+          "oneNextAction": "Review or import `tmp/math30-msforms-smoke/quiz.msforms.quickimport.docx` in Microsoft Forms and decide how to handle diagrams for Q21 and Q26."
+        }
+      }
+    },
+    "requiresHumanApproval": true,
+    "status": "pending",
+    "privacy": {
+      "redactionStatus": "clean",
+      "redactionNotes": []
+    },
+    "createdAt": "2026-05-08T15:58:40.872Z"
+  },
+  "decision": {
+    "candidateId": "cand_brightspacequizexporter_codex_report_fe172119557e",
+    "classification": "schema_contract_rule",
+    "recommendedAction": "review_for_promotion",
+    "promotable": true,
+    "strengthScore": 7,
+    "strengthLabel": "strong",
+    "blockers": [],
+    "boosters": [
+      "code-change backed",
+      "test backed",
+      "real-run backed",
+      "cross-repo reusable",
+      "single vetted run"
+    ],
+    "recommendedQueueType": "schema_patch_candidate",
+    "promotionTarget": "schema_patch",
+    "reason": "The candidate describes a structured contract weakness rather than a single result.",
+    "requiredEvidence": [
+      "source events",
+      "source report or trace",
+      "human approval",
+      "code change backing",
+      "test backing",
+      "real run backing",
+      "expected future behavior change",
+      "regression eval if possible"
+    ],
+    "expectedFutureBehaviorChange": "Future outputs are validated against the stronger schema contract.",
+    "suggestedRegressionEval": "Malformed structured output should fail schema validation instead of passing silently.",
+    "autoPromote": false,
+    "requiresHumanApproval": true
+  }
+}

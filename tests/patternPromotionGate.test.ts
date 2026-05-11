@@ -13,9 +13,10 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("repo_specific_fact");
+    expect(result.recommendedAction).toBe("hold_local");
     expect(result.promotable).toBe(false);
     expect(result.recommendedQueueType).toBe("trace_only");
-    expect(result.reason).toContain("one-off");
+    expect(result.reason).toContain("repo-specific fact");
   });
 
   it("turns seed-gold-is-not-ingest-proof into a proof-boundary eval candidate", () => {
@@ -28,6 +29,7 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("proof_boundary_rule");
+    expect(result.recommendedAction).toBe("review_for_promotion");
     expect(result.promotable).toBe(true);
     expect(result.recommendedQueueType).toBe("eval_candidate");
     expect(result.promotionTarget).toBe("eval");
@@ -45,6 +47,7 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("proof_boundary_rule");
+    expect(result.recommendedAction).toBe("review_for_promotion");
     expect(result.promotable).toBe(true);
     expect(result.recommendedQueueType).toBe("eval_candidate");
     expect(result.promotionTarget).toBe("eval");
@@ -59,6 +62,7 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("mode_behavior_rule");
+    expect(result.recommendedAction).toBe("review_for_promotion");
     expect(result.promotable).toBe(true);
     expect(result.recommendedQueueType).toBe("mode_contract_patch_candidate");
     expect(result.promotionTarget).toBe("mode_contract_patch");
@@ -73,6 +77,7 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("policy_safety_rule");
+    expect(result.recommendedAction).toBe("review_for_promotion");
     expect(result.promotable).toBe(true);
     expect(result.recommendedQueueType).toBe("policy_patch_candidate");
     expect(result.promotionTarget).toBe("policy_patch");
@@ -92,9 +97,11 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(explicit.classification).toBe("user_preference");
+    expect(explicit.recommendedAction).toBe("review_for_promotion");
     expect(explicit.promotable).toBe(true);
     expect(explicit.recommendedQueueType).toBe("memory_candidate");
     expect(explicit.promotionTarget).toBe("memory");
+    expect(inferred.recommendedAction).toBe("discard");
     expect(inferred.promotable).toBe(false);
     expect(inferred.recommendedQueueType).toBe("trace_only");
   });
@@ -108,6 +115,7 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("codex_handoff_rule");
+    expect(result.recommendedAction).toBe("review_for_promotion");
     expect(result.promotable).toBe(true);
     expect(result.recommendedQueueType).toBe("codex_prompt_candidate");
     expect(result.promotionTarget).toBe("mode_contract_patch");
@@ -123,6 +131,7 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("trace_fact");
+    expect(result.recommendedAction).toBe("discard");
     expect(result.promotable).toBe(false);
     expect(result.recommendedQueueType).toBe("trace_only");
   });
@@ -137,9 +146,28 @@ describe("PatternPromotionGate", () => {
     });
 
     expect(result.classification).toBe("cross_repo_pattern");
+    expect(result.recommendedAction).toBe("review_for_promotion");
     expect(result.promotable).toBe(true);
     expect(result.recommendedQueueType).toBe("eval_candidate");
     expect(result.promotionTarget).toBe("eval");
+  });
+
+  it("elevates a single vetted reusable run into review_for_promotion", () => {
+    const result = gate.classify({
+      candidateId: "single-vetted-run",
+      text: "proof boundary rule: local command evidence should verify reusable export proof behavior.",
+      sourceEventIds: ["evt-1"],
+      codeChangeBacked: true,
+      testBacked: true,
+      realRunBacked: true,
+      reusableAcrossRepos: true
+    });
+
+    expect(result.classification).toBe("proof_boundary_rule");
+    expect(result.recommendedAction).toBe("review_for_promotion");
+    expect(result.promotable).toBe(true);
+    expect(result.strengthLabel).toBe("vetted");
+    expect(result.boosters).toContain("single vetted run");
   });
 
   it("never auto-promotes even when candidate is promotable", () => {

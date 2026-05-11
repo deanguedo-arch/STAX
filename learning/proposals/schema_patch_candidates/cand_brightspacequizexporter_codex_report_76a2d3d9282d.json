@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "sidecar-promoted-candidate-v1",
+  "promotedAt": "2026-05-11T20:44:39.953Z",
+  "candidate": {
+    "candidateId": "cand_brightspacequizexporter_codex_report_76a2d3d9282d",
+    "sourceEventId": "codex_session_report_76a2d3d9282d",
+    "sourceRepo": {
+      "name": "brightspacequizexporter",
+      "pathHash": "a1e415ddc1b76484726f36b1e4c845263f1fd837c7bb19a86c3ee3285b9e0a09",
+      "branch": "codex/resume-math30-msforms-20260506",
+      "commitSha": "0ea79fddda266b3e8a08ad00e5830db4eba0097b"
+    },
+    "candidateType": "repo_memory",
+    "scope": "repo",
+    "summary": "Codex report from brightspacequizexporter: Run the Common Cartridge QTI quizzes through the Google Forms visual-prompt route in choice-text proof format, fix the discovered MathML linebreak rendering bug, and commit/push the converter work.. Next: Inspect the 21 bridge-validation failures and surface their diagnostics so the remaining Common Cartridge quizzes can be sent without guessing.",
+    "proposedArtifact": {
+      "destinationHint": "memory/candidates/",
+      "payload": {
+        "sourceKind": "codex_session_report",
+        "sourcePath": "rollout-2026-05-06T08-33-08-019dfdb4-f51b-70c0-8da8-566a1adccc19.jsonl",
+        "sessionId": "019dfdb4-f51b-70c0-8da8-566a1adccc19",
+        "eventTimestamp": "2026-05-07T19:00:57.622Z",
+        "reportHash": "76a2d3d9282d40cbecc387eef17993f291b965ebc124cbe673f3a6df4137b33c",
+        "sections": {
+          "objective": "Run the Common Cartridge QTI quizzes through the Google Forms visual-prompt route in choice-text proof format, fix the discovered MathML linebreak rendering bug, and commit/push the converter work.",
+          "filesChanged": "- `scripts/send-cartridge-qti-google-visual-proof.ts`\n- `scripts/send-cartridge-qti-google-visual-batch.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- `src/test/unit/scripts/sendCartridgeQtiGoogleVisualBatchScript.test.ts`\n- `.stax/codex-report.md`",
+          "testsAdded": "- QTI visual proof parser/project tests.\n- QTI browser prompt preparation tests for WIRIS cleanup, `mfenced`, readable MathML choices, MathML `mspace linebreak=\"newline\"` systems, and trailing linebreak marker removal.\n- QTI visual batch argument/discovery/command helper tests.",
+          "commandsRun": "- `Get-Content -Raw .stax/status.json`\n- `git status --short --branch`\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-batch.ts -- --cartridge \"c:\\Users\\dean.guedo\\Downloads\\D2LCCExport_151071_25-26 _ S2 _ Mathematics 10-C _ Per 1(A) _ Sec 2_20265741.zip\" --image-output-dir tmp\\cartridge-qti-google-visual-batch\\choice-text --summary tmp\\cartridge-qti-google-visual-batch-choice-text-summary.md`\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts`\n- `npx vite-node --script scripts\\send-cartridge-qti-google-visual-proof.ts -- --cartridge \"...\" --qti-path quiz/ifb6c3fe0-fd0b-4e46-8408-bc7905d74734/qti_9f2e09ba-1262-4db5-9093-9fab83f4ed6e.xml --image-output-dir tmp\\qti-linebreak-fix-ch7 --title \"Math 10C Ch.7 Exam - Systems of Linear Equations (online) - Choice Text Proof Linebreak Dry Run\" --dry-run`\n- Four live corrected linebreak-form sends for Ch.7, Ch.4, Section 1.4, and Section 3.1.\n- `npm test -- src/test/unit/scripts/sendCartridgeQtiGoogleVisualBatchScript.test.ts src/test/unit/scripts/sendCartridgeQtiGoogleVisualProofScript.test.ts src/test/unit/export/sendToGoogleFormsBridge.test.ts`\n- `npm run build`\n- `git diff --cached --check`\n- `git commit -m \"Add QTI visual Google Forms proof pipeline\"`\n- `git push origin codex/resume-math30-msforms-20260506`",
+          "commandOutputSummary": "- STAX status read: exit 0; verdict `Pass`.\n- Full live batch: exit 1 because 21 of 78 QTI assessments failed bridge export validation; 57 Forms were created and summary was written to `tmp\\cartridge-qti-google-visual-batch-choice-text-summary.md`.\n- Ch.7 dry run after fix: exit 0; rendered 16 images, and local `q8.png` showed the system as two stacked equations.\n- Corrected Ch.7 live send: exit 0; edit URL `[redacted-url]\n- Corrected Ch.4 live send: exit 0; edit URL `[redacted-url]\n- Corrected Section 1.4 live send: exit 0; edit URL `[redacted-url]\n- Corrected Section 3.1 live send: exit 0; edit URL `[redacted-url]\n- Targeted tests: exit 0; 3 files and 19 tests passed.\n- Build: exit 0; Vite reported the existing large chunk warning.\n- Staged whitespace check: exit 0.\n- Push: exit 0; pre-push `npm run ingest:ci` passed build, promotion check, focused ingest suite, and 22 manual benchmarks; pushed commit `b8c4e9b`.",
+          "verified": "- The QTI visual proof route can render prompt images from Common Cartridge QTI and send them through the existing Google Forms bridge.\n- The shown Ch.7 linebreak bug is fixed locally and in a newly created corrected live Form.\n- The converter now normalizes MathML `mspace linebreak=\"newline\"` systems into stacked `mtable` rows for browser screenshot rendering.\n- Code changes were committed and pushed to `origin/codex/resume-math30-msforms-20260506`.",
+          "weakProvisional": "- The batch succeeded for 57 of 78 assessments, not all 78.\n- The corrected live Forms are new duplicates; the older Forms created before the fix still exist and may still show collapsed linebreaks.\n- The generated `tmp` summaries/images are local proof artifacts and are intentionally ignored by Git.",
+          "unverified": "- The root cause of the 21 bridge validation failures.\n- Whether every created Google Form has been manually opened and visually audited question-by-question.\n- Whether the failed Final Exam export can be recovered without additional validation/bridge changes.",
+          "risks": "- Large practice quizzes and some exams may exceed current exporter/bridge assumptions.\n- Duplicate Forms can be confusing unless the fixed versions are used for the linebreak-affected assessments.",
+          "oneNextAction": "Inspect the 21 bridge-validation failures and surface their diagnostics so the remaining Common Cartridge quizzes can be sent without guessing."
+        }
+      }
+    },
+    "requiresHumanApproval": true,
+    "status": "pending",
+    "privacy": {
+      "redactionStatus": "redacted",
+      "redactionNotes": [
+        "URLs or secret-like values were redacted from report sections."
+      ]
+    },
+    "createdAt": "2026-05-08T15:58:40.876Z"
+  },
+  "decision": {
+    "candidateId": "cand_brightspacequizexporter_codex_report_76a2d3d9282d",
+    "classification": "schema_contract_rule",
+    "recommendedAction": "review_for_promotion",
+    "promotable": true,
+    "strengthScore": 7,
+    "strengthLabel": "strong",
+    "blockers": [],
+    "boosters": [
+      "code-change backed",
+      "test backed",
+      "real-run backed",
+      "cross-repo reusable",
+      "single vetted run"
+    ],
+    "recommendedQueueType": "schema_patch_candidate",
+    "promotionTarget": "schema_patch",
+    "reason": "The candidate describes a structured contract weakness rather than a single result.",
+    "requiredEvidence": [
+      "source events",
+      "source report or trace",
+      "human approval",
+      "code change backing",
+      "test backing",
+      "real run backing",
+      "expected future behavior change",
+      "regression eval if possible"
+    ],
+    "expectedFutureBehaviorChange": "Future outputs are validated against the stronger schema contract.",
+    "suggestedRegressionEval": "Malformed structured output should fail schema validation instead of passing silently.",
+    "autoPromote": false,
+    "requiresHumanApproval": true
+  }
+}

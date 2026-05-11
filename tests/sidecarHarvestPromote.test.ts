@@ -213,6 +213,40 @@ describe("STAX sidecar harvest, review, promote, and dashboard", () => {
     expect(dashboard.pending).toBe(1);
     expect(dashboard.usefulBlocks).toBe(1);
   });
+
+  it("routes promoted repo-memory candidates by reviewed promotion target", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-promote-target-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-promote-target-"));
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      codexReportWithCodeAndTests(
+        "Wrong repo command output must not verify the target repo.",
+        "- src/evidence/ProofGate.ts\n- tests/proofGate.test.ts",
+        "- Added target-repo proof boundary regression coverage.",
+        "- `npm test -- tests/proofGate.test.ts`\n- `npm run gate:repo-proof`",
+        "- Tests passed exit 0.\n- Gate run passed exit 0.\n- Real command evidence was collected.",
+        "- Verified target-repo proof boundary enforcement.",
+        "Add the wrong-repo proof boundary to the durable eval set."
+      ),
+      "utf8"
+    );
+
+    const harvested = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const candidateId = harvested.candidates[0]!.candidateId;
+    const result = await promoteSidecarImport({
+      candidateId,
+      approve: true,
+      staxRoot
+    });
+    const promotedArtifact = JSON.parse(await fs.readFile(result.artifactPath, "utf8")) as {
+      decision: { promotionTarget: string; recommendedAction: string };
+    };
+
+    expect(result.artifactPath).toContain(path.join("evals", "candidates"));
+    expect(promotedArtifact.decision.promotionTarget).toBe("eval");
+    expect(promotedArtifact.decision.recommendedAction).toBe("review_for_promotion");
+  });
 });
 
 function baseEvent(
@@ -297,6 +331,50 @@ function codexReport(objective: string): string {
     "## One next action",
     "Use the QTI visual route before PDF crops when Common Cartridge data exists.",
     ""
+  ].join("\n");
+}
+
+function codexReportWithCodeAndTests(
+  objective: string,
+  filesChanged: string,
+  testsAdded: string,
+  commandsRun: string,
+  outputSummary: string,
+  verified: string,
+  oneNextAction: string
+): string {
+  return [
+    "# Codex Report",
+    "",
+    "## Objective",
+    objective,
+    "",
+    "## Files Changed",
+    filesChanged,
+    "",
+    "## Tests Added",
+    testsAdded,
+    "",
+    "## Commands Run",
+    commandsRun,
+    "",
+    "## Command Output Summary With Exit Codes",
+    outputSummary,
+    "",
+    "## What Is Verified",
+    verified,
+    "",
+    "## What Is Weak/Provisional",
+    "- None.",
+    "",
+    "## What Is Unverified",
+    "- None.",
+    "",
+    "## Risks",
+    "- None.",
+    "",
+    "## One Next Action",
+    oneNextAction
   ].join("\n");
 }
 

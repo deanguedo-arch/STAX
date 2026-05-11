@@ -2,10 +2,12 @@ import type { LearningQueueType } from "./LearningEvent.js";
 import {
   PatternPromotionDecisionSchema,
   PatternPromotionInputSchema,
+  type PatternPromotionAction,
   type PatternPromotionClassification,
   type PatternPromotionDecision,
   type PatternPromotionInput,
   type ParsedPatternPromotionInput,
+  type PatternPromotionStrengthLabel,
   type PatternPromotionTarget
 } from "./PatternPromotionSchemas.js";
 
@@ -25,17 +27,37 @@ export class PatternPromotionGate {
     const repeated = input.repeatCount > 1 || input.sourceEventIds.length > 1;
     const highSeverity = input.severity === "critical" || input.severity === "major";
     const decision = this.ruleFor(input, normalized, repeated, highSeverity);
-    const promotable = isPromotable(decision.classification) && (repeated || highSeverity || input.explicitUserPreference);
+    const strength = scorePromotionStrength(input, repeated, highSeverity);
+    const reusable = input.reusableAcrossRepos || isReusableClassification(decision.classification);
+    const singleVettedRun = input.codeChangeBacked && input.testBacked && input.realRunBacked && reusable;
+    const blockers = collectBlockers(input, decision.classification, reusable);
+    const boosters = collectBoosters(input, repeated, highSeverity, singleVettedRun, reusable);
+    const recommendedAction = decideAction({
+      input,
+      classification: decision.classification,
+      reusable,
+      repeated,
+      highSeverity,
+      singleVettedRun,
+      blockers,
+      strengthScore: strength.score
+    });
+    const promotable = recommendedAction === "review_for_promotion" || recommendedAction === "promote_with_approval";
 
     return PatternPromotionDecisionSchema.parse({
       candidateId: input.candidateId,
       classification: decision.classification,
+      recommendedAction,
       promotable,
+      strengthScore: strength.score,
+      strengthLabel: strength.label,
+      blockers,
+      boosters,
       recommendedQueueType: promotable ? decision.recommendedQueueType : "trace_only",
       promotionTarget: promotable ? decision.promotionTarget : "none",
       reason: promotable
         ? decision.reason
-        : `${decision.reason} It remains evidence because it is one-off, low-severity, or repo-specific.`,
+        : `${decision.reason} ${reasonForNonPromotion(recommendedAction, blockers)}`,
       requiredEvidence: promotable
         ? requiredEvidenceFor(input, decision.classification)
         : ["source trace", "original report or command evidence"],
@@ -168,8 +190,103 @@ function normalize(value: string): string {
   return value.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function isPromotable(classification: PatternPromotionClassification): boolean {
+function isReusableClassification(classification: PatternPromotionClassification): boolean {
   return !["trace_fact", "repo_specific_fact"].includes(classification);
+}
+
+function scorePromotionStrength(
+  input: ParsedPatternPromotionInput,
+  repeated: boolean,
+  highSeverity: boolean
+): { score: number; label: PatternPromotionStrengthLabel } {
+  let score = 0;
+  if (repeated) score += 2;
+  if (highSeverity) score += 2;
+  if (input.explicitUserPreference) score += 3;
+  if (input.codeChangeBacked) score += 2;
+  if (input.testBacked) score += 2;
+  if (input.realRunBacked) score += 2;
+  if (input.reusableAcrossRepos) score += 2;
+  if (input.humanApproved) score += 1;
+  if (input.repoScoped) score -= 1;
+  score = Math.max(0, Math.min(10, score));
+  return {
+    score,
+    label: score >= 8 ? "vetted" : score >= 6 ? "strong" : score >= 3 ? "moderate" : "weak"
+  };
+}
+
+function collectBlockers(
+  input: ParsedPatternPromotionInput,
+  classification: PatternPromotionClassification,
+  reusable: boolean
+): string[] {
+  const blockers: string[] = [];
+  if (classification === "trace_fact") blockers.push("one-off trace only");
+  if (classification === "repo_specific_fact") blockers.push("repo-specific fact");
+  if (input.repoScoped && !reusable) blockers.push("scoped to one repo");
+  if (!input.testBacked && !input.explicitUserPreference) blockers.push("no test backing");
+  if (!input.realRunBacked && !input.explicitUserPreference) blockers.push("no real-run backing");
+  if (!reusable && classification !== "trace_fact" && classification !== "repo_specific_fact") blockers.push("reusability not established");
+  return blockers;
+}
+
+function collectBoosters(
+  input: ParsedPatternPromotionInput,
+  repeated: boolean,
+  highSeverity: boolean,
+  singleVettedRun: boolean,
+  reusable: boolean
+): string[] {
+  const boosters: string[] = [];
+  if (repeated) boosters.push("repeated pattern evidence");
+  if (highSeverity) boosters.push("high-severity failure");
+  if (input.codeChangeBacked) boosters.push("code-change backed");
+  if (input.testBacked) boosters.push("test backed");
+  if (input.realRunBacked) boosters.push("real-run backed");
+  if (reusable) boosters.push("cross-repo reusable");
+  if (input.humanApproved) boosters.push("human approved");
+  if (singleVettedRun) boosters.push("single vetted run");
+  return boosters;
+}
+
+function decideAction(options: {
+  input: ParsedPatternPromotionInput;
+  classification: PatternPromotionClassification;
+  reusable: boolean;
+  repeated: boolean;
+  highSeverity: boolean;
+  singleVettedRun: boolean;
+  blockers: string[];
+  strengthScore: number;
+}): PatternPromotionAction {
+  const { input, classification, reusable, repeated, highSeverity, singleVettedRun, blockers, strengthScore } = options;
+  if (classification === "trace_fact") return "discard";
+  if (classification === "repo_specific_fact") return "hold_local";
+  if (input.explicitUserPreference) {
+    return input.humanApproved ? "promote_with_approval" : "review_for_promotion";
+  }
+  if (blockers.includes("repo-specific fact")) return "hold_local";
+  if (reusable && (repeated || highSeverity)) {
+    return input.humanApproved ? "promote_with_approval" : "review_for_promotion";
+  }
+  if (singleVettedRun && strengthScore >= 6) {
+    return input.humanApproved ? "promote_with_approval" : "review_for_promotion";
+  }
+  if (reusable && strengthScore >= 7) {
+    return input.humanApproved ? "promote_with_approval" : "review_for_promotion";
+  }
+  return classification === "trace_fact" ? "discard" : "hold_local";
+}
+
+function reasonForNonPromotion(action: PatternPromotionAction, blockers: string[]): string {
+  if (action === "discard") return "It remains trace evidence because it is one-off and not reusable.";
+  if (action === "hold_local") {
+    return blockers.length > 0
+      ? `It remains local evidence for now because ${blockers.join(", ")}.`
+      : "It remains local evidence until reusability is clearer.";
+  }
+  return "It still requires human approval before promotion.";
 }
 
 function isProofBoundaryRule(text: string): boolean {
@@ -206,6 +323,9 @@ function isRepoSpecificFact(text: string): boolean {
 function requiredEvidenceFor(input: ParsedPatternPromotionInput, classification: PatternPromotionClassification): string[] {
   const evidence = ["source events", "source report or trace", "human approval"];
   if (input.repeatCount > 1 || input.sourceEventIds.length > 1) evidence.push("repeatability evidence");
+  if (input.codeChangeBacked) evidence.push("code change backing");
+  if (input.testBacked) evidence.push("test backing");
+  if (input.realRunBacked) evidence.push("real run backing");
   if (classification !== "user_preference") evidence.push("expected future behavior change");
   if (["proof_boundary_rule", "mode_behavior_rule", "policy_safety_rule", "schema_contract_rule"].includes(classification)) {
     evidence.push("regression eval if possible");

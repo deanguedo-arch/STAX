@@ -1,7 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { PatternPromotionGate } from "./PatternPromotionGate.js";
+import { patternPromotionDecisionForSidecarCandidate } from "./SidecarImportReview.js";
 import { ensureDirectory, nowIso, readTextIfExists, sanitizeId } from "../sidecar/SidecarRepo.js";
 import { SidecarImportCandidateSchema, type SidecarImportCandidate } from "./SidecarImportCandidate.js";
+import type { PatternPromotionTarget } from "./PatternPromotionSchemas.js";
 
 export type PromoteSidecarImportOptions = {
   candidateId: string;
@@ -28,8 +31,12 @@ export async function promoteSidecarImport(options: PromoteSidecarImportOptions)
     throw new Error("Global failure-pattern promotion from a single event requires --allow-single-event.");
   }
   if (candidate.candidateType === "none") throw new Error("Candidate type 'none' has no promotion target.");
+  const decision = patternPromotionDecisionForSidecarCandidate(candidate, new PatternPromotionGate());
+  if (decision.recommendedAction === "discard") throw new Error("Discard-only candidate cannot be promoted.");
+  const effectiveTarget = decision.promotionTarget !== "none" ? decision.promotionTarget : fallbackPromotionTarget(candidate.candidateType);
+  if (effectiveTarget === "none") throw new Error("Candidate review did not produce a durable promotion target.");
 
-  const artifactDir = path.join(staxRoot, destinationDir(candidate.candidateType));
+  const artifactDir = path.join(staxRoot, destinationDir(effectiveTarget, candidate.candidateType));
   await ensureDirectory(artifactDir);
   const artifactPath = path.join(artifactDir, `${sanitizeId(candidate.candidateId)}.json`);
   await fs.writeFile(
@@ -38,6 +45,7 @@ export async function promoteSidecarImport(options: PromoteSidecarImportOptions)
       {
         schemaVersion: "sidecar-promoted-candidate-v1",
         promotedAt: nowIso(),
+        decision,
         candidate
       },
       null,
@@ -65,7 +73,53 @@ export async function promoteSidecarImport(options: PromoteSidecarImportOptions)
   };
 }
 
-function destinationDir(candidateType: SidecarImportCandidate["candidateType"]): string {
+function destinationDir(
+  promotionTarget: PatternPromotionTarget,
+  candidateType: SidecarImportCandidate["candidateType"]
+): string {
+  switch (promotionTarget) {
+    case "eval":
+      return candidateType === "redteam_eval" ? "evals/candidates/redteam" : "evals/candidates";
+    case "schema_patch":
+      return "learning/proposals/schema_patch_candidates";
+    case "mode_contract_patch":
+      return "learning/proposals/mode_contract_patch_candidates";
+    case "policy_patch":
+      return "learning/proposals/policy_patch_candidates";
+    case "memory":
+      return "memory/candidates";
+    case "correction":
+      return "learning/proposals/correction_candidates";
+    case "training":
+      return "learning/proposals/training_candidates";
+    case "golden":
+      return "learning/proposals/golden_candidates";
+    case "none":
+      return destinationDirFromCandidateType(candidateType);
+  }
+}
+
+function fallbackPromotionTarget(candidateType: SidecarImportCandidate["candidateType"]): PatternPromotionTarget {
+  switch (candidateType) {
+    case "regression_eval":
+    case "redteam_eval":
+      return "eval";
+    case "failure_pattern":
+      return "golden";
+    case "repo_archetype_rule":
+      return "golden";
+    case "repo_memory":
+      return "memory";
+    case "validator_patch":
+      return "schema_patch";
+    case "prompt_template":
+      return "mode_contract_patch";
+    case "none":
+      return "none";
+  }
+}
+
+function destinationDirFromCandidateType(candidateType: SidecarImportCandidate["candidateType"]): string {
   switch (candidateType) {
     case "regression_eval":
       return "evals/candidates";

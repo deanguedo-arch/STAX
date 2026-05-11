@@ -4,6 +4,7 @@ import { ensureDirectory, nowIso, sanitizeId } from "../sidecar/SidecarRepo.js";
 import { PatternPromotionGate } from "./PatternPromotionGate.js";
 import type { LearningQueueType } from "./LearningEvent.js";
 import type {
+  PatternPromotionAction,
   PatternPromotionClassification,
   PatternPromotionDecision,
   PatternPromotionTarget
@@ -14,12 +15,17 @@ import type { SidecarImportCandidate } from "./SidecarImportCandidate.js";
 export type SidecarImportAggregate = {
   aggregateId: string;
   classification: PatternPromotionClassification;
+  recommendedAction: PatternPromotionAction;
   candidateCount: number;
   sourceCandidateIds: string[];
   sourceEventIds: string[];
   sourceRepos: string[];
   exampleSummaries: string[];
   promotable: boolean;
+  strengthScore: number;
+  strengthLabel: PatternPromotionDecision["strengthLabel"];
+  blockers: string[];
+  boosters: string[];
   recommendedQueueType: LearningQueueType;
   promotionTarget: PatternPromotionTarget;
   reason: string;
@@ -115,11 +121,15 @@ export function renderSidecarImportAggregation(
       `## ${aggregate.aggregateId}`,
       "",
       `Classification: ${aggregate.classification}`,
+      `Recommended action: ${aggregate.recommendedAction}`,
       `Candidate count: ${aggregate.candidateCount}`,
+      `Promotion strength: ${aggregate.strengthLabel} (${aggregate.strengthScore}/10)`,
       `Promotable: ${aggregate.promotable ? "yes" : "no"}`,
       `Recommended queue: ${aggregate.recommendedQueueType}`,
       `Promotion target: ${aggregate.promotionTarget}`,
       "Requires human approval: yes",
+      `Boosters: ${aggregate.boosters.length ? aggregate.boosters.join(", ") : "none"}`,
+      `Blockers: ${aggregate.blockers.length ? aggregate.blockers.join(", ") : "none"}`,
       `Reason: ${aggregate.reason}`,
       `Expected behavior change: ${aggregate.expectedFutureBehaviorChange}`,
       aggregate.suggestedRegressionEval ? `Suggested regression eval: ${aggregate.suggestedRegressionEval}` : "Suggested regression eval: none",
@@ -154,12 +164,17 @@ function aggregateGroup(
   return {
     aggregateId: `agg_${sanitizeId(classification)}`,
     classification,
+    recommendedAction: aggregateDecision.recommendedAction,
     candidateCount: items.length,
     sourceCandidateIds,
     sourceEventIds,
     sourceRepos,
     exampleSummaries,
     promotable: aggregateDecision.promotable,
+    strengthScore: aggregateDecision.strengthScore,
+    strengthLabel: aggregateDecision.strengthLabel,
+    blockers: aggregateDecision.blockers,
+    boosters: aggregateDecision.boosters,
     recommendedQueueType: aggregateDecision.recommendedQueueType,
     promotionTarget: aggregateDecision.promotionTarget,
     reason: aggregateDecision.reason,

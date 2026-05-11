@@ -13,6 +13,15 @@ export const PatternPromotionClassificationSchema = z.enum([
   "user_preference"
 ]);
 
+export const PatternPromotionActionSchema = z.enum([
+  "discard",
+  "hold_local",
+  "review_for_promotion",
+  "promote_with_approval"
+]);
+
+export const PatternPromotionStrengthLabelSchema = z.enum(["weak", "moderate", "strong", "vetted"]);
+
 export const PatternPromotionTargetSchema = z.enum([
   "correction",
   "eval",
@@ -33,13 +42,24 @@ export const PatternPromotionInputSchema = z.object({
   failureTypes: z.array(LearningFailureTypeSchema).default([]),
   severity: z.enum(["none", "minor", "major", "critical"]).default("minor"),
   repeatCount: z.number().int().nonnegative().default(1),
-  explicitUserPreference: z.boolean().default(false)
+  explicitUserPreference: z.boolean().default(false),
+  codeChangeBacked: z.boolean().default(false),
+  testBacked: z.boolean().default(false),
+  realRunBacked: z.boolean().default(false),
+  reusableAcrossRepos: z.boolean().default(false),
+  repoScoped: z.boolean().default(false),
+  humanApproved: z.boolean().default(false)
 });
 
 export const PatternPromotionDecisionSchema = z.object({
   candidateId: z.string().min(1),
   classification: PatternPromotionClassificationSchema,
+  recommendedAction: PatternPromotionActionSchema,
   promotable: z.boolean(),
+  strengthScore: z.number().min(0).max(10),
+  strengthLabel: PatternPromotionStrengthLabelSchema,
+  blockers: z.array(z.string()),
+  boosters: z.array(z.string()),
   recommendedQueueType: LearningQueueTypeSchema,
   promotionTarget: PatternPromotionTargetSchema,
   reason: z.string().min(1),
@@ -51,6 +71,8 @@ export const PatternPromotionDecisionSchema = z.object({
 });
 
 export type PatternPromotionClassification = z.infer<typeof PatternPromotionClassificationSchema>;
+export type PatternPromotionAction = z.infer<typeof PatternPromotionActionSchema>;
+export type PatternPromotionStrengthLabel = z.infer<typeof PatternPromotionStrengthLabelSchema>;
 export type PatternPromotionTarget = z.infer<typeof PatternPromotionTargetSchema>;
 export type PatternPromotionInput = z.input<typeof PatternPromotionInputSchema>;
 export type ParsedPatternPromotionInput = z.output<typeof PatternPromotionInputSchema>;

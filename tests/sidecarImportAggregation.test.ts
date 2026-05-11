@@ -22,6 +22,7 @@ describe("sidecar import aggregation", () => {
 
     expect(handoff).toMatchObject({
       candidateCount: 2,
+      recommendedAction: "review_for_promotion",
       promotable: true,
       recommendedQueueType: "codex_prompt_candidate",
       promotionTarget: "mode_contract_patch",
@@ -30,6 +31,7 @@ describe("sidecar import aggregation", () => {
     expect(handoff?.requiredEvidence).toContain("repeatability evidence");
     expect(proof).toMatchObject({
       candidateCount: 2,
+      recommendedAction: "review_for_promotion",
       promotable: true,
       recommendedQueueType: "eval_candidate",
       promotionTarget: "eval",
@@ -37,6 +39,7 @@ describe("sidecar import aggregation", () => {
     });
     expect(repoFact).toMatchObject({
       candidateCount: 2,
+      recommendedAction: "hold_local",
       promotable: false,
       recommendedQueueType: "trace_only",
       promotionTarget: "none"
@@ -53,6 +56,8 @@ describe("sidecar import aggregation", () => {
 
     expect(report).toContain("Pending Aggregate Pattern Review");
     expect(report).toContain("Classification: schema_contract_rule");
+    expect(report).toContain("Recommended action: review_for_promotion");
+    expect(report).toContain("Promotion strength:");
     expect(report).toContain("Promotable: yes");
     expect(report).toContain("Requires human approval: yes");
     expect(report).not.toContain("approved");

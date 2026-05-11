@@ -33,12 +33,13 @@
     }
   },
   "requiresHumanApproval": true,
-  "status": "pending",
+  "status": "promoted",
   "privacy": {
     "redactionStatus": "redacted",
     "redactionNotes": [
       "URLs or secret-like values were redacted from report sections."
     ]
   },
-  "createdAt": "2026-05-08T15:58:40.876Z"
+  "createdAt": "2026-05-08T15:58:40.876Z",
+  "promotedAt": "2026-05-11T20:44:39.954Z"
 }

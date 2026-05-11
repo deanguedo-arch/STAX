@@ -33,9 +33,13 @@ export function renderSidecarImportReview(candidates: SidecarImportCandidate[]):
         `Summary: ${candidate.summary}`,
         `Suggested artifact: ${candidate.proposedArtifact?.destinationHint ?? "none"}`,
         `Pattern classification: ${patternDecision.classification}`,
+        `Recommended action: ${patternDecision.recommendedAction}`,
+        `Promotion strength: ${patternDecision.strengthLabel} (${patternDecision.strengthScore}/10)`,
         `Pattern promotable: ${patternDecision.promotable ? "yes" : "no"}`,
         `Recommended queue: ${patternDecision.recommendedQueueType}`,
         `Promotion target: ${patternDecision.promotionTarget}`,
+        `Boosters: ${patternDecision.boosters.length ? patternDecision.boosters.join(", ") : "none"}`,
+        `Blockers: ${patternDecision.blockers.length ? patternDecision.blockers.join(", ") : "none"}`,
         `Pattern reason: ${patternDecision.reason}`,
         "Decision required: approve / reject / defer"
       ].join("\n");
@@ -51,11 +55,65 @@ export function patternPromotionDecisionForSidecarCandidate(
     candidateId: candidate.candidateId,
     text: sidecarCandidatePatternText(candidate),
     sourceEventIds: [candidate.sourceEventId],
-    repo: candidate.sourceRepo.name
+    repo: candidate.sourceRepo.name,
+    codeChangeBacked: hasSubstantiveCodeChanges(candidate),
+    testBacked: hasTestBacking(candidate),
+    realRunBacked: hasRealRunBacking(candidate),
+    reusableAcrossRepos: inferReusableAcrossRepos(candidate),
+    repoScoped: candidate.scope === "repo",
+    humanApproved: false
   });
 }
 
 function sidecarCandidatePatternText(candidate: SidecarImportCandidate): string {
   const payloadText = candidate.proposedArtifact?.payload ? JSON.stringify(candidate.proposedArtifact.payload) : "";
   return [candidate.summary, payloadText].filter(Boolean).join("\n");
+}
+
+function candidateSections(candidate: SidecarImportCandidate): Record<string, string> {
+  const sections = candidate.proposedArtifact?.payload?.sections;
+  if (!sections || typeof sections !== "object") return {};
+  return Object.fromEntries(
+    Object.entries(sections).filter((entry): entry is [string, string] => typeof entry[1] === "string")
+  );
+}
+
+function hasSubstantiveCodeChanges(candidate: SidecarImportCandidate): boolean {
+  const filesChanged = candidateSections(candidate).filesChanged ?? "";
+  return /(src\/|tests\/|scripts\/|package\.json|package-lock\.json|AGENTS\.md|docs\/)/.test(filesChanged) && !onlySidecarFiles(filesChanged);
+}
+
+function onlySidecarFiles(filesChanged: string): boolean {
+  const lines = filesChanged
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => line.startsWith("-"));
+  return lines.length > 0 && lines.every((line) => /\.stax\//.test(line));
+}
+
+function hasTestBacking(candidate: SidecarImportCandidate): boolean {
+  const sections = candidateSections(candidate);
+  const testsAdded = sections.testsAdded ?? "";
+  const commandsRun = sections.commandsRun ?? "";
+  const commandOutputSummary = sections.commandOutputSummary ?? "";
+  return (
+    (!/none\.?$/i.test(testsAdded.trim()) && /(test|spec)/i.test(testsAdded)) ||
+    /(npm test|vitest|ingest:ci|typecheck|smoke:stax|rax -- eval)/i.test(commandsRun) ||
+    /(tests? passed|passed \d+ files|passed \d+ tests|typecheck: pass|exit 0)/i.test(commandOutputSummary)
+  );
+}
+
+function hasRealRunBacking(candidate: SidecarImportCandidate): boolean {
+  const text = sidecarCandidatePatternText(candidate);
+  return /(exit 0|generated|converted|preflight|accept|artifact|output|writes the expected artifact set|command evidence)/i.test(text);
+}
+
+function inferReusableAcrossRepos(candidate: SidecarImportCandidate): boolean {
+  const text = sidecarCandidatePatternText(candidate).toLowerCase();
+  if (candidate.candidateType === "validator_patch" || candidate.candidateType === "prompt_template") return true;
+  if (/(must not|should include|requires|proof|schema|validator|contract|fake-complete|wrong repo|target repo|handoff)/.test(text)) {
+    return true;
+  }
+  return hasSubstantiveCodeChanges(candidate) && !/(forensics|math 30|question bank|google form|microsoft forms|brightspace print quiz)/.test(text);
 }
