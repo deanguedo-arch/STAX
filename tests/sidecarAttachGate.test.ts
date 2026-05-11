@@ -165,6 +165,82 @@ describe("STAX sidecar attach and gate", () => {
     expect(reportAfterSecondGate.match(/<!-- STAX:proof-strength:start -->/g)).toHaveLength(1);
   });
 
+  it("does not mark command evidence stale when only tracked sidecar proof artifacts advanced HEAD", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-proof-report-head-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    execFileSync("git", ["add", ".gitignore", "AGENTS.md", ".stax/status.json", ".stax/next-codex-prompt.md", ".stax/reports/latest-proof-report.md"], {
+      cwd: repoPath
+    });
+    execFileSync("git", ["commit", "-m", "attach stax"], { cwd: repoPath });
+    await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
+    const evidenceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoPath }).toString().trim();
+    const evidenceBranch = execFileSync("git", ["branch", "--show-current"], { cwd: repoPath }).toString().trim();
+    const evidenceId = "cmd_sidecar_only_head_advance";
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "command-evidence", `${evidenceId}.json`),
+      `${JSON.stringify(
+        {
+          evidenceId,
+          command: "npm test",
+          cwd: repoPath,
+          repo: path.basename(repoPath),
+          branch: evidenceBranch,
+          commitSha: evidenceCommit,
+          exitCode: 0,
+          stdout: "tests passed",
+          stderr: "",
+          startedAt: "2026-05-11T00:00:00.000Z",
+          finishedAt: "2026-05-11T00:00:01.000Z",
+          source: "local_stax_command_output"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: update app",
+        "Files changed: src/app.ts",
+        "Tests added: none",
+        "Commands run: npm test",
+        `Command output summary with exit codes: ${evidenceId} exit code 0`,
+        "What is verified: implementation complete with local command proof",
+        "What is weak/provisional: none",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: accept"
+      ].join("\n"),
+      "utf8"
+    );
+
+    await runStaxGate({ repoPath, writeLearningEvent: false });
+    execFileSync("git", ["add", ".stax/status.json", ".stax/proof_strength.json", ".stax/reports/latest-proof-report.md"], {
+      cwd: repoPath
+    });
+    execFileSync("git", ["commit", "-m", "track proof report"], { cwd: repoPath });
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.risk.join("\n")).not.toContain("Stale command evidence");
+    expect(status.verified.join("\n")).toContain("predates current head only by STAX sidecar artifact commits");
+  });
+
   it("rejects docs-only implementation claims", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-docs-only-");
     await attachStaxToRepo(repoPath);

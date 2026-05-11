@@ -28,6 +28,7 @@ import {
   ensureDirectory,
   nowIso,
   readTextIfExists,
+  runGit,
   sanitizeId,
   sha256,
   shortHash,
@@ -89,7 +90,12 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   const task = (await readTextIfExists(path.join(staxPath, "task.md"))).trim() || `STAX sidecar audit for ${snapshot.repoName}.`;
   const codexReport = stripGeneratedProofStrengthSection(await readTextIfExists(path.join(staxPath, "codex-report.md"))).trim();
   const commandEvidenceEntries = await readCommandEvidenceEntries(repoPath);
-  const commandEvidence = renderCommandEvidence(commandEvidenceEntries);
+  const proofStackCommandEvidenceEntries = await normalizeSidecarOnlyCommandEvidence(
+    repoPath,
+    commandEvidenceEntries,
+    snapshot.commitSha
+  );
+  const commandEvidence = renderCommandEvidence(proofStackCommandEvidenceEntries);
   const changedFiles = resolveChangedFiles(snapshot.gitStatusShort, snapshot.unifiedDiff);
   const auditableDiff = changedFiles.length > 0;
   const auditableUnifiedDiff = auditableDiff ? snapshot.unifiedDiff : "";
@@ -102,7 +108,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     gitStatusShort: snapshot.gitStatusShort,
     changedFiles,
     unifiedDiff: auditableUnifiedDiff,
-    commandEvidence: commandEvidenceEntries,
+    commandEvidence: proofStackCommandEvidenceEntries,
     codexReport,
     visualEvidence: [],
     dataProofArtifacts: [],
@@ -117,7 +123,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     codexReport,
     changedFiles,
     unifiedDiff: auditableUnifiedDiff,
-    commandEvidenceEntries,
+    commandEvidenceEntries: proofStackCommandEvidenceEntries,
     targetRepoPath: repoPath,
     expectedRepo: snapshot.repoName,
     expectedBranch: snapshot.branch,
@@ -125,7 +131,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     expectedCwd: repoPath
   });
 
-  const extra = deriveSidecarFindings({
+  const extra = await deriveSidecarFindings({
     hasDiff: auditableDiff,
     changedFiles,
     codexReport,
@@ -978,14 +984,14 @@ function isSidecarManagedPath(filePath: string): boolean {
   return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/") || normalized.startsWith("stax/");
 }
 
-function deriveSidecarFindings(input: {
+async function deriveSidecarFindings(input: {
   hasDiff: boolean;
   changedFiles: ProjectControlChangedFile[];
   codexReport: string;
   commandEvidenceEntries: ProjectControlCommandEvidenceEntry[];
   repoPath: string;
   snapshot: { repoName: string; branch?: string; commitSha?: string };
-}): Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk"> {
+}): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
   const verified: string[] = [];
   const weak: string[] = [];
   const unverified: string[] = [];
@@ -1044,8 +1050,15 @@ function deriveSidecarFindings(input: {
       risk.push("Wrong cwd command proof blocked.");
     }
     if (entry.commitSha && input.snapshot.commitSha && entry.commitSha !== input.snapshot.commitSha) {
-      weak.push(`Command evidence commit ${entry.commitSha} differs from current head ${input.snapshot.commitSha}.`);
-      risk.push("Stale command evidence must be refreshed for the current head.");
+      const sidecarOnlyAdvance = await evidenceCommitDiffIsSidecarManaged(input.repoPath, entry.commitSha);
+      if (sidecarOnlyAdvance) {
+        verified.push(
+          `Command evidence ${entry.commitSha.slice(0, 12)} predates current head only by STAX sidecar artifact commits.`
+        );
+      } else {
+        weak.push(`Command evidence commit ${entry.commitSha} differs from current head ${input.snapshot.commitSha}.`);
+        risk.push("Stale command evidence must be refreshed for the current head.");
+      }
     }
     if (entry.exitCode !== 0) {
       unverified.push(`Command evidence failed: ${entry.command} exited ${entry.exitCode ?? "unknown"}.`);
@@ -1061,6 +1074,29 @@ function deriveSidecarFindings(input: {
   }
 
   return { verified, weak, unverified, risk };
+}
+
+async function evidenceCommitDiffIsSidecarManaged(repoPath: string, evidenceCommitSha: string): Promise<boolean> {
+  const changed = await runGit(repoPath, ["diff", "--name-only", `${evidenceCommitSha}..HEAD`]);
+  const paths = changed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return paths.length > 0 && paths.every(isSidecarManagedPath);
+}
+
+async function normalizeSidecarOnlyCommandEvidence(
+  repoPath: string,
+  entries: SidecarCommandEvidenceEntry[],
+  currentCommitSha?: string
+): Promise<SidecarCommandEvidenceEntry[]> {
+  if (!currentCommitSha) return entries;
+  const normalized: SidecarCommandEvidenceEntry[] = [];
+  for (const entry of entries) {
+    if (entry.commitSha && entry.commitSha !== currentCommitSha && await evidenceCommitDiffIsSidecarManaged(repoPath, entry.commitSha)) {
+      normalized.push({ ...entry, commitSha: currentCommitSha });
+      continue;
+    }
+    normalized.push(entry);
+  }
+  return normalized;
 }
 
 async function readCommandEvidenceEntries(repoPath: string): Promise<SidecarCommandEvidenceEntry[]> {
