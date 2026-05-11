@@ -21,6 +21,7 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("npm run test:e2e")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run build")).toBe("build");
     expect(commandFamilyForIntelligence("npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --dry-run")).toBe("e2e");
+    expect(commandFamilyForIntelligence("npm run brightspaceexport -- convert quiz.pdf --target msforms")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run rax -- eval --redteam")).toBe("redteam");
     expect(commandFamilyForIntelligence("gh run view 200")).toBe("ci");
     expect(commandFamilyForIntelligence("SYNC_ALL.cmd")).toBe("deploy");
@@ -127,6 +128,27 @@ describe("command evidence intelligence", () => {
         "SUCCESS\t2/2\tModule 2 Assessment",
         "SUMMARY\t2\t0\tC:\\tmp\\summary.md"
       ].join("\n"),
+      expectedRepo: "brightspacequizexporter",
+      expectedBranch: "codex/resume-math30-msforms-20260506",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.commandFamily).toBe("e2e");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+  });
+
+  it("treats the Brightspace exporter command as executable local proof even when it writes artifacts silently", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run brightspaceexport -- convert fixtures/benchmarks/sources/FINAL EXAM FORENSICS 25.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/export",
+      cwd: "/Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+      repo: "brightspacequizexporter",
+      branch: "codex/resume-math30-msforms-20260506",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: "",
       expectedRepo: "brightspacequizexporter",
       expectedBranch: "codex/resume-math30-msforms-20260506",
       expectedCommitSha: "abcdef1",
