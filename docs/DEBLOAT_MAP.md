@@ -207,9 +207,9 @@ program. It should not obscure the proof-gate product.
 - `src/lab/`
 - `src/training/`
 - broad learning lab scripts
-- `docs/STAX_LEARNING_LAB.md`
-- `docs/RAX_LEARNING_LAB_REPORT.md`
-- `docs/RAX_TRAINING_DATA_MODEL.md`
+- `docs/archive/research/STAX_LEARNING_LAB.md`
+- `docs/archive/research/RAX_LEARNING_LAB_REPORT.md`
+- `docs/archive/research/RAX_TRAINING_DATA_MODEL.md`
 
 Reason: candidate generation and training export are not the product right now.
 They should remain approval-gated and off the main path.
@@ -249,51 +249,62 @@ docs/archive/research/
 
 ### Campaign And Benchmark Docs
 
-Archive top-level reports such as:
+Archived in Phase 4A:
 
-- `docs/STAX_GENERAL_SUPERIORITY_CAMPAIGN.md`
-- `docs/RAX_GENERAL_SUPERIORITY_CAMPAIGN_REPORT.md`
-- `docs/RAX_STAX_VS_CHATGPT_MANUAL_BENCHMARK.md`
-- `docs/RAX_STAX_VS_CHATGPT_SEED5_RESULTS.md`
-- `docs/RAX_STAX_VS_CHATGPT_SEED20_RESULTS.md`
-- `docs/RAX_STAX_VS_RAW_CHATGPT_SEED20_RESULTS.md`
-- `docs/RAX_RAW_CHATGPT_ROUND2_BENCHMARK_PLAN.md`
-- `docs/RAX_RAW_CHATGPT_ROUND2_RESULTS.md`
-- `docs/RAX_RAW_CHATGPT_ROUND3_STATEFUL_PLAN.md`
-- `docs/RAX_RAW_CHATGPT_ROUND3_RESULTS.md`
-- `docs/RAX_PHASE10_REAL_WORKFLOW_REPORT.md`
-- `docs/RAX_PHASE11_SUBSCRIPTION_COMPARISON_REPORT.md`
-- `docs/STAX_REAL_TASK_DOGFOOD_PROTOCOL.md`
-- `docs/RAX_REAL_TASK_DOGFOOD_REPORT.md`
-- `docs/RAX_REAL_USE_CAMPAIGN_REPORT.md`
+- `docs/archive/benchmarks/STAX_GENERAL_SUPERIORITY_CAMPAIGN.md`
+- `docs/archive/benchmarks/RAX_GENERAL_SUPERIORITY_CAMPAIGN_REPORT.md`
+- `docs/archive/benchmarks/RAX_STAX_VS_CHATGPT_MANUAL_BENCHMARK.md`
+- `docs/archive/benchmarks/RAX_STAX_VS_CHATGPT_SEED5_RESULTS.md`
+- `docs/archive/benchmarks/RAX_STAX_VS_CHATGPT_SEED20_RESULTS.md`
+- `docs/archive/benchmarks/RAX_STAX_VS_RAW_CHATGPT_SEED20_RESULTS.md`
+- `docs/archive/benchmarks/RAX_RAW_CHATGPT_ROUND2_BENCHMARK_PLAN.md`
+- `docs/archive/benchmarks/RAX_RAW_CHATGPT_ROUND2_RESULTS.md`
+- `docs/archive/benchmarks/RAX_RAW_CHATGPT_ROUND3_STATEFUL_PLAN.md`
+- `docs/archive/benchmarks/RAX_RAW_CHATGPT_ROUND3_RESULTS.md`
+- `docs/archive/benchmarks/RAX_LOCAL_PROBLEM_BENCHMARK_REPORT.md`
+- `docs/archive/benchmarks/RAX_EXTERNAL_BASELINE_IMPORT_REPORT.md`
+- `docs/archive/benchmarks/RAX_EXTERNAL_SOURCE_DIVERSITY_REPORT.md`
+- `docs/archive/benchmarks/RAX_BENCHMARK_ANTI_GAMING_REPORT.md`
+- `docs/archive/campaigns/RAX_PHASE10_REAL_WORKFLOW_REPORT.md`
+- `docs/archive/campaigns/RAX_PHASE11_SUBSCRIPTION_COMPARISON_REPORT.md`
+- `docs/archive/campaigns/STAX_REAL_TASK_DOGFOOD_PROTOCOL.md`
+- `docs/archive/campaigns/RAX_REAL_TASK_DOGFOOD_REPORT.md`
+
+Not moved yet:
+
+- `docs/RAX_REAL_USE_CAMPAIGN_REPORT.md` remains top-level because source
+  prompts still reference it directly.
 
 ### Investor And Release-History Docs
 
-Archive top-level docs such as:
+Partially archived in Phase 4A:
+
+- `docs/archive/research/RAX_AUTONOMOUS_IMPROVEMENT_LAB_REPORT.md`
+- `docs/archive/releases/REPO_TRANSFER_TRIAL_PLAN.md`
+- `docs/archive/releases/REPO_TRANSFER_TRIAL_RESULTS.md`
+- `docs/archive/releases/REPO_TRANSFER_RC2A_HYGIENE_REPORT.md`
+- `docs/archive/releases/REPO_TRANSFER_RC2A_JUDGE_ACCEPTANCE.md`
+
+Not moved yet:
 
 - `docs/STAX_9_5_PROMOTION_REPORT.md`
 - `docs/RAX_100_PROOF_REPORT.md`
 - `docs/RAX_KNOWN_GAPS_CONSENSUS_REPORT.md`
 - `docs/RAX_LOCAL_PROOF_SUPERIORITY_REPORT.md`
-- `docs/RAX_AUTONOMOUS_IMPROVEMENT_LAB_REPORT.md`
-- `docs/REPO_TRANSFER_TRIAL_PLAN.md`
-- `docs/REPO_TRANSFER_TRIAL_RESULTS.md`
-- `docs/REPO_TRANSFER_RC2A_HYGIENE_REPORT.md`
-- `docs/REPO_TRANSFER_RC2A_JUDGE_ACCEPTANCE.md`
 - `docs/releases/`
 
 ### Old RAX Architecture Docs
 
 Archive or rewrite after public docs exist:
 
-- `docs/RAX_ARCHITECTURE.md`
-- `docs/RAX_MASTER_SPEC.md`
-- `docs/RAX_PHASE_PLAN.md`
-- `docs/RAX_MODE_MODEL.md`
-- `docs/RAX_POLICY_MODEL.md`
-- `docs/RAX_MEMORY_MODEL.md`
-- `docs/RAX_SAFETY_MODEL.md`
-- `docs/RAX_TRAINING_DATA_MODEL.md`
+- `docs/archive/research/RAX_ARCHITECTURE.md`
+- `docs/archive/research/RAX_MASTER_SPEC.md`
+- `docs/archive/phase-plans/RAX_PHASE_PLAN.md`
+- `docs/archive/research/RAX_MODE_MODEL.md`
+- `docs/archive/research/RAX_POLICY_MODEL.md`
+- `docs/archive/research/RAX_MEMORY_MODEL.md`
+- `docs/archive/research/RAX_SAFETY_MODEL.md`
+- `docs/archive/research/RAX_TRAINING_DATA_MODEL.md`
 - `README_RAX.md`
 - `RAX_LOCAL_BLUEPRINT.md`
 
