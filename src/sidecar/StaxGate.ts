@@ -1055,7 +1055,7 @@ function deriveNextAction(
   risk: string[]
 ): string {
   const combined = [...unverified, ...risk].join("\n").toLowerCase();
-  if (verdict === "Accept") return `Report the STAX sidecar Accept, keep scope unchanged, and stop. ${STAX_ACCEPT_BOUNDARY}`;
+  if (verdict === "Accept") return `Record the STAX sidecar Accept, keep scope unchanged, and stop. ${STAX_ACCEPT_BOUNDARY}`;
   if (!codexReport.trim()) return "Ask Codex to write .stax/codex-report.md using the required STAX report fields.";
   if (commandEvidenceEntries.length === 0 && /test|command|proof|exit code|passed/i.test(combined)) {
     return `Run npm run stax:collect -- --repo ${repoPath} -- npm test, or collect the repo's canonical proof command.`;
