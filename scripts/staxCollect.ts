@@ -1,6 +1,7 @@
 import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
 
 function parseArgs(argv: string[]): { repoPath: string; command: string[]; allowRisky: boolean } {
+  if (argv.includes("--help") || argv.includes("-h")) throw new Error("Usage: npm run stax:collect -- --repo <path> -- <command...>");
   const repoIndex = argv.indexOf("--repo");
   const repoEq = argv.find((arg) => arg.startsWith("--repo="));
   const repoPath = repoEq ? repoEq.slice("--repo=".length) : repoIndex >= 0 ? argv[repoIndex + 1] : undefined;
@@ -13,7 +14,12 @@ function parseArgs(argv: string[]): { repoPath: string; command: string[]; allow
 }
 
 async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  if (argv.includes("--help") || argv.includes("-h")) {
+    process.stdout.write("Usage: npm run stax:collect -- --repo <path> -- <command...>\n");
+    return;
+  }
+  const args = parseArgs(argv);
   const evidence = await collectCommandEvidence(args);
   process.stdout.write(`${JSON.stringify(evidence, null, 2)}\n`);
   process.exitCode = evidence.exitCode ?? 1;

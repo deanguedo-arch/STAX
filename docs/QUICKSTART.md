@@ -2,9 +2,8 @@
 
 STAX catches fake-complete AI coding work before you trust it.
 
-This quickstart uses the current npm script surface. The target public command
-shape is `stax attach`, `stax collect`, `stax gate`, `stax status`, and
-`stax next`.
+This quickstart uses the npm script surface. The built CLI shape is
+`stax attach`, `stax collect`, `stax gate`, `stax status`, and `stax next`.
 
 ## 1. Install
 

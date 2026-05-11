@@ -1,6 +1,7 @@
 import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 
 function parseArgs(argv: string[]): { repoPath: string; copy: boolean; runGate: boolean } {
+  if (argv.includes("--help") || argv.includes("-h")) throw new Error("Usage: npm run stax:next -- --repo <path> [--copy] [--no-gate]");
   const index = argv.indexOf("--repo");
   const eq = argv.find((arg) => arg.startsWith("--repo="));
   const repoPath = eq ? eq.slice("--repo=".length) : index >= 0 ? argv[index + 1] : undefined;
@@ -13,7 +14,12 @@ function parseArgs(argv: string[]): { repoPath: string; copy: boolean; runGate: 
 }
 
 async function main(): Promise<void> {
-  const args = parseArgs(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  if (argv.includes("--help") || argv.includes("-h")) {
+    process.stdout.write("Usage: npm run stax:next -- --repo <path> [--copy] [--no-gate]\n");
+    return;
+  }
+  const args = parseArgs(argv);
   const result = await getNextCodexPrompt(args);
   process.stdout.write(`${result.prompt}\n`);
   if (args.copy) {

@@ -12,7 +12,7 @@ npm run stax:status -- --repo <path>
 npm run stax:next -- --repo <path>
 ```
 
-The target installed CLI shape is:
+The built/installed CLI shape is:
 
 ```bash
 stax attach --repo <path>

@@ -22,6 +22,12 @@ import { CommandEvidenceStore } from "./evidence/CommandEvidenceStore.js";
 import { EvidenceCollector } from "./evidence/EvidenceCollector.js";
 import { ControlAuditCaseRunner } from "./control/ControlAuditCaseRunner.js";
 import { SystemDoctor } from "./doctor/SystemDoctor.js";
+import { attachStaxToRepo } from "./sidecar/AttachStax.js";
+import { collectCommandEvidence } from "./sidecar/CommandEvidenceCollector.js";
+import { getNextCodexPrompt } from "./sidecar/NextCodexPrompt.js";
+import { runStaxGate } from "./sidecar/StaxGate.js";
+import { getStaxStatus } from "./sidecar/StaxStatus.js";
+import { upgradeStaxSidecar } from "./sidecar/UpgradeSidecar.js";
 import { DisagreementCapture } from "./learning/DisagreementCapture.js";
 import { LearningEventSchema, LearningQueueTypeSchema } from "./learning/LearningEvent.js";
 import { LearningMetricsStore } from "./learning/LearningMetrics.js";
@@ -120,6 +126,11 @@ const knownCommands = new Set([
   "auto-advance",
   "mine",
   "review",
+  "attach",
+  "collect",
+  "gate",
+  "status",
+  "next",
   "staxcore",
   "doctor",
   "help"
@@ -136,8 +147,18 @@ function parseArgs(argv: string[]): ParsedArgs {
 
   for (let index = 0; index < remaining.length; index += 1) {
     const arg = remaining[index];
+    if (arg === "--") {
+      positional.push(...remaining.slice(index + 1));
+      break;
+    }
     if (arg?.startsWith("--")) {
-      const key = arg.slice(2);
+      const flag = arg.slice(2);
+      const equalsIndex = flag.indexOf("=");
+      if (equalsIndex >= 0) {
+        flags[flag.slice(0, equalsIndex)] = flag.slice(equalsIndex + 1);
+        continue;
+      }
+      const key = flag;
       const next = remaining[index + 1];
       if (next && !next.startsWith("--")) {
         flags[key] = next;
@@ -2075,8 +2096,135 @@ function commandEvidencePath(evidence: { commandEvidenceId: string; createdAt: s
   return path.join("evidence", "commands", evidence.createdAt.slice(0, 10), `${evidence.commandEvidenceId}.json`);
 }
 
+function hasHelpFlag(args: ParsedArgs): boolean {
+  return args.flags.help === true || args.flags.h === true;
+}
+
+function repoFlag(args: ParsedArgs, usage: string): string {
+  const repo = args.flags.repo;
+  if (typeof repo !== "string" || !repo.trim()) {
+    throw new Error(usage);
+  }
+  return repo;
+}
+
+function staxHelp(command?: string): string {
+  const helpByCommand: Record<string, string[]> = {
+    attach: [
+      "Usage: stax attach --repo <path> [--upgrade]",
+      "",
+      "Attach the STAX proof-gate sidecar to a repo."
+    ],
+    collect: [
+      "Usage: stax collect --repo <path> -- <command...>",
+      "",
+      "Run a proof command in the attached repo and record cwd, exit code, output, branch, and commit evidence.",
+      "Dangerous commands require --allow-risky after human approval."
+    ],
+    gate: [
+      "Usage: stax gate --repo <path>",
+      "",
+      "Audit the attached repo and write .stax/status.md, .stax/status.json, and .stax/next-codex-prompt.md."
+    ],
+    status: [
+      "Usage: stax status --repo <path>",
+      "",
+      "Print the current STAX sidecar status card."
+    ],
+    next: [
+      "Usage: stax next --repo <path> [--copy] [--no-gate]",
+      "",
+      "Print the next bounded Codex correction prompt. By default this refreshes the gate first."
+    ]
+  };
+  if (command && helpByCommand[command]) return helpByCommand[command].join("\n");
+  return [
+    "STAX proof-gate commands:",
+    "  stax attach --repo <path> [--upgrade]",
+    "  stax collect --repo <path> -- <command...>",
+    "  stax gate --repo <path>",
+    "  stax status --repo <path>",
+    "  stax next --repo <path> [--copy] [--no-gate]",
+    "",
+    "npm script equivalents:",
+    "  npm run stax -- attach --repo <path>",
+    "  npm run stax -- collect --repo <path> -- <command...>",
+    "  npm run stax -- gate --repo <path>",
+    "  npm run stax -- status --repo <path>",
+    "  npm run stax -- next --repo <path>"
+  ].join("\n");
+}
+
+async function attachCommand(args: ParsedArgs): Promise<void> {
+  if (hasHelpFlag(args)) {
+    logInfo(staxHelp("attach"));
+    return;
+  }
+  const repoPath = repoFlag(args, "Usage: stax attach --repo <path> [--upgrade]");
+  const result = args.flags.upgrade === true
+    ? await upgradeStaxSidecar({ repoPath })
+    : await attachStaxToRepo(repoPath);
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+}
+
+async function collectCommand(args: ParsedArgs): Promise<void> {
+  if (hasHelpFlag(args)) {
+    logInfo(staxHelp("collect"));
+    return;
+  }
+  const repoPath = repoFlag(args, "Usage: stax collect --repo <path> -- <command...>");
+  if (args.positional.length === 0) {
+    throw new Error("Usage: stax collect --repo <path> -- <command...>");
+  }
+  const evidence = await collectCommandEvidence({
+    repoPath,
+    command: args.positional,
+    allowRisky: args.flags["allow-risky"] === true
+  });
+  process.stdout.write(`${JSON.stringify(evidence, null, 2)}\n`);
+  process.exitCode = evidence.exitCode ?? 1;
+}
+
+async function gateCommand(args: ParsedArgs): Promise<void> {
+  if (hasHelpFlag(args)) {
+    logInfo(staxHelp("gate"));
+    return;
+  }
+  const status = await runStaxGate({
+    repoPath: repoFlag(args, "Usage: stax gate --repo <path>")
+  });
+  process.stdout.write(status.statusMarkdown);
+  process.exitCode = status.exitCode;
+}
+
+async function statusCommand(args: ParsedArgs): Promise<void> {
+  if (hasHelpFlag(args)) {
+    logInfo(staxHelp("status"));
+    return;
+  }
+  process.stdout.write(await getStaxStatus(repoFlag(args, "Usage: stax status --repo <path>")));
+}
+
+async function nextCommand(args: ParsedArgs): Promise<void> {
+  if (hasHelpFlag(args)) {
+    logInfo(staxHelp("next"));
+    return;
+  }
+  const result = await getNextCodexPrompt({
+    repoPath: repoFlag(args, "Usage: stax next --repo <path> [--copy] [--no-gate]"),
+    copy: args.flags.copy === true,
+    runGate: args.flags["no-gate"] !== true
+  });
+  process.stdout.write(`${result.prompt}\n`);
+  if (args.flags.copy === true) {
+    process.stdout.write(result.copied ? "\n[STAX] Copied next Codex prompt to clipboard.\n" : `\n[STAX] Clipboard copy failed: ${result.copyError}\n`);
+  }
+}
+
 function help(): void {
   logInfo([
+    staxHelp(),
+    "",
     "RAX commands:",
     '  rax run "input"',
     "  rax run --file input.txt",
@@ -2125,10 +2273,29 @@ function help(): void {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const executable = path.basename(process.argv[1] ?? "");
-  if (args.command === "run" && process.argv.slice(2).length === 0 && executable.includes("stax")) {
-    await chatCommand({ command: "chat", positional: [], flags: {} });
+  const staxInvocation = executable.includes("stax") || process.env.npm_lifecycle_event === "stax";
+  if (args.command === "run" && hasHelpFlag(args)) {
+    logInfo(staxInvocation ? staxHelp() : [
+      staxHelp(),
+      "",
+      "Run `rax help` for the full internal command surface."
+    ].join("\n"));
+  } else if (args.command === "help" && staxInvocation) {
+    logInfo(staxHelp(args.positional[0]));
+  } else if (args.command === "run" && process.argv.slice(2).length === 0 && staxInvocation) {
+    logInfo(staxHelp());
   } else if (args.command === "run") {
     await runCommand(args);
+  } else if (args.command === "attach") {
+    await attachCommand(args);
+  } else if (args.command === "collect") {
+    await collectCommand(args);
+  } else if (args.command === "gate") {
+    await gateCommand(args);
+  } else if (args.command === "status") {
+    await statusCommand(args);
+  } else if (args.command === "next") {
+    await nextCommand(args);
   } else if (args.command === "control-audit") {
     await controlAuditCommand(args);
   } else if (args.command === "batch") {

@@ -109,7 +109,7 @@ npm run stax:next -- --repo <path>
 
 `stax:next-prompt` remains as a compatibility alias for older local workflows.
 
-The target public command surface is:
+The built/installed CLI surface is:
 
 ```bash
 stax attach --repo <path>

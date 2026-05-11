@@ -70,8 +70,8 @@ stax status --repo <path>
 stax next --repo <path>
 ```
 
-The current repo still exposes this through npm scripts and legacy `rax` routing.
-The target public interface is the small `stax` command surface above.
+The repo exposes this through both the built `stax` CLI and npm script aliases
+while legacy `rax` routing remains available for internal commands.
 
 ## Core Files In An Attached Repo
 
