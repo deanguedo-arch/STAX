@@ -167,7 +167,8 @@ export async function collectCommandEvidence(
 
 function runCommand(cwd: string, command: string[]): Promise<{ stdout: string; stderr: string; exitCode: number }> {
   return new Promise((resolve, reject) => {
-    const child = spawn(command[0]!, command.slice(1), {
+    const resolvedCommand = resolveCollectCommand(command);
+    const child = spawn(resolvedCommand.executable, resolvedCommand.args, {
       cwd,
       shell: false,
       env: process.env
@@ -185,6 +186,22 @@ function runCommand(cwd: string, command: string[]): Promise<{ stdout: string; s
       resolve({ stdout, stderr, exitCode: code ?? 1 });
     });
   });
+}
+
+function resolveCollectCommand(command: string[]): { executable: string; args: string[] } {
+  const executable = command[0]!;
+  const args = command.slice(1);
+  if (process.platform === "win32" && /^(npm|npm\.cmd)$/i.test(executable)) {
+    const npmExecPath = process.env.npm_execpath?.trim();
+    if (npmExecPath) {
+      return {
+        executable: process.execPath,
+        args: [npmExecPath, ...args]
+      };
+    }
+    return { executable: "npm.cmd", args };
+  }
+  return { executable, args };
 }
 
 function commandEvidenceLearningEvent(
