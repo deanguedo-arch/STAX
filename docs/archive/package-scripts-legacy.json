@@ -1,29 +1,15 @@
 {
-  "name": "stax",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "bin": {
-    "rax": "./dist/src/cli.js",
-    "stax": "./dist/src/cli.js"
-  },
+  "purpose": "Provenance copy of the pre-public-surface package.json scripts before STAX proof-gate script cleanup.",
+  "capturedFrom": "package.json",
   "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit",
-    "validate": "npm run typecheck && npm test",
-    "stax": "tsx src/cli.ts",
-    "stax:attach": "tsx scripts/staxAttach.ts",
-    "stax:collect": "tsx scripts/staxCollect.ts",
-    "stax:gate": "tsx scripts/staxGate.ts",
-    "stax:status": "tsx scripts/staxStatus.ts",
-    "stax:next": "tsx scripts/staxNextPrompt.ts",
     "dev": "tsx src/cli.ts",
     "rax": "tsx src/cli.ts",
     "chat": "tsx src/cli.ts chat",
     "run": "tsx src/cli.ts run",
     "smoke:stax": "tsx src/cli.ts run --mode planning \"STAX system improvement plan\"",
+    "test": "vitest run",
     "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
     "audit:doctrine": "tsx scripts/auditDoctrine.ts",
     "audit:boundaries": "tsx scripts/auditBoundaries.ts",
     "audit:security": "tsx scripts/auditSecurity.ts",
@@ -66,10 +52,14 @@
     "pr-artifact:audit": "tsx scripts/auditLivePrArtifact.ts",
     "staxcore:status": "tsx scripts/staxcoreWorkflowStatus.ts",
     "staxcore:wait": "tsx scripts/staxcoreWorkflowWait.ts",
+    "stax:attach": "tsx scripts/staxAttach.ts",
     "stax:sidecar-upgrade": "tsx scripts/staxSidecarUpgrade.ts",
+    "stax:status": "tsx scripts/staxStatus.ts",
+    "stax:gate": "tsx scripts/staxGate.ts",
     "stax:turn-contract": "tsx scripts/staxTurnContract.ts",
     "stax:next-prompt": "tsx scripts/staxNextPrompt.ts",
     "stax:watch": "tsx scripts/staxWatch.ts",
+    "stax:collect": "tsx scripts/staxCollect.ts",
     "stax:codex-collect": "tsx scripts/staxCodexCollect.ts",
     "stax:harvest": "tsx scripts/staxHarvest.ts",
     "stax:review-imports": "tsx scripts/staxReviewImports.ts",
@@ -106,17 +96,7 @@
     "test:unit": "vitest run tests/**/*.test.ts --exclude tests/fixtures/**",
     "test:ci-safe": "vitest run tests/**/*.test.ts --exclude tests/fixtures/** --testTimeout 10000",
     "validate:hardened": "npm run typecheck && npm run build && npm run audit:doctrine && npm run audit:boundaries && npm run audit:security && npm run test:ci-safe",
+    "build": "tsc",
     "start": "node dist/src/cli.js"
-  },
-  "dependencies": {
-    "dotenv": "17.4.2",
-    "openai": "6.34.0",
-    "zod": "4.3.6"
-  },
-  "devDependencies": {
-    "@types/node": "25.6.0",
-    "tsx": "4.21.0",
-    "typescript": "6.0.3",
-    "vitest": "4.1.5"
   }
 }

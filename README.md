@@ -71,7 +71,7 @@ Read the status and next correction prompt:
 
 ```bash
 npm run stax:status -- --repo ../my-project
-npm run stax:next-prompt -- --repo ../my-project
+npm run stax:next -- --repo ../my-project
 ```
 
 ## Output
@@ -104,8 +104,10 @@ npm run stax:attach -- --repo <path>
 npm run stax:collect -- --repo <path> -- <command>
 npm run stax:gate -- --repo <path>
 npm run stax:status -- --repo <path>
-npm run stax:next-prompt -- --repo <path>
+npm run stax:next -- --repo <path>
 ```
+
+`stax:next-prompt` remains as a compatibility alias for older local workflows.
 
 The target public command surface is:
 
@@ -159,4 +161,5 @@ Runtime accountability files can also exist locally:
 - [Quickstart](docs/QUICKSTART.md)
 - [Codex workflow](docs/CODEX_WORKFLOW.md)
 - [Proof model](docs/PROOF_MODEL.md)
+- [Commands](docs/COMMANDS.md)
 - [Debloat map](docs/DEBLOAT_MAP.md)

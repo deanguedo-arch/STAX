@@ -93,7 +93,7 @@ STAX writes:
 
 ```bash
 npm run stax:status -- --repo ../my-project
-npm run stax:next-prompt -- --repo ../my-project
+npm run stax:next -- --repo ../my-project
 ```
 
 Use the next prompt when STAX returns `Reject`, `Provisional`, or

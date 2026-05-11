@@ -120,7 +120,7 @@ Does a human need to decide?
 When proof is missing or weak, use:
 
 ```bash
-npm run stax:next-prompt -- --repo ../my-project
+npm run stax:next -- --repo ../my-project
 ```
 
 or open:

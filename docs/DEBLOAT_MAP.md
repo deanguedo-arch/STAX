@@ -111,9 +111,10 @@ stax status --repo <path>
 stax next --repo <path>
 ```
 
-Current gap: `package.json` has `stax:next-prompt`, not `stax:next`. The CLI
-binary has a `stax` bin, but the npm script surface still leads with legacy and
-internal commands.
+Phase 3 status: `package.json` now has the public npm aliases `validate`,
+`stax`, and `stax:next`. `stax:next-prompt` remains as a compatibility alias.
+The package script surface still keeps legacy and internal commands because
+GitHub workflows currently call some of them directly.
 
 ### Core Tests
 
@@ -333,16 +334,16 @@ Target public scripts:
 }
 ```
 
-Current support:
+Current support after Phase 3:
 
 - `stax:attach`: present
 - `stax:collect`: present
 - `stax:gate`: present
 - `stax:status`: present
-- `stax:next-prompt`: present, should gain public alias `stax:next`
-- `stax`: not present as an npm script, but `bin.stax` exists for built package
-- `validate`: not present; closest are `validate:all`, `validate:hardened`, and
-  `validate:staxcore:*`
+- `stax:next`: present
+- `stax:next-prompt`: present as compatibility alias
+- `stax`: present as an npm script; `bin.stax` also exists for built package
+- `validate`: present
 
 ### Keep Internal
 
