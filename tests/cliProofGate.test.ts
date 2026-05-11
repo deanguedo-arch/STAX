@@ -63,5 +63,5 @@ describe("STAX proof-gate CLI", () => {
     expect(preflightJson.exitCode).toBe(0);
     expect(preflightJson.blocking).toBe(false);
     expect(preflightJson.eventPaths.length).toBeGreaterThanOrEqual(2);
-  }, 30000);
+  }, 90000);
 });

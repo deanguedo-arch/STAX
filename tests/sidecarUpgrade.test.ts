@@ -64,7 +64,7 @@ describe("STAX sidecar upgrade", () => {
     expect(config.runtimeFreshnessMode).toBe("strict");
     expect(config.commandEvidenceStore).toBe("external_user_store");
     expect(config.commandEvidenceRepoId).toMatch(/^stax-sidecar-upgrade-/);
-    expect(config.commandEvidenceRoot).toContain(".stax/evidence");
+    expect(config.commandEvidenceRoot).toMatch(/\.stax[\\/]evidence/);
     expect(config.preflightDefaultBoundary).toBe("local");
     expect(config.preflightBoundaryPolicy?.local).toBe("observer");
     expect(config.preflightBoundaryPolicy?.push).toBe("soft");
