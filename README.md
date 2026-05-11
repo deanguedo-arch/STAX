@@ -97,6 +97,10 @@ The gate writes:
 .stax/next-codex-prompt.md
 ```
 
+It also appends or updates a generated `## STAX Proof Strength` section in
+`.stax/codex-report.md`. That section is marked as STAX audit output and is
+ignored as input on the next gate run.
+
 The status card is organized around:
 
 ```txt

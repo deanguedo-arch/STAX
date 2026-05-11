@@ -32,6 +32,10 @@ artifact:
 .stax/next-codex-prompt.md
 ```
 
+It also appends or refreshes a generated `## STAX Proof Strength` section in
+`.stax/codex-report.md`. STAX strips that generated section before the next
+score, so the audit does not grade itself.
+
 ## Validation
 
 Core repo validation:

@@ -82,6 +82,16 @@ Sidecar gate runs persist the same artifact shape at:
 .stax/proof_strength.json
 ```
 
+Sidecar gates also append or refresh a generated report section:
+
+```txt
+.stax/codex-report.md
+```
+
+The generated `## STAX Proof Strength` section is wrapped in STAX markers and
+is stripped before the next proof-strength evaluation. It is display/audit
+output, not a Codex-authored completion claim.
+
 The run trace also includes a compact summary:
 
 ```json

@@ -64,6 +64,11 @@ The Codex report should include:
 - anything not run
 - human approvals needed
 
+After `stax gate`, STAX appends or updates a generated `## STAX Proof Strength`
+section in this report. Codex should not edit that generated section. It is the
+audit result, not Codex's own claim, and STAX strips it before the next proof
+score.
+
 ## Command Evidence
 
 Run relevant proof commands through STAX:
