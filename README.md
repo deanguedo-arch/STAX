@@ -1,195 +1,162 @@
-# STAX/RAX - Rule-Aware Adaptive Runtime
+# STAX
 
-STAX is the adaptive rule-aware learning/runtime system. RAX is the internal runtime engine/name where still used.
+Catch fake-complete AI coding work before you trust it.
 
-It processes input through:
+STAX is a local proof gate for AI-coded work. It attaches to a repo, audits
+Codex or AI coding claims against real evidence, and writes a verdict:
 
 ```txt
-Input
--> Risk Classifier
--> Boundary Decision
--> Instruction Stack
--> Retrieval
--> Agent Router
--> Primary Agent
--> Critic Agent
--> Formatter Agent
--> Schema Validation
--> Run Log
--> LearningEvent
--> Learning Queue / Proposal / Approval Gate
--> Output
+Accept
+Provisional
+Reject
+Human Review
 ```
 
-## Install
+## What It Checks
+
+STAX audits AI coding work against proof such as:
+
+- git diff
+- command output and exit codes
+- test and build results
+- screenshots or visual proof
+- data validation and dry-run artifacts
+- release proof and rollback requirements
+- PR artifacts and review evidence
+- human approval requirements
+
+It does not treat an AI report as truth by itself.
+
+## 5-Minute Quickstart
+
+Install and verify the repo:
 
 ```bash
 npm install
-cp .env.example .env
-```
-
-On PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-## Chat-First Use
-
-For daily use, start STAX chat:
-
-```bash
-npm run chat
-```
-
-One-shot chat for tests or quick prompts:
-
-```bash
-npm run rax -- chat --once "Design the approved learning loop."
-```
-
-Normal chat messages still create a run, trace, LearningEvent, queue/proposal when needed, and a linked thread message under `chats/threads/`.
-
-Useful slash commands:
-
-```txt
-/mode planning
-/status
-/last
-/queue
-/metrics
-/learn last
-/lab report
-/lab queue
-/audit-last --proof
-/disagree <reason>
-/compare external <answer>
-/eval
-/replay last
-/clear
-/compact
-/exit
-```
-
-You can also use plain English for common controls:
-
-```txt
-what just happened?
-show status
-learn from that
-audit last answer
-I disagree because ...
-run evals
-unleash the sandbox
-show sandbox report
-reset mode to auto
-```
-
-## Local Proof Controls
-
-STAX is meant to beat normal chat inside local projects by using proof surfaces:
-
-```bash
-npm run rax -- evidence collect --workspace current
-npm run rax -- evidence list
-npm run rax -- disagree --reason "This over-refused a defensive governance audit."
-npm run rax -- workspace create canvas-helper --repo ../canvas-helper
-npm run rax -- train quality --file training.jsonl
-```
-
-`/audit-last --proof`, `/disagree`, and `/compare external` are the chat-first versions of those controls. They create evidence, LearningEvents, and candidate eval pressure only; they do not approve, promote, merge, train, or enable tools.
-
-## Learning Lab Workers
-
-The Learning Lab creates synthetic scenario candidates for controlled STAX exposure. Workers are not autonomous agents and do not promote memory, evals, training records, policies, schemas, or modes.
-
-```bash
-npm run rax -- lab curriculum --domain planning --count 5
-npm run rax -- lab scenarios --curriculum learning/lab/curricula/<file>.json
-npm run rax -- lab run --file learning/lab/scenarios/<file>.json
-npm run rax -- lab redteam --count 5
-npm run rax -- lab report
-npm run rax -- lab queue
-```
-
-Profile-bound improvement cycles are available as sandbox artifacts:
-
-```bash
-npm run rax -- lab go --profile cautious --cycles 1 --domain planning --count 5
-npm run rax -- lab go --profile balanced --cycles 1 --domain planning --count 5
-npm run rax -- lab failures
-npm run rax -- lab patches
-npm run rax -- lab handoffs
-```
-
-These commands can create cycle records, failure clusters, patch proposals, handoff prompts, verification records, and release-gate records. They do not merge, promote, approve memory, train models, or mutate durable system state automatically.
-
-## Run With Mock Provider
-
-```bash
-npm run dev -- run --mode planning "Design the STAX approved learning loop."
-```
-
-The mock provider works offline. OpenAI is required only when `RAX_PROVIDER=openai`.
-
-## Run With Ollama
-
-```bash
-RAX_PROVIDER=ollama OLLAMA_MODEL=llama3.2 npm run dev -- "Analyze this project plan."
-```
-
-On PowerShell:
-
-```powershell
-$env:RAX_PROVIDER="ollama"; $env:OLLAMA_MODEL="llama3.2"; npm run dev -- "Analyze this project plan."
-```
-
-## Run With OpenAI
-
-```bash
-RAX_PROVIDER=openai OPENAI_API_KEY=your_key OPENAI_MODEL=gpt-5.2 npm run dev -- "Build a project plan."
-```
-
-OpenAI is optional. `OPENAI_API_KEY` is required only when `RAX_PROVIDER=openai`.
-
-## Commands
-
-```bash
-npm run dev -- run "input"
-npm run dev -- run --file input.txt
-npm run dev -- batch examples/
-npm run dev -- eval
-npm run dev -- replay <run-id>
-npm run dev -- show last
-npm run dev -- learn queue
-npm run dev -- learn metrics
-npm run dev -- memory search "query"
-npm run dev -- correct <run-id> --output corrected.md --reason "reason"
-```
-
-## Test
-
-```bash
-npm test
 npm run typecheck
+npm test
 ```
 
-## Run Logs
+Attach STAX to a project:
 
-Each run writes:
+```bash
+npm run stax:attach -- --repo ../my-project
+```
+
+Write the task:
+
+```bash
+printf "Fix the composer resize bug.\n" > ../my-project/.stax/task.md
+```
+
+Let Codex work in the attached repo, then have it update:
 
 ```txt
-runs/YYYY-MM-DD/<run-id>/
-  input.txt
-  config.json
-  stack.md
-  risk.json
-  routing.json
-  agent-output.md
-  critic.md
-  final.md
-  trace.json
-  learning_event.json
+../my-project/.stax/codex-report.md
 ```
 
-`trace.json` includes routing, boundary, risk, agent sequence, validation, model-call metadata, and retry count.
+Collect command evidence:
+
+```bash
+npm run stax:collect -- --repo ../my-project -- npm test
+```
+
+Run the gate:
+
+```bash
+npm run stax:gate -- --repo ../my-project
+```
+
+Read the status and next correction prompt:
+
+```bash
+npm run stax:status -- --repo ../my-project
+npm run stax:next-prompt -- --repo ../my-project
+```
+
+## Output
+
+The gate writes:
+
+```txt
+.stax/status.md
+.stax/status.json
+.stax/next-codex-prompt.md
+```
+
+The status card is organized around:
+
+```txt
+Verified
+Weak / Provisional
+Unverified
+Risk
+One Next Action
+Codex Prompt if needed
+```
+
+## Current Commands
+
+The current repo exposes the proof-gate flow through npm scripts:
+
+```bash
+npm run stax:attach -- --repo <path>
+npm run stax:collect -- --repo <path> -- <command>
+npm run stax:gate -- --repo <path>
+npm run stax:status -- --repo <path>
+npm run stax:next-prompt -- --repo <path>
+```
+
+The target public command surface is:
+
+```bash
+stax attach --repo <path>
+stax collect --repo <path> -- <command>
+stax gate --repo <path>
+stax status --repo <path>
+stax next --repo <path>
+```
+
+## Core Sidecar Files
+
+Attached repos use a local `.stax/` folder:
+
+```txt
+.stax/task.md
+.stax/codex-report.md
+.stax/status.md
+.stax/status.json
+.stax/next-codex-prompt.md
+.stax/turn-contract.json
+.stax/command-evidence/
+```
+
+Runtime accountability files can also exist locally:
+
+```txt
+.stax/current-turn.json
+.stax/runtime/
+.stax/turns/
+.stax/events/
+.stax/ledger.json
+.stax/learning-ledger.json
+```
+
+## STAX Does Not
+
+- write code for you
+- replace Codex or another coding agent
+- auto-merge, auto-push, or auto-deploy
+- auto-promote memory, evals, policies, schemas, modes, training data, or source
+  changes
+- trust AI claims without evidence
+- prove general ChatGPT superiority
+- require OpenAI unless the selected provider is OpenAI
+
+## More Docs
+
+- [Product thesis](docs/PRODUCT.md)
+- [Quickstart](docs/QUICKSTART.md)
+- [Codex workflow](docs/CODEX_WORKFLOW.md)
+- [Proof model](docs/PROOF_MODEL.md)
+- [Debloat map](docs/DEBLOAT_MAP.md)
