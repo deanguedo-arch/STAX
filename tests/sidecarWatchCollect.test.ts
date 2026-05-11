@@ -18,7 +18,7 @@ import { externalCommandEvidenceStoreForRepo } from "../src/sidecar/ExternalComm
 import { sha256 } from "../src/sidecar/SidecarRepo.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
-import { stableHash } from "../src/sidecar/WorktreeFingerprint.js";
+import { collectWorktreeFingerprint, stableHash } from "../src/sidecar/WorktreeFingerprint.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 async function updateSidecarConfig(repoPath: string, patch: Record<string, unknown>): Promise<void> {
@@ -564,6 +564,22 @@ describe("STAX sidecar watch and collect", () => {
     expect(allowed.exitCode).toBe(0);
     expect(allowed.warning).toMatch(/allow-risky/);
     expect(allowed.warning).toContain("remote_publish");
+  });
+
+  it("tracks ignored relevant source files without fingerprinting dependency trees", async () => {
+    const repoPath = await createTempGitRepo("stax-fingerprint-ignored-deps-");
+    await fs.writeFile(path.join(repoPath, ".gitignore"), "node_modules/\nsrc/hidden.ts\n", "utf8");
+    await fs.mkdir(path.join(repoPath, "node_modules", "pkg"), { recursive: true });
+    await fs.mkdir(path.join(repoPath, "src"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "node_modules", "pkg", "index.ts"), "export const dependency = true;\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "node_modules", "pkg", "package.json"), "{\"name\":\"pkg\"}\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "src", "hidden.ts"), "export const hidden = true;\n", "utf8");
+
+    const fingerprint = await collectWorktreeFingerprint(repoPath);
+    const paths = fingerprint.untrackedRelevantFiles.map((item) => item.path);
+
+    expect(paths).toContain("src/hidden.ts");
+    expect(paths.some((item) => item.startsWith("node_modules/"))).toBe(false);
   });
 
   it("audits only changed inputs and reports verdict changes", async () => {

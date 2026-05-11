@@ -144,8 +144,21 @@ async function collectIgnoredRelevantFiles(repoPath: string): Promise<string[]> 
 function isAuditableUntrackedPath(filePath: string): boolean {
   const normalized = normalizeRelativePath(filePath);
   if (isWorktreeFingerprintExcludedPath(normalized)) return false;
+  if (isDependencyTreePath(normalized)) return false;
   if (normalized === ".gitignore" || normalized === "AGENTS.md") return true;
   return UNTRACKED_RELEVANT_ROLES.has(classifyFileRole(normalized));
+}
+
+function isDependencyTreePath(filePath: string): boolean {
+  const normalized = normalizeRelativePath(filePath);
+  return normalized.startsWith("node_modules/") ||
+    normalized.startsWith("bower_components/") ||
+    normalized.startsWith(".pnpm-store/") ||
+    normalized.startsWith(".yarn/cache/") ||
+    normalized.startsWith(".yarn/unplugged/") ||
+    normalized.startsWith(".venv/") ||
+    normalized.startsWith("venv/") ||
+    normalized.startsWith("vendor/bundle/");
 }
 
 function uniquePathFilter(): (filePath: string) => boolean {
