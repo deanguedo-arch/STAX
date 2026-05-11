@@ -276,7 +276,7 @@ function decideAction(options: {
   if (reusable && strengthScore >= 7) {
     return input.humanApproved ? "promote_with_approval" : "review_for_promotion";
   }
-  return classification === "trace_fact" ? "discard" : "hold_local";
+  return "hold_local";
 }
 
 function reasonForNonPromotion(action: PatternPromotionAction, blockers: string[]): string {
