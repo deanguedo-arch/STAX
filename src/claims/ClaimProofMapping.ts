@@ -95,25 +95,25 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
     }
   };
 
-  if (/\bimplemented\b|\bimplementation is complete\b|\bcompleted\b|\bfix is complete\b/i.test(normalized)) {
+  if (/\bimplemented\b|\bimplementation is complete\b|\bcompleted\b|\bfix is complete\b|\bdone\b|\ball set\b|\bresolved\b|\bcleaned up\b/i.test(normalized)) {
     push("implementation", "Implementation is complete.");
   }
-  if (/\btests? passed\b|\btest suite passed\b|\badded tests\b/i.test(normalized)) {
+  if (/\btests? passed\b|\btest suite passed\b|\badded tests\b|\bchecks? (?:are )?green\b|\bci (?:is )?green\b|\bbuild passed\b|\btypecheck passed\b|\blint passed\b|\bvalidated\b/i.test(normalized)) {
     push("test", "Tests passed.");
   }
   if (/\bevals? passed\b|\bregression passed\b|\bredteam passed\b/i.test(normalized)) {
     push("eval", "Evals passed.");
   }
-  if (/\bworks\b|\bbehavior\b|\bfeature works\b|\bbehavior is verified\b|\bruntime ready\b/i.test(normalized)) {
+  if (/\bworks\b|\bworks now\b|\bshould work\b|\bbehavior\b|\bfeature works\b|\bbehavior is verified\b|\bruntime ready\b|\bready to use\b/i.test(normalized)) {
     push("behavior", "Behavior is proven.");
   }
-  if (/\bvisual\b|\blayout\b|\bscreenshot\b|\brendered\b|\bcss\b/i.test(normalized)) {
+  if (/\bvisual\b|\blayout\b|\bscreenshot\b|\brendered\b|\bcss\b|\blooks good\b|\blooks correct\b/i.test(normalized)) {
     push("visual", "Visual/layout claim.");
   }
   if (/\bdata\b|\bcsv\b|\brow-count\b|\brow count\b|\bdry-run\b|\bdry run\b|\bcanonical\b/i.test(normalized)) {
     push("data", "Data correctness or publish readiness claim.");
   }
-  if (/\brelease\b|\bdeploy(?:ment)?\b|\bpublish\b|\bsync\b|\bapp store\b|\btestflight\b/i.test(normalized)) {
+  if (/\brelease\b|\bdeploy(?:ment)?\b|\bpublish\b|\bsync\b|\bapp store\b|\btestflight\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(normalized)) {
     push("release_deploy", "Release/deploy readiness claim.");
   }
   if (/\bmemory\b|\bpromotion\b|\bapproved memory\b/i.test(normalized)) {
