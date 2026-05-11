@@ -663,6 +663,7 @@ async function showCommand(args: ParsedArgs): Promise<void> {
   const trace = JSON.parse(await fs.readFile(path.join(runDir, "trace.json"), "utf8")) as {
     mode?: string;
     validation?: { valid?: boolean };
+    proofStrength?: { label: string; primaryLimiter: string };
     learningEventId?: string;
     learningQueues?: string[];
   };
@@ -671,6 +672,7 @@ async function showCommand(args: ParsedArgs): Promise<void> {
       `Run: ${runId}`,
       `Mode: ${trace.mode ?? "unknown"}`,
       `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
+      `ProofStrength: ${trace.proofStrength ? `${trace.proofStrength.label} - ${trace.proofStrength.primaryLimiter}` : "none"}`,
       `LearningEvent: ${trace.learningEventId ?? "none"}`,
       `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
       `Trace: ${toPosixPath(path.relative(process.cwd(), path.join(runDir, "trace.json")))}`
@@ -683,6 +685,7 @@ async function showCommand(args: ParsedArgs): Promise<void> {
     `Run: ${runId}`,
     `Mode: ${trace.mode ?? "unknown"}`,
     `Validation: ${trace.validation?.valid === false ? "failed" : "passed"}`,
+    `ProofStrength: ${trace.proofStrength ? `${trace.proofStrength.label} - ${trace.proofStrength.primaryLimiter}` : "none"}`,
     `LearningEvent: ${trace.learningEventId ?? "none"}`,
     `LearningQueues: ${trace.learningQueues?.join(", ") || "none"}`,
     `Trace: ${toPosixPath(path.relative(process.cwd(), path.join(runDir, "trace.json")))}`

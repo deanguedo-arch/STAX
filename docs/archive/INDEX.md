@@ -12,6 +12,7 @@ The current public docs are:
 - `docs/QUICKSTART.md`
 - `docs/CODEX_WORKFLOW.md`
 - `docs/PROOF_MODEL.md`
+- `docs/PROOF_STRENGTH_GATE.md`
 - `docs/COMMANDS.md`
 - `docs/FAQ.md`
 - `docs/STAX_SIDECAR_DOCTRINE.md`

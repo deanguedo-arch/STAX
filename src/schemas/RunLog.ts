@@ -4,6 +4,7 @@ import type { RaxConfig } from "./Config.js";
 import type { DetailLevel, ProviderRole, RaxMode } from "./Config.js";
 import type { LearningQueueType } from "../learning/LearningEvent.js";
 import type { RiskScore } from "./RiskScore.js";
+import type { ProofStrengthTraceSummary } from "../evidence/ProofStrengthSchemas.js";
 
 export type ModelCallTrace = {
   role: ProviderRole;
@@ -61,6 +62,7 @@ export type RunTrace = {
   validation: Record<string, unknown>;
   retries?: number;
   detailLevel?: DetailLevel;
+  proofStrength?: ProofStrengthTraceSummary;
   learningEventId?: string;
   learningQueues?: LearningQueueType[];
 };

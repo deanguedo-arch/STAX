@@ -9,6 +9,7 @@ import type { RunTrace } from "../schemas/RunLog.js";
 import type { BoundaryResult } from "../safety/BoundaryDecision.js";
 import type { CriticReview } from "../validators/CriticGate.js";
 import { LearningRecorder } from "../learning/LearningRecorder.js";
+import type { ProofStrengthResult } from "../evidence/ProofStrengthSchemas.js";
 
 export type RunLoggerPayload = {
   runId: string;
@@ -31,6 +32,7 @@ export type RunLoggerPayload = {
   formatter?: string;
   final: string;
   trace: RunTrace;
+  proofStrength?: ProofStrengthResult;
   createdAt: string;
 };
 
@@ -138,6 +140,13 @@ export class RunLogger {
         "utf8"
       ),
       fs.writeFile(path.join(dir, "final.md"), payload.final, "utf8"),
+      payload.proofStrength
+        ? fs.writeFile(
+            path.join(dir, "proof_strength.json"),
+            JSON.stringify(payload.proofStrength, null, 2),
+            "utf8"
+          )
+        : Promise.resolve(),
       fs.writeFile(
         path.join(dir, "trace.json"),
         JSON.stringify(payload.trace, null, 2),

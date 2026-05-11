@@ -11,6 +11,12 @@ import { PolicySelector } from "../policy/PolicySelector.js";
 import type { ModelProvider } from "../providers/ModelProvider.js";
 import { CommandEvidenceStore } from "../evidence/CommandEvidenceStore.js";
 import { EvidenceGroundingGate } from "../evidence/EvidenceGroundingGate.js";
+import {
+  ProofStrengthGate,
+  inferProofStrengthClaimType,
+  summarizeProofStrength
+} from "../evidence/ProofStrengthGate.js";
+import type { ProofStrengthResult } from "../evidence/ProofStrengthSchemas.js";
 import { ProviderRouter } from "../routing/ProviderRouter.js";
 import { DEFAULT_CONFIG, type DeepPartial, type RaxConfig } from "../schemas/Config.js";
 import type { DetailLevel, RaxMode } from "../schemas/Config.js";
@@ -241,14 +247,16 @@ export class RaxRuntime {
       mode: effectiveRoute.mode,
       output: primary.output
     });
-    const groundingIssues = await this.evidenceGroundingIssues({
+    let proofStrength: ProofStrengthResult | undefined;
+    const proofAudit = await this.proofStrengthAudit({
       mode: effectiveRoute.mode,
       output: primary.output,
       options,
       repoEvidencePack
     });
-    if (groundingIssues.length) {
-      criticReview = mergeCriticIssues(criticReview, groundingIssues);
+    proofStrength = proofAudit.proofStrength;
+    if (proofAudit.groundingIssues.length && !isMockLikeProvider(this.providerForRole("generator").name)) {
+      criticReview = mergeCriticIssues(criticReview, proofAudit.groundingIssues);
     }
     let repairResult: RepairResult | undefined;
     let repairPasses = 0;
@@ -273,14 +281,15 @@ export class RaxRuntime {
           mode: effectiveRoute.mode,
           output: primary.output
         });
-        const postRepairGroundingIssues = await this.evidenceGroundingIssues({
+        const postRepairProofAudit = await this.proofStrengthAudit({
           mode: effectiveRoute.mode,
           output: primary.output,
           options,
           repoEvidencePack
         });
-        if (postRepairGroundingIssues.length) {
-          criticReview = mergeCriticIssues(criticReview, postRepairGroundingIssues);
+        proofStrength = postRepairProofAudit.proofStrength;
+        if (postRepairProofAudit.groundingIssues.length && !isMockLikeProvider(this.providerForRole("generator").name)) {
+          criticReview = mergeCriticIssues(criticReview, postRepairProofAudit.groundingIssues);
         }
       }
     }
@@ -371,7 +380,8 @@ export class RaxRuntime {
         boundaryDecision: boundary,
         modelCalls,
         validation,
-        retries
+        retries,
+        proofStrength: summarizeProofStrength(proofStrength)
       };
 
       const output: RaxOutput = {
@@ -412,6 +422,7 @@ export class RaxRuntime {
           : JSON.stringify({ status: "not_attempted_due_to_critical" }, null, 2),
         final: failureOutput,
         trace,
+        proofStrength,
         createdAt
       });
 
@@ -532,7 +543,8 @@ export class RaxRuntime {
         boundaryDecision: boundary,
         modelCalls,
         validation,
-        retries
+        retries,
+        proofStrength: summarizeProofStrength(proofStrength)
       };
       await this.logger.log({
         runId,
@@ -556,6 +568,7 @@ export class RaxRuntime {
         formatter: formatterResult.output,
         final: failureOutput,
         trace,
+        proofStrength,
         createdAt
       });
       throw new ValidationFailureError(validation.issues.join("; "));
@@ -612,7 +625,8 @@ export class RaxRuntime {
       boundaryDecision: boundary,
       modelCalls,
       validation,
-      retries
+      retries,
+      proofStrength: summarizeProofStrength(proofStrength)
     };
 
     const output: RaxOutput = {
@@ -655,6 +669,7 @@ export class RaxRuntime {
       formatter: formatterResult.output,
       final: formatterResult.output,
       trace,
+      proofStrength,
       createdAt
     });
 
@@ -733,14 +748,14 @@ export class RaxRuntime {
     }
   }
 
-  private async evidenceGroundingIssues(input: {
+  private async proofStrengthAudit(input: {
     mode: RaxMode;
     output: string;
     options: RaxRunOptions;
     repoEvidencePack?: RepoEvidencePack;
-  }): Promise<string[]> {
-    if (!input.repoEvidencePack || isMockLikeProvider(this.providerForRole("generator").name) || !isRepoFacingMode(input.mode)) {
-      return [];
+  }): Promise<{ groundingIssues: string[]; proofStrength?: ProofStrengthResult }> {
+    if (!input.repoEvidencePack || !isRepoFacingMode(input.mode)) {
+      return { groundingIssues: [] };
     }
     const commandEvidence = await new CommandEvidenceStore(this.rootDir).list({
       workspace: input.options.workspace
@@ -751,7 +766,22 @@ export class RaxRuntime {
       repoEvidence: input.repoEvidencePack,
       commandEvidence
     });
-    return grounding.unsupportedClaims.map((claim) => `Evidence grounding unsupported ${claim.kind}: ${claim.text}`);
+    const claimType = inferProofStrengthClaimType(input.output);
+    const proofStrength = claimType
+      ? new ProofStrengthGate().evaluate({
+          claimType,
+          claimText: input.output,
+          groundingResult: grounding,
+          commandEvidence,
+          repoEvidence: input.repoEvidencePack,
+          expectedRepoPath: input.options.linkedRepoPath,
+          expectedWorkspace: input.options.workspace
+        })
+      : undefined;
+    return {
+      groundingIssues: grounding.unsupportedClaims.map((claim) => `Evidence grounding unsupported ${claim.kind}: ${claim.text}`),
+      proofStrength
+    };
   }
 
   private modelCriticIssues(output: string, providerName: string): string[] {

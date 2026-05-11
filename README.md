@@ -173,6 +173,7 @@ Runtime accountability files can also exist locally:
 - [Quickstart](docs/QUICKSTART.md)
 - [Codex workflow](docs/CODEX_WORKFLOW.md)
 - [Proof model](docs/PROOF_MODEL.md)
+- [Proof strength gate](docs/PROOF_STRENGTH_GATE.md)
 - [Commands](docs/COMMANDS.md)
 - [FAQ](docs/FAQ.md)
 - [Debloat map](docs/DEBLOAT_MAP.md)

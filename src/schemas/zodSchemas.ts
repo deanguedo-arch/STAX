@@ -357,6 +357,13 @@ export const RunTraceSchema = z.object({
   validation: z.record(z.string(), z.unknown()),
   route: z.record(z.string(), z.unknown()),
   replayable: z.boolean(),
+  proofStrength: z.object({
+    label: z.enum(["Missing", "Weak", "Provisional", "Strong", "Audit-grade", "Reject"]),
+    rawScore: z.number().min(0).max(1),
+    finalScore: z.number().min(0).max(1),
+    capApplied: z.array(z.string()),
+    primaryLimiter: z.string()
+  }).optional(),
   learningEventId: z.string().optional(),
   learningQueues: z.array(LearningQueueTypeSchema).optional()
 });
