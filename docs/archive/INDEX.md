@@ -23,6 +23,8 @@ The current public docs are:
   reports.
 - `research/`: learning lab, autonomous improvement lab, legacy RAX specs, and
   old training/memory/mode/policy/safety research docs.
+- `reports/`: historical RAX/STAX implementation reports that are useful as
+  provenance but should not lead the product path.
 - `releases/`: repo-transfer and release-history reports moved out of the top
   docs path.
 - `phase-plans/`: old phase-plan material.
@@ -42,5 +44,6 @@ Examples:
 - `docs/PROJECT_STATE.md`
 - `docs/EVIDENCE_REGISTRY.md`
 - `docs/CLAIM_LEDGER.md`
+- `docs/PROVEN_WORKING.md`
 - `docs/RAX_REAL_USE_CAMPAIGN_REPORT.md`
 - `docs/STAX_NEXT_10_PHASES_CONSENSUS.md`

@@ -146,7 +146,7 @@ Likely files:
 - `src/operator/OperationSchemas.ts`
 - `tests/chatOperatorReceipt.test.ts`
 - `docs/STAX_CHAT_OPERATOR_RECEIPTS.md`
-- `docs/RAX_CHAT_OPERATOR_RECEIPTS_REPORT.md`
+- `docs/archive/reports/RAX_CHAT_OPERATOR_RECEIPTS_REPORT.md`
 
 Proof gates:
 
@@ -472,7 +472,7 @@ unknown. If evidence is vague, pasted, stale, or missing, the claim must move to
 Required report:
 
 ```txt
-docs/RAX_CHAT_OPERATOR_RECEIPTS_REPORT.md
+docs/archive/reports/RAX_CHAT_OPERATOR_RECEIPTS_REPORT.md
 ```
 
 Required code artifacts:

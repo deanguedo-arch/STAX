@@ -289,9 +289,11 @@ Not moved yet:
 
 - `docs/STAX_9_5_PROMOTION_REPORT.md`
 - `docs/RAX_100_PROOF_REPORT.md`
-- `docs/RAX_KNOWN_GAPS_CONSENSUS_REPORT.md`
-- `docs/RAX_LOCAL_PROOF_SUPERIORITY_REPORT.md`
 - `docs/releases/`
+
+Phase 4B archived additional historical reports under:
+
+- `docs/archive/reports/`
 
 ### Old RAX Architecture Docs
 
