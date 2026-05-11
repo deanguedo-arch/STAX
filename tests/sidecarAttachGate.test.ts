@@ -188,6 +188,64 @@ describe("STAX sidecar attach and gate", () => {
     expect(reportAfterSecondGate.match(/<!-- STAX:proof-strength:start -->/g)).toHaveLength(1);
   });
 
+  it("reports proof strength for verified command evidence without hard completion wording", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-verification-run-");
+    useTestExternalEvidenceRoot(repoPath);
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(
+      repoPath,
+      "package.json",
+      `${JSON.stringify({ scripts: { build: "node -e \"console.log('build ok')\"" } }, null, 2)}\n`
+    );
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "build"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: record local verification evidence",
+        "Files changed: none",
+        "Tests added: none",
+        "Commands run: npm run build",
+        `Command output summary with exit codes: ${evidence.evidenceId} exit code 0`,
+        "What is verified: local command evidence was captured for the current repo state",
+        "What is weak/provisional: none",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: none"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.proofStrength?.claimType).toBe("verification_run");
+    expect(status.proofStrength?.label === "Strong" || status.proofStrength?.label === "Audit-grade").toBe(true);
+    expect(status.statusMarkdown).toContain("- Artifact: .stax/proof_strength.json");
+    const artifact = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "proof_strength.json"), "utf8")) as { claimType: string; label: string };
+    expect(artifact.claimType).toBe("verification_run");
+    const reportWithProofStrength = await fs.readFile(path.join(repoPath, ".stax", "codex-report.md"), "utf8");
+    expect(reportWithProofStrength).toContain("## STAX Proof Strength");
+    expect(reportWithProofStrength).toContain("- Claim Type: verification_run");
+    expect(reportWithProofStrength).toContain("- Confidence Report: .stax/reports/latest-confidence-report.md");
+  });
+
   it("does not mark command evidence stale when only tracked sidecar proof artifacts advanced HEAD", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-proof-report-head-");
     useTestExternalEvidenceRoot(repoPath);

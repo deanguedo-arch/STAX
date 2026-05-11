@@ -29,6 +29,49 @@ describe("ProofStrengthGate", () => {
     expect(result.oneNextAction).toBe("No proof-strength correction is needed for this claim.");
   });
 
+  it("scores verified command proof runs without reclassifying them as completion claims", () => {
+    const command = commandEvidence({
+      command: "npm run build",
+      args: ["run", "build"],
+      commandFamily: "build",
+      source: "local_stax_command_output"
+    });
+    const result = evaluate({
+      claimType: "verification_run",
+      claimText: "Command evidence: npm run build exited 0 for package.json.",
+      commandEvidence: [command]
+    });
+
+    expect(result.label === "Strong" || result.label === "Audit-grade").toBe(true);
+    expect(result.capApplied).toEqual([]);
+    expect(result.rejectReasons).toEqual([]);
+    expect(result.strongProof.join("\n")).toContain("Verified local STAX command provenance is present for this repo state.");
+  });
+
+  it("does not let weak side notes become the primary limiter for audit-grade proof", () => {
+    const command = commandEvidence({
+      command: "npm run build",
+      args: ["run", "build"],
+      commandFamily: "build",
+      source: "local_stax_command_output"
+    });
+    const sidecarCommand = commandEvidence({
+      command: "npm run stax:sidecar:start",
+      args: ["run", "stax:sidecar:start"],
+      source: "human_pasted_command_output"
+    });
+    const result = evaluate({
+      claimType: "verification_run",
+      claimText: "Command evidence: npm run build exited 0 for package.json. Maintenance command: npm run stax:sidecar:start -- --once.",
+      commandEvidence: [command, sidecarCommand]
+    });
+
+    expect(result.label).toBe("Audit-grade");
+    expect(result.weakProof.join("\n")).toContain("npm run stax:sidecar:start");
+    expect(result.primaryLimiter).toBe("Available proof is strong enough for this claim type.");
+    expect(result.oneNextAction).toBe("No proof-strength correction is needed for this claim.");
+  });
+
   it("caps Codex-reported command output at Provisional", () => {
     const result = evaluate({
       claimType: "tests_passed",

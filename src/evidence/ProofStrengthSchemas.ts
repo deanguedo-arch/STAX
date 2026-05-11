@@ -8,7 +8,8 @@ export const ProofStrengthClaimTypeSchema = z.enum([
   "tests_passed",
   "visual_behavior_verified",
   "release_ready",
-  "security_fixed"
+  "security_fixed",
+  "verification_run"
 ]);
 
 export const ProofStrengthLabelSchema = z.enum([

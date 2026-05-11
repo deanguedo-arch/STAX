@@ -36,6 +36,9 @@ artifact:
 It also appends or refreshes a generated `## STAX Proof Strength` section in
 `.stax/codex-report.md`. STAX strips that generated section before the next
 score, so the audit does not grade itself.
+When the report avoids hard completion/test/release claims but verified command
+evidence exists, STAX still writes proof strength as a `verification_run` so the
+captured proof is not invisible.
 
 `stax collect` stores raw command proof outside the attached repo:
 

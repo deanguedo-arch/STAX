@@ -21,6 +21,12 @@ Phase 1 supports only:
 - `visual_behavior_verified`
 - `release_ready`
 - `security_fixed`
+- `verification_run`
+
+`verification_run` is the sidecar fallback when STAX has command evidence but
+the Codex report does not make a hard completion, test-pass, visual, release, or
+security claim. It scores the proof run itself without pretending the command
+proves more than it actually proves.
 
 ## Inputs
 
@@ -55,8 +61,8 @@ It includes:
 
 Hard caps and reject conditions are the product.
 
-- No command evidence caps implementation, test, release, and security claims at
-  `Provisional`.
+- No command evidence caps implementation, test, release, security, and
+  verification-run claims at `Provisional`.
 - Codex-reported command output only caps the result at `Provisional`.
 - A `local_stax_command_output` label is not strong proof by itself. Sidecar
   command evidence must verify as `verified_local_stax_command`; otherwise it is

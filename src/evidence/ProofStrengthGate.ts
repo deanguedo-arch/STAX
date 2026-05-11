@@ -14,7 +14,8 @@ const COMMAND_REQUIRED_CLAIMS = new Set<ProofStrengthClaimType>([
   "implementation_complete",
   "tests_passed",
   "release_ready",
-  "security_fixed"
+  "security_fixed",
+  "verification_run"
 ]);
 
 const LABEL_MAX_SCORE: Record<Exclude<ProofStrengthLabel, "Reject" | "Audit-grade">, number> = {
@@ -52,6 +53,9 @@ export class ProofStrengthGate {
 
     for (const command of localPassingCommands) {
       strongProof.push(`Local STAX command evidence passed: ${command.command} exited ${command.exitCode}.`);
+    }
+    if (parsed.claimType === "verification_run" && localPassingCommands.length > 0) {
+      strongProof.push("Verified local STAX command provenance is present for this repo state.");
     }
     for (const command of unverifiedLocalCommands) {
       weakProof.push(
@@ -241,8 +245,11 @@ function rawProofScore(
   let score = 0;
   if (input.groundingSupported > 0) score += Math.min(0.25, 0.1 * input.groundingSupported);
   if (input.groundingWeak > 0) score += 0.08;
-  if (input.localPassingCommands > 0) score += claimType === "tests_passed" ? 0.55 : 0.35;
-  else if (input.provisionalCommands > 0) score += 0.42;
+  if (input.localPassingCommands > 0) {
+    score += claimType === "tests_passed" ? 0.55 : claimType === "verification_run" ? 0.7 : 0.35;
+  } else if (input.provisionalCommands > 0) {
+    score += 0.42;
+  }
   if (claimType === "implementation_complete" && input.repoSourceFiles > 0) score += 0.18;
   if (claimType === "implementation_complete" && input.repoTestFiles > 0) score += 0.12;
   if (claimType === "visual_behavior_verified" && input.visualProof) score += 0.55;
@@ -270,10 +277,9 @@ function primaryLimiterFor(input: {
   if (input.rejectReasons[0]) return input.rejectReasons[0];
   if (input.capApplied[0]) return input.capApplied[0].reason;
   if (input.missingProof[0]) return input.missingProof[0];
-  if (input.weakProof[0]) return input.weakProof[0];
   return input.label === "Audit-grade" || input.label === "Strong"
     ? "Available proof is strong enough for this claim type."
-    : "Available proof is not yet strong enough for this claim type.";
+    : input.weakProof[0] ?? "Available proof is not yet strong enough for this claim type.";
 }
 
 function nextActionFor(

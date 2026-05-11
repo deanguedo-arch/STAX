@@ -740,7 +740,8 @@ async function deriveSidecarProofStrength(input: {
   generatedAt: string;
 }): Promise<ProofStrengthResult | undefined> {
   const claimText = [input.task, input.codexReport].filter((item) => item.trim()).join("\n\n");
-  const claimType = inferProofStrengthClaimType(claimText);
+  const commandEvidence = input.commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
+  const claimType = inferProofStrengthClaimType(claimText) ?? (commandEvidence.length > 0 ? "verification_run" : undefined);
   if (!claimType) return undefined;
   const evidenceFiles = mergeChangedFiles(input.changedFiles, await existingMentionedFiles(input.repoPath, claimText));
   const repoEvidence = sidecarRepoEvidencePack({
@@ -749,7 +750,6 @@ async function deriveSidecarProofStrength(input: {
     changedFiles: evidenceFiles,
     createdAt: input.generatedAt
   });
-  const commandEvidence = input.commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
   const groundingResult = new EvidenceGroundingGate().evaluate({
     output: claimTextForGrounding(claimText, input.repoPath, input.snapshot.branch),
     repoEvidence,
