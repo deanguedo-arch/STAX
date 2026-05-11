@@ -19,6 +19,7 @@ import type { ProjectControlCardStatus } from "../projectControl/ControlCard.js"
 import { validateProjectControlCardShape } from "../projectControl/ControlCard.js";
 import type { RepoEvidencePack } from "../workspace/RepoEvidenceSchemas.js";
 import {
+  readCommandEvidenceLedgerTipFromDir,
   readCommandEvidenceLedgerFromDir,
   verifyCommandEvidenceLedger,
   type CommandEvidenceLedgerVerification
@@ -34,7 +35,13 @@ import {
 import { writeSidecarLearningEvent } from "./SidecarLearningWriter.js";
 import type { SidecarLearningEvent, SidecarLearningEventType } from "./SidecarLearningEvent.js";
 import { STAX_CONFIDENCE_REPORT_RELATIVE_PATH, STAX_PROOF_REPORT_RELATIVE_PATH } from "./AttachStax.js";
-import { checkTurnCompliance, type TurnComplianceMode } from "./TurnCompliance.js";
+import {
+  verifyProtocolCompliance,
+  type ProtocolComplianceFinding,
+  type ProtocolComplianceResult,
+  type ProtocolStatus
+} from "./ProtocolComplianceVerifier.js";
+import type { TurnComplianceMode } from "./TurnCompliance.js";
 import { writeTurnContract, type StaxTurnContract } from "./TurnContract.js";
 import {
   collectGitSnapshot,
@@ -48,7 +55,11 @@ import {
   sidecarDir,
   validateRepoPath
 } from "./SidecarRepo.js";
-import { collectWorktreeFingerprint, type WorktreeFingerprint } from "./WorktreeFingerprint.js";
+import {
+  collectWorktreeFingerprint,
+  isWorktreeFingerprintExcludedPath,
+  type WorktreeFingerprint
+} from "./WorktreeFingerprint.js";
 
 export type StaxGateVerdict = ProjectControlCardStatus;
 
@@ -70,6 +81,9 @@ export type StaxGateStatus = {
   oneNextAction: string;
   codexPrompt: string;
   proofStrength?: ProofStrengthResult;
+  protocolStatus?: ProtocolStatus;
+  protocolFailures?: ProtocolComplianceFinding[];
+  protocol?: ProtocolComplianceResult;
   statusMarkdown: string;
   cardShapeIssues: string[];
   turnContract?: Pick<StaxTurnContract, "turnId" | "requiredAcknowledgement" | "statusHash" | "nextPromptHash">;
@@ -103,6 +117,8 @@ type SidecarCommandEvidenceEntry = SidecarCommandEvidenceWithProvenance;
 
 const STAX_PROOF_STRENGTH_SECTION_START = "<!-- STAX:proof-strength:start -->";
 const STAX_PROOF_STRENGTH_SECTION_END = "<!-- STAX:proof-strength:end -->";
+const STAX_ACCEPT_BOUNDARY =
+  "Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.";
 
 export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGateStatus> {
   const repoPath = await validateRepoPath(options.repoPath);
@@ -173,12 +189,14 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     generatedAt: nowIso()
   });
   const runtime = await deriveRuntimeFindings(repoPath, config, options.now ?? new Date());
-  const compliance = await deriveTurnComplianceFindings({
+  const protocol = await verifyProtocolCompliance({
     repoPath,
-    config,
-    codexReport,
+    codexReportText: codexReport,
+    mode: config.turnComplianceMode ?? (config.requireFreshCodexTurnCapture ? "strict" : "normal"),
+    codexClaimsCompletion: /\b(done|complete|finished|ready)\b/i.test(codexReport),
     hasDiff: auditableDiff
   });
+  const compliance = protocolComplianceFindings(protocol);
   const proofStrengthSections = proofStrengthFindings(proofStrength);
 
   const verified = dedupe([
@@ -214,7 +232,8 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     risk,
     oneNextAction,
     codexPrompt,
-    proofStrength
+    proofStrength,
+    protocol
   });
   const cardShapeIssues = validateProjectControlCardShape(statusMarkdown);
   const status: StaxGateStatus = {
@@ -235,6 +254,9 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     oneNextAction,
     codexPrompt,
     proofStrength,
+    protocolStatus: protocol.status,
+    protocolFailures: protocol.findings,
+    protocol,
     statusMarkdown,
     cardShapeIssues
   };
@@ -373,43 +395,36 @@ function runtimeFreshnessModeForConfig(config: SidecarConfig): TurnComplianceMod
   return "normal";
 }
 
-async function deriveTurnComplianceFindings(input: {
-  repoPath: string;
-  config: SidecarConfig;
-  codexReport: string;
-  hasDiff: boolean;
-}): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
-  const mode = input.config.turnComplianceMode ?? (input.config.requireFreshCodexTurnCapture ? "strict" : "normal");
-  if (mode === "manual") {
-    return {
-      verified: [],
-      weak: [],
-      unverified: [],
-      risk: []
-    };
+function protocolComplianceFindings(
+  protocol: ProtocolComplianceResult
+): Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk"> {
+  if (protocol.mode === "manual") {
+    return { verified: [], weak: [], unverified: [], risk: [] };
   }
-  const compliance = await checkTurnCompliance({
-    repoPath: input.repoPath,
-    codexReportText: input.codexReport,
-    mode,
-    codexClaimsCompletion: /\b(done|complete|finished|ready)\b/i.test(input.codexReport),
-    hasDiff: input.hasDiff
-  });
-  if (compliance.pass) {
+  if (protocol.status === "ok") {
     return {
-      verified: [`Codex acknowledged current STAX turn contract: ${compliance.acknowledgement}`],
+      verified: [`Protocol compliance verified: Codex acknowledged current STAX turn contract: ${protocol.acknowledgement}`],
       weak: [],
       unverified: [],
       risk: []
     };
   }
 
-  const weak = compliance.issues.filter((issue) => issue.severity === "weak").map((issue) => issue.message);
-  const unverified = compliance.issues.filter((issue) => issue.severity === "reject").map((issue) => issue.message);
-  const risk =
-    unverified.length > 0
-      ? ["False Pass risk: Codex did not prove it read the current STAX turn contract."]
-      : [];
+  const weak = protocol.findings
+    .filter((finding) => finding.severity === "warning")
+    .map((finding) => finding.message);
+  const humanReview = protocol.findings
+    .filter((finding) => finding.severity === "human_review")
+    .map((finding) => `Protocol compliance requires human review: ${finding.message}`);
+  const unverified = protocol.findings
+    .filter((finding) => finding.severity === "reject")
+    .map((finding) => finding.message);
+  const risk = [
+    ...humanReview,
+    ...(unverified.length > 0
+      ? ["Protocol failure: Codex did not prove it followed the current STAX sidecar contract."]
+      : [])
+  ];
   return {
     verified: [],
     weak,
@@ -453,7 +468,7 @@ async function writeSidecarStatus(
   await writeLatestConfidenceReport(repoPath, status);
   await fs.writeFile(
     path.join(staxPath, "next-codex-prompt.md"),
-    status.verdict === "Accept" ? "No correction prompt needed; the current sidecar gate is accepted.\n" : `${status.codexPrompt}\n`,
+    status.verdict === "Accept" ? `No correction prompt needed. ${STAX_ACCEPT_BOUNDARY}\n` : `${status.codexPrompt}\n`,
     "utf8"
   );
 }
@@ -468,11 +483,13 @@ function renderStatusMarkdown(input: {
   oneNextAction: string;
   codexPrompt: string;
   proofStrength?: ProofStrengthResult;
+  protocol?: ProtocolComplianceResult;
 }): string {
   return [
     "## Verdict",
     `- Status: ${input.verdict}`,
     `- Why: ${input.why}`,
+    `- Accept Boundary: ${STAX_ACCEPT_BOUNDARY}`,
     "",
     "## Verified",
     ...renderBullets(input.verified, "Nothing verified yet."),
@@ -489,12 +506,26 @@ function renderStatusMarkdown(input: {
     "## Proof Strength",
     ...renderProofStrength(input.proofStrength),
     "",
+    "## Protocol Compliance",
+    ...renderProtocolCompliance(input.protocol),
+    "",
     "## One Next Action",
     `- ${input.oneNextAction}`,
     "",
     "## Codex Prompt if needed",
     input.codexPrompt
   ].join("\n") + "\n";
+}
+
+function renderProtocolCompliance(protocol?: ProtocolComplianceResult): string[] {
+  if (!protocol) return ["- Status: unknown"];
+  return [
+    `- Status: ${protocol.status}`,
+    `- Mode: ${protocol.mode}`,
+    `- Required Sections Present: ${protocol.requiredSectionsPresent.join(", ") || "none"}`,
+    `- Missing Required Sections: ${protocol.missingRequiredSections.join(", ") || "none"}`,
+    ...protocol.findings.map((finding) => `- ${finding.severity}: ${finding.message}`)
+  ];
 }
 
 function renderProofStrength(proofStrength?: ProofStrengthResult): string[] {
@@ -531,6 +562,7 @@ function renderCodexReportProofStrengthSection(proofStrength?: ProofStrengthResu
       "Generated by `stax gate`; this is STAX audit output, not a Codex completion claim.",
       "",
       "- Summary: No formal proof-strength artifact was generated for this gate run.",
+      `- Accept Boundary: ${STAX_ACCEPT_BOUNDARY}`,
       `- Proof report: ${STAX_PROOF_REPORT_RELATIVE_PATH}`,
       `- Confidence report: ${STAX_CONFIDENCE_REPORT_RELATIVE_PATH}`,
       STAX_PROOF_STRENGTH_SECTION_END
@@ -550,6 +582,7 @@ function renderCodexReportProofStrengthSection(proofStrength?: ProofStrengthResu
     `- Caps Applied: ${proofStrength.capApplied.map((cap) => cap.id).join(", ") || "none"}`,
     `- Primary Limiter: ${proofStrength.primaryLimiter}`,
     `- Next Proof Action: ${proofStrength.oneNextAction}`,
+    `- Accept Boundary: ${STAX_ACCEPT_BOUNDARY}`,
     `- Proof report: ${STAX_PROOF_REPORT_RELATIVE_PATH}`,
     "- Artifact: .stax/proof_strength.json",
     `- Confidence Report: ${STAX_CONFIDENCE_REPORT_RELATIVE_PATH}`,
@@ -598,6 +631,7 @@ function renderLatestProofReport(
     "## Verdict",
     `- Status: ${status.verdict}`,
     `- Why: ${sanitizeProofReportText(status.why, status.repoPath)}`,
+    `- Accept Boundary: ${STAX_ACCEPT_BOUNDARY}`,
     `- Generated At: ${status.generatedAt}`,
     `- Repo: ${status.repo}`,
     ...repoLines,
@@ -615,6 +649,9 @@ function renderLatestProofReport(
           `- One Next Proof Action: ${sanitizeProofReportText(proofStrength.oneNextAction, status.repoPath)}`
         ]
       : ["- No proof-strength artifact was generated for this gate run."]),
+    "",
+    "## Protocol Compliance",
+    ...renderProtocolCompliance(status.protocol).map((line) => sanitizeProtocolReportLine(line, status.repoPath)),
     "",
     "## Command Evidence",
     ...renderCommandEvidenceReportLines(commandEvidenceEntries),
@@ -659,6 +696,7 @@ function renderLatestConfidenceReport(status: StaxGateStatus): string {
     "## Verdict",
     `- Status: ${status.verdict}`,
     `- Why: ${sanitizeProofReportText(status.why, status.repoPath)}`,
+    `- Accept Boundary: ${STAX_ACCEPT_BOUNDARY}`,
     `- Generated At: ${status.generatedAt}`,
     `- Repo: ${status.repo}`,
     ...repoLines,
@@ -676,6 +714,9 @@ function renderLatestConfidenceReport(status: StaxGateStatus): string {
           `- One Next Proof Action: ${sanitizeProofReportText(proofStrength.oneNextAction, status.repoPath)}`
         ]
       : ["- No proof-strength artifact was generated for this gate run."]),
+    "",
+    "## Protocol Compliance",
+    ...renderProtocolCompliance(status.protocol).map((line) => sanitizeProtocolReportLine(line, status.repoPath)),
     "",
     "## Strong Proof",
     ...renderProofStrengthEvidenceBullets(proofStrength?.strongProof ?? [], status.repoPath, "No strong proof recorded."),
@@ -741,6 +782,10 @@ function sanitizeProofReportText(input: string, repoPath: string): string {
     .replace(new RegExp(escapeRegex(path.resolve(repoPath)), "g"), "<repo>")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function sanitizeProtocolReportLine(input: string, repoPath: string): string {
+  return sanitizeProofReportText(input, repoPath);
 }
 
 function renderBullets(items: string[], fallback: string): string[] {
@@ -993,7 +1038,7 @@ function deriveVerdict(input: {
 }
 
 function deriveWhy(verdict: StaxGateVerdict, weak: string[], unverified: string[], risk: string[]): string {
-  if (verdict === "Accept") return "Sidecar gate found no unverified proof claim for the current repo state.";
+  if (verdict === "Accept") return STAX_ACCEPT_BOUNDARY;
   if (unverified[0]) return unverified[0];
   if (risk[0]) return risk[0];
   if (weak[0]) return weak[0];
@@ -1009,7 +1054,7 @@ function deriveNextAction(
   risk: string[]
 ): string {
   const combined = [...unverified, ...risk].join("\n").toLowerCase();
-  if (verdict === "Accept") return "Continue with the normal repo workflow; no sidecar correction is needed.";
+  if (verdict === "Accept") return `Continue with the normal repo workflow; no sidecar correction is needed. ${STAX_ACCEPT_BOUNDARY}`;
   if (!codexReport.trim()) return "Ask Codex to write .stax/codex-report.md using the required STAX report fields.";
   if (commandEvidenceEntries.length === 0 && /test|command|proof|exit code|passed/i.test(combined)) {
     return `Run npm run stax:collect -- --repo ${repoPath} -- npm test, or collect the repo's canonical proof command.`;
@@ -1019,7 +1064,7 @@ function deriveNextAction(
 
 function deriveCodexPrompt(verdict: StaxGateVerdict, nextAction: string, unverified: string[], risk: string[]): string {
   if (verdict === "Accept") {
-    return "Report the accepted STAX sidecar status, keep the scope unchanged, and stop.";
+    return `Report the STAX sidecar Accept as proof-gate status only. ${STAX_ACCEPT_BOUNDARY} Keep the scope unchanged, and stop.`;
   }
   return [
     "STAX Sidecar rejected or held this task because proof is incomplete.",
@@ -1105,7 +1150,7 @@ function parseStatusChangedFiles(gitStatusShort: string): ProjectControlChangedF
 
 function isSidecarManagedPath(filePath: string): boolean {
   const normalized = filePath.replace(/\\/g, "/").replace(/^\.?\//, "");
-  return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/") || normalized.startsWith("stax/");
+  return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/");
 }
 
 async function deriveSidecarFindings(input: {
@@ -1163,9 +1208,11 @@ async function deriveSidecarFindings(input: {
   for (const entry of latestCommandEvidenceByCommand(input.commandEvidenceEntries)) {
     if (entry.provenanceStatus === "verified_local_stax_command") {
       verified.push(`Command evidence provenance verified: ${entry.evidenceId ?? entry.command}.`);
+      verified.push(`Command evidence freshness verified: ${entry.evidenceId ?? entry.command} matches the current auditable worktree.`);
     } else {
       const status = entry.provenanceStatus ?? "unverified_sidecar_json";
       unverified.push(`Command evidence provenance is not verified for ${entry.command}: ${status}.`);
+      unverified.push(commandEvidenceLayerFailure(entry.command, status));
       risk.push(`Untrusted command evidence cannot prove Codex claims: ${status}.`);
       for (const issue of entry.provenanceIssues.slice(0, 3)) {
         weak.push(issue);
@@ -1210,10 +1257,20 @@ async function deriveSidecarFindings(input: {
   return { verified, weak, unverified, risk };
 }
 
+function commandEvidenceLayerFailure(command: string, status: string): string {
+  if (status === "wrong_worktree" || status === "wrong_commit") {
+    return `Command evidence freshness failed for ${command}: ${status}.`;
+  }
+  if (status === "wrong_repo" || status === "wrong_branch" || status === "wrong_cwd") {
+    return `Command evidence context failed for ${command}: ${status}.`;
+  }
+  return `Command evidence provenance failed for ${command}: ${status}.`;
+}
+
 async function evidenceCommitDiffIsSidecarManaged(repoPath: string, evidenceCommitSha: string): Promise<boolean> {
   const changed = await runGit(repoPath, ["diff", "--name-only", `${evidenceCommitSha}..HEAD`]);
   const paths = changed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  return paths.length > 0 && paths.every(isSidecarManagedPath);
+  return paths.length > 0 && paths.every(isWorktreeFingerprintExcludedPath);
 }
 
 async function normalizeSidecarOnlyCommandEvidence(
@@ -1250,6 +1307,7 @@ async function readCommandEvidenceEntries(
 ): Promise<SidecarCommandEvidenceEntry[]> {
   const externalStore = externalCommandEvidenceStoreForRepo(repoPath);
   const externalLedgerRecords = await readCommandEvidenceLedgerFromDir(externalStore.commandEvidenceDir);
+  const externalLedgerTip = await readCommandEvidenceLedgerTipFromDir(externalStore.commandEvidenceDir);
   const externalEntries = await readCommandEvidenceEntriesFromDir({
     repoPath,
     snapshot,
@@ -1257,7 +1315,11 @@ async function readCommandEvidenceEntries(
     dir: externalStore.commandEvidenceDir,
     evidenceStore: "external_user_store",
     externalRepoId: externalStore.repoId,
-    ledgerVerification: verifyCommandEvidenceLedger(externalLedgerRecords)
+    ledgerVerification: verifyCommandEvidenceLedger(externalLedgerRecords, {
+      ledgerTip: externalLedgerTip,
+      requireLedgerTip: true,
+      commandEvidenceDir: externalStore.commandEvidenceDir
+    })
   });
   const externalEvidenceIds = new Set(externalEntries.map((entry) => entry.evidenceId).filter(Boolean));
   const legacyEntries = await readCommandEvidenceEntriesFromDir({

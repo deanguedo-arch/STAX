@@ -25,6 +25,11 @@ import { SystemDoctor } from "./doctor/SystemDoctor.js";
 import { attachStaxToRepo } from "./sidecar/AttachStax.js";
 import { collectCommandEvidence } from "./sidecar/CommandEvidenceCollector.js";
 import { getNextCodexPrompt } from "./sidecar/NextCodexPrompt.js";
+import {
+  runStaxPreflight,
+  type StaxPreflightBoundary,
+  type StaxPreflightMode
+} from "./sidecar/StaxPreflight.js";
 import { runStaxGate } from "./sidecar/StaxGate.js";
 import { getStaxStatus } from "./sidecar/StaxStatus.js";
 import { upgradeStaxSidecar } from "./sidecar/UpgradeSidecar.js";
@@ -129,6 +134,7 @@ const knownCommands = new Set([
   "attach",
   "collect",
   "gate",
+  "preflight",
   "status",
   "next",
   "staxcore",
@@ -2129,6 +2135,11 @@ function staxHelp(command?: string): string {
       "",
       "Audit the attached repo and write .stax/status.md, .stax/status.json, and .stax/next-codex-prompt.md."
     ],
+    preflight: [
+      "Usage: stax preflight --repo <path> [--mode observer|soft|hard] [--boundary local|handoff|commit|push|merge|release|deploy|data_publish|ci]",
+      "",
+      "Run gate, record a preflight event, and return an enforcement exit code. When --mode is omitted, .stax/config.json boundary policy chooses observer, soft, or hard."
+    ],
     status: [
       "Usage: stax status --repo <path>",
       "",
@@ -2146,6 +2157,7 @@ function staxHelp(command?: string): string {
     "  stax attach --repo <path> [--upgrade]",
     "  stax collect --repo <path> -- <command...>",
     "  stax gate --repo <path>",
+    "  stax preflight --repo <path> [--boundary local|push|release]",
     "  stax status --repo <path>",
     "  stax next --repo <path> [--copy] [--no-gate]",
     "",
@@ -2153,6 +2165,7 @@ function staxHelp(command?: string): string {
     "  npm run stax -- attach --repo <path>",
     "  npm run stax -- collect --repo <path> -- <command...>",
     "  npm run stax -- gate --repo <path>",
+    "  npm run stax -- preflight --repo <path>",
     "  npm run stax -- status --repo <path>",
     "  npm run stax -- next --repo <path>"
   ].join("\n");
@@ -2198,6 +2211,48 @@ async function gateCommand(args: ParsedArgs): Promise<void> {
   });
   process.stdout.write(status.statusMarkdown);
   process.exitCode = status.exitCode;
+}
+
+async function preflightCommand(args: ParsedArgs): Promise<void> {
+  if (hasHelpFlag(args)) {
+    logInfo(staxHelp("preflight"));
+    return;
+  }
+  const result = await runStaxPreflight({
+    repoPath: repoFlag(args, "Usage: stax preflight --repo <path> [--mode observer|soft|hard]"),
+    mode: staxPreflightModeFlag(args.flags.mode),
+    boundary: staxPreflightBoundaryFlag(args.flags.boundary),
+    bypassReason: typeof args.flags["bypass-reason"] === "string" ? args.flags["bypass-reason"] : undefined,
+    approvalPath: typeof args.flags.approval === "string" ? args.flags.approval : undefined,
+    actor: typeof args.flags.actor === "string" ? args.flags.actor : undefined,
+    command: args.positional.length > 0 ? args.positional : undefined
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  process.exitCode = result.exitCode;
+}
+
+function staxPreflightModeFlag(value: string | boolean | undefined): StaxPreflightMode | undefined {
+  if (value === undefined || value === false) return undefined;
+  if (value === "observer" || value === "soft" || value === "hard") return value;
+  throw new Error(`Invalid --mode: ${String(value)}`);
+}
+
+function staxPreflightBoundaryFlag(value: string | boolean | undefined): StaxPreflightBoundary | undefined {
+  if (value === undefined || value === false) return undefined;
+  if (
+    value === "local" ||
+    value === "handoff" ||
+    value === "commit" ||
+    value === "push" ||
+    value === "merge" ||
+    value === "release" ||
+    value === "deploy" ||
+    value === "data_publish" ||
+    value === "ci"
+  ) {
+    return value;
+  }
+  throw new Error(`Invalid --boundary: ${String(value)}`);
 }
 
 async function statusCommand(args: ParsedArgs): Promise<void> {
@@ -2295,6 +2350,8 @@ async function main(): Promise<void> {
     await collectCommand(args);
   } else if (args.command === "gate") {
     await gateCommand(args);
+  } else if (args.command === "preflight") {
+    await preflightCommand(args);
   } else if (args.command === "status") {
     await statusCommand(args);
   } else if (args.command === "next") {

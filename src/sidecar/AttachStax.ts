@@ -48,6 +48,7 @@ At the start of every Codex turn in this repo:
 4. Include the exact \`STAX_ACK ...\` line from \`.stax/turn-contract.json\` in \`.stax/codex-report.md\`.
 5. If \`.stax/turn-contract.json\` is missing, say so in \`.stax/codex-report.md\` and do not claim completion.
 6. If \`.stax/task.md\` is blank, write the user's current objective there before editing.
+7. Before handoff or a protected boundary, run STAX preflight in observer mode unless the user explicitly asks for soft or hard enforcement.
 
 Do not claim completion without proof.
 Do not claim tests passed without command output.
@@ -121,7 +122,20 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
           commandEvidenceRoot: displayExternalEvidencePath(externalEvidenceRoot()),
           maxCodexTurnAgeMs: 300000,
           maxSidecarHeartbeatAgeMs: 300000,
-          dangerousCommandsRequireAllowRisky: true
+          dangerousCommandsRequireAllowRisky: true,
+          preflightDefaultBoundary: "local",
+          preflightBoundaryPolicy: {
+            local: "observer",
+            handoff: "soft",
+            commit: "soft",
+            push: "soft",
+            merge: "hard",
+            release: "hard",
+            deploy: "hard",
+            data_publish: "hard",
+            ci: "hard"
+          },
+          preflightEvents: "sidecar_and_external"
         },
         null,
         2

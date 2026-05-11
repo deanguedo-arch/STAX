@@ -251,6 +251,9 @@ describe("STAX sidecar attach and gate", () => {
     const status = await runStaxGate({ repoPath, writeLearningEvent: false });
 
     expect(status.verdict).toBe("Accept");
+    expect(status.why).toContain("required claims are supported by verified evidence for this repo state");
+    expect(status.why).toContain("does not certify general code correctness");
+    expect(status.statusMarkdown).toContain("- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state");
     expect(status.proofStrength?.claimType).toBe("verification_run");
     expect(status.proofStrength?.label === "Strong" || status.proofStrength?.label === "Audit-grade").toBe(true);
     expect(status.statusMarkdown).toContain("- Artifact: .stax/proof_strength.json");
@@ -259,7 +262,10 @@ describe("STAX sidecar attach and gate", () => {
     const reportWithProofStrength = await fs.readFile(path.join(repoPath, ".stax", "codex-report.md"), "utf8");
     expect(reportWithProofStrength).toContain("## STAX Proof Strength");
     expect(reportWithProofStrength).toContain("- Claim Type: verification_run");
+    expect(reportWithProofStrength).toContain("- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state");
     expect(reportWithProofStrength).toContain("- Confidence Report: .stax/reports/latest-confidence-report.md");
+    const latestProofReport = await fs.readFile(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"), "utf8");
+    expect(latestProofReport).toContain("- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state");
   });
 
   it("does not mark command evidence stale when only tracked sidecar proof artifacts advanced HEAD", async () => {

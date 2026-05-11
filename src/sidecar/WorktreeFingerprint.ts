@@ -42,9 +42,11 @@ export async function collectWorktreeFingerprint(repoPath: string): Promise<Work
   const parsed = parsePorcelain(statusPorcelain);
   const trackedRelevant = parsed.filter((item) => item.status !== "??" && !isWorktreeFingerprintExcludedPath(item.path));
   const untrackedRelevant = parsed.filter((item) => {
-    if (item.status !== "??" || isWorktreeFingerprintExcludedPath(item.path)) return false;
-    return UNTRACKED_RELEVANT_ROLES.has(classifyFileRole(item.path));
+    if (item.status !== "??") return false;
+    return isAuditableUntrackedPath(item.path);
   });
+  const ignoredRelevant = (await collectIgnoredRelevantFiles(repoPath))
+    .filter((filePath) => !untrackedRelevant.some((item) => normalizeRelativePath(item.path) === filePath));
   const ignoredSidecarFiles = parsed
     .filter((item) => isWorktreeFingerprintExcludedPath(item.path))
     .map((item) => item.path)
@@ -59,8 +61,11 @@ export async function collectWorktreeFingerprint(repoPath: string): Promise<Work
       }))
   );
   const untrackedRelevantFiles = await Promise.all(
-    untrackedRelevant
-      .map((item) => normalizeRelativePath(item.path))
+    [
+      ...untrackedRelevant.map((item) => normalizeRelativePath(item.path)),
+      ...ignoredRelevant
+    ]
+      .filter(uniquePathFilter())
       .sort(comparePaths)
       .map(async (filePath) => ({
         path: filePath,
@@ -105,7 +110,51 @@ export function canonicalJson(value: unknown): string {
 
 export function isWorktreeFingerprintExcludedPath(filePath: string): boolean {
   const normalized = normalizeRelativePath(filePath);
-  return normalized === "AGENTS.md" || normalized === ".gitignore" || normalized.startsWith(".stax/") || normalized.startsWith("stax/");
+  if (!normalized.startsWith(".stax/")) return false;
+  if (/^\.stax\/command-evidence\/[^/]+\.json$/i.test(normalized)) return false;
+  if (/^\.stax\/command-evidence\/[^/]+\.pointer\.json$/i.test(normalized)) return true;
+  return normalized === ".stax/config.json" ||
+    normalized === ".stax/current-turn.json" ||
+    normalized === ".stax/codex-report.md" ||
+    normalized === ".stax/heartbeat.json" ||
+    normalized === ".stax/next-codex-prompt.md" ||
+    normalized === ".stax/proof_strength.json" ||
+    normalized === ".stax/status.md" ||
+    normalized === ".stax/status.json" ||
+    normalized === ".stax/task.md" ||
+    normalized === ".stax/turn-contract.json" ||
+    normalized === ".stax/ledger.json" ||
+    normalized === ".stax/learning-ledger.json" ||
+    normalized.startsWith(".stax/events/") ||
+    normalized.startsWith(".stax/reports/") ||
+    normalized.startsWith(".stax/runtime/") ||
+    normalized.startsWith(".stax/turns/");
+}
+
+async function collectIgnoredRelevantFiles(repoPath: string): Promise<string[]> {
+  const ignored = await runGit(repoPath, ["ls-files", "--others", "--ignored", "--exclude-standard"]);
+  return ignored
+    .split(/\r?\n/)
+    .map((line) => normalizeRelativePath(line.trim()))
+    .filter(Boolean)
+    .filter(isAuditableUntrackedPath)
+    .sort(comparePaths);
+}
+
+function isAuditableUntrackedPath(filePath: string): boolean {
+  const normalized = normalizeRelativePath(filePath);
+  if (isWorktreeFingerprintExcludedPath(normalized)) return false;
+  if (normalized === ".gitignore" || normalized === "AGENTS.md") return true;
+  return UNTRACKED_RELEVANT_ROLES.has(classifyFileRole(normalized));
+}
+
+function uniquePathFilter(): (filePath: string) => boolean {
+  const seen = new Set<string>();
+  return (filePath) => {
+    if (seen.has(filePath)) return false;
+    seen.add(filePath);
+    return true;
+  };
 }
 
 function parsePorcelain(input: string): Array<{ status: string; path: string }> {

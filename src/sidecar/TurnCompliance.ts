@@ -25,6 +25,7 @@ export type CheckTurnComplianceOptions = {
   mode?: TurnComplianceMode;
   codexClaimsCompletion?: boolean;
   hasDiff?: boolean;
+  skipReportMtime?: boolean;
 };
 
 function parseJsonObject(raw: string): Record<string, unknown> | undefined {
@@ -146,7 +147,7 @@ export async function checkTurnCompliance(options: CheckTurnComplianceOptions): 
   }
 
   const generatedAtMs = Date.parse(contract.generatedAt);
-  const modifiedAtMs = await reportMtimeMs(repoPath);
+  const modifiedAtMs = options.skipReportMtime ? undefined : await reportMtimeMs(repoPath);
   if (Number.isFinite(generatedAtMs) && modifiedAtMs !== undefined && modifiedAtMs < generatedAtMs) {
     issues.push({
       severity: severityForMissingAck(mode, missingAckInput),

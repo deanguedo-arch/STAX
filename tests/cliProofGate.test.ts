@@ -25,6 +25,11 @@ describe("STAX proof-gate CLI", () => {
 
     expect(stdout).toContain("Usage: stax gate --repo <path>");
     expect(stdout).toContain(".stax/status.md");
+
+    const preflight = cliInvocation(["preflight", "--help"]);
+    const preflightHelp = await execFileAsync(preflight.command, preflight.commandArgs);
+    expect(preflightHelp.stdout).toContain("Usage: stax preflight --repo <path>");
+    expect(preflightHelp.stdout).toContain("boundary policy chooses observer, soft, or hard");
   }, 30000);
 
   it("attaches, prints status, prints next prompt, and collects command evidence through stax subcommands", async () => {
@@ -51,5 +56,12 @@ describe("STAX proof-gate CLI", () => {
     expect(evidence.exitCode).toBe(0);
     expect(evidence.command).toContain("console.log('proof')");
     await expect(fs.stat(path.join(repoPath, ".stax", "command-evidence"))).resolves.toBeTruthy();
+
+    const preflight = cliInvocation(["preflight", "--repo", repoPath, "--mode", "observer"]);
+    const preflightResult = await execFileAsync(preflight.command, preflight.commandArgs);
+    const preflightJson = JSON.parse(preflightResult.stdout) as { exitCode: number; blocking: boolean; eventPaths: string[] };
+    expect(preflightJson.exitCode).toBe(0);
+    expect(preflightJson.blocking).toBe(false);
+    expect(preflightJson.eventPaths.length).toBeGreaterThanOrEqual(2);
   }, 30000);
 });

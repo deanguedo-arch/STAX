@@ -2,6 +2,12 @@ import { spawn } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { ProjectControlCommandEvidenceEntry } from "../projectControl/ProjectControlEvidencePacket.js";
+import {
+  classifyDangerousSidecarCommand,
+  isDangerousSidecarCommand,
+  type SidecarCommandRiskCategory,
+  type SidecarCommandRiskClassification
+} from "./CommandRiskPolicy.js";
 import { appendCommandEvidenceLedgerRecord, commandEvidenceLedgerPathForDir } from "./CommandEvidenceLedger.js";
 import {
   canonicalCommandEvidenceHash,
@@ -32,6 +38,13 @@ export type CommandEvidenceCollectorOptions = {
   writeLearningEvent?: boolean;
 };
 
+export {
+  classifyDangerousSidecarCommand,
+  isDangerousSidecarCommand,
+  type SidecarCommandRiskCategory,
+  type SidecarCommandRiskClassification
+};
+
 export type CollectedCommandEvidence = ProjectControlCommandEvidenceEntry & {
   evidenceId: string;
   stdoutPath: string;
@@ -50,35 +63,16 @@ export type CollectedCommandEvidence = ProjectControlCommandEvidenceEntry & {
   repoPointerPath: string;
 };
 
-const DANGEROUS_COMMAND_PATTERNS = [
-  /\bdeploy\b/i,
-  /\bpublish\b/i,
-  /\bsync\b/i,
-  /\brm\s+-rf\b/i,
-  /\bgit\s+push\b/i,
-  /\bgit\s+reset\s+--hard\b/i,
-  /\bnpm\s+publish\b/i,
-  /\bfirebase\s+deploy\b/i,
-  /\bvercel\s+deploy\b/i,
-  /\bgh\s+release\b/i,
-  /\bdocker\s+push\b/i,
-  /\bkubectl\s+apply\b/i,
-  /\bterraform\s+apply\b/i
-];
-
-export function isDangerousSidecarCommand(command: string[]): boolean {
-  const joined = command.join(" ");
-  return DANGEROUS_COMMAND_PATTERNS.some((pattern) => pattern.test(joined));
-}
-
 export async function collectCommandEvidence(
   options: CommandEvidenceCollectorOptions
 ): Promise<CollectedCommandEvidence> {
   if (options.command.length === 0) throw new Error("No command supplied after --.");
   const repoPath = await validateRepoPath(options.repoPath);
-  const risky = isDangerousSidecarCommand(options.command);
-  if (risky && !options.allowRisky) {
-    throw new Error("Dangerous command blocked by STAX Sidecar. Re-run with --allow-risky only after human approval.");
+  const risk = classifyDangerousSidecarCommand(options.command);
+  if (risk.dangerous && !options.allowRisky) {
+    throw new Error(
+      `Dangerous command blocked by STAX Sidecar (${risk.categories.join(", ")}). Re-run with --allow-risky only after human approval.`
+    );
   }
 
   const snapshotBefore = await collectGitSnapshot(repoPath);
@@ -120,7 +114,7 @@ export async function collectCommandEvidence(
     source: "local_stax_command_output" as const,
     stdout: "",
     stderr: "",
-    warning: risky ? "allow-risky used for dangerous command collection" : undefined,
+    warning: risk.dangerous ? `allow-risky used for dangerous command collection: ${risk.categories.join(", ")}` : undefined,
     evidenceStore: "external_user_store",
     externalRepoId: store.repoId,
     externalEvidencePath: evidencePath,
