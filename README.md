@@ -74,6 +74,18 @@ npm run stax:status -- --repo ../my-project
 npm run stax:next -- --repo ../my-project
 ```
 
+## 60-Second Demo
+
+Run the fake-complete demo:
+
+```bash
+bash examples/fake-complete-demo/run-demo.sh
+```
+
+It creates a throwaway repo, simulates a confident "fixed and tests passed"
+report with no captured command evidence, shows STAX rejecting it, then captures
+`npm test` and reruns the gate.
+
 ## Output
 
 The gate writes:

@@ -5,6 +5,12 @@ STAX catches fake-complete AI coding work before you trust it.
 This quickstart uses the npm script surface. The built CLI shape is
 `stax attach`, `stax collect`, `stax gate`, `stax status`, and `stax next`.
 
+For a complete throwaway demo, run:
+
+```bash
+bash examples/fake-complete-demo/run-demo.sh
+```
+
 ## 1. Install
 
 ```bash
