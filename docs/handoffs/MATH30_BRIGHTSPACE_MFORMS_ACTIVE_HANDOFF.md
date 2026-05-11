@@ -229,9 +229,9 @@ Acceptance rule:
 ## Ready Prompt For Next Computer
 
 ```txt
-docs/ACTIVE_HANDOFF.md
+docs/archive/handoffs/ACTIVE_HANDOFF.md
 
-Read /Users/deanguedo/Documents/GitHub/STAX/docs/ACTIVE_HANDOFF.md and /Users/deanguedo/Documents/GitHub/STAX/docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md.
+Read /Users/deanguedo/Documents/GitHub/STAX/docs/archive/handoffs/ACTIVE_HANDOFF.md and /Users/deanguedo/Documents/GitHub/STAX/docs/handoffs/MATH30_BRIGHTSPACE_MFORMS_ACTIVE_HANDOFF.md.
 
 Then open /Users/deanguedo/Documents/GitHub/brightspacequizexporter.
 

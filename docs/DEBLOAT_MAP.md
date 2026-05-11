@@ -143,7 +143,7 @@ These can stay, but should not be the headline.
 ### Governance And Review
 
 - `src/review/`
-- `docs/STAX_REVIEW_ROUTER.md`
+- `docs/archive/internal/STAX_REVIEW_ROUTER.md`
 - review queue, ledger, risk scoring, batching, and judgment packet code
 
 Reason: useful internal governance. It routes what needs Dean or human judgment,
@@ -196,8 +196,8 @@ These should be preserved for now, but demoted from public product identity.
 ### STAX Core Kernel And Sealed Truth
 
 - `src/staxcore/`
-- `docs/STAXCORE_RELEASE_PROFILES.md`
-- `docs/STAX_CORE_ONE_LAYER_REBUILD_PLAN.md`
+- `docs/archive/staxcore/STAXCORE_RELEASE_PROFILES.md`
+- `docs/archive/staxcore/STAX_CORE_ONE_LAYER_REBUILD_PLAN.md`
 
 Reason: serious hardening work, but it reads as a separate research/kernel
 program. It should not obscure the proof-gate product.
@@ -285,6 +285,10 @@ Partially archived in Phase 4A:
 - `docs/archive/releases/REPO_TRANSFER_RC2A_HYGIENE_REPORT.md`
 - `docs/archive/releases/REPO_TRANSFER_RC2A_JUDGE_ACCEPTANCE.md`
 
+Phase 4C archived non-source-referenced top-level STAX Core docs under:
+
+- `docs/archive/staxcore/`
+
 Not moved yet:
 
 - `docs/STAX_9_5_PROMOTION_REPORT.md`
@@ -294,6 +298,14 @@ Not moved yet:
 Phase 4B archived additional historical reports under:
 
 - `docs/archive/reports/`
+
+Phase 4C archived legacy top-level docs under:
+
+- `docs/archive/chat/`
+- `docs/archive/handoffs/`
+- `docs/archive/internal/`
+- `docs/archive/research/`
+- `docs/archive/staxcore/`
 
 ### Old RAX Architecture Docs
 

@@ -160,12 +160,12 @@ Completed in order:
 Use this exact prompt in the next Codex chat:
 
 ```txt
-docs/ACTIVE_HANDOFF.md
+docs/archive/handoffs/ACTIVE_HANDOFF.md
 
 We are continuing STAX Core hardening in /Users/deanguedo/Documents/GitHub/STAX.
 
 First read:
-- /Users/deanguedo/Documents/GitHub/STAX/docs/ACTIVE_HANDOFF.md
+- /Users/deanguedo/Documents/GitHub/STAX/docs/archive/handoffs/ACTIVE_HANDOFF.md
 - /Users/deanguedo/Documents/GitHub/STAX/AGENTS.md
 
 Then verify:

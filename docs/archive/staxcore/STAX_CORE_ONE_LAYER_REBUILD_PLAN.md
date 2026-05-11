@@ -281,7 +281,7 @@ Phase 8:
 Phase 9:
 - `validate:staxcore:strict` package script added for one-command strict gate validation
 - CI workflow added (`.github/workflows/staxcore-strict.yml`) to run strict gate and upload release artifacts
-- strict-vs-standard guardrail doc added (`docs/STAXCORE_RELEASE_PROFILES.md`)
+- strict-vs-standard guardrail doc added (`docs/archive/staxcore/STAXCORE_RELEASE_PROFILES.md`)
 - CLI strict release-gate tests added to prove strict mode fails when eval flags are missing
 
 Phase 10:

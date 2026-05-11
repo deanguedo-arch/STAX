@@ -145,7 +145,7 @@ Likely files:
 - `src/operator/OperationExecutor.ts`
 - `src/operator/OperationSchemas.ts`
 - `tests/chatOperatorReceipt.test.ts`
-- `docs/STAX_CHAT_OPERATOR_RECEIPTS.md`
+- `docs/archive/chat/STAX_CHAT_OPERATOR_RECEIPTS.md`
 - `docs/archive/reports/RAX_CHAT_OPERATOR_RECEIPTS_REPORT.md`
 
 Proof gates:
@@ -480,7 +480,7 @@ Required code artifacts:
 - `src/operator/OperationReceipt.ts`
 - `src/operator/OperationReceiptValidator.ts`
 - `tests/chatOperatorReceipt.test.ts`
-- `docs/STAX_CHAT_OPERATOR_RECEIPTS.md`
+- `docs/archive/chat/STAX_CHAT_OPERATOR_RECEIPTS.md`
 
 Modify:
 

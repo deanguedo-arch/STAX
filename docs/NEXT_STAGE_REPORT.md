@@ -8,14 +8,14 @@ Follow-up update: added the terminal chat control surface and read-only local ev
 
 ## Files Created
 
-- Baseline/project governance docs: `docs/BASELINE_V0_1.md`, `docs/PROJECT_STATE.md`, `docs/DECISION_LOG.md`, `docs/KNOWN_FAILURES.md`, `docs/NEXT_ACTIONS.md`, `docs/RISK_REGISTER.md`, `docs/PROVEN_WORKING.md`, `docs/UNPROVEN_CLAIMS.md`, `docs/EVIDENCE_REGISTRY.md`, `docs/CLAIM_LEDGER.md`.
+- Baseline/project governance docs: `docs/archive/internal/BASELINE_V0_1.md`, `docs/PROJECT_STATE.md`, `docs/DECISION_LOG.md`, `docs/KNOWN_FAILURES.md`, `docs/NEXT_ACTIONS.md`, `docs/RISK_REGISTER.md`, `docs/PROVEN_WORKING.md`, `docs/UNPROVEN_CLAIMS.md`, `docs/EVIDENCE_REGISTRY.md`, `docs/CLAIM_LEDGER.md`.
 - Mode contracts and registry: `modes/project_brain.mode.md`, `modes/codex_audit.mode.md`, `modes/prompt_factory.mode.md`, `modes/test_gap_audit.mode.md`, `modes/policy_drift.mode.md`, `modes/registry.json`.
 - Task prompts: `prompts/tasks/project_brain.md`, `prompts/tasks/codex_audit.md`, `prompts/tasks/prompt_factory.md`, `prompts/tasks/test_gap_audit.md`, `prompts/tasks/policy_drift.md`.
 - Schemas/validators: `src/schemas/ProjectBrainOutput.ts`, `src/schemas/CodexAuditOutput.ts`, `src/schemas/PromptFactoryOutput.ts`, `src/schemas/TestGapAuditOutput.ts`, `src/schemas/PolicyDriftOutput.ts`, `src/validators/ProjectBrainValidator.ts`, `src/validators/CodexAuditValidator.ts`, `src/validators/PromptFactoryValidator.ts`, `src/validators/TestGapAuditValidator.ts`, `src/validators/PolicyDriftValidator.ts`, `src/validators/markdownSections.ts`.
 - Registry helpers: `src/evidence/EvidenceRegistry.ts`, `src/claims/ClaimLedger.ts`, `src/modes/ModeRegistry.ts`.
 - Regression evals/goldens: new Project Brain, Codex Audit, Prompt Factory, Test Gap, and Policy Drift fixtures under `evals/regression/` and `goldens/`.
 - Tests: `tests/governanceModes.test.ts`, `tests/evidenceClaimRegistry.test.ts`.
-- Chat/local evidence: `src/chat/ChatSession.ts`, `src/evidence/LocalEvidenceCollector.ts`, `tests/chatSession.test.ts`, `tests/localEvidence.test.ts`, `docs/CHAT_CLI.md`.
+- Chat/local evidence: `src/chat/ChatSession.ts`, `src/evidence/LocalEvidenceCollector.ts`, `tests/chatSession.test.ts`, `tests/localEvidence.test.ts`, `docs/archive/chat/CHAT_CLI.md`.
 
 ## Files Modified
 
