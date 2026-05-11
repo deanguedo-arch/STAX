@@ -174,4 +174,5 @@ Runtime accountability files can also exist locally:
 - [Codex workflow](docs/CODEX_WORKFLOW.md)
 - [Proof model](docs/PROOF_MODEL.md)
 - [Commands](docs/COMMANDS.md)
+- [FAQ](docs/FAQ.md)
 - [Debloat map](docs/DEBLOAT_MAP.md)

@@ -13,6 +13,7 @@ The current public docs are:
 - `docs/CODEX_WORKFLOW.md`
 - `docs/PROOF_MODEL.md`
 - `docs/COMMANDS.md`
+- `docs/FAQ.md`
 - `docs/STAX_SIDECAR_DOCTRINE.md`
 
 ## Folders
