@@ -24,6 +24,9 @@ describe("STAX sidecar upgrade", () => {
       commandEvidenceStore?: string;
       commandEvidenceRepoId?: string;
       commandEvidenceRoot?: string;
+      preflightDefaultBoundary?: string;
+      preflightBoundaryPolicy?: Record<string, string>;
+      preflightEvents?: string;
     };
     const task = await fs.readFile(path.join(repoPath, ".stax", "task.md"), "utf8");
     const report = await fs.readFile(path.join(repoPath, ".stax", "codex-report.md"), "utf8");
@@ -62,6 +65,11 @@ describe("STAX sidecar upgrade", () => {
     expect(config.commandEvidenceStore).toBe("external_user_store");
     expect(config.commandEvidenceRepoId).toMatch(/^stax-sidecar-upgrade-/);
     expect(config.commandEvidenceRoot).toContain(".stax/evidence");
+    expect(config.preflightDefaultBoundary).toBe("local");
+    expect(config.preflightBoundaryPolicy?.local).toBe("observer");
+    expect(config.preflightBoundaryPolicy?.push).toBe("soft");
+    expect(config.preflightBoundaryPolicy?.release).toBe("hard");
+    expect(config.preflightEvents).toBe("sidecar_and_external");
     expect(task).toBe("do not overwrite task\n");
     expect(report).toBe("do not overwrite report\n");
     expect(ledger).toContain("do-not-overwrite");
