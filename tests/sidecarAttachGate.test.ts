@@ -6,6 +6,8 @@ import {
   attachStaxToRepo,
   STAX_AGENTS_SECTION_END_MARKER,
   STAX_AGENTS_SECTION_MARKER,
+  STAX_CONFIDENCE_REPORT_RELATIVE_PATH,
+  STAX_PROOF_REPORT_RELATIVE_PATH,
   upsertAgentsProtocolSection
 } from "../src/sidecar/AttachStax.js";
 import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
@@ -96,6 +98,20 @@ describe("STAX sidecar attach and gate", () => {
     await expect(fs.stat(path.join(repoPath, ".stax", "status.md"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "status.json"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "next-codex-prompt.md"))).resolves.toBeTruthy();
+  });
+
+  it("writes a compact proof-strength summary into the Codex report even when proof-strength is unavailable", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-no-proof-strength-summary-");
+    await attachStaxToRepo(repoPath);
+
+    const status = await runStaxGate({ repoPath });
+    const codexReport = await fs.readFile(path.join(repoPath, ".stax", "codex-report.md"), "utf8");
+
+    expect(status.proofStrength).toBeUndefined();
+    expect(codexReport).toContain("## STAX Proof Strength");
+    expect(codexReport).toContain("- Summary: No formal proof-strength artifact was generated for this gate run.");
+    expect(codexReport).toContain(`- Proof report: ${STAX_PROOF_REPORT_RELATIVE_PATH}`);
+    expect(codexReport).toContain(`- Confidence report: ${STAX_CONFIDENCE_REPORT_RELATIVE_PATH}`);
   });
 
   it("makes missing runtime capture provisional by default", async () => {

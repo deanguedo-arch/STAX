@@ -4,6 +4,9 @@ import { tryCollectCodexTurn, writeSidecarHeartbeat } from "./CodexTurnCapture.j
 import { runStaxGate, type StaxGateStatus } from "./StaxGate.js";
 import { pathExists, readTextIfExists, runGit, sha256, sidecarDir, validateRepoPath } from "./SidecarRepo.js";
 
+const STAX_PROOF_STRENGTH_SECTION_START = "<!-- STAX:proof-strength:start -->";
+const STAX_PROOF_STRENGTH_SECTION_END = "<!-- STAX:proof-strength:end -->";
+
 export type StaxWatcherOptions = {
   repoPath: string;
   intervalMs?: number;
@@ -75,10 +78,23 @@ async function computeWatcherInputHash(repoPath: string): Promise<string> {
   );
   const inputs = await Promise.all([
     readTextIfExists(path.join(staxPath, "task.md")),
-    readTextIfExists(path.join(staxPath, "codex-report.md")),
+    readCodexAuthoredReportForWatcher(staxPath),
     runGit(repoPath, ["status", "--short"]),
     runGit(repoPath, ["diff", "--no-ext-diff", "--binary"]),
     readTextIfExists(path.join(repoPath, ".git", "HEAD"))
   ]);
   return sha256([...inputs, ...commandStats].join("\n"));
+}
+
+async function readCodexAuthoredReportForWatcher(staxPath: string): Promise<string> {
+  const report = await readTextIfExists(path.join(staxPath, "codex-report.md"));
+  const sectionPattern = new RegExp(
+    `\\n*${escapeRegex(STAX_PROOF_STRENGTH_SECTION_START)}[\\s\\S]*?${escapeRegex(STAX_PROOF_STRENGTH_SECTION_END)}\\n*`,
+    "g"
+  );
+  return report.replace(sectionPattern, "\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
