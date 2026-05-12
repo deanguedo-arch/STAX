@@ -18,6 +18,8 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("bundle exec rspec spec/runtime_spec.rb")).toBe("test");
     expect(commandFamilyForIntelligence("composer test")).toBe("test");
     expect(commandFamilyForIntelligence("npm test")).toBe("test");
+    expect(commandFamilyForIntelligence("npm run test:learning")).toBe("test");
+    expect(commandFamilyForIntelligence("npm run test:metadata-policy")).toBe("test");
     expect(commandFamilyForIntelligence("npm run test:e2e")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run build")).toBe("build");
     expect(commandFamilyForIntelligence("npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --dry-run")).toBe("e2e");
@@ -156,6 +158,27 @@ describe("command evidence intelligence", () => {
     });
 
     expect(result.commandFamily).toBe("e2e");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+  });
+
+  it("treats npm run test:* package scripts as executable local proof", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run test:learning",
+      cwd: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      repo: "canvas-helper",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: "",
+      expectedRepo: "canvas-helper",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "tests_passed"
+    });
+
+    expect(result.commandFamily).toBe("test");
     expect(result.proofStrength).toBe("strong_local_proof");
     expect(result.status).toBe("passed");
   });

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "stax-rollout-phase-gate-v1",
+  "generatedAt": "2026-05-12T12:25:40.829Z",
+  "status": "passed",
+  "phases": [
+    {
+      "phase": "phase_0_baseline",
+      "title": "Phase 0 - Lock Current Proof Baseline",
+      "status": "passed",
+      "scoreTarget": "Baseline validation commands pass and known limits are explicit.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "docs/releases/STAX_RC_CURRENT/command_proof.md",
+        "docs/releases/STAX_RC_CURRENT/known_limits.md",
+        "docs/releases/STAX_RC_CURRENT/allowed_claims.md",
+        "docs/releases/STAX_RC_CURRENT/forbidden_claims.md"
+      ],
+      "nextAction": "Keep this baseline immutable unless a new baseline proof packet is generated."
+    },
+    {
+      "phase": "phase_1_fixture_league",
+      "title": "Phase 1 - Adversarial Fixture League",
+      "status": "passed",
+      "scoreTarget": "50 fixtures, 0 critical false accepts, <=5% false rejects, >=90% actionable next prompts.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "fixtures/stax_trials/manifest.json",
+        "fixtures/stax_trials/results.json",
+        "fixtures/stax_trials/failure_report.md"
+      ],
+      "nextAction": "Keep fixture failures converted into regression cases before broad rollout."
+    },
+    {
+      "phase": "phase_2_dogfood_league",
+      "title": "Phase 2 - STAX Self-Dogfood League",
+      "status": "passed",
+      "scoreTarget": "20 eligible observer runs, 0 critical false accepts, <=10% false rejects, >=90% protocol and next-prompt rates.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "docs/releases/STAX_DOGFOOD_LEAGUE/observer_runs.json",
+        "docs/releases/STAX_DOGFOOD_LEAGUE/observer_report.md",
+        "docs/releases/STAX_DOGFOOD_LEAGUE/regression_additions.md"
+      ],
+      "nextAction": "Proceed to measured soft-gate trial only after misses are in regression tests."
+    },
+    {
+      "phase": "phase_3_claim_extraction",
+      "title": "Phase 3 - Claim Extraction Hardening",
+      "status": "passed",
+      "scoreTarget": "100 claim-evasion fixtures, 0 high-risk false negatives, <=10% false positives, 0 unsupported accepts.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "fixtures/stax_trials/claim_evasion_results.json",
+        "docs/releases/CLAIM_EXTRACTION_HARDENING/report.md",
+        "docs/releases/CLAIM_EXTRACTION_HARDENING/allowed_phrasing.md"
+      ],
+      "nextAction": "Use Phase 3 as a prerequisite for soft-gate trials."
+    },
+    {
+      "phase": "phase_4_soft_gate_trial",
+      "title": "Phase 4 - Soft-Gate Trial",
+      "status": "passed",
+      "scoreTarget": "50 soft-gate runs, 0 high-risk false accepts, <=5% false rejects for build/test/typecheck, <=20% overrides.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "docs/releases/SOFT_GATE_TRIAL/runs.json",
+        "docs/releases/SOFT_GATE_TRIAL/override_ledger.json",
+        "docs/releases/SOFT_GATE_TRIAL/trial_report.md"
+      ],
+      "nextAction": "Finish the dogfood league, then run measured soft-gate trials with an override ledger."
+    },
+    {
+      "phase": "phase_5_product_surface",
+      "title": "Phase 5 - Product Surface Amputation",
+      "status": "passed",
+      "scoreTarget": "Public surface <=6 commands and cold-user demo/docs prove the narrowed product story.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "docs/releases/PRODUCT_SURFACE_AMPUTATION/demo_checklist.md",
+        "docs/releases/PRODUCT_SURFACE_AMPUTATION/public_surface_map.md",
+        "docs/releases/PRODUCT_SURFACE_AMPUTATION/archive_map.md"
+      ],
+      "nextAction": "Map public/internal/archive commands, then shrink the visible product path without deleting internal capability."
+    },
+    {
+      "phase": "phase_6_limited_hard_gate",
+      "title": "Phase 6 - Limited Hard Gate",
+      "status": "passed",
+      "scoreTarget": "Hard gate only protected boundaries after 50+ soft-gate runs across 3+ repos.",
+      "promotionGatePassed": true,
+      "failures": [],
+      "proofArtifacts": [
+        "docs/releases/LIMITED_HARD_GATE/boundary_policy.md",
+        "docs/releases/LIMITED_HARD_GATE/override_policy.md",
+        "docs/releases/LIMITED_HARD_GATE/rollback_proof.md",
+        "docs/releases/LIMITED_HARD_GATE/trial_report.md"
+      ],
+      "nextAction": "Do not turn on hard gate until soft-gate trial evidence and boundary policies pass."
+    }
+  ],
+  "nextAction": "All rollout phases have passed their deterministic gates."
+}

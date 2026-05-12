@@ -15,6 +15,7 @@ import {
 import { COMMAND_EVIDENCE_LEDGER_SCHEMA_VERSION } from "../src/sidecar/CommandEvidenceLedger.js";
 import { canonicalCommandEvidenceHash } from "../src/sidecar/CommandEvidenceVerifier.js";
 import { externalCommandEvidenceStoreForRepo } from "../src/sidecar/ExternalCommandEvidenceStore.js";
+import { refreshSidecar } from "../src/sidecar/SidecarRefresh.js";
 import { sha256 } from "../src/sidecar/SidecarRepo.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
@@ -122,6 +123,55 @@ describe("STAX sidecar watch and collect", () => {
       { role: "assistant", text: "Starting sidecar." }
     ]);
     await expect(fs.stat(result.turnArtifactPath)).resolves.toBeTruthy();
+  });
+
+  it("refreshes heartbeat and Codex turn capture in one pass", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-refresh-");
+    await attachStaxToRepo(repoPath);
+    const sessionsRoot = path.join(repoPath, "codex-sessions");
+    const sessionPath = path.join(sessionsRoot, "rollout-session.jsonl");
+    await fs.mkdir(sessionsRoot, { recursive: true });
+    await fs.writeFile(
+      sessionPath,
+      [
+        JSON.stringify({ type: "session_meta", payload: { id: "refresh-session-123" } }),
+        JSON.stringify({
+          type: "response_item",
+          payload: {
+            type: "message",
+            role: "user",
+            content: [{ type: "input_text", text: "Refresh the STAX sidecar." }]
+          }
+        }),
+        JSON.stringify({
+          type: "response_item",
+          payload: {
+            type: "message",
+            role: "assistant",
+            content: [{ type: "output_text", text: "STAX_ACK refresh-token Refresh complete." }]
+          }
+        })
+      ].join("\n"),
+      "utf8"
+    );
+
+    const result = await refreshSidecar({
+      repoPath,
+      sessionsRoot,
+      now: new Date("2026-05-04T18:00:00.000Z")
+    });
+    const heartbeat = JSON.parse(await fs.readFile(result.heartbeatPath, "utf8")) as { updatedAt: string };
+    const currentTurn = JSON.parse(
+      await fs.readFile(path.join(repoPath, ".stax", "current-turn.json"), "utf8")
+    ) as { sessionId: string; messageCount: number; messages: Array<{ text: string }> };
+
+    expect(result.schemaVersion).toBe("stax-sidecar-refresh-v1");
+    expect(result.turn.sessionId).toBe("refresh-session-123");
+    expect(result.turn.messageCount).toBe(2);
+    expect(heartbeat.updatedAt).toBe("2026-05-04T18:00:00.000Z");
+    expect(currentTurn.sessionId).toBe("refresh-session-123");
+    expect(currentTurn.messages.map((message) => message.text).join("\n")).toContain("STAX_ACK refresh-token");
+    await expect(fs.stat(result.turn.turnArtifactPath)).resolves.toBeTruthy();
   });
 
   it("accepts a clean attached repo only after fresh heartbeat and Codex turn capture", async () => {
@@ -311,6 +361,56 @@ describe("STAX sidecar watch and collect", () => {
     expect(status.unverified.join("\n")).toContain("wrong_worktree");
     expect(status.unverified.join("\n")).toContain("Command evidence freshness failed");
     expect(status.risk.join("\n")).toContain("wrong_worktree");
+  });
+
+  it("does not let stale historical evidence poison a later current proof run", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-stale-history-current-proof-");
+    await fs.writeFile(
+      path.join(repoPath, "package.json"),
+      `${JSON.stringify({
+        scripts: {
+          test: "node -e \"console.log('tests passed')\"",
+          typecheck: "node -e \"console.log('typecheck passed')\""
+        }
+      }, null, 2)}\n`,
+      "utf8"
+    );
+    await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, "src/app.ts"), "export const value = 3;\n", "utf8");
+    const current = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "typecheck"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify current proof.",
+        "Files changed: src/app.ts",
+        "Tests added: none",
+        "Commands run: npm run typecheck",
+        `Command output summary with exit codes: ${current.evidenceId} exit code 0`,
+        "What is verified: implementation complete with local command evidence.",
+        "What is weak/provisional: stale historical evidence is retained only as history.",
+        "What is unverified: none.",
+        "Risks: none.",
+        "One next action: accept.",
+        ""
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).not.toBe("Reject");
+    expect(status.verified.join("\n")).toContain(current.evidenceId);
+    expect(status.unverified.join("\n")).not.toContain("wrong_worktree");
+    expect(status.risk.join("\n")).not.toContain("wrong_worktree");
+    expect(status.verified.join("\n")).toContain("Historical command evidence ignored for current proof");
   });
 
   it("rejects command evidence after an untracked relevant source file appears", async () => {
@@ -625,7 +725,7 @@ describe("STAX sidecar watch and collect", () => {
 
     expect(status.why).not.toContain("failed_proof");
     expect(status.unverified.join("\n")).not.toContain("Command evidence failed");
-    expect(status.weak.join("\n")).toContain("superseded by a later passing");
+    expect(status.verified.join("\n")).toContain("superseded by a later passing");
     expect(status.proofStrength?.label).not.toBe("Reject");
     expect(status.proofStrength?.capApplied.map((cap) => cap.id)).not.toContain("unverified_local_command_provenance");
     expect(status.proofStrength?.rejectReasons.join("\n") ?? "").not.toContain("Failed command evidence");

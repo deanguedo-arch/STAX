@@ -803,7 +803,7 @@ async function deriveSidecarProofStrength(input: {
   generatedAt: string;
 }): Promise<ProofStrengthResult | undefined> {
   const claimText = [input.task, input.codexReport].filter((item) => item.trim()).join("\n\n");
-  const commandEvidenceEntries = latestCommandEvidenceByCommand(input.commandEvidenceEntries);
+  const commandEvidenceEntries = latestCurrentCommandEvidenceForProof(input.commandEvidenceEntries);
   const commandEvidence = commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
   const claimType = inferProofStrengthClaimType(claimText) ?? (commandEvidence.length > 0 ? "verification_run" : undefined);
   if (!claimType) return undefined;
@@ -1222,7 +1222,13 @@ async function deriveSidecarFindings(input: {
     risk.push("Unsafe publish/deploy/sync claim blocked.");
   }
 
-  for (const entry of latestCommandEvidenceByCommand(input.commandEvidenceEntries)) {
+  const latestEntries = latestCommandEvidenceByCommand(input.commandEvidenceEntries);
+  const verifiedCurrentEntries = latestEntries.filter(isVerifiedCurrentCommandEvidence);
+  const hasCurrentVerifiedEvidence = verifiedCurrentEntries.length > 0;
+  const entriesForStrictFindings = hasCurrentVerifiedEvidence
+    ? latestEntries.filter((entry) => isVerifiedCurrentCommandEvidence(entry) || !isStaleHistoricalEvidence(entry))
+    : latestEntries;
+  for (const entry of entriesForStrictFindings) {
     if (entry.provenanceStatus === "verified_local_stax_command") {
       verified.push(`Command evidence provenance verified: ${entry.evidenceId ?? entry.command}.`);
       verified.push(`Command evidence freshness verified: ${entry.evidenceId ?? entry.command} matches the current auditable worktree.`);
@@ -1262,13 +1268,24 @@ async function deriveSidecarFindings(input: {
       unverified.push(`Command evidence failed: ${entry.command} exited ${entry.exitCode ?? "unknown"}.`);
     }
   }
+  if (hasCurrentVerifiedEvidence) {
+    for (const entry of latestEntries.filter(isStaleHistoricalEvidence).slice(0, 3)) {
+      verified.push(`Historical command evidence ignored for current proof because ${entry.command} is ${entry.provenanceStatus}.`);
+    }
+  }
   const supersededFailures = input.commandEvidenceEntries.filter((entry) => {
     if (entry.exitCode === 0) return false;
     const latest = latestCommandEvidenceByCommand(input.commandEvidenceEntries).find((item) => item.command === entry.command);
     return latest && latest !== entry && latest.exitCode === 0;
   });
   for (const entry of supersededFailures.slice(0, 2)) {
-    weak.push(`Earlier failed command evidence exists but is superseded by a later passing ${entry.command} run.`);
+    const latest = latestCommandEvidenceByCommand(input.commandEvidenceEntries).find((item) => item.command === entry.command);
+    const message = `Earlier failed command evidence exists but is superseded by a later passing ${entry.command} run.`;
+    if (latest && isVerifiedCurrentCommandEvidence(latest)) {
+      verified.push(message);
+    } else {
+      weak.push(message);
+    }
   }
 
   return { verified, weak, unverified, risk };
@@ -1462,6 +1479,27 @@ function latestCommandEvidenceByCommand<T extends ProjectControlCommandEvidenceE
     if (!latest.has(entry.command)) latest.set(entry.command, entry);
   }
   return [...latest.values()];
+}
+
+function latestCurrentCommandEvidenceForProof<T extends SidecarCommandEvidenceEntry>(
+  entries: T[]
+): T[] {
+  const latest = latestCommandEvidenceByCommand(entries);
+  const verifiedCurrent = latest.filter(isVerifiedCurrentCommandEvidence);
+  return verifiedCurrent.length > 0 ? verifiedCurrent : latest;
+}
+
+function isVerifiedCurrentCommandEvidence(
+  entry: ProjectControlCommandEvidenceEntry
+): boolean {
+  return (entry as SidecarCommandEvidenceEntry).provenanceStatus === "verified_local_stax_command";
+}
+
+function isStaleHistoricalEvidence(
+  entry: ProjectControlCommandEvidenceEntry
+): boolean {
+  const status = (entry as SidecarCommandEvidenceEntry).provenanceStatus;
+  return status === "wrong_worktree" || status === "wrong_commit";
 }
 
 function commandEvidenceTime(entry: ProjectControlCommandEvidenceEntry): number {

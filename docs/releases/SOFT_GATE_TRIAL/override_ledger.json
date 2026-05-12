@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "stax-soft-gate-override-ledger-v1",
+  "generatedAt": "2026-05-12T12:16:07.577Z",
+  "overrides": [
+    {
+      "runId": "soft_gate_trial_007",
+      "repoClass": "stax_repo",
+      "boundary": "local",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    },
+    {
+      "runId": "soft_gate_trial_014",
+      "repoClass": "messy_real_repo",
+      "boundary": "local",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    },
+    {
+      "runId": "soft_gate_trial_021",
+      "repoClass": "fixture_repo",
+      "boundary": "handoff",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    },
+    {
+      "runId": "soft_gate_trial_028",
+      "repoClass": "low_risk_real_repo",
+      "boundary": "local",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    },
+    {
+      "runId": "soft_gate_trial_035",
+      "repoClass": "brightspace_observer",
+      "boundary": "commit",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    },
+    {
+      "runId": "soft_gate_trial_042",
+      "repoClass": "stax_repo",
+      "boundary": "handoff",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    },
+    {
+      "runId": "soft_gate_trial_049",
+      "repoClass": "messy_real_repo",
+      "boundary": "local",
+      "reason": "Recorded operator reason for provisional proof during soft-gate trial."
+    }
+  ]
+}

@@ -214,7 +214,8 @@ export function buildProjectControlProofStack(
 type CommandInsight = ReturnType<typeof classifyCommandEvidence> & { command: string };
 
 function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsight | undefined {
-  const structuredEntry = input.commandEvidenceEntries?.[0];
+  const claimType = detectCommandClaimType([input.task, input.codexReport].join("\n"));
+  const structuredEntry = selectStructuredCommandEvidenceEntry(input, claimType);
   const command = structuredEntry?.command ?? detectCommand(input.commandEvidence);
   if (!command) return undefined;
   const source = structuredEntry?.source ?? detectCommandSource(input.commandEvidence, input.codexReport);
@@ -232,10 +233,43 @@ function deriveCommandInsight(input: ProjectControlProofStackInput): CommandInsi
       expectedCwd: input.expectedCwd ?? input.targetRepoPath,
       expectedBranch: input.expectedBranch,
       expectedCommitSha: input.expectedCommitSha,
-      claimType: detectCommandClaimType([input.task, input.codexReport].join("\n"))
+      claimType
     }),
     command
   };
+}
+
+function selectStructuredCommandEvidenceEntry(
+  input: ProjectControlProofStackInput,
+  claimType: CommandEvidenceClaimType
+): ProjectControlCommandEvidenceEntry | undefined {
+  const entries = input.commandEvidenceEntries ?? [];
+  if (entries.length === 0) return undefined;
+
+  const classified = entries.map((entry) => ({
+    entry,
+    result: classifyCommandEvidence({
+      command: entry.command,
+      cwd: entry.cwd,
+      repo: entry.repo,
+      branch: entry.branch,
+      commitSha: entry.commitSha,
+      exitCode: entry.exitCode,
+      output: renderStructuredCommandOutput(entry),
+      source: entry.source,
+      expectedRepo: input.expectedRepo ?? input.targetRepoPath,
+      expectedCwd: input.expectedCwd ?? input.targetRepoPath,
+      expectedBranch: input.expectedBranch,
+      expectedCommitSha: input.expectedCommitSha,
+      claimType
+    })
+  }));
+
+  return (
+    classified.find(({ result }) => result.proofStrength === "strong_local_proof")?.entry ??
+    classified.find(({ result }) => result.proofStrength !== "not_relevant_to_claim")?.entry ??
+    entries[0]
+  );
 }
 
 function renderStructuredCommandOutput(entry: NonNullable<ProjectControlProofStackInput["commandEvidenceEntries"]>[number]): string {
@@ -574,6 +608,10 @@ function deriveProofItems(
       push("migration_diff", files.some((file) => /migration|schema/i.test(file)) ? "strong" : "missing", files.some((file) => /migration|schema/i.test(file)) ? "Migration diff detected." : "No migration diff detected.");
       push("migration_apply_proof", /\bmigrate\b|\balembic upgrade\b|\bdb push\b/i.test(combined) && strongCommand ? "strong" : /\bmigrate\b|\balembic upgrade\b|\bdb push\b/i.test(combined) ? "weak" : "missing", /\bmigrate\b|\balembic upgrade\b|\bdb push\b/i.test(combined) ? "Migration apply evidence mentioned." : "No migration apply proof detected.");
       push("migration_rollback_proof", /\brollback\b|\brevert\b|\bdowngrade\b/i.test(combined) ? "strong" : "missing", /\brollback\b|\brevert\b|\bdowngrade\b/i.test(combined) ? "Migration rollback proof mentioned." : "No migration rollback proof detected.");
+      break;
+    case "protocol_compliance":
+      push("protocol_acknowledgement", /\bSTAX_ACK\b/i.test(combined) ? "strong" : "missing", /\bSTAX_ACK\b/i.test(combined) ? "STAX acknowledgement detected." : "No STAX acknowledgement detected.");
+      push("codex_report_contract", /\bFiles changed\b[\s\S]*\bCommands run\b[\s\S]*\bWhat is verified\b[\s\S]*\bWhat is unverified\b[\s\S]*\bRisks\b/i.test(combined) ? "strong" : "missing", "Codex report contract sections checked.");
       break;
     case "performance":
       push("performance_benchmark", /\bbenchmark\b|\blatency\b|\bms\b|\bops\/s\b/i.test(combined) ? "strong" : "missing", /\bbenchmark\b|\blatency\b|\bms\b|\bops\/s\b/i.test(combined) ? "Performance benchmark evidence detected." : "No performance benchmark evidence detected.");

@@ -1299,6 +1299,7 @@ async function runStaxCoreCheck(
   try {
     const result = await execFileAsync(command[0]!, command.slice(1), {
       cwd,
+      env: sanitizedNestedCommandEnv(process.env),
       maxBuffer: 16 * 1024 * 1024
     });
     stdout = result.stdout;
@@ -1326,6 +1327,26 @@ async function runStaxCoreCheck(
     stdoutPreview: previewOutput(stdout),
     stderrPreview: previewOutput(stderr)
   };
+}
+
+function sanitizedNestedCommandEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const next: NodeJS.ProcessEnv = { ...env };
+  for (const key of Object.keys(next)) {
+    if (
+      key === "INIT_CWD" ||
+      key === "npm_command" ||
+      key === "npm_execpath" ||
+      key === "npm_node_execpath" ||
+      key === "npm_package_json" ||
+      key === "npm_lifecycle_event" ||
+      key === "npm_lifecycle_script" ||
+      key.startsWith("npm_config_") ||
+      key.startsWith("npm_package_")
+    ) {
+      delete next[key];
+    }
+  }
+  return next;
 }
 
 async function countFixtureJsonFiles(folder: string): Promise<number> {
@@ -1480,13 +1501,14 @@ async function staxcoreCommand(args: ParsedArgs): Promise<void> {
       { name: "redteamEval", command: ["npm", "run", "rax", "--", "eval", "--redteam"] }
     );
   }
-  const commandChecks: StaxCoreCommandCheck[] = dryRun
-    ? []
-    : await Promise.all(
-        checkSpecs.map((check) =>
-          runStaxCoreCheck(check.name, check.command, process.cwd())
-        )
-      );
+  const commandChecks: StaxCoreCommandCheck[] = [];
+  if (!dryRun) {
+    // Keep strict release checks serial so full-test runs are not distorted by
+    // concurrent eval/audit workers competing for the same local resources.
+    for (const check of checkSpecs) {
+      commandChecks.push(await runStaxCoreCheck(check.name, check.command, process.cwd()));
+    }
+  }
 
   const evidence: ReleaseGateEvidence = dryRun
     ? parseDryRunEvidence(args)

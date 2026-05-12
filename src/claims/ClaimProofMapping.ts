@@ -26,6 +26,7 @@ const REQUIRED_PROOF_BY_CLAIM: Record<ClaimProofClaimType, ClaimProofType[]> = {
   config_policy: ["config_diff", "human_policy_approval"],
   dependency: ["dependency_inspection", "dependency_build_proof"],
   migration: ["migration_diff", "migration_apply_proof", "migration_rollback_proof"],
+  protocol_compliance: ["protocol_acknowledgement", "codex_report_contract"],
   performance: ["performance_benchmark", "performance_baseline"],
   accessibility: ["accessibility_audit", "ui_flow_evidence"]
 };
@@ -89,56 +90,66 @@ export async function loadClaimDecompositionFixtureCases(rootDir = process.cwd()
 export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[] {
   const claims: ClaimDecompositionItem[] = [];
   const normalized = text.trim();
+  const prose = stripCommandTokens(normalized);
   const push = (claimType: ClaimProofClaimType, claim: string, hardClaim = true) => {
     if (!claims.some((item) => item.claimType === claimType && item.claim === claim)) {
       claims.push({ claimType, claim, hardClaim });
     }
   };
 
-  if (/\bimplemented\b|\bimplementation is complete\b|\bcompleted\b|\bfix is complete\b|\bdone\b|\ball set\b|\bresolved\b|\bcleaned up\b/i.test(normalized)) {
+  if (/\bimplemented\b|\bimplementation is complete\b|\bcompleted\b|\bfix is complete\b|\bdone\b|\ball set\b|\bresolved\b|\bcleaned up\b/i.test(prose)) {
     push("implementation", "Implementation is complete.");
   }
-  if (/\btests? passed\b|\btest suite passed\b|\badded tests\b|\bchecks? (?:are )?green\b|\bci (?:is )?green\b|\bbuild passed\b|\btypecheck passed\b|\blint passed\b|\bvalidated\b/i.test(normalized)) {
+  if (/\btests? passed\b|\btest suite passed\b|\badded tests\b|\bchecks? (?:are )?green\b|\bci (?:is )?green\b|\bbuild passed\b|\btypecheck passed\b|\blint passed\b|\bvalidated\b/i.test(prose)) {
     push("test", "Tests passed.");
   }
-  if (/\bevals? passed\b|\bregression passed\b|\bredteam passed\b/i.test(normalized)) {
+  if (/\bevals? passed\b|\bregression passed\b|\bredteam passed\b/i.test(prose)) {
     push("eval", "Evals passed.");
   }
-  if (/\bworks\b|\bworks now\b|\bshould work\b|\bbehavior\b|\bfeature works\b|\bbehavior is verified\b|\bruntime ready\b|\bready to use\b/i.test(normalized)) {
+  if (/\bworks\b|\bworks now\b|\bshould work\b|\bbehavior\b|\bfeature works\b|\bbehavior is verified\b|\bruntime ready\b|\bready to use\b/i.test(prose)) {
     push("behavior", "Behavior is proven.");
   }
-  if (/\bvisual\b|\blayout\b|\bscreenshot\b|\brendered\b|\bcss\b|\blooks good\b|\blooks correct\b/i.test(normalized)) {
+  if (/\bvisual\b|\blayout\b|\bscreenshot\b|\brendered\b|\bcss\b|\blooks good\b|\blooks correct\b/i.test(prose)) {
     push("visual", "Visual/layout claim.");
   }
-  if (/\bdata\b|\bcsv\b|\brow-count\b|\brow count\b|\bdry-run\b|\bdry run\b|\bcanonical\b/i.test(normalized)) {
+  if (/\bdata\b|\bcsv\b|\brow-count\b|\brow count\b|\bdry-run\b|\bdry run\b|\bcanonical\b|\brecords? (?:are )?(?:normalized|clean|valid|ready)\b|\bgenerated rows\b|\brows are clean\b/i.test(prose)) {
     push("data", "Data correctness or publish readiness claim.");
   }
-  if (/\brelease\b|\bdeploy(?:ment)?\b|\bpublish\b|\bsync\b|\bapp store\b|\btestflight\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(normalized)) {
+  if (/\brelease\b|\bdeploy(?:ment)?\b|\bpublish\b|\bsync\b|\bapp store\b|\btestflight\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(prose)) {
     push("release_deploy", "Release/deploy readiness claim.");
   }
-  if (/\bmemory\b|\bpromotion\b|\bapproved memory\b/i.test(normalized)) {
+  if (/\bmemory\b|\bpromotion\b|\bpromoted\b|\bpromote\b|\bapproved memory\b|\bapproval exists\b/i.test(prose)) {
     push("memory_promotion", "Memory promotion or approval claim.");
   }
-  if (/\bsecurity\b|\bsecret\b|\btoken\b|\bprivate key\b/i.test(normalized)) {
+  if (/\bsecurity\b|\bsecret\b|\btoken\b|\bprivate key\b|\bvulnerability\b|\bxss\b|\bcsrf\b|\bauth bypass\b|\binjection\b/i.test(prose)) {
     push("security", "Security claim.");
   }
-  if (/\bconfig\b|\bpolicy\b|\btsconfig\b|\beslint\b|\bplaywright\.config\b/i.test(normalized)) {
+  if (/\bconfig\b|(?<![-:])\bpolicy\b|\btsconfig\b|\beslint\b|\bplaywright\.config\b/i.test(prose)) {
     push("config_policy", "Config/policy claim.");
   }
-  if (/\bdependency\b|\bpackage-lock\b|\byarn\.lock\b|\bpnpm-lock\b|\bupgraded\b|\binstalled\b/i.test(normalized)) {
+  if (/\bdependency\b|\bpackage-lock\b|\byarn\.lock\b|\bpnpm-lock\b|\bupgraded\b|\bupgrade\b|\binstalled\b|\bpackage install\b|\blibrary upgrade\b/i.test(prose)) {
     push("dependency", "Dependency claim.");
   }
-  if (/\bmigration\b|\brollback\b|\bschema change\b|\balembic\b/i.test(normalized)) {
+  if (/\bmigration\b|\bmigrated\b|\brollback\b|\bdowngrade\b|\bschema change\b|\bdb schema\b|\bdatabase change\b|\balembic\b/i.test(prose)) {
     push("migration", "Migration claim.");
   }
-  if (/\bperformance\b|\bfaster\b|\blatency\b|\bbenchmark\b/i.test(normalized)) {
+  if (/\bprotocol\b|\bturn contract\b|\bstax_ack\b|\backnowledg(?:e|ed|ement)\b|\bcodex report contract\b|\bfollowed the workflow\b|\bcurrent turn\b|\bsidecar heartbeat\b/i.test(prose)) {
+    push("protocol_compliance", "Protocol compliance claim.");
+  }
+  if (/\bperformance\b|\bfaster\b|\blatency\b|\bbenchmark\b/i.test(prose)) {
     push("performance", "Performance claim.");
   }
-  if (/\baccessibility\b|\baxe\b|\ba11y\b|\bscreen reader\b/i.test(normalized)) {
+  if (/\baccessibility\b|\baxe\b|\ba11y\b|\bscreen reader\b/i.test(prose)) {
     push("accessibility", "Accessibility claim.");
   }
 
   return claims;
+}
+
+function stripCommandTokens(text: string): string {
+  return text
+    .replace(/`(?:npm|pnpm|yarn|npx)[^`]+`/gi, " ")
+    .replace(/\b(?:npm|pnpm|yarn|npx)\s+(?:run\s+)?[a-z0-9:_@./-]+(?:\s+[a-z0-9:_@./=-]+)*/gi, " ");
 }
 
 function renderExplanation(

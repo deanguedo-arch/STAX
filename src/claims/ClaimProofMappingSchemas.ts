@@ -13,6 +13,7 @@ export const ClaimProofClaimTypeSchema = z.enum([
   "config_policy",
   "dependency",
   "migration",
+  "protocol_compliance",
   "performance",
   "accessibility"
 ]);
@@ -41,6 +42,8 @@ export const ClaimProofTypeSchema = z.enum([
   "migration_diff",
   "migration_apply_proof",
   "migration_rollback_proof",
+  "protocol_acknowledgement",
+  "codex_report_contract",
   "performance_benchmark",
   "performance_baseline",
   "accessibility_audit",

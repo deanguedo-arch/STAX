@@ -165,7 +165,7 @@ function runCommand(cwd: string, command: string[]): Promise<{ stdout: string; s
     const child = spawn(resolvedCommand.executable, resolvedCommand.args, {
       cwd,
       shell: false,
-      env: process.env
+      env: sanitizedCollectedCommandEnv(process.env)
     });
     let stdout = "";
     let stderr = "";
@@ -180,6 +180,26 @@ function runCommand(cwd: string, command: string[]): Promise<{ stdout: string; s
       resolve({ stdout, stderr, exitCode: code ?? 1 });
     });
   });
+}
+
+function sanitizedCollectedCommandEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const next: NodeJS.ProcessEnv = { ...env };
+  for (const key of Object.keys(next)) {
+    if (
+      key === "INIT_CWD" ||
+      key === "npm_command" ||
+      key === "npm_execpath" ||
+      key === "npm_node_execpath" ||
+      key === "npm_package_json" ||
+      key === "npm_lifecycle_event" ||
+      key === "npm_lifecycle_script" ||
+      key.startsWith("npm_config_") ||
+      key.startsWith("npm_package_")
+    ) {
+      delete next[key];
+    }
+  }
+  return next;
 }
 
 function resolveCollectCommand(command: string[]): { executable: string; args: string[] } {

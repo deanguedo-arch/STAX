@@ -67,4 +67,15 @@ describe("claim-to-proof mapping", () => {
       expect(decomposeClaimsFromReport(testCase.report), testCase.caseId).toEqual(testCase.expectedClaims);
     }
   });
+
+  it("does not convert command script names into config or policy claims", () => {
+    const claims = decomposeClaimsFromReport([
+      "Commands run:",
+      "- `npm run test:metadata-policy`",
+      "Command output summary with exit codes:",
+      "- `npm run test:metadata-policy` exited 0."
+    ].join("\n"));
+
+    expect(claims).toEqual([]);
+  });
 });

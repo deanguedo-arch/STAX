@@ -83,29 +83,35 @@ export function evaluateDogfoodLeague(league: DogfoodLeague): DogfoodLeagueSumma
   const bypassRate = rate(eligible.filter((run) => run.bypassUsed).length, eligible.length);
   const repeatedFailureClasses = repeatedWorkflowFailures(eligible);
   const failures: string[] = [];
+  let hasQualityFailure = false;
 
   if (eligible.length < league.thresholds.eligibleRuns) {
     failures.push(`Needs ${league.thresholds.eligibleRuns} eligible observer runs; currently has ${eligible.length}.`);
   }
   if (criticalFalseAccepts > league.thresholds.criticalFalseAccepts) {
     failures.push(`Critical false accepts: ${criticalFalseAccepts}.`);
+    hasQualityFailure = true;
   }
   if (falseRejectRate > league.thresholds.maxFalseRejectRate) {
     failures.push(`False reject rate ${falseRejectRate} exceeds ${league.thresholds.maxFalseRejectRate}.`);
+    hasQualityFailure = true;
   }
   if (eligible.length > 0 && protocolComplianceRate < league.thresholds.minProtocolComplianceRate) {
     failures.push(`Protocol compliance rate ${protocolComplianceRate} is below ${league.thresholds.minProtocolComplianceRate}.`);
+    hasQualityFailure = true;
   }
   if (eligible.length > 0 && nextPromptActionableRate < league.thresholds.minNextPromptActionableRate) {
     failures.push(`Next-prompt actionable rate ${nextPromptActionableRate} is below ${league.thresholds.minNextPromptActionableRate}.`);
+    hasQualityFailure = true;
   }
   if (repeatedFailureClasses.length > 0) {
     failures.push(`Repeated failure classes need regression tests: ${repeatedFailureClasses.join(", ")}.`);
+    hasQualityFailure = true;
   }
 
   return {
     leagueId: league.leagueId,
-    status: failures.length === 0 ? "passed" : eligible.length === 0 ? "in_progress" : "failed",
+    status: failures.length === 0 ? "passed" : hasQualityFailure ? "failed" : "in_progress",
     totalRuns: league.runs.length,
     eligibleRuns: eligible.length,
     bootstrapObservations,

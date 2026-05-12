@@ -11,13 +11,20 @@ describe("STAX Phase 2 dogfood observer league", () => {
   it("loads the Phase 2 observer ledger without counting bootstrap observations as exit-gate runs", async () => {
     const league = await loadDogfoodLeague();
     const summary = evaluateDogfoodLeague(league);
+    const bootstrapObservations = league.runs.filter((run) => run.mode === "bootstrap_observation");
+    const eligibleRuns = league.runs.filter((run) => run.mode === "observer" && run.countsTowardExitGate);
 
     expect(league.runs.length).toBeGreaterThanOrEqual(3);
-    expect(summary.bootstrapObservations).toBe(league.runs.length);
-    expect(summary.eligibleRuns).toBe(0);
-    expect(summary.status).toBe("in_progress");
-    expect(summary.promotionGatePassed).toBe(false);
-    expect(summary.failures).toContain("Needs 20 eligible observer runs; currently has 0.");
+    expect(bootstrapObservations.length).toBeGreaterThanOrEqual(3);
+    expect(summary.bootstrapObservations).toBe(bootstrapObservations.length);
+    expect(summary.eligibleRuns).toBe(eligibleRuns.length);
+    expect(summary.status).toBe(eligibleRuns.length >= league.thresholds.eligibleRuns ? "passed" : "in_progress");
+    expect(summary.promotionGatePassed).toBe(eligibleRuns.length >= league.thresholds.eligibleRuns);
+    if (eligibleRuns.length < league.thresholds.eligibleRuns) {
+      expect(summary.failures).toContain(`Needs 20 eligible observer runs; currently has ${eligibleRuns.length}.`);
+    } else {
+      expect(summary.failures).toEqual([]);
+    }
   });
 
   it("passes only after 20 eligible observer runs meet the Phase 2 thresholds", async () => {
@@ -94,11 +101,17 @@ describe("STAX Phase 2 dogfood observer league", () => {
 
   it("renders observer and regression reports from the ledger", async () => {
     const league = await loadDogfoodLeague();
+    const eligibleRuns = league.runs.filter((run) => run.mode === "observer" && run.countsTowardExitGate);
     const report = renderDogfoodObserverReport(league, "2026-05-11T00:00:00.000Z");
     const regressions = renderDogfoodRegressionAdditions(league, "2026-05-11T00:00:00.000Z");
 
-    expect(report).toContain("Eligible observer runs: 0");
-    expect(report).toContain("Needs 20 eligible observer runs");
+    expect(report).toContain(`Eligible observer runs: ${eligibleRuns.length}`);
+    expect(report).toContain(`Status: ${eligibleRuns.length >= league.thresholds.eligibleRuns ? "passed" : "in_progress"}`);
+    if (eligibleRuns.length < league.thresholds.eligibleRuns) {
+      expect(report).toContain("Needs 20 eligible observer runs");
+    } else {
+      expect(report).toContain("Phase 2 promotion gate passed.");
+    }
     expect(report).toContain("Workflow Burden Findings");
     expect(regressions).toContain("tests/staxTrialLeague.test.ts");
   });

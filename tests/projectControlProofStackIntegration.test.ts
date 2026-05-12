@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultRuntime } from "../src/core/RaxRuntime.js";
+import { buildProjectControlProofStack } from "../src/projectControl/ProjectControlProofStack.js";
 
 function packet(input: {
   task: string;
@@ -22,6 +23,68 @@ function packet(input: {
 }
 
 describe("project_control proof stack integration", () => {
+  it("selects relevant command evidence from a mixed local command set", () => {
+    const result = buildProjectControlProofStack({
+      task: "Observer run for local command evidence.",
+      repoEvidence: "Target repo path: /repo\nChanged files: src/app.ts\ntests/app.test.ts",
+      commandEvidence: "",
+      codexReport: [
+        "Objective: collect local command evidence.",
+        "Files changed:",
+        "- none",
+        "Tests added:",
+        "- none",
+        "Commands run:",
+        "- `npm run build:studio` exited 0.",
+        "- `npm run test:learning` exited 0.",
+        "Command output summary with exit codes:",
+        "- local commands exited 0.",
+        "What is verified:",
+        "- Command evidence exists.",
+        "What is weak/provisional:",
+        "- No broader claim.",
+        "What is unverified:",
+        "- Screen proof.",
+        "Risks:",
+        "- Dirty checkout.",
+        "One next action:",
+        "- Stop."
+      ].join("\n"),
+      targetRepoPath: "/repo",
+      expectedRepo: "/repo",
+      expectedCwd: "/repo",
+      expectedBranch: "main",
+      expectedCommitSha: "abc",
+      commandEvidenceEntries: [
+        {
+          command: "npm run test:learning",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "learning tests passed",
+          stderr: "",
+          source: "local_stax_command_output"
+        },
+        {
+          command: "npm run build:studio",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "studio build passed",
+          stderr: "",
+          source: "local_stax_command_output"
+        }
+      ]
+    });
+
+    expect(result.verified).toContain("Command evidence classifier: strong_local_proof for npm run build:studio.");
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
+  });
+
   it("keeps a 20-case proof-stack integration gate with zero false accepts and low false blocks", async () => {
     const runtime = await createDefaultRuntime();
     const cases = [
