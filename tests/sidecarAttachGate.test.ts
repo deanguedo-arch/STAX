@@ -268,6 +268,71 @@ describe("STAX sidecar attach and gate", () => {
     expect(latestProofReport).toContain("- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state");
   });
 
+  it("does not convert metadata-only release or data words into sidecar hard claims", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-claim-metadata-");
+    useTestExternalEvidenceRoot(repoPath);
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(
+      repoPath,
+      "package.json",
+      `${JSON.stringify({ scripts: { test: "node -e \"console.log('metadata-safe')\"" } }, null, 2)}\n`
+    );
+    await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
+    await fs.writeFile(path.join(repoPath, "src/app.ts"), "export const value = 2;\n", "utf8");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: classify protected command inventory wording",
+        "Files changed:",
+        "- docs/releases/LIMITED_HARD_GATE/boundary_policy.md",
+        "- scripts/syncData.ts",
+        "Tests added:",
+        "- Report metadata regression covers release, publish, sync, and data-publish command family wording.",
+        "Commands run:",
+        "- `npm test`",
+        `Command output summary with exit codes: ${evidence.evidenceId} exit code 0`,
+        "Changes made:",
+        "- Command inventory wording is parsed as metadata, not as shipping readiness.",
+        "What is verified:",
+        "- Local command evidence was captured for this exact repo state.",
+        "What is weak/provisional:",
+        "- No live protected-boundary rollout was attempted.",
+        "What is unverified:",
+        "- Release/deploy/data-publish rollout in another repo remains future work.",
+        "Risks:",
+        "- Config policy review remains future work.",
+        "One next action:",
+        "- Keep the metadata wording regression scoped."
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.risk.join("\n")).not.toContain("Unsafe publish/deploy/sync claim blocked");
+    expect(status.unverified.join("\n")).not.toContain("Deploy/publish/sync/release claim lacks approval");
+    expect(status.proofStrength?.claimType).toBe("verification_run");
+  });
+
   it("does not mark command evidence stale when only tracked sidecar proof artifacts advanced HEAD", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-proof-report-head-");
     useTestExternalEvidenceRoot(repoPath);

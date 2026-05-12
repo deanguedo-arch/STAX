@@ -355,12 +355,32 @@ function detectCommandSource(commandEvidence: string, codexReport: string): Comm
 }
 
 function detectCommandClaimType(text: string): CommandEvidenceClaimType {
-  if (/\btests? passed\b/i.test(text)) return "tests_passed";
+  const claims = decomposeClaimsFromReport(text).map((claim) => claim.claimType);
+  if (claims.includes("release_deploy")) return "release_ready";
   if (/\bbuild\b/i.test(text)) return "build_passed";
   if (/\btypecheck\b/i.test(text)) return "typecheck_passed";
   if (/\blint\b/i.test(text)) return "lint_passed";
-  if (/\brelease\b|\bdeploy\b|\bpublish\b|\bsync\b/i.test(text)) return "release_ready";
-  if (/\bbehavior\b|\bworks\b|\bready\b|\bverified\b/i.test(text)) return "behavior";
+  if (claims.includes("test") || claims.includes("eval")) return "tests_passed";
+  if (
+    claims.some((claim) =>
+      [
+        "implementation",
+        "behavior",
+        "visual",
+        "data",
+        "security",
+        "config_policy",
+        "dependency",
+        "migration",
+        "protocol_compliance",
+        "performance",
+        "accessibility",
+        "memory_promotion"
+      ].includes(claim)
+    )
+  ) {
+    return "behavior";
+  }
   return "unspecified";
 }
 

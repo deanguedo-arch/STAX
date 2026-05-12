@@ -1,14 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { decomposeClaimsFromReport } from "../claims/ClaimProofMapping.js";
 import { classifyFileRole } from "../diffAudit/DiffAudit.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { commandFamilyFor, type CommandEvidence } from "../evidence/CommandEvidenceStore.js";
 import { EvidenceGroundingGate } from "../evidence/EvidenceGroundingGate.js";
-import {
-  ProofStrengthGate,
-  inferProofStrengthClaimType
-} from "../evidence/ProofStrengthGate.js";
-import type { ProofStrengthResult } from "../evidence/ProofStrengthSchemas.js";
+import { ProofStrengthGate } from "../evidence/ProofStrengthGate.js";
+import type { ProofStrengthClaimType, ProofStrengthResult } from "../evidence/ProofStrengthSchemas.js";
 import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
 import type {
   ProjectControlChangedFile,
@@ -805,7 +803,7 @@ async function deriveSidecarProofStrength(input: {
   const claimText = [input.task, input.codexReport].filter((item) => item.trim()).join("\n\n");
   const commandEvidenceEntries = latestCurrentCommandEvidenceForProof(input.commandEvidenceEntries);
   const commandEvidence = commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
-  const claimType = inferProofStrengthClaimType(claimText) ?? (commandEvidence.length > 0 ? "verification_run" : undefined);
+  const claimType = inferProofStrengthClaimTypeFromClaims(claimText) ?? (commandEvidence.length > 0 ? "verification_run" : undefined);
   if (!claimType) return undefined;
   const evidenceFiles = mergeChangedFiles(input.changedFiles, await existingMentionedFiles(input.repoPath, claimText));
   const repoEvidence = sidecarRepoEvidencePack({
@@ -1189,7 +1187,8 @@ async function deriveSidecarFindings(input: {
   const sourceChanged = roles.has("source") || roles.has("script");
   const testChanged = roles.has("test");
   const visualChanged = roles.has("visual_style");
-  const riskyRelease = /\b(deploy|publish|sync|release|TestFlight|App Store|production)\b/i.test(report);
+  const reportClaims = decomposeClaimsFromReport(report);
+  const riskyRelease = reportClaims.some((claim) => claim.claimType === "release_deploy");
   const implementationClaim = /\b(implemented|fixed|done|complete|ready|works|behavior|runtime)\b/i.test(report);
   const testsPassedClaim = /\b(tests? passed|npm test passed|all tests passed|test suite passed)\b/i.test(report);
 
@@ -1628,13 +1627,18 @@ function inferFailurePatternIds(status: StaxGateStatus): string[] {
 }
 
 function inferClaimTypes(report: string): string[] {
-  const claims: string[] = [];
-  if (/\bimplemented|fixed|source|runtime\b/i.test(report)) claims.push("implementation");
-  if (/\btest|spec|passed\b/i.test(report)) claims.push("test");
-  if (/\bbehavior|works|ready\b/i.test(report)) claims.push("behavior");
-  if (/\bvisual|layout|css|screenshot\b/i.test(report)) claims.push("visual");
-  if (/\bdeploy|release|publish|sync\b/i.test(report)) claims.push("release_deploy");
+  const claims = decomposeClaimsFromReport(report).map((claim) => claim.claimType);
   return dedupe(claims.length ? claims : ["unspecified"]);
+}
+
+function inferProofStrengthClaimTypeFromClaims(text: string): ProofStrengthClaimType | undefined {
+  const claims = decomposeClaimsFromReport(text).map((claim) => claim.claimType);
+  if (claims.includes("release_deploy")) return "release_ready";
+  if (claims.includes("security")) return "security_fixed";
+  if (claims.includes("visual") || claims.includes("accessibility")) return "visual_behavior_verified";
+  if (claims.includes("test") || claims.includes("eval")) return "tests_passed";
+  if (claims.includes("implementation") || claims.includes("behavior")) return "implementation_complete";
+  return undefined;
 }
 
 function dedupe<T>(items: T[]): T[] {

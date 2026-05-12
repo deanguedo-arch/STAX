@@ -78,4 +78,63 @@ describe("claim-to-proof mapping", () => {
 
     expect(claims).toEqual([]);
   });
+
+  it("does not convert report metadata, paths, commands, or future gaps into hard claims", () => {
+    const claims = decomposeClaimsFromReport([
+      "Files changed:",
+      "- docs/releases/LIMITED_HARD_GATE/boundary_policy.md",
+      "- scripts/syncData.ts",
+      "Commands run:",
+      "- `npm run release:dry-run`",
+      "Command output summary with exit codes:",
+      "- `npm run release:dry-run` exited 0.",
+      "Changes made:",
+      "- Command risk classifier marks release, publish, sync, and data-publish command families as protected risk.",
+      "What is unverified:",
+      "- Release/deploy/data-publish rollout in another repo.",
+      "Risks:",
+      "- Config policy review remains future work."
+    ].join("\n"));
+
+    expect(claims).toEqual([]);
+  });
+
+  it("does not convert explicit non-claims into hard claims", () => {
+    const claims = decomposeClaimsFromReport([
+      "This does not claim release is ready.",
+      "It does not enable deploy, publish, sync, data publish, or config policy changes.",
+      "No external shipping action is authorized."
+    ].join("\n"));
+
+    expect(claims).toEqual([]);
+  });
+
+  it("still catches real readiness and policy claims after metadata filtering", () => {
+    const claims = decomposeClaimsFromReport(
+      "Deployment ready after migration rollback check. CSV row-count and dry-run prove the data is ready. Updated tsconfig and policy approval is recorded."
+    );
+
+    expect(claims).toEqual([
+      {
+        claimType: "data",
+        claim: "Data correctness or publish readiness claim.",
+        hardClaim: true
+      },
+      {
+        claimType: "release_deploy",
+        claim: "Release/deploy readiness claim.",
+        hardClaim: true
+      },
+      {
+        claimType: "config_policy",
+        claim: "Config/policy claim.",
+        hardClaim: true
+      },
+      {
+        claimType: "migration",
+        claim: "Migration claim.",
+        hardClaim: true
+      }
+    ]);
+  });
 });

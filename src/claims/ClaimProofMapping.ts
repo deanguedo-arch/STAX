@@ -90,7 +90,7 @@ export async function loadClaimDecompositionFixtureCases(rootDir = process.cwd()
 export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[] {
   const claims: ClaimDecompositionItem[] = [];
   const normalized = text.trim();
-  const prose = stripCommandTokens(normalized);
+  const prose = normalizeClaimProse(normalized);
   const push = (claimType: ClaimProofClaimType, claim: string, hardClaim = true) => {
     if (!claims.some((item) => item.claimType === claimType && item.claim === claim)) {
       claims.push({ claimType, claim, hardClaim });
@@ -112,10 +112,10 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
   if (/\bvisual\b|\blayout\b|\bscreenshot\b|\brendered\b|\bcss\b|\blooks good\b|\blooks correct\b/i.test(prose)) {
     push("visual", "Visual/layout claim.");
   }
-  if (/\bdata\b|\bcsv\b|\brow-count\b|\brow count\b|\bdry-run\b|\bdry run\b|\bcanonical\b|\brecords? (?:are )?(?:normalized|clean|valid|ready)\b|\bgenerated rows\b|\brows are clean\b/i.test(prose)) {
+  if (/\b(?:csv|data|records?|rows?|canonical dataset|data mapping)\b.{0,80}\b(?:ready|readiness|valid|validated|clean|normalized|proved|proven|prepared|correct|row-count|row count|dry-run|dry run|generated)\b|\b(?:row-count|row count|dry-run|dry run|generated rows|rows are clean)\b/i.test(prose)) {
     push("data", "Data correctness or publish readiness claim.");
   }
-  if (/\brelease\b|\bdeploy(?:ment)?\b|\bpublish\b|\bsync\b|\bapp store\b|\btestflight\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(prose)) {
+  if (/\b(?:release|deploy(?:ment)?|publish|sync|app store|testflight|data\s+publish)\b.{0,80}\b(?:ready|readiness|candidate|done|complete|succeeded|passed|verified|published|deployed|synced|shipped|mergeable|safe|can proceed|proceed)\b|\b(?:published|deployed|synced|released)\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(prose)) {
     push("release_deploy", "Release/deploy readiness claim.");
   }
   if (/\bmemory\b|\bpromotion\b|\bpromoted\b|\bpromote\b|\bapproved memory\b|\bapproval exists\b/i.test(prose)) {
@@ -124,7 +124,7 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
   if (/\bsecurity\b|\bsecret\b|\btoken\b|\bprivate key\b|\bvulnerability\b|\bxss\b|\bcsrf\b|\bauth bypass\b|\binjection\b/i.test(prose)) {
     push("security", "Security claim.");
   }
-  if (/\bconfig\b|(?<![-:])\bpolicy\b|\btsconfig\b|\beslint\b|\bplaywright\.config\b/i.test(prose)) {
+  if (/\b(?:config-heavy|config-only|workflow-only)\b|\b(?:updated|changed|added|modified|set|recorded|approved|approval|proves?|ready|readiness)\b.{0,80}\b(?:config|policy|tsconfig|eslint|playwright\.config)\b|\b(?:config|policy|tsconfig|eslint|playwright\.config)\b.{0,80}\b(?:updated|changed|added|modified|approval|approved|recorded|proves?|ready|readiness)\b/i.test(prose)) {
     push("config_policy", "Config/policy claim.");
   }
   if (/\bdependency\b|\bpackage-lock\b|\byarn\.lock\b|\bpnpm-lock\b|\bupgraded\b|\bupgrade\b|\binstalled\b|\bpackage install\b|\blibrary upgrade\b/i.test(prose)) {
@@ -146,10 +146,62 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
   return claims;
 }
 
+function normalizeClaimProse(text: string): string {
+  return stripNegatedClaimLines(stripCommandTokens(stripCodeAndPathTokens(stripReportMetadataSections(text))));
+}
+
+function stripCodeAndPathTokens(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`[^`]*`/g, " ")
+    .replace(/\b[a-z0-9_.-]+(?:\/[a-z0-9_.-]+)+\b/gi, " ");
+}
+
+function stripReportMetadataSections(text: string): string {
+  const skippedSections = new Set([
+    "files changed",
+    "tests added",
+    "commands run",
+    "command output summary with exit codes",
+    "what is unverified",
+    "risks",
+    "one next action"
+  ]);
+  const output: string[] = [];
+  let skipping = false;
+
+  for (const line of text.split(/\r?\n/)) {
+    const heading = parseReportHeading(line);
+    if (heading) {
+      skipping = skippedSections.has(heading);
+      if (!skipping) output.push(line);
+      continue;
+    }
+    if (!skipping) output.push(line);
+  }
+
+  return output.join("\n");
+}
+
+function parseReportHeading(line: string): string | undefined {
+  const normalized = line.trim().replace(/^#+\s*/, "").replace(/\s*:\s*$/, "").toLowerCase();
+  if (!normalized || normalized.length > 80) return undefined;
+  if (!/^[a-z][a-z0-9 /-]*$/.test(normalized)) return undefined;
+  if (!line.trim().endsWith(":")) return undefined;
+  return normalized;
+}
+
+function stripNegatedClaimLines(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .filter((line) => !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized)\b/i.test(line))
+    .join("\n");
+}
+
 function stripCommandTokens(text: string): string {
   return text
     .replace(/`(?:npm|pnpm|yarn|npx)[^`]+`/gi, " ")
-    .replace(/\b(?:npm|pnpm|yarn|npx)\s+(?:run\s+)?[a-z0-9:_@./-]+(?:\s+[a-z0-9:_@./=-]+)*/gi, " ");
+    .replace(/\b(?:npm|pnpm|yarn|npx)[ \t]+(?:run[ \t]+)?[a-z0-9:_@./-]+(?:[ \t]+[a-z0-9:_@./=-]+)*/gi, " ");
 }
 
 function renderExplanation(
