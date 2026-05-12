@@ -308,12 +308,17 @@ async function evaluatePhase6(rootDir: string, phases: RolloutPhaseGateItem[]): 
     "docs/releases/LIMITED_HARD_GATE/boundary_policy.md",
     "docs/releases/LIMITED_HARD_GATE/override_policy.md",
     "docs/releases/LIMITED_HARD_GATE/rollback_proof.md",
-    "docs/releases/LIMITED_HARD_GATE/trial_report.md"
+    "docs/releases/LIMITED_HARD_GATE/trial_report.md",
+    "docs/releases/LIMITED_HARD_GATE/release_like_preflight_trial.md"
   ];
   const failures = await missingArtifacts(rootDir, artifacts);
   const trialReport = await readIfExists(path.join(rootDir, "docs", "releases", "LIMITED_HARD_GATE", "trial_report.md"));
   if (!/Status:\s*passed/i.test(trialReport)) {
     failures.push("Limited hard-gate trial report is not marked Status: passed.");
+  }
+  const releaseTrial = await readIfExists(path.join(rootDir, "docs", "releases", "LIMITED_HARD_GATE", "release_like_preflight_trial.md"));
+  if (!/Status:\s*passed/i.test(releaseTrial)) {
+    failures.push("Release-like preflight trial is not marked Status: passed.");
   }
   const prerequisiteFailures = prerequisitesNotPassed(phases, ["phase_4_soft_gate_trial"]);
   failures.push(...prerequisiteFailures);

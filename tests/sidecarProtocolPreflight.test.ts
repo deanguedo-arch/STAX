@@ -1,10 +1,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { attachStaxToRepo } from "../src/sidecar/AttachStax.js";
 import { verifyProtocolCompliance } from "../src/sidecar/ProtocolComplianceVerifier.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
-import { runStaxPreflight } from "../src/sidecar/StaxPreflight.js";
+import {
+  canPreflightApprovalSatisfy,
+  inferPreflightBoundaryFromCommand,
+  resolvePreflightPolicy,
+  runStaxPreflight
+} from "../src/sidecar/StaxPreflight.js";
 import { readTurnContract } from "../src/sidecar/TurnContract.js";
 import { createTempGitRepo } from "./sidecarTestHelpers.js";
 
@@ -19,6 +24,10 @@ async function updateSidecarConfig(repoPath: string, patch: Record<string, unkno
 }
 
 describe("STAX protocol compliance and preflight", () => {
+  afterEach(() => {
+    delete process.env.STAX_EVIDENCE_ROOT;
+  });
+
   it("reports missing required Codex report sections as protocol warnings", async () => {
     const repoPath = await createTempGitRepo("stax-protocol-sections-");
     await attachStaxToRepo(repoPath);
@@ -117,6 +126,33 @@ describe("STAX protocol compliance and preflight", () => {
     expect(explicit.exitCode).toBe(0);
   });
 
+  it("infers protected preflight boundaries from release-like commands", async () => {
+    const repoPath = await createTempGitRepo("stax-preflight-command-boundary-");
+    await attachStaxToRepo(repoPath);
+
+    expect(inferPreflightBoundaryFromCommand(["git", "tag", "stax-v1.0.0"])).toBe("release");
+    expect(inferPreflightBoundaryFromCommand(["git", "push", "--tags"])).toBe("release");
+    expect(inferPreflightBoundaryFromCommand(["git", "push", "origin", "main"])).toBe("push");
+    expect(inferPreflightBoundaryFromCommand(["npm", "publish"])).toBe("release");
+    expect(inferPreflightBoundaryFromCommand(["gh", "release", "create", "stax-v1.0.0"])).toBe("release");
+    expect(inferPreflightBoundaryFromCommand(["npm", "run", "deploy"])).toBe("deploy");
+    expect(inferPreflightBoundaryFromCommand(["SYNC_ALL.cmd"])).toBe("data_publish");
+
+    const release = await resolvePreflightPolicy(repoPath, {
+      command: ["git", "tag", "stax-v1.0.0"]
+    });
+    const push = await resolvePreflightPolicy(repoPath, {
+      command: ["git", "push", "origin", "main"]
+    });
+
+    expect(release.boundary).toBe("release");
+    expect(release.boundarySource).toBe("command");
+    expect(release.mode).toBe("hard");
+    expect(push.boundary).toBe("push");
+    expect(push.boundarySource).toBe("command");
+    expect(push.mode).toBe("soft");
+  });
+
   it("preflight soft mode can continue only when a bypass reason is recorded", async () => {
     const repoPath = await createTempGitRepo("stax-preflight-soft-bypass-");
     await attachStaxToRepo(repoPath);
@@ -142,6 +178,43 @@ describe("STAX protocol compliance and preflight", () => {
     expect(bypassed.exitCode).toBe(0);
     expect(bypassed.bypassed).toBe(true);
     expect(bypassed.eventPaths.some((item) => item.includes("bypass_"))).toBe(true);
+  });
+
+  it("hard preflight blocks release-like commands while soft mode records explicit bypasses", async () => {
+    const repoPath = await createTempGitRepo("stax-preflight-release-boundary-");
+    await attachStaxToRepo(repoPath);
+    const blocked = await runStaxPreflight({
+      repoPath,
+      mode: "hard",
+      command: ["git", "tag", "stax-v1.0.0"],
+      writeLearningEvent: false
+    });
+    const bypassed = await runStaxPreflight({
+      repoPath,
+      mode: "soft",
+      command: ["git", "tag", "stax-v1.0.0"],
+      bypassReason: "user explicitly approved recording a release-like boundary bypass for this trial",
+      actor: "test-user",
+      writeLearningEvent: false
+    });
+
+    expect(blocked.boundary).toBe("release");
+    expect(blocked.boundarySource).toBe("command");
+    expect(blocked.exitCode).not.toBe(0);
+    expect(blocked.blocking).toBe(true);
+    expect(bypassed.boundary).toBe("release");
+    expect(bypassed.boundarySource).toBe("command");
+    expect(bypassed.bypassed).toBe(true);
+    expect(bypassed.exitCode).toBe(0);
+    expect(bypassed.blocking).toBe(false);
+  });
+
+  it("allows scoped approval to satisfy an accepted proof state with a risky boundary command", () => {
+    expect(canPreflightApprovalSatisfy("Accept", 2)).toBe(true);
+    expect(canPreflightApprovalSatisfy("Provisional", 2)).toBe(true);
+    expect(canPreflightApprovalSatisfy("Human review", 2)).toBe(true);
+    expect(canPreflightApprovalSatisfy("Reject", 2)).toBe(false);
+    expect(canPreflightApprovalSatisfy("Accept", 3)).toBe(false);
   });
 
   it("hard preflight maps protocol failure to the protocol exit code", async () => {

@@ -24,7 +24,7 @@ export type StaxPreflightBoundary =
   | "data_publish"
   | "ci";
 export type StaxPreflightExitCode = 0 | 1 | 2 | 3 | 4 | 5;
-export type StaxPreflightPolicySource = "explicit" | "config" | "default";
+export type StaxPreflightPolicySource = "explicit" | "command" | "config" | "default";
 
 export type StaxPreflightBoundaryPolicy = Partial<Record<StaxPreflightBoundary, StaxPreflightMode>>;
 
@@ -105,7 +105,7 @@ export async function runStaxPreflight(options: RunStaxPreflightOptions): Promis
   });
   const recommendedExitCode = recommendedPreflightExitCode(status, commandRisk);
   const bypassed = Boolean(options.bypassReason?.trim());
-  const approved = approval.valid && approvalCanSatisfy(status, recommendedExitCode);
+  const approved = approval.valid && canPreflightApprovalSatisfy(status.verdict, recommendedExitCode);
   const exitCode = enforcedExitCode({
     mode,
     recommendedExitCode,
@@ -191,7 +191,7 @@ export async function runStaxPreflight(options: RunStaxPreflightOptions): Promis
 
 export async function resolvePreflightPolicy(
   repoPathInput: string,
-  options: Pick<RunStaxPreflightOptions, "mode" | "boundary"> = {}
+  options: Pick<RunStaxPreflightOptions, "mode" | "boundary" | "command"> = {}
 ): Promise<{
   mode: StaxPreflightMode;
   boundary: StaxPreflightBoundary;
@@ -201,10 +201,13 @@ export async function resolvePreflightPolicy(
   const repoPath = await validateRepoPath(repoPathInput);
   const config = await readPreflightConfig(repoPath);
   const configuredBoundary = parseBoundary(config.preflightDefaultBoundary);
-  const boundary = options.boundary ?? configuredBoundary ?? "local";
+  const commandBoundary = inferPreflightBoundaryFromCommand(options.command);
+  const boundary = options.boundary ?? commandBoundary ?? configuredBoundary ?? "local";
   const boundarySource: StaxPreflightPolicySource = options.boundary
     ? "explicit"
-    : configuredBoundary
+    : commandBoundary
+      ? "command"
+      : configuredBoundary
       ? "config"
       : "default";
   const configuredPolicy = parseBoundaryPolicy(config.preflightBoundaryPolicy);
@@ -294,9 +297,12 @@ function enforcedExitCode(input: {
   return input.recommendedExitCode;
 }
 
-function approvalCanSatisfy(status: StaxGateStatus, recommendedExitCode: StaxPreflightExitCode): boolean {
+export function canPreflightApprovalSatisfy(
+  verdict: StaxGateStatus["verdict"],
+  recommendedExitCode: StaxPreflightExitCode
+): boolean {
   if (recommendedExitCode !== 2) return false;
-  return status.verdict === "Human review" || status.verdict === "Provisional";
+  return verdict === "Accept" || verdict === "Human review" || verdict === "Provisional";
 }
 
 function preflightReason(input: {
@@ -353,4 +359,36 @@ export function createPreflightApprovalTemplate(input: {
 export function nowPreflightEventId(repoPath: string, reason: string): string {
   const generatedAt = preflightGeneratedAt();
   return preflightEventId("preflight", generatedAt, repoPath, reason);
+}
+
+export function inferPreflightBoundaryFromCommand(command?: string[]): StaxPreflightBoundary | undefined {
+  if (!command?.length) return undefined;
+  const executable = (command[0] ?? "").toLowerCase();
+  const args = command.slice(1).map((arg) => arg.toLowerCase());
+  const joined = command.join(" ").toLowerCase();
+
+  if (executable === "git" && args[0] === "push") {
+    if (args.includes("--tags") || args.includes("--follow-tags")) return "release";
+    return "push";
+  }
+  if (executable === "git" && args[0] === "tag") return "release";
+  if (/^(npm|pnpm|yarn)$/.test(executable) && (args[0] === "publish" || args[0] === "version")) return "release";
+  if (executable === "npm" && args[0] === "run" && /^(release|publish|deploy|sync)(:|$)/.test(args[1] ?? "")) {
+    return inferScriptBoundary(args[1] ?? "");
+  }
+  if (executable === "gh" && args[0] === "release") return "release";
+  if (executable === "docker" && args[0] === "push") return "release";
+  if (/\b(firebase|vercel)\s+deploy\b/.test(joined) || /\bdeploy\b/.test(joined)) return "deploy";
+  if (/\b(sync_all|sync_programs|publish_data_to_sheets)\b/.test(joined)) return "data_publish";
+  if (/\bpublish\b/.test(joined) || /\bsync\b/.test(joined)) return "data_publish";
+  if (/\b(terraform|kubectl|helm|aws|gcloud|az)\b/.test(joined) && /\b(apply|delete|replace|patch|scale|rollout|put|create|update|deploy|sync|publish)\b/.test(joined)) {
+    return "deploy";
+  }
+  return undefined;
+}
+
+function inferScriptBoundary(scriptName: string): StaxPreflightBoundary {
+  if (/^deploy(:|$)/.test(scriptName)) return "deploy";
+  if (/^(publish|sync)(:|$)/.test(scriptName)) return "data_publish";
+  return "release";
 }

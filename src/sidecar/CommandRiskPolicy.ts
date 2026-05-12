@@ -1,6 +1,7 @@
 export type SidecarCommandRiskCategory =
   | "destructive_filesystem"
   | "destructive_git"
+  | "release_boundary"
   | "remote_publish"
   | "package_publish"
   | "dependency_install_scripts"
@@ -46,6 +47,12 @@ export function classifySidecarCommandRisk(command: string[]): SidecarCommandRis
   }
   if (executable === "git" && args[0] === "push") {
     add("destructive_git", "git push mutates the remote repository");
+    if (args.includes("--tags") || args.includes("--follow-tags")) {
+      add("release_boundary", "pushing tags can publish release markers to the remote repository");
+    }
+  }
+  if (executable === "git" && args[0] === "tag") {
+    add("release_boundary", "git tag creates or mutates release markers");
   }
   if (executable === "git" && args[0] === "reset" && args.includes("--hard")) {
     add("destructive_git", "git reset --hard discards local work");
@@ -53,11 +60,15 @@ export function classifySidecarCommandRisk(command: string[]): SidecarCommandRis
   if (executable === "git" && args[0] === "clean" && args.some((arg) => /f/.test(arg)) && args.some((arg) => /d/.test(arg))) {
     add("destructive_git", "git clean -fd removes untracked files");
   }
-  if (/\b(deploy|sync)\b/i.test(joined) || /\b(firebase|vercel)\s+deploy\b/i.test(joined)) {
+  if (/\b(deploy|sync)\b/i.test(joined) || /\b(sync_all|sync_programs|publish_data_to_sheets)\b/i.test(joined) || /\b(firebase|vercel)\s+deploy\b/i.test(joined)) {
     add("remote_publish", "deploy/sync commands mutate external systems");
+  }
+  if (/\b(npm|pnpm|yarn)\s+version\b/i.test(joined) || /\bnpm\s+run\s+release\b/i.test(joined)) {
+    add("release_boundary", "version or release scripts can create release artifacts or tags");
   }
   if (/\b(npm|pnpm|yarn)\s+publish\b/i.test(joined) || /\bgh\s+release\b/i.test(joined) || /\bdocker\s+push\b/i.test(joined)) {
     add("package_publish", "publish/release commands mutate package, release, or image registries");
+    if (/\bgh\s+release\b/i.test(joined)) add("release_boundary", "GitHub release commands publish release artifacts");
   }
   if (isDependencyInstallCommand(executable, args)) {
     add("dependency_install_scripts", "dependency install commands can run lifecycle scripts and mutate dependency state");
@@ -94,7 +105,7 @@ function riskLevelForCategories(categories: SidecarCommandRiskCategory[]): Sidec
   if (categories.some((category) => category === "remote_code_execution" || category === "secret_or_clipboard_exposure")) {
     return "forbidden_by_default";
   }
-  if (categories.some((category) => category === "destructive_filesystem" || category === "destructive_git" || category === "remote_publish" || category === "package_publish" || category === "infrastructure_mutation")) {
+  if (categories.some((category) => category === "destructive_filesystem" || category === "destructive_git" || category === "release_boundary" || category === "remote_publish" || category === "package_publish" || category === "infrastructure_mutation")) {
     return "dangerous";
   }
   return "caution";

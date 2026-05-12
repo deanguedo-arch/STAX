@@ -1,6 +1,6 @@
 {
   "schemaVersion": "stax-rollout-phase-gate-v1",
-  "generatedAt": "2026-05-12T12:25:40.829Z",
+  "generatedAt": "2026-05-12T15:22:34.724Z",
   "status": "passed",
   "phases": [
     {
@@ -99,7 +99,8 @@
         "docs/releases/LIMITED_HARD_GATE/boundary_policy.md",
         "docs/releases/LIMITED_HARD_GATE/override_policy.md",
         "docs/releases/LIMITED_HARD_GATE/rollback_proof.md",
-        "docs/releases/LIMITED_HARD_GATE/trial_report.md"
+        "docs/releases/LIMITED_HARD_GATE/trial_report.md",
+        "docs/releases/LIMITED_HARD_GATE/release_like_preflight_trial.md"
       ],
       "nextAction": "Do not turn on hard gate until soft-gate trial evidence and boundary policies pass."
     }

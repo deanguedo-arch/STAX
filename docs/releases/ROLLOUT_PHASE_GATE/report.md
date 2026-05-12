@@ -1,6 +1,6 @@
 # STAX Rollout Phase Gate
 
-Generated: 2026-05-12T12:25:40.829Z
+Generated: 2026-05-12T15:22:34.724Z
 
 ## Summary
 
@@ -153,6 +153,7 @@ Proof artifacts:
 - docs/releases/LIMITED_HARD_GATE/override_policy.md
 - docs/releases/LIMITED_HARD_GATE/rollback_proof.md
 - docs/releases/LIMITED_HARD_GATE/trial_report.md
+- docs/releases/LIMITED_HARD_GATE/release_like_preflight_trial.md
 
 Gate findings:
 

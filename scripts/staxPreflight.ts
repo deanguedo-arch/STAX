@@ -6,7 +6,8 @@ function usage(): string {
     "       npm run stax:preflight -- --repo <path> --mode soft --bypass-reason \"human reason\"",
     "",
     "Runs STAX gate, records a preflight event, and returns an enforcement exit code.",
-    "When --mode is omitted, .stax/config.json boundary policy chooses observer, soft, or hard."
+    "When --mode is omitted, .stax/config.json boundary policy chooses observer, soft, or hard.",
+    "When --boundary is omitted, obvious command boundaries such as git tag, git push --tags, npm publish, gh release, deploy, publish, and sync are inferred from the command after --."
   ].join("\n");
 }
 
