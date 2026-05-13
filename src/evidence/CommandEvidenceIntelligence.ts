@@ -65,6 +65,7 @@ export function commandFamilyForIntelligence(command: string): CommandEvidenceFa
   if (/\b(sync_all\.cmd|publish_data_to_sheets\.bat|publish|deploy|release|sync)\b/.test(normalized)) return "deploy";
   if (/\b(eval --redteam|--redteam)\b/.test(normalized)) return "redteam";
   if (/\b(eval --regression|--regression)\b/.test(normalized)) return "regression";
+  if (/\bsmoke:stax\b/.test(normalized)) return "test";
   if (/\bcampaign:operating-window(?::today)?\b/.test(normalized)) return "eval";
   if (/\b(rax -- eval|eval)\b/.test(normalized)) return "eval";
   if (/\b(playwright|cypress|test:e2e|e2e:project|e2e)\b/.test(normalized)) return "e2e";

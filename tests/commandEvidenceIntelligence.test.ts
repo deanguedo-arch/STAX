@@ -25,6 +25,7 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("npm run verify -- --project social-studies-10-1-docx-export")).toBe("test");
     expect(commandFamilyForIntelligence("npm run test:e2e")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run build")).toBe("build");
+    expect(commandFamilyForIntelligence("npm run smoke:stax")).toBe("test");
     expect(commandFamilyForIntelligence("npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --dry-run")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run brightspaceexport -- convert quiz.pdf --target msforms")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run rax -- eval --redteam")).toBe("redteam");
