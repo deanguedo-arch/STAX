@@ -725,6 +725,7 @@ describe("STAX sidecar watch and collect", () => {
 
     expect(status.why).not.toContain("failed_proof");
     expect(status.unverified.join("\n")).not.toContain("Command evidence failed");
+    expect(status.risk.join("\n")).not.toContain("command failed");
     expect(status.verified.join("\n")).toContain("superseded by a later passing");
     expect(status.proofStrength?.label).not.toBe("Reject");
     expect(status.proofStrength?.capApplied.map((cap) => cap.id)).not.toContain("unverified_local_command_provenance");

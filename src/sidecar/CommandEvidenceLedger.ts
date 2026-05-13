@@ -58,34 +58,48 @@ export async function appendCommandEvidenceLedgerRecord(input: {
     ? commandEvidenceLedgerPathForDir(input.commandEvidenceDir)
     : commandEvidenceLedgerPath(requiredRepoPath(input.repoPath));
   await ensureDirectory(path.dirname(ledgerPath));
-  const records = input.commandEvidenceDir
-    ? await readCommandEvidenceLedgerFromDir(input.commandEvidenceDir)
-    : await readCommandEvidenceLedger(requiredRepoPath(input.repoPath));
-  const previous = records.at(-1);
-  const recordWithoutHash: Omit<CommandEvidenceLedgerRecord, "ledgerHash"> = {
-    schemaVersion: COMMAND_EVIDENCE_LEDGER_SCHEMA_VERSION,
-    sequence: previous ? previous.sequence + 1 : 1,
-    evidenceId: input.evidenceId,
-    evidencePath: input.evidencePath,
-    stdoutPath: input.stdoutPath,
-    stderrPath: input.stderrPath,
-    evidenceHash: input.evidenceHash,
-    stdoutHash: input.stdoutHash,
-    stderrHash: input.stderrHash,
-    worktreeBeforeHash: input.worktreeBeforeHash,
-    worktreeAfterHash: input.worktreeAfterHash,
-    previousLedgerHash: previous?.ledgerHash ?? null,
-    recordedAt: input.recordedAt ?? nowIso()
-  };
-  const record: CommandEvidenceLedgerRecord = {
-    ...recordWithoutHash,
-    ledgerHash: ledgerRecordHash(recordWithoutHash)
-  };
-  await fs.appendFile(ledgerPath, `${JSON.stringify(record)}\n`, "utf8");
-  if (input.commandEvidenceDir) {
-    await writeCommandEvidenceLedgerTipForDir(input.commandEvidenceDir, record);
-  }
-  return record;
+  return withCommandEvidenceLedgerLock(ledgerPath, async () => {
+    let records = input.commandEvidenceDir
+      ? await readCommandEvidenceLedgerFromDir(input.commandEvidenceDir)
+      : await readCommandEvidenceLedger(requiredRepoPath(input.repoPath));
+    const ledgerTip = input.commandEvidenceDir
+      ? await readCommandEvidenceLedgerTipFromDir(input.commandEvidenceDir)
+      : undefined;
+    const existingVerification = verifyCommandEvidenceLedger(records, {
+      ledgerTip,
+      requireLedgerTip: input.commandEvidenceDir !== undefined,
+      commandEvidenceDir: input.commandEvidenceDir
+    });
+    if (records.length > 0 && !existingVerification.valid) {
+      await archiveInvalidCommandEvidenceLedger(ledgerPath, input.commandEvidenceDir);
+      records = [];
+    }
+    const previous = records.at(-1);
+    const recordWithoutHash: Omit<CommandEvidenceLedgerRecord, "ledgerHash"> = {
+      schemaVersion: COMMAND_EVIDENCE_LEDGER_SCHEMA_VERSION,
+      sequence: previous ? previous.sequence + 1 : 1,
+      evidenceId: input.evidenceId,
+      evidencePath: input.evidencePath,
+      stdoutPath: input.stdoutPath,
+      stderrPath: input.stderrPath,
+      evidenceHash: input.evidenceHash,
+      stdoutHash: input.stdoutHash,
+      stderrHash: input.stderrHash,
+      worktreeBeforeHash: input.worktreeBeforeHash,
+      worktreeAfterHash: input.worktreeAfterHash,
+      previousLedgerHash: previous?.ledgerHash ?? null,
+      recordedAt: input.recordedAt ?? nowIso()
+    };
+    const record: CommandEvidenceLedgerRecord = {
+      ...recordWithoutHash,
+      ledgerHash: ledgerRecordHash(recordWithoutHash)
+    };
+    await fs.appendFile(ledgerPath, `${JSON.stringify(record)}\n`, "utf8");
+    if (input.commandEvidenceDir) {
+      await writeCommandEvidenceLedgerTipForDir(input.commandEvidenceDir, record);
+    }
+    return record;
+  });
 }
 
 export async function readCommandEvidenceLedger(repoPath: string): Promise<CommandEvidenceLedgerRecord[]> {
@@ -118,7 +132,7 @@ export async function writeCommandEvidenceLedgerTipForDir(
   };
   const tipPath = commandEvidenceLedgerTipPathForDir(commandEvidenceDir);
   await ensureDirectory(path.dirname(tipPath));
-  await fs.writeFile(tipPath, `${JSON.stringify(tip, null, 2)}\n`, "utf8");
+  await writeJsonFileAtomic(tipPath, tip);
   return tip;
 }
 
@@ -213,4 +227,52 @@ function requiredRepoPath(repoPath: string | undefined): string {
 
 function ledgerRecordHash(record: Omit<CommandEvidenceLedgerRecord, "ledgerHash">): string {
   return stableHash(record);
+}
+
+async function archiveInvalidCommandEvidenceLedger(ledgerPath: string, commandEvidenceDir?: string): Promise<void> {
+  const suffix = `.corrupt-${Date.now()}`;
+  await fs.rename(ledgerPath, `${ledgerPath}${suffix}`).catch((error) => {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  });
+  if (!commandEvidenceDir) return;
+  const tipPath = commandEvidenceLedgerTipPathForDir(commandEvidenceDir);
+  await fs.rename(tipPath, `${tipPath}${suffix}`).catch((error) => {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  });
+}
+
+async function withCommandEvidenceLedgerLock<T>(ledgerPath: string, fn: () => Promise<T>): Promise<T> {
+  const lockPath = `${ledgerPath}.lock`;
+  let handle: fs.FileHandle | undefined;
+
+  for (let attempt = 0; attempt < 80; attempt += 1) {
+    try {
+      handle = await fs.open(lockPath, "wx");
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      await sleep(25);
+    }
+  }
+
+  if (!handle) {
+    throw new Error("Timed out waiting for command evidence ledger lock.");
+  }
+
+  try {
+    return await fn();
+  } finally {
+    await handle.close();
+    await fs.rm(lockPath, { force: true });
+  }
+}
+
+async function writeJsonFileAtomic(filePath: string, payload: unknown): Promise<void> {
+  const tmpPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(tmpPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await fs.rename(tmpPath, filePath);
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

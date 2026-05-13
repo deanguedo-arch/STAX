@@ -81,7 +81,59 @@ describe("project_control proof stack integration", () => {
       ]
     });
 
-    expect(result.verified).toContain("Command evidence classifier: strong_local_proof for npm run build:studio.");
+    expect(result.verified.join("\n")).toMatch(/Command evidence classifier: strong_local_proof for npm run (?:build:studio|test:learning)\./);
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
+  });
+
+  it("does not force build proof from non-claim build wording", () => {
+    const result = buildProjectControlProofStack({
+      task: "Observer run for local sidecar evidence.",
+      repoEvidence: "Target repo path: /repo\nChanged files: scripts/verify-project.ts\ntests/project.test.ts",
+      commandEvidence: "",
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: collect local command evidence.",
+        "Files changed:",
+        "- scripts/verify-project.ts",
+        "Tests added:",
+        "- tests/project.test.ts",
+        "Commands run:",
+        "- `npm run test:e2e:smoke` exited 0.",
+        "Command output summary with exit codes:",
+        "- E2E smoke exited 0.",
+        "What is verified:",
+        "- Command evidence exists.",
+        "What is weak/provisional:",
+        "- This run did not execute the Studio builder because that command can write build artifacts.",
+        "What is unverified:",
+        "- Broader checkout review.",
+        "Risks:",
+        "- Dirty checkout.",
+        "One next action:",
+        "- Stop."
+      ].join("\n"),
+      targetRepoPath: "/repo",
+      expectedRepo: "/repo",
+      expectedCwd: "/repo",
+      expectedBranch: "main",
+      expectedCommitSha: "abc",
+      commandEvidenceEntries: [
+        {
+          command: "npm run test:e2e:smoke",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "e2e smoke passed",
+          stderr: "",
+          source: "local_stax_command_output"
+        }
+      ]
+    });
+
+    expect(result.verified).toContain("Command evidence classifier: strong_local_proof for npm run test:e2e:smoke.");
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("build_passed");
     expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
   });
 

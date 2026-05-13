@@ -357,7 +357,7 @@ function detectCommandSource(commandEvidence: string, codexReport: string): Comm
 function detectCommandClaimType(text: string): CommandEvidenceClaimType {
   const claims = decomposeClaimsFromReport(text).map((claim) => claim.claimType);
   if (claims.includes("release_deploy")) return "release_ready";
-  if (/\bbuild\b/i.test(text)) return "build_passed";
+  if (/\b(?:build passed|build succeeded|build completed|compiled successfully)\b/i.test(text)) return "build_passed";
   if (/\btypecheck\b/i.test(text)) return "typecheck_passed";
   if (/\blint\b/i.test(text)) return "lint_passed";
   if (claims.includes("test") || claims.includes("eval")) return "tests_passed";

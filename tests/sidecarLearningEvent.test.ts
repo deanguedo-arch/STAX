@@ -36,6 +36,37 @@ describe("STAX sidecar learning events", () => {
     expect(await fs.readdir(path.join(repoPath, ".stax", "events"))).toHaveLength(0);
   });
 
+  it("serializes concurrent learning-ledger writes without corrupting JSON", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-concurrent-learning-");
+    await attachStaxToRepo(repoPath);
+
+    await Promise.all([
+      writeSidecarLearningEvent(repoPath, baseEvent({ eventId: "evt_parallel_a" })),
+      writeSidecarLearningEvent(repoPath, baseEvent({ eventId: "evt_parallel_b" }))
+    ]);
+
+    const ledger = JSON.parse(
+      await fs.readFile(path.join(repoPath, ".stax", "learning-ledger.json"), "utf8")
+    ) as { events: SidecarLearningEvent[] };
+    expect(ledger.events.map((event) => event.eventId).sort()).toEqual(["evt_parallel_a", "evt_parallel_b"]);
+  });
+
+  it("archives malformed learning-ledger JSON and resumes with the new event", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-corrupt-learning-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(path.join(repoPath, ".stax", "learning-ledger.json"), "{ bad json", "utf8");
+
+    const result = await writeSidecarLearningEvent(repoPath, baseEvent({ eventId: "evt_after_corruption" }));
+
+    const staxFiles = await fs.readdir(path.join(repoPath, ".stax"));
+    const ledger = JSON.parse(
+      await fs.readFile(path.join(repoPath, ".stax", "learning-ledger.json"), "utf8")
+    ) as { events: SidecarLearningEvent[] };
+    expect(result.written).toBe(true);
+    expect(staxFiles.some((file) => file.startsWith("learning-ledger.json.corrupt-"))).toBe(true);
+    expect(ledger.events.map((event) => event.eventId)).toEqual(["evt_after_corruption"]);
+  });
+
   it("gate writes a fake-complete learning event locally", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-gate-event-");
     await attachStaxToRepo(repoPath);

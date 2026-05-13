@@ -76,7 +76,7 @@ export function commandFamilyForIntelligence(command: string): CommandEvidenceFa
   if (/\b(typecheck|tsc --noemit|tsc -noemit|cargo check|go vet|mypy|pyright)\b/.test(normalized)) return "typecheck";
   if (/\b(lint|eslint|clippy|rubocop|ruff check)\b/.test(normalized)) return "lint";
   if (/\b(build|webpack|vite build|next build|cargo build|go build|gradle assemble|mvn package|mvnw package)\b/.test(normalized)) return "build";
-  if (/\b(?:(?:npm|pnpm|yarn) run test(?::[a-z0-9:_-]+)?|npm test|pnpm test|yarn test|vitest|jest|pytest|cargo test|go test|gradle test|gradlew test|mvn test|mvnw test|phpunit|composer test|bundle exec rspec|rspec)\b/.test(normalized)) {
+  if (/\b(?:(?:npm|pnpm|yarn) run (?:test(?::[a-z0-9:_-]+)?|validate(?::[a-z0-9:_-]+)?|verify(?::[a-z0-9:_-]+)?)|npm test|pnpm test|yarn test|(?:\.\/)?(?:node_modules\/\.bin\/)?tsx --test|vitest|jest|pytest|cargo test|go test|gradle test|gradlew test|mvn test|mvnw test|phpunit|composer test|bundle exec rspec|rspec)\b/.test(normalized)) {
     return "test";
   }
   if (/\b(gh run|github actions|workflow run|ci|run id|job:|matrix)\b/.test(normalized)) return "ci";
@@ -176,8 +176,8 @@ function parseOutputSignals(command: string, output: string): ParsedOutputSignal
   const normalized = output.toLowerCase();
   const commandFamily = commandFamilyForIntelligence(command);
 
-  const cancelled = /\b(cancelled|canceled|aborted)\b/.test(normalized);
-  const skipped = /\b(skipped|pending|todo)\b/.test(normalized);
+  const cancelled = outputIndicatesCancellation(normalized);
+  const skipped = outputIndicatesSkippedOrPending(normalized);
   const partial = /\b(truncated|partial log|snip|\.\.\.|incomplete|timed out)\b/.test(normalized);
 
   const failed = outputIndicatesFailure(normalized);
@@ -230,8 +230,23 @@ function outputIndicatesFailure(output: string): boolean {
     .replace(/\b0\s+failures?\b/g, "")
     .replace(/\bcriticalfailures\s*[:=]?\s*0\b/g, "")
     .replace(/\berrors?\s*[:=]?\s*0\b/g, "")
-    .replace(/\b0\s+errors?\b/g, "");
+    .replace(/\b0\s+errors?\b/g, "")
+    .replace(/\berrors?\b[^\n\r]{0,24}\bnone\b/g, "");
   return /\b(failed|failure|error|errors|panic|traceback|not ok|exited with code 1|exit code 1)\b/.test(withoutZeroFailures);
+}
+
+function outputIndicatesCancellation(output: string): boolean {
+  const withoutZeroCancellation = output
+    .replace(/\b(cancelled|canceled|aborted)\s*[:=]?\s*0\b/g, "")
+    .replace(/\b0\s+(cancelled|canceled|aborted)\b/g, "");
+  return /\b(cancelled|canceled|aborted)\b/.test(withoutZeroCancellation);
+}
+
+function outputIndicatesSkippedOrPending(output: string): boolean {
+  const withoutZeroSkipped = output
+    .replace(/\b(skipped|pending|todo)\s*[:=]?\s*0\b/g, "")
+    .replace(/\b0\s+(skipped|pending|todo)\b/g, "");
+  return /\b(skipped|pending|todo)\b/.test(withoutZeroSkipped);
 }
 
 function commandStatus(

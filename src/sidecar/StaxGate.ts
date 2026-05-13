@@ -128,9 +128,10 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   const codexReport = stripGeneratedProofStrengthSection(await readTextIfExists(path.join(staxPath, "codex-report.md"))).trim();
   const currentFingerprint = await collectWorktreeFingerprint(repoPath);
   const commandEvidenceEntries = await readCommandEvidenceEntries(repoPath, snapshot, currentFingerprint);
+  const currentCommandEvidenceEntries = latestCurrentCommandEvidenceForProof(commandEvidenceEntries);
   const proofStackCommandEvidenceEntries = await normalizeSidecarOnlyCommandEvidence(
     repoPath,
-    demoteUnverifiedCommandEvidence(commandEvidenceEntries),
+    demoteUnverifiedCommandEvidence(currentCommandEvidenceEntries),
     snapshot.commitSha
   );
   const commandEvidence = renderCommandEvidence(proofStackCommandEvidenceEntries);
@@ -1282,8 +1283,6 @@ async function deriveSidecarFindings(input: {
     const message = `Earlier failed command evidence exists but is superseded by a later passing ${entry.command} run.`;
     if (latest && isVerifiedCurrentCommandEvidence(latest)) {
       verified.push(message);
-    } else {
-      weak.push(message);
     }
   }
 

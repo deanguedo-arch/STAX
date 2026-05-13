@@ -9,6 +9,7 @@ describe("command evidence intelligence", () => {
   it("classifies command families used by messy repo proof loops", () => {
     expect(commandFamilyForIntelligence("npm run typecheck")).toBe("typecheck");
     expect(commandFamilyForIntelligence("pnpm vitest run")).toBe("test");
+    expect(commandFamilyForIntelligence("./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts")).toBe("test");
     expect(commandFamilyForIntelligence("yarn jest --runInBand")).toBe("test");
     expect(commandFamilyForIntelligence("pytest tests/test_cli.py")).toBe("test");
     expect(commandFamilyForIntelligence("cargo test -p stax")).toBe("test");
@@ -20,6 +21,8 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("npm test")).toBe("test");
     expect(commandFamilyForIntelligence("npm run test:learning")).toBe("test");
     expect(commandFamilyForIntelligence("npm run test:metadata-policy")).toBe("test");
+    expect(commandFamilyForIntelligence("npm run validate:manifests")).toBe("test");
+    expect(commandFamilyForIntelligence("npm run verify -- --project social-studies-10-1-docx-export")).toBe("test");
     expect(commandFamilyForIntelligence("npm run test:e2e")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run build")).toBe("build");
     expect(commandFamilyForIntelligence("npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --dry-run")).toBe("e2e");
@@ -181,5 +184,85 @@ describe("command evidence intelligence", () => {
     expect(result.commandFamily).toBe("test");
     expect(result.proofStrength).toBe("strong_local_proof");
     expect(result.status).toBe("passed");
+  });
+
+  it("does not treat zero skipped/todo/cancelled test-summary counts as partial command output", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run test:e2e:harness",
+      cwd: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      repo: "canvas-helper",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: [
+        "Test Files  1 passed (1)",
+        "Tests  8 passed (8)",
+        "Start at  19:24:24",
+        "Duration  6.12s",
+        "skipped 0",
+        "todo 0",
+        "cancelled 0"
+      ].join("\n"),
+      expectedRepo: "canvas-helper",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.commandFamily).toBe("e2e");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+    expect(result.limitations).not.toContain("command or workflow was cancelled");
+    expect(result.limitations).not.toContain("command output is partial, skipped, or incomplete");
+  });
+
+  it("does not treat explicit no-error summaries as failed proof", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run verify -- --project social-studies-10-1-docx-export",
+      cwd: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      repo: "canvas-helper",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: [
+        "Metadata policy: passed",
+        "Mode: generated-output",
+        "Missing generated outputs (ERROR): none"
+      ].join("\n"),
+      expectedRepo: "canvas-helper",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.commandFamily).toBe("test");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+  });
+
+  it("still flags positive skipped/todo/cancelled command-summary counts", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run test:e2e:harness",
+      cwd: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      repo: "canvas-helper",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: [
+        "Test Files  1 passed (1)",
+        "Tests  7 passed | skipped 1 | todo 1 | cancelled 1"
+      ].join("\n"),
+      expectedRepo: "canvas-helper",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.proofStrength).toBe("partial_local_proof");
+    expect(result.status).toBe("partial");
+    expect(result.limitations).toContain("command or workflow was cancelled");
   });
 });
