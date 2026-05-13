@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "stax-proof-surface-pack-v1",
+  "repoName": "brightspacequizexporter",
+  "status": "static",
+  "confidence": "high",
+  "detectedStack": ["node", "vite", "rollup", "ingest"],
+  "proofSurfaces": [
+    {
+      "claimType": "dependency_ready",
+      "requiredEvidence": ["dependency_inspection", "build_proof"],
+      "commands": ["npm ls @rollup/rollup-darwin-arm64 rollup vite", "npm run build"],
+      "blockedEvidence": ["package_json_only"],
+      "confidence": "high",
+      "source": "brightspacequizexporter static pack",
+      "nextAction": "Run dependency inspection and npm run build through stax:collect."
+    },
+    {
+      "claimType": "ingest_ready",
+      "requiredEvidence": ["build_proof", "ingest_ci_output"],
+      "commands": ["npm run build", "npm run ingest:ci"],
+      "blockedEvidence": ["npm run ingest:seed-gold"],
+      "confidence": "high",
+      "source": "brightspacequizexporter static pack",
+      "nextAction": "Run npm run build and npm run ingest:ci through stax:collect; seed-gold is not repair proof."
+    },
+    {
+      "claimType": "repo_identity",
+      "requiredEvidence": ["target_repo_cwd", "matching_repo_path", "matching_worktree_fingerprint"],
+      "commands": [],
+      "blockedEvidence": ["wrong_repo_command_output"],
+      "confidence": "high",
+      "source": "generic STAX sidecar rule",
+      "nextAction": "Collect command evidence from the brightspacequizexporter repo root; wrong-repo output cannot verify this repo."
+    }
+  ],
+  "blockedActions": [],
+  "warnings": ["Dependency/install repair is separate from parser/source/fixture/gold changes."]
+}

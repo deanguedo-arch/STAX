@@ -28,6 +28,7 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("npx vite-node --script scripts/send-cartridge-qti-google-visual-batch.ts -- --dry-run")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run brightspaceexport -- convert quiz.pdf --target msforms")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run rax -- eval --redteam")).toBe("redteam");
+    expect(commandFamilyForIntelligence("npm run campaign:operating-window:today")).toBe("eval");
     expect(commandFamilyForIntelligence("gh run view 200")).toBe("ci");
     expect(commandFamilyForIntelligence("SYNC_ALL.cmd")).toBe("deploy");
   });

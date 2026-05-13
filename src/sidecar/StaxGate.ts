@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { decomposeClaimsFromReport } from "../claims/ClaimProofMapping.js";
+import { proofSurfacePromptHint } from "../projectControl/ProofSurfacePack.js";
 import { classifyFileRole } from "../diffAudit/DiffAudit.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { commandFamilyFor, type CommandEvidence } from "../evidence/CommandEvidenceStore.js";
@@ -219,7 +220,8 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     risk
   });
   const why = deriveWhy(verdict, weak, unverified, risk);
-  const oneNextAction = deriveNextAction(verdict, codexReport, commandEvidenceEntries, repoPath, unverified, risk);
+  const proofSurfaceHint = await proofSurfacePromptHint({ repoPath, reportText: codexReport, unverified, risk });
+  const oneNextAction = deriveNextAction(verdict, codexReport, commandEvidenceEntries, repoPath, unverified, risk, proofSurfaceHint);
   const codexPrompt = deriveCodexPrompt(verdict, oneNextAction, unverified, risk);
   const exitCode = exitCodeForVerdict(verdict);
   const statusMarkdown = renderStatusMarkdown({
@@ -1051,11 +1053,13 @@ function deriveNextAction(
   commandEvidenceEntries: ProjectControlCommandEvidenceEntry[],
   repoPath: string,
   unverified: string[],
-  risk: string[]
+  risk: string[],
+  proofSurfaceHint?: string
 ): string {
   const combined = [...unverified, ...risk].join("\n").toLowerCase();
   if (verdict === "Accept") return `Record the STAX sidecar Accept, keep scope unchanged, and stop. ${STAX_ACCEPT_BOUNDARY}`;
   if (!codexReport.trim()) return "Ask Codex to write .stax/codex-report.md using the required STAX report fields.";
+  if (proofSurfaceHint && (unverified.length > 0 || risk.length > 0)) return proofSurfaceHint;
   if (commandEvidenceEntries.length === 0 && /test|command|proof|exit code|passed/i.test(combined)) {
     return `Run npm run stax:collect -- --repo ${repoPath} -- npm test, or collect the repo's canonical proof command.`;
   }

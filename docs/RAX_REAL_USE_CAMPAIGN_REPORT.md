@@ -1,5 +1,7 @@
 # RAX Real Use Campaign Report
 
+Historical report. Current status lives in [CURRENT_STATUS.md](./CURRENT_STATUS.md).
+
 Date started: 2026-04-28
 
 ## Purpose

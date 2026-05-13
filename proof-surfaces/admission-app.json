@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "stax-proof-surface-pack-v1",
+  "repoName": "ADMISSION-APP",
+  "status": "static",
+  "confidence": "high",
+  "detectedStack": ["powershell", "apps-script", "sheets-sync"],
+  "proofSurfaces": [
+    {
+      "claimType": "build_ready",
+      "requiredEvidence": ["local_command_output"],
+      "commands": ["npm run build:pages"],
+      "blockedEvidence": ["docs_updated_only"],
+      "confidence": "high",
+      "source": "admission-app static pack",
+      "nextAction": "Run npm run build:pages through stax:collect."
+    },
+    {
+      "claimType": "publish_sync_deploy_ready",
+      "requiredEvidence": ["preflight_output", "target_validation", "explicit_human_approval"],
+      "commands": [
+        "tools/validate-sync-surface.ps1",
+        "tools/validate-apps-script-structure.ps1",
+        "tools/validate-canonical.ps1"
+      ],
+      "blockedEvidence": ["docs_updated_only", "script_exists_only"],
+      "confidence": "high",
+      "source": "admission-app static pack",
+      "nextAction": "Run sync/app-script/canonical preflight validation before any live sync or publish claim."
+    },
+    {
+      "claimType": "repo_identity",
+      "requiredEvidence": ["target_repo_cwd", "matching_repo_path", "matching_worktree_fingerprint"],
+      "commands": [],
+      "blockedEvidence": ["wrong_repo_command_output"],
+      "confidence": "high",
+      "source": "generic STAX sidecar rule",
+      "nextAction": "Collect command evidence from the ADMISSION-APP repo root; wrong-repo output cannot verify this repo."
+    }
+  ],
+  "blockedActions": [
+    { "action": "SYNC_ALL.cmd", "requires": ["preflight proof", "target validation", "human approval"] },
+    { "action": "SYNC_PROGRAMS.cmd", "requires": ["preflight proof", "target validation", "human approval"] },
+    { "action": "PUBLISH_DATA_TO_SHEETS.bat", "requires": ["preflight proof", "target validation", "human approval"] }
+  ],
+  "warnings": ["config/sheets_sync.json is required; config/sheets_sync.json.example is example-only."]
+}

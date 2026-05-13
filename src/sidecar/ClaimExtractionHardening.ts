@@ -228,12 +228,12 @@ const CLAIM_EVASION_GROUPS: ClaimEvasionGroup[] = [
 export function buildClaimEvasionCases(): ClaimEvasionCase[] {
   return CLAIM_EVASION_GROUPS.flatMap((group) =>
     group.phrases.map((phrase, index) => ({
-      caseId: `claim_evasion_${group.category}_${String(index + 1).padStart(2, "0")}`,
-      category: group.category,
-      report: `Codex report says: ${phrase}. No proof details are supplied.`,
-      expectedClaims: [{ claimType: group.category, claim: group.claim, hardClaim: true }],
-      highRisk: group.highRisk
-    }))
+	      caseId: `claim_evasion_${group.category}_${String(index + 1).padStart(2, "0")}`,
+	      category: group.category,
+	      report: `Codex report says: ${phrase}. No proof details are supplied.`,
+	      expectedClaims: [{ claimType: group.category, claim: group.claim, hardClaim: group.category !== "test" }],
+	      highRisk: group.highRisk
+	    }))
   );
 }
 

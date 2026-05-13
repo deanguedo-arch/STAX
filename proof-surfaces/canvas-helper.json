@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "stax-proof-surface-pack-v1",
+  "repoName": "canvas-helper",
+  "status": "static",
+  "confidence": "high",
+  "detectedStack": ["node", "vite", "playwright", "html-css"],
+  "proofSurfaces": [
+    {
+      "claimType": "visual_ready",
+      "requiredEvidence": ["rendered_screenshot", "visual_checklist"],
+      "commands": ["npm run build:studio", "npm run test:e2e", "npm run test:e2e:project"],
+      "blockedEvidence": ["css_diff_only"],
+      "confidence": "high",
+      "source": "canvas-helper static pack",
+      "nextAction": "Capture a rendered screenshot/checklist and run the relevant project E2E command through stax:collect."
+    },
+    {
+      "claimType": "export_ready",
+      "requiredEvidence": ["export_command_output", "artifact_validation"],
+      "commands": ["npm run build:studio", "npm run test:course-shell"],
+      "blockedEvidence": ["file_exists_only"],
+      "confidence": "medium",
+      "source": "canvas-helper static pack",
+      "nextAction": "Run the export/build validation command and cite the generated artifact proof."
+    },
+    {
+      "claimType": "repo_identity",
+      "requiredEvidence": ["target_repo_cwd", "matching_repo_path", "matching_worktree_fingerprint"],
+      "commands": [],
+      "blockedEvidence": ["wrong_repo_command_output"],
+      "confidence": "high",
+      "source": "generic STAX sidecar rule",
+      "nextAction": "Collect command evidence from the canvas-helper repo root; wrong-repo output cannot verify this repo."
+    }
+  ],
+  "blockedActions": [],
+  "warnings": []
+}

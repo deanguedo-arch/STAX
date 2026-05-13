@@ -23,12 +23,14 @@ import {
   externalCommandEvidenceRepoId,
   externalEvidenceRoot
 } from "./ExternalCommandEvidenceStore.js";
+import { discoverProofSurfaces } from "../projectControl/ProofSurfacePack.js";
 import { writeTurnContract } from "./TurnContract.js";
 
 export { STAX_SIDECAR_PROTOCOL_VERSION } from "./AttachStax.js";
 
 export type UpgradeStaxSidecarOptions = {
   repoPath: string;
+  discoverSurfaces?: boolean;
 };
 
 export type UpgradeStaxSidecarResult = {
@@ -40,6 +42,9 @@ export type UpgradeStaxSidecarResult = {
   agentsPath: string;
   configPath: string;
   protocolPath: string;
+  promptContractPath: string;
+  proofSurfaceCandidatePath?: string;
+  proofSurfaceReviewPath?: string;
 };
 
 type JsonObject = Record<string, unknown>;
@@ -56,9 +61,11 @@ export async function upgradeStaxSidecar(options: UpgradeStaxSidecarOptions): Pr
   const configPath = path.join(staxPath, "config.json");
   const protocolPath = path.join(staxPath, "AGENT_PROTOCOL.md");
   const agentsPath = path.join(repoPath, "AGENTS.md");
+  const promptContractPath = path.join(staxPath, "prompt-contract.json");
 
   await writeTextIfChanged(configPath, `${JSON.stringify(await mergedConfig(configPath, snapshot), null, 2)}\n`, changedFiles);
   await writeTextIfChanged(protocolPath, `${STAX_AGENT_PROTOCOL}\n`, changedFiles);
+  await writeTextIfChanged(promptContractPath, `${JSON.stringify(promptContract(), null, 2)}\n`, changedFiles);
   await writeTextIfChanged(agentsPath, `${upsertAgentsProtocolSection(await readTextIfExists(agentsPath)).trimEnd()}\n`, changedFiles);
   await ensureGeneratedArtifactIgnores(path.join(repoPath, ".gitignore"), changedFiles);
 
@@ -102,6 +109,10 @@ export async function upgradeStaxSidecar(options: UpgradeStaxSidecarOptions): Pr
     changedFiles
   );
   await writeTurnContractIfMissing(repoPath, changedFiles);
+  const surfaceDiscovery = options.discoverSurfaces ? await discoverProofSurfaces(repoPath) : undefined;
+  if (surfaceDiscovery) {
+    changedFiles.push(surfaceDiscovery.candidatePath, surfaceDiscovery.reviewPath);
+  }
 
   return {
     repoPath,
@@ -111,7 +122,10 @@ export async function upgradeStaxSidecar(options: UpgradeStaxSidecarOptions): Pr
     preservedFiles,
     agentsPath,
     configPath,
-    protocolPath
+    protocolPath,
+    promptContractPath,
+    proofSurfaceCandidatePath: surfaceDiscovery?.candidatePath,
+    proofSurfaceReviewPath: surfaceDiscovery?.reviewPath
   };
 }
 
@@ -203,6 +217,35 @@ async function writeTurnContractIfMissing(repoPath: string, changedFiles: string
   if (await pathExists(contractPath)) return;
   await writeTurnContract({ repoPath });
   changedFiles.push(contractPath);
+}
+
+function promptContract(): JsonObject {
+  return {
+    schemaVersion: "stax-prompt-contract-v1",
+    requiresCodexReport: true,
+    requiresExactTurnAcknowledgement: true,
+    claimsNeedLocalProof: true,
+    prohibitedClaimsWithoutProof: [
+      "tests passed",
+      "build succeeded",
+      "visual/layout ready",
+      "publish/sync/deploy ready",
+      "code correctness proved"
+    ],
+    reportSections: [
+      "STAX acknowledgement",
+      "Objective",
+      "Files changed",
+      "Tests added",
+      "Commands run",
+      "Command output summary with exit codes",
+      "What is verified",
+      "What is weak/provisional",
+      "What is unverified",
+      "Risks",
+      "One next action"
+    ]
+  };
 }
 
 function defaultStatusMarkdown(): string {

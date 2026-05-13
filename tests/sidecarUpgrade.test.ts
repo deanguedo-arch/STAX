@@ -16,6 +16,10 @@ describe("STAX sidecar upgrade", () => {
     const result = await upgradeStaxSidecar({ repoPath });
 
     const protocol = await fs.readFile(path.join(repoPath, ".stax", "AGENT_PROTOCOL.md"), "utf8");
+    const promptContract = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "prompt-contract.json"), "utf8")) as {
+      schemaVersion?: string;
+      reportSections?: string[];
+    };
     const agents = await fs.readFile(path.join(repoPath, "AGENTS.md"), "utf8");
     const config = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "config.json"), "utf8")) as {
       sidecarProtocolVersion?: string;
@@ -39,6 +43,7 @@ describe("STAX sidecar upgrade", () => {
       expect.arrayContaining([
         path.join(repoPath, ".stax", "AGENT_PROTOCOL.md"),
         path.join(repoPath, ".stax", "config.json"),
+        path.join(repoPath, ".stax", "prompt-contract.json"),
         path.join(repoPath, ".stax", "reports", "latest-proof-report.md"),
         path.join(repoPath, ".stax", "reports", "latest-confidence-report.md"),
         path.join(repoPath, ".gitignore"),
@@ -53,6 +58,8 @@ describe("STAX sidecar upgrade", () => {
       ])
     );
     expect(protocol).toContain("Do not claim completion without proof.");
+    expect(promptContract.schemaVersion).toBe("stax-prompt-contract-v1");
+    expect(promptContract.reportSections).toContain("Commands run");
     expect(protocol).not.toContain("stale sidecar protocol");
     expect(agents).toContain("Keep repo instructions.");
     expect(agents).toContain("read `.stax/next-codex-prompt.md`");
@@ -76,10 +83,36 @@ describe("STAX sidecar upgrade", () => {
     expect(event).toContain("evidence");
     expect(gitignore).toContain(".stax/*");
     expect(gitignore).toContain("!.stax/proof_strength.json");
+    expect(gitignore).toContain("!.stax/prompt-contract.json");
+    expect(gitignore).toContain("!.stax/proof-surfaces.json");
     expect(gitignore).toContain("!.stax/reports/latest-proof-report.md");
     expect(gitignore).toContain("!.stax/reports/latest-confidence-report.md");
     await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"))).resolves.toBeTruthy();
     await expect(fs.stat(path.join(repoPath, ".stax", "reports", "latest-confidence-report.md"))).resolves.toBeTruthy();
+  });
+
+  it("can generate proof-surface candidates during upgrade without approving them", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-upgrade-surfaces-");
+    await fs.writeFile(
+      path.join(repoPath, "package.json"),
+      `${JSON.stringify({ scripts: { build: "tsc", test: "vitest run", deploy: "firebase deploy" } }, null, 2)}\n`,
+      "utf8"
+    );
+
+    const result = await upgradeStaxSidecar({ repoPath, discoverSurfaces: true });
+    const candidate = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "proof-surfaces.candidate.json"), "utf8")) as {
+      status?: string;
+      proofSurfaces?: Array<{ claimType: string }>;
+      blockedActions?: Array<{ action: string }>;
+    };
+
+    expect(result.proofSurfaceCandidatePath).toBe(path.join(repoPath, ".stax", "proof-surfaces.candidate.json"));
+    expect(result.proofSurfaceReviewPath).toBe(path.join(repoPath, ".stax", "proof-surfaces.review.md"));
+    expect(candidate.status).toBe("candidate");
+    expect(candidate.proofSurfaces?.map((surface) => surface.claimType)).toContain("build_ready");
+    expect(candidate.proofSurfaces?.map((surface) => surface.claimType)).toContain("tests_passed");
+    expect(candidate.blockedActions?.map((action) => action.action)).toContain("npm run deploy");
+    await expect(fs.stat(path.join(repoPath, ".stax", "proof-surfaces.json"))).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("is idempotent after the sidecar is current", async () => {

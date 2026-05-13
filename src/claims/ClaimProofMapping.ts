@@ -91,63 +91,75 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
   const claims: ClaimDecompositionItem[] = [];
   const normalized = text.trim();
   const prose = normalizeClaimProse(normalized);
+  const sourceQualified = isSourceQualifiedClaim(prose);
+  const hardClaimFor = (claimType: ClaimProofClaimType) => !(sourceQualified && claimType === "test");
   const push = (claimType: ClaimProofClaimType, claim: string, hardClaim = true) => {
     if (!claims.some((item) => item.claimType === claimType && item.claim === claim)) {
       claims.push({ claimType, claim, hardClaim });
     }
   };
 
-  if (/\bimplemented\b|\bimplementation is complete\b|\bcompleted\b|\bfix is complete\b|\bdone\b|\ball set\b|\bresolved\b|\bcleaned up\b/i.test(prose)) {
-    push("implementation", "Implementation is complete.");
+  const visualScopedCompletion = /\b(?:visual|layout|css|screenshot|rendered|style|ui)\b.{0,60}\b(?:done|complete|completed|resolved|fixed)\b|\b(?:done|complete|completed|resolved|fixed)\b.{0,60}\b(?:visual|layout|css|screenshot|rendered|style|ui)\b/i.test(prose);
+  const domainScopedPlainFix = /\b(?:visual|layout|css|screenshot|rendered|style|ui|security|secret|token|private key|vulnerability|xss|csrf|auth bypass|injection|policy|config)\b.{0,60}\bfixed\b|\bfixed\b.{0,60}\b(?:visual|layout|css|screenshot|rendered|style|ui|security|secret|token|private key|vulnerability|xss|csrf|auth bypass|injection|policy|config)\b/i.test(prose);
+  if (
+    (/\bimplemented\b|\b(?:implementation|fix|work|changes?) (?:is|are) complete\b|\bcompleted\b|\bdone\b|\ball set\b|\bresolved\b|\bcleaned up\b/i.test(prose) && !visualScopedCompletion) ||
+    (/\bfixed\b/i.test(prose) && !domainScopedPlainFix)
+  ) {
+    push("implementation", "Implementation is complete.", hardClaimFor("implementation"));
   }
-  if (/\btests? passed\b|\btest suite passed\b|\badded tests\b|\bchecks? (?:are )?green\b|\bci (?:is )?green\b|\bbuild passed\b|\btypecheck passed\b|\blint passed\b|\bvalidated\b/i.test(prose)) {
-    push("test", "Tests passed.");
+  const dataScopedValidation = /\b(?:csv|data|records?|rows?|canonical dataset|data mapping)\b.{0,60}\bvalidated\b|\bvalidated\b.{0,60}\b(?:csv|data|records?|rows?|canonical dataset|data mapping)\b/i.test(prose);
+  if (/\btests? passed\b|\btest suite passed\b|\badded tests\b|\bchecks? (?:are )?green\b|\bci (?:is )?green\b|\bbuild passed\b|\btypecheck passed\b|\blint passed\b|\bvalidated\b/i.test(prose) && !dataScopedValidation) {
+    push("test", "Tests passed.", hardClaimFor("test"));
   }
   if (/\bevals? passed\b|\bregression passed\b|\bredteam passed\b/i.test(prose)) {
-    push("eval", "Evals passed.");
+    push("eval", "Evals passed.", hardClaimFor("eval"));
   }
   if (/\bworks\b|\bworks now\b|\bshould work\b|\bbehavior\b|\bfeature works\b|\bbehavior is verified\b|\bruntime ready\b|\bready to use\b/i.test(prose)) {
-    push("behavior", "Behavior is proven.");
+    push("behavior", "Behavior is proven.", hardClaimFor("behavior"));
   }
   if (/\bvisual\b|\blayout\b|\bscreenshot\b|\brendered\b|\bcss\b|\blooks good\b|\blooks correct\b/i.test(prose)) {
-    push("visual", "Visual/layout claim.");
+    push("visual", "Visual/layout claim.", hardClaimFor("visual"));
   }
   if (/\b(?:csv|data|records?|rows?|canonical dataset|data mapping)\b.{0,80}\b(?:ready|readiness|valid|validated|clean|normalized|proved|proven|prepared|correct|row-count|row count|dry-run|dry run|generated)\b|\b(?:row-count|row count|dry-run|dry run|generated rows|rows are clean)\b/i.test(prose)) {
-    push("data", "Data correctness or publish readiness claim.");
+    push("data", "Data correctness or publish readiness claim.", hardClaimFor("data"));
   }
-  if (/\b(?:release|deploy(?:ment)?|publish|sync|app store|testflight|data\s+publish)\b.{0,80}\b(?:ready|readiness|candidate|done|complete|succeeded|passed|verified|published|deployed|synced|shipped|mergeable|safe|can proceed|proceed)\b|\b(?:published|deployed|synced|released)\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(prose)) {
-    push("release_deploy", "Release/deploy readiness claim.");
+  if (/\b(?:release|deploy(?:ment)?|publish|sync|app store|testflight|data\s+publish)\b.{0,80}\b(?:ready|readiness|candidate|done|complete|succeeded|passed|verified|published|deployed|synced|shipped|mergeable|safe|can proceed|proceed)\b|\bready to (?:publish|deploy|release|sync|ship|merge)\b|\b(?:published|deployed|synced|released)\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(prose)) {
+    push("release_deploy", "Release/deploy readiness claim.", hardClaimFor("release_deploy"));
   }
   if (/\bmemory\b|\bpromotion\b|\bpromoted\b|\bpromote\b|\bapproved memory\b|\bapproval exists\b/i.test(prose)) {
-    push("memory_promotion", "Memory promotion or approval claim.");
+    push("memory_promotion", "Memory promotion or approval claim.", hardClaimFor("memory_promotion"));
   }
   if (/\bsecurity\b|\bsecret\b|\btoken\b|\bprivate key\b|\bvulnerability\b|\bxss\b|\bcsrf\b|\bauth bypass\b|\binjection\b/i.test(prose)) {
-    push("security", "Security claim.");
+    push("security", "Security claim.", hardClaimFor("security"));
   }
   if (/\b(?:config-heavy|config-only|workflow-only)\b|\b(?:updated|changed|added|modified|set|recorded|approved|approval|proves?|ready|readiness)\b.{0,80}\b(?:config|policy|tsconfig|eslint|playwright\.config)\b|\b(?:config|policy|tsconfig|eslint|playwright\.config)\b.{0,80}\b(?:updated|changed|added|modified|approval|approved|recorded|proves?|ready|readiness)\b/i.test(prose)) {
-    push("config_policy", "Config/policy claim.");
+    push("config_policy", "Config/policy claim.", hardClaimFor("config_policy"));
   }
-  if (/\bdependency\b|\bpackage-lock\b|\byarn\.lock\b|\bpnpm-lock\b|\bupgraded\b|\bupgrade\b|\binstalled\b|\bpackage install\b|\blibrary upgrade\b/i.test(prose)) {
-    push("dependency", "Dependency claim.");
+  if (/\bdependenc(?:y|ies)\b|\bpackage-lock\b|\byarn\.lock\b|\bpnpm-lock\b|\b(?:dependenc(?:y|ies)|package|library)\b.{0,80}\b(?:upgraded|upgrade|updated|installed|install|safe|ready|complete|clean)\b|\b(?:upgraded|upgrade|updated|installed|install)\b.{0,80}\b(?:dependenc(?:y|ies)|package|library)\b/i.test(prose)) {
+    push("dependency", "Dependency claim.", hardClaimFor("dependency"));
   }
   if (/\bmigration\b|\bmigrated\b|\brollback\b|\bdowngrade\b|\bschema change\b|\bdb schema\b|\bdatabase change\b|\balembic\b/i.test(prose)) {
-    push("migration", "Migration claim.");
+    push("migration", "Migration claim.", hardClaimFor("migration"));
   }
   if (/\bprotocol\b|\bturn contract\b|\bstax_ack\b|\backnowledg(?:e|ed|ement)\b|\bcodex report contract\b|\bfollowed the workflow\b|\bcurrent turn\b|\bsidecar heartbeat\b/i.test(prose)) {
-    push("protocol_compliance", "Protocol compliance claim.");
+    push("protocol_compliance", "Protocol compliance claim.", hardClaimFor("protocol_compliance"));
   }
   if (/\bperformance\b|\bfaster\b|\blatency\b|\bbenchmark\b/i.test(prose)) {
-    push("performance", "Performance claim.");
+    push("performance", "Performance claim.", hardClaimFor("performance"));
   }
   if (/\baccessibility\b|\baxe\b|\ba11y\b|\bscreen reader\b/i.test(prose)) {
-    push("accessibility", "Accessibility claim.");
+    push("accessibility", "Accessibility claim.", hardClaimFor("accessibility"));
   }
 
   return claims;
 }
 
 function normalizeClaimProse(text: string): string {
-  return stripNegatedClaimLines(stripCommandTokens(stripCodeAndPathTokens(stripReportMetadataSections(text))));
+  return stripNegatedClaimLines(stripCommandTokens(stripCodeAndPathTokens(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))));
+}
+
+function stripGeneratedStaxBlocks(text: string): string {
+  return text.replace(/<!-- STAX:proof-strength:start -->[\s\S]*?<!-- STAX:proof-strength:end -->/g, " ");
 }
 
 function stripCodeAndPathTokens(text: string): string {
@@ -194,7 +206,7 @@ function parseReportHeading(line: string): string | undefined {
 function stripNegatedClaimLines(text: string): string {
   return text
     .split(/\r?\n/)
-    .filter((line) => !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized)\b/i.test(line))
+    .filter((line) => !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete)\b/i.test(line))
     .join("\n");
 }
 
@@ -202,6 +214,17 @@ function stripCommandTokens(text: string): string {
   return text
     .replace(/`(?:npm|pnpm|yarn|npx)[^`]+`/gi, " ")
     .replace(/\b(?:npm|pnpm|yarn|npx)[ \t]+(?:run[ \t]+)?[a-z0-9:_@./-]+(?:[ \t]+[a-z0-9:_@./=-]+)*/gi, " ");
+}
+
+function stripNonClaimPrefixedLines(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*-?\s*(?:risk|risks|unverified|weak|weak\/provisional|missing proof|primary limiter|next proof action)\s*:/i.test(line))
+    .join("\n");
+}
+
+function isSourceQualifiedClaim(text: string): boolean {
+  return /\b(?:codex|ai|assistant|model|report)\s+(?:says|said|claims?|claimed|reported|states|stated)\b/i.test(text);
 }
 
 function renderExplanation(

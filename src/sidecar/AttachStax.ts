@@ -31,6 +31,10 @@ const STAX_GITIGNORE_BLOCK_LINES = [
   "!.stax/status.json",
   "!.stax/next-codex-prompt.md",
   "!.stax/proof_strength.json",
+  "!.stax/prompt-contract.json",
+  "!.stax/proof-surfaces.json",
+  "!.stax/proof-surfaces.candidate.json",
+  "!.stax/proof-surfaces.review.md",
   "!.stax/reports/",
   `!${STAX_PROOF_REPORT_RELATIVE_PATH}`,
   `!${STAX_CONFIDENCE_REPORT_RELATIVE_PATH}`
@@ -142,6 +146,39 @@ export async function attachStaxToRepo(repoPathInput: string): Promise<AttachSta
       )}\n`
     ],
     [path.join(staxPath, "AGENT_PROTOCOL.md"), `${STAX_AGENT_PROTOCOL}\n`],
+    [
+      path.join(staxPath, "prompt-contract.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-prompt-contract-v1",
+          requiresCodexReport: true,
+          requiresExactTurnAcknowledgement: true,
+          claimsNeedLocalProof: true,
+          prohibitedClaimsWithoutProof: [
+            "tests passed",
+            "build succeeded",
+            "visual/layout ready",
+            "publish/sync/deploy ready",
+            "code correctness proved"
+          ],
+          reportSections: [
+            "STAX acknowledgement",
+            "Objective",
+            "Files changed",
+            "Tests added",
+            "Commands run",
+            "Command output summary with exit codes",
+            "What is verified",
+            "What is weak/provisional",
+            "What is unverified",
+            "Risks",
+            "One next action"
+          ]
+        },
+        null,
+        2
+      )}\n`
+    ],
     [path.join(staxPath, "task.md"), ""],
     [path.join(staxPath, "codex-report.md"), ""],
     [

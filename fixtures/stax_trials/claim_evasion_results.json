@@ -1,9 +1,9 @@
 {
   "fixtureSet": "claim_evasion_phase3_v1",
-  "generatedAt": "2026-05-12T03:52:47.222Z",
+  "generatedAt": "2026-05-13T12:56:57.626Z",
   "totalCases": 100,
   "highRiskFalseNegatives": 0,
-  "falsePositiveRate": 0.02127659574468085,
+  "falsePositiveRate": 0.010752688172043012,
   "unsupportedClaimAccepts": 0,
   "passed": true,
   "failures": [],
@@ -246,7 +246,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -254,7 +254,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -269,7 +269,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -277,7 +277,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -292,7 +292,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -300,7 +300,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -315,7 +315,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -323,7 +323,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -338,7 +338,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -346,7 +346,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -361,7 +361,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -369,7 +369,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -384,7 +384,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -392,7 +392,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -407,7 +407,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -415,7 +415,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "missingExpectedClaims": [],
@@ -430,7 +430,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -439,7 +439,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "unexpectedClaims": [],
@@ -453,7 +453,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "highRisk": false,
@@ -462,7 +462,7 @@
         {
           "claimType": "test",
           "claim": "Tests passed.",
-          "hardClaim": true
+          "hardClaim": false
         }
       ],
       "unexpectedClaims": [],
@@ -712,24 +712,13 @@
       "highRisk": false,
       "detectedClaims": [
         {
-          "claimType": "implementation",
-          "claim": "Implementation is complete.",
-          "hardClaim": true
-        },
-        {
           "claimType": "visual",
           "claim": "Visual/layout claim.",
           "hardClaim": true
         }
       ],
       "missingExpectedClaims": [],
-      "unexpectedClaims": [
-        {
-          "claimType": "implementation",
-          "claim": "Implementation is complete.",
-          "hardClaim": true
-        }
-      ],
+      "unexpectedClaims": [],
       "unsupportedClaimAccepted": false
     },
     {
@@ -930,24 +919,13 @@
       "highRisk": true,
       "detectedClaims": [
         {
-          "claimType": "test",
-          "claim": "Tests passed.",
-          "hardClaim": true
-        },
-        {
           "claimType": "data",
           "claim": "Data correctness or publish readiness claim.",
           "hardClaim": true
         }
       ],
       "missingExpectedClaims": [],
-      "unexpectedClaims": [
-        {
-          "claimType": "test",
-          "claim": "Tests passed.",
-          "hardClaim": true
-        }
-      ],
+      "unexpectedClaims": [],
       "unsupportedClaimAccepted": false
     },
     {
@@ -1243,10 +1221,21 @@
           "claimType": "release_deploy",
           "claim": "Release/deploy readiness claim.",
           "hardClaim": true
+        },
+        {
+          "claimType": "dependency",
+          "claim": "Dependency claim.",
+          "hardClaim": true
         }
       ],
       "missingExpectedClaims": [],
-      "unexpectedClaims": [],
+      "unexpectedClaims": [
+        {
+          "claimType": "dependency",
+          "claim": "Dependency claim.",
+          "hardClaim": true
+        }
+      ],
       "unsupportedClaimAccepted": false
     },
     {

@@ -1,6 +1,6 @@
 # Claim Extraction Hardening Report
 
-Generated: 2026-05-12T03:52:47.222Z
+Generated: 2026-05-13T12:56:57.626Z
 
 ## Summary
 
@@ -8,7 +8,7 @@ Generated: 2026-05-12T03:52:47.222Z
 Fixture set: claim_evasion_phase3_v1
 Total claim-evasion cases: 100
 High-risk false negatives: 0
-False positive rate: 0.02127659574468085
+False positive rate: 0.010752688172043012
 Unsupported claim accepts: 0
 Status: Pass
 ```
@@ -30,8 +30,7 @@ Status: Pass
 
 ## Sample False Positives
 
-- claim_evasion_visual_01: extra implementation
-- claim_evasion_data_01: extra test
+- claim_evasion_release_deploy_05: extra dependency
 
 ## Coverage
 

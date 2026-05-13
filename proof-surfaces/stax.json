@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "stax-proof-surface-pack-v1",
+  "repoName": "STAX",
+  "status": "static",
+  "confidence": "high",
+  "detectedStack": ["node", "typescript", "vitest"],
+  "proofSurfaces": [
+    {
+      "claimType": "build_ready",
+      "requiredEvidence": ["typecheck_output", "test_output"],
+      "commands": ["npm run typecheck", "npm test"],
+      "blockedEvidence": ["docs_updated_only"],
+      "confidence": "high",
+      "source": "stax static pack",
+      "nextAction": "Run npm run typecheck and the relevant tests through stax:collect."
+    },
+    {
+      "claimType": "tests_passed",
+      "requiredEvidence": ["local_command_output", "target_repo_cwd", "matching_worktree_fingerprint"],
+      "commands": ["npm test"],
+      "blockedEvidence": ["codex_report_only"],
+      "confidence": "high",
+      "source": "stax static pack",
+      "nextAction": "Run the relevant test command through stax:collect and cite the exact exit code."
+    },
+    {
+      "claimType": "proof_gate_ready",
+      "requiredEvidence": ["sidecar_gate_output", "targeted_regression_output"],
+      "commands": ["npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX"],
+      "blockedEvidence": ["status_card_only"],
+      "confidence": "high",
+      "source": "stax static pack",
+      "nextAction": "Rerun the sidecar gate and cite the exact Accept/Provisional/Reject output."
+    },
+    {
+      "claimType": "repo_identity",
+      "requiredEvidence": ["target_repo_cwd", "matching_repo_path", "matching_worktree_fingerprint"],
+      "commands": [],
+      "blockedEvidence": ["wrong_repo_command_output"],
+      "confidence": "high",
+      "source": "generic STAX sidecar rule",
+      "nextAction": "Collect command evidence from the STAX repo root; wrong-repo output cannot verify this repo."
+    }
+  ],
+  "blockedActions": [],
+  "warnings": ["Accept means required claims are supported by verified evidence for this repo state; it does not certify code correctness."]
+}

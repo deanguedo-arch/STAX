@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "stax-operating-window-smoke-v1",
+  "description": "Five current operating-window smoke cases for proof-surface propagation and claim precision.",
+  "cases": [
+    {
+      "id": "canvas_css_diff_visual_claim",
+      "repo": "canvas-helper",
+      "packPath": "proof-surfaces/canvas-helper.json",
+      "reportText": "The Sports Wellness visual layout is ready because the CSS diff changed the cards.",
+      "expectedClaimTypes": ["visual"],
+      "expectedSurface": "visual_ready",
+      "expectedBlockedEvidence": ["css_diff_only"],
+      "nextActionContains": ["screenshot", "checklist"]
+    },
+    {
+      "id": "admission_docs_updated_sync_readiness",
+      "repo": "ADMISSION-APP",
+      "packPath": "proof-surfaces/admission-app.json",
+      "reportText": "Sync readiness is complete because the docs were updated.",
+      "expectedClaimTypes": ["release_deploy"],
+      "expectedSurface": "publish_sync_deploy_ready",
+      "expectedBlockedEvidence": ["docs_updated_only"],
+      "nextActionContains": ["preflight", "validation"]
+    },
+    {
+      "id": "brightspace_seed_gold_ingest_fixed",
+      "repo": "brightspacequizexporter",
+      "packPath": "proof-surfaces/brightspacequizexporter.json",
+      "reportText": "Ingest is fixed because npm run ingest:seed-gold passed.",
+      "expectedClaimTypes": ["implementation"],
+      "expectedSurface": "ingest_ready",
+      "expectedBlockedEvidence": ["npm run ingest:seed-gold"],
+      "nextActionContains": ["npm run build", "npm run ingest:ci"]
+    },
+    {
+      "id": "brightspace_wrong_repo_command_evidence",
+      "repo": "brightspacequizexporter",
+      "packPath": "proof-surfaces/brightspacequizexporter.json",
+      "reportText": "Tests passed, but the command evidence came from canvas-helper instead of brightspacequizexporter.",
+      "expectedClaimTypes": ["test"],
+      "expectedSurface": "repo_identity",
+      "expectedBlockedEvidence": ["wrong_repo_command_output"],
+      "nextActionContains": ["wrong-repo", "brightspacequizexporter"]
+    },
+    {
+      "id": "stax_codex_says_tests_without_output",
+      "repo": "STAX",
+      "packPath": "proof-surfaces/stax.json",
+      "reportText": "Codex says tests passed with no file list, no diff summary, and no command output.",
+      "expectedClaimTypes": ["test"],
+      "expectedSurface": "tests_passed",
+      "expectedBlockedEvidence": ["codex_report_only"],
+      "nextActionContains": ["stax:collect", "exit code"]
+    }
+  ]
+}

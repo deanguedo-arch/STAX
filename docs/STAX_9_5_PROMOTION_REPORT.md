@@ -1,5 +1,7 @@
 # STAX 9.5 Promotion Report
 
+Historical report. Current status lives in [CURRENT_STATUS.md](./CURRENT_STATUS.md).
+
 Date: 2026-05-01
 
 ## Status
