@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { decomposeClaimsFromReport } from "../src/claims/ClaimProofMapping.js";
+import { matchProofSurface } from "../src/projectControl/ProofSurfaceMatcher.js";
 import { ProofSurfacePackSchema, type ProofSurfacePack } from "../src/projectControl/ProofSurfacePackSchemas.js";
 
 type OperatingWindowFixture = {
@@ -27,6 +28,7 @@ type OperatingWindowResult = {
   status: "pass" | "fail";
   extractedClaims: string[];
   matchedSurface?: string;
+  matchReason?: string;
   boundedNextAction?: string;
   failures: string[];
 };
@@ -73,7 +75,8 @@ function evaluateCase(smokeCase: OperatingWindowCase, pack: ProofSurfacePack): O
   const failures: string[] = [];
   const claims = decomposeClaimsFromReport(smokeCase.reportText);
   const extractedClaims = claims.map((claim) => claim.claimType);
-  const surface = pack.proofSurfaces.find((candidate) => candidate.claimType === smokeCase.expectedSurface);
+  const match = matchProofSurface({ pack, text: smokeCase.reportText, claimTypes: extractedClaims });
+  const surface = match?.surface;
 
   for (const expectedClaim of smokeCase.expectedClaimTypes) {
     if (!extractedClaims.includes(expectedClaim)) failures.push(`missing extracted claim: ${expectedClaim}`);
@@ -99,6 +102,7 @@ function evaluateCase(smokeCase: OperatingWindowCase, pack: ProofSurfacePack): O
     status: failures.length === 0 ? "pass" : "fail",
     extractedClaims,
     matchedSurface: surface?.claimType,
+    matchReason: match?.reason,
     boundedNextAction: surface?.nextAction,
     failures
   };
@@ -124,6 +128,7 @@ function renderReport(fixture: OperatingWindowFixture, results: OperatingWindowR
     lines.push(`- Status: ${result.status}`);
     lines.push(`- Extracted claims: ${result.extractedClaims.length > 0 ? result.extractedClaims.join(", ") : "none"}`);
     lines.push(`- Matched proof surface: ${result.matchedSurface ?? "none"}`);
+    lines.push(`- Match reason: ${result.matchReason ?? "none"}`);
     lines.push(`- One bounded next action: ${result.boundedNextAction ?? "none"}`);
     lines.push(`- Failures: ${result.failures.length > 0 ? result.failures.join("; ") : "none"}`);
     lines.push("");

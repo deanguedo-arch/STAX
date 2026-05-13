@@ -56,6 +56,7 @@ async function discoverFiles(repoPath: string): Promise<RepoDiscoveredFile[]> {
   for (const file of ROOT_FILES) {
     await add(file, kindForPath(file));
   }
+  await addRootCommandFiles(repoPath, found);
   await addDirectory(repoPath, ".github/workflows", "workflow", found);
   await addDirectory(repoPath, "scripts", "script", found);
   await addDirectory(repoPath, "tools", "tool", found);
@@ -63,6 +64,25 @@ async function discoverFiles(repoPath: string): Promise<RepoDiscoveredFile[]> {
   await addDirectory(repoPath, "config", "example_config", found, 80, (file) => file.endsWith(".example") || file.includes(".example."));
 
   return [...found.values()].sort((a, b) => a.path.localeCompare(b.path));
+}
+
+async function addRootCommandFiles(repoPath: string, found: Map<string, RepoDiscoveredFile>): Promise<void> {
+  const entries = await fs.readdir(repoPath, { withFileTypes: true }).catch(() => []);
+  for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+    if (!entry.isFile()) continue;
+    if (!/\.(?:cmd|bat|ps1|sh)$/i.test(entry.name)) continue;
+    const normalized = entry.name.replace(/\\/g, "/");
+    if (shouldSkipPath(normalized)) continue;
+    const fullPath = path.join(repoPath, normalized);
+    const stats = await fs.stat(fullPath).catch(() => undefined);
+    if (!stats?.isFile()) continue;
+    found.set(normalized, {
+      path: normalized,
+      kind: "script",
+      sizeBytes: stats.size,
+      redacted: isSensitivePath(normalized)
+    });
+  }
 }
 
 async function addDirectory(

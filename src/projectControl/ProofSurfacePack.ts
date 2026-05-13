@@ -4,6 +4,7 @@ import { ensureDirectory, nowIso, readTextIfExists, sidecarDir, validateRepoPath
 import { detectCommandSurfaces } from "./CommandSurfaceDetector.js";
 import { generateProofSurfaceCandidate } from "./ProofSurfaceCandidateGenerator.js";
 import { ProofSurfacePackSchema, type ProofSurfacePack } from "./ProofSurfacePackSchemas.js";
+import { matchProofSurface } from "./ProofSurfaceMatcher.js";
 import { discoverRepo } from "./RepoDiscovery.js";
 import { detectRiskSurfaces } from "./RiskSurfaceDetector.js";
 import { detectStacks } from "./StackDetector.js";
@@ -86,7 +87,7 @@ export async function proofSurfacePromptHint(input: {
   const { pack, approved } = await loadSidecarProofSurfacePack(input.repoPath);
   if (!pack) return undefined;
   const text = [input.reportText, ...input.unverified, ...input.risk].join("\n").toLowerCase();
-  const surface = selectSurface(pack, text);
+  const surface = matchProofSurface({ pack, text })?.surface;
   if (!surface) return undefined;
   const prefix = approved ? "Approved proof surface" : "Candidate proof surface";
   const qualifier = approved ? "" : " This is candidate-only, so treat it as a provisional hint until approved.";
@@ -98,23 +99,4 @@ async function readProofSurfacePack(filePath: string): Promise<ProofSurfacePack>
   const raw = await readTextIfExists(filePath);
   if (!raw.trim()) throw new Error(`Missing proof-surface candidate: ${filePath}`);
   return ProofSurfacePackSchema.parse(JSON.parse(raw) as unknown);
-}
-
-function selectSurface(pack: ProofSurfacePack, text: string) {
-  const ordered = [
-    [/visual|layout|css|screenshot|rendered|looks good/, "visual_ready"],
-    [/publish|sync|deploy|release|ship|merge/, "publish_sync_deploy_ready"],
-    [/data|ingest|pipeline|schema|fixture|row|csv|json/, "data_pipeline_ready"],
-    [/gold|seed-gold|snapshot|expected/, "gold_fixture_update"],
-    [/build|typecheck|compile/, "build_ready"],
-    [/test|passed|green|ci/, "tests_passed"],
-    [/wrong repo|wrong cwd|repo mismatch/, "repo_identity"]
-  ] as const;
-  for (const [pattern, claimType] of ordered) {
-    if (pattern.test(text)) {
-      const found = pack.proofSurfaces.find((surface) => surface.claimType === claimType);
-      if (found) return found;
-    }
-  }
-  return pack.proofSurfaces.find((surface) => surface.claimType === "repo_identity");
 }

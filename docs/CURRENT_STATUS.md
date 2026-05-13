@@ -40,9 +40,17 @@ STAX is strong for Codex/repo project-control:
 - Phase B executable: STAX 7, ChatGPT 0, ties 13
 - zero STAX critical misses in promotion window
 
+## Implemented Since Current Baseline
+
+- sidecar upgrade propagation
+- proof-surface candidate discovery
+- claim extraction hardening v1
+- static known-repo proof-surface packs
+- candidate versus approved proof-surface workflow
+
 ## Current Technical Risks
 
-- claim extraction precision
 - doc/report consistency
-- sidecar upgrade propagation
-- proof-surface pack propagation
+- proof-surface matching precision
+- real repo attach/upgrade trial coverage
+- unusual-repo proof-surface discovery edge cases

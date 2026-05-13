@@ -39,6 +39,23 @@ describe("repo proof-surface discovery", () => {
     expect(pack.blockedActions[0]?.requires).toContain("non-mutating preflight proof");
   });
 
+  it("discovers publish/sync/preflight surfaces from local tool and command files", async () => {
+    const repoPath = await createRepoWithPackage({ "build:pages": "node tools/build-pages.js" });
+    await fs.mkdir(path.join(repoPath, "tools"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "tools", "validate-sync-surface.ps1"), "Write-Output ok\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "tools", "validate-canonical.ps1"), "Write-Output ok\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "SYNC_ALL.cmd"), "echo sync\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "PUBLISH_DATA_TO_SHEETS.bat"), "echo publish\n", "utf8");
+
+    const { pack } = await discoverProofSurfaces(repoPath);
+    const publish = pack.proofSurfaces.find((surface) => surface.claimType === "publish_sync_deploy_ready");
+
+    expect(publish?.commands).toEqual(expect.arrayContaining(["tools/validate-sync-surface.ps1", "tools/validate-canonical.ps1"]));
+    expect(pack.blockedActions.map((action) => action.action)).toEqual(
+      expect.arrayContaining(["SYNC_ALL.cmd", "PUBLISH_DATA_TO_SHEETS.bat"])
+    );
+  });
+
   it("detects visual/layout proof requirements for HTML/CSS workspaces", async () => {
     const repoPath = await createRepoWithPackage({ "test:e2e": "playwright test" });
     await fs.mkdir(path.join(repoPath, "workspace"), { recursive: true });

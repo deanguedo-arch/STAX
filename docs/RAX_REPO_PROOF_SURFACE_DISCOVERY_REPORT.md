@@ -15,7 +15,12 @@ The candidate is not enforced as approved truth. It can guide a next prompt as a
 
 ## Inputs
 
-Discovery inspects local repo files only, including package scripts, common lockfiles, build/test configs, workflows, scripts, tools, docs, README, AGENTS, and example config files.
+Discovery inspects local repo files only, including package scripts, common lockfiles, build/test configs, workflows, scripts, tools, top-level command files, docs, README, AGENTS, and example config files.
+
+Command-surface discovery includes package scripts plus local script/tool files
+such as `.cmd`, `.bat`, `.ps1`, and `.sh` files. This lets repos with
+PowerShell or shell-based publish/sync/preflight workflows produce candidate
+proof rules without adding package.json wrappers.
 
 It skips or redacts secrets, `.env` files, dependency folders, build output, coverage, `.git`, and large binary artifacts.
 
@@ -38,4 +43,5 @@ Approval copies the candidate to `.stax/proof-surfaces.json` and records an even
 
 ## Verification
 
-Covered by `tests/proofSurfacePack.test.ts` and `tests/sidecarUpgrade.test.ts`.
+Covered by `tests/proofSurfacePack.test.ts`, `tests/proofSurfaceMatcher.test.ts`,
+and `tests/sidecarUpgrade.test.ts`.

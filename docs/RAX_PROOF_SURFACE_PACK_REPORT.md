@@ -30,4 +30,11 @@ These are examples and known-repo seeds, not globally promoted repo facts.
 
 ## Verification
 
-Covered by `tests/proofSurfacePack.test.ts`.
+Covered by:
+
+- `tests/proofSurfacePack.test.ts`
+- `tests/proofSurfaceMatcher.test.ts`
+
+The matcher is intentionally separate from candidate generation so sidecar
+prompts can choose repo-specific proof boundaries before falling back to generic
+keywords.

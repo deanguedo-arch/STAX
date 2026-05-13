@@ -12,6 +12,7 @@ Five current operating-window smoke cases for proof-surface propagation and clai
 - Status: pass
 - Extracted claims: visual
 - Matched proof surface: visual_ready
+- Match reason: claim type matched: visual
 - One bounded next action: Capture a rendered screenshot/checklist and run the relevant project E2E command through stax:collect.
 - Failures: none
 
@@ -21,6 +22,7 @@ Five current operating-window smoke cases for proof-surface propagation and clai
 - Status: pass
 - Extracted claims: release_deploy
 - Matched proof surface: publish_sync_deploy_ready
+- Match reason: claim type matched: release_deploy
 - One bounded next action: Run sync/app-script/canonical preflight validation before any live sync or publish claim.
 - Failures: none
 
@@ -30,6 +32,7 @@ Five current operating-window smoke cases for proof-surface propagation and clai
 - Status: pass
 - Extracted claims: implementation
 - Matched proof surface: ingest_ready
+- Match reason: blocked evidence matched: npm run ingest:seed-gold
 - One bounded next action: Run npm run build and npm run ingest:ci through stax:collect; seed-gold is not repair proof.
 - Failures: none
 
@@ -39,6 +42,7 @@ Five current operating-window smoke cases for proof-surface propagation and clai
 - Status: pass
 - Extracted claims: test
 - Matched proof surface: repo_identity
+- Match reason: target repo mismatch language matched
 - One bounded next action: Collect command evidence from the brightspacequizexporter repo root; wrong-repo output cannot verify this repo.
 - Failures: none
 
@@ -48,6 +52,7 @@ Five current operating-window smoke cases for proof-surface propagation and clai
 - Status: pass
 - Extracted claims: test
 - Matched proof surface: tests_passed
+- Match reason: claim type matched: test
 - One bounded next action: Run the relevant test command through stax:collect and cite the exact exit code.
 - Failures: none
 
