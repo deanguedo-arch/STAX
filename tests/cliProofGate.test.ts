@@ -43,10 +43,14 @@ describe("STAX proof-gate CLI", () => {
 
     const status = cliInvocation(["status", "--repo", repoPath]);
     const statusResult = await execFileAsync(status.command, status.commandArgs);
+    expect(statusResult.stdout).toContain("## STAX Status Read");
+    expect(statusResult.stdout).toContain("Fresh Audit");
     expect(statusResult.stdout).toContain("## Verdict");
 
     const next = cliInvocation(["next", "--repo", repoPath, "--no-gate"]);
     const nextResult = await execFileAsync(next.command, next.commandArgs);
+    expect(nextResult.stdout).toContain("Using stored next prompt");
+    expect(nextResult.stdout).toContain("not a fresh audit");
     expect(nextResult.stdout).toContain(".stax/codex-report.md");
 
     const collect = cliInvocation(["collect", "--repo", repoPath, "--", process.execPath, "-e", "console.log('proof')"]);

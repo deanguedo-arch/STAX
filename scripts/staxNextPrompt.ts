@@ -21,6 +21,9 @@ async function main(): Promise<void> {
   }
   const args = parseArgs(argv);
   const result = await getNextCodexPrompt(args);
+  if (!args.runGate) {
+    process.stdout.write("[STAX] Using stored next prompt because --no-gate was supplied. This is not a fresh audit.\n\n");
+  }
   process.stdout.write(`${result.prompt}\n`);
   if (args.copy) {
     process.stdout.write(result.copied ? "\n[STAX] Copied next Codex prompt to clipboard.\n" : `\n[STAX] Clipboard copy failed: ${result.copyError}\n`);

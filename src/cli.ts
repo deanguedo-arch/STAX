@@ -2295,6 +2295,9 @@ async function nextCommand(args: ParsedArgs): Promise<void> {
     copy: args.flags.copy === true,
     runGate: args.flags["no-gate"] !== true
   });
+  if (args.flags["no-gate"] === true) {
+    process.stdout.write("[STAX] Using stored next prompt because --no-gate was supplied. This is not a fresh audit.\n\n");
+  }
   process.stdout.write(`${result.prompt}\n`);
   if (args.flags.copy === true) {
     process.stdout.write(result.copied ? "\n[STAX] Copied next Codex prompt to clipboard.\n" : `\n[STAX] Clipboard copy failed: ${result.copyError}\n`);
