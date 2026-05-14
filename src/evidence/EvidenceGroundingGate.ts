@@ -8,7 +8,7 @@ import {
 } from "./EvidenceGroundingSchemas.js";
 
 const COMMAND_PATTERN = /\b(?:npm|pnpm|yarn|npx)[ \t]+(?:run[ \t]+)?[a-z0-9:_@./-]+(?:[ \t]+[a-z0-9:_@./=-]+)*/gi;
-const FILE_PATTERN = /\b(?:[A-Za-z0-9_.-]+\/)+(?:[A-Za-z0-9_.-]+)(?:\.[A-Za-z0-9]+)?\b|\b[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|json|md|css|html|yml|yaml)\b/g;
+const FILE_PATTERN = /\b(?:[A-Za-z0-9_.-]+\/)+(?:[A-Za-z0-9_.-]+\.[A-Za-z0-9]+)\b|\b[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|json|md|css|html|yml|yaml)\b/g;
 const HARD_PROOF_PATTERN = /\b(?:tests?|typecheck|build|eval|regression|redteam|ingest:ci)\b[^\n.]*\b(?:pass(?:ed|es)?|green|succeed(?:ed|s)?|verified)\b/i;
 const COMPLETION_PATTERN = /\b(?:fixed|complete|completed|done|verified|ready to apply|ready for apply)\b/i;
 
@@ -19,6 +19,7 @@ export class EvidenceGroundingGate {
 
     for (const filePath of unique(matches(parsed.output, FILE_PATTERN))) {
       if (isLikelyCommandToken(filePath)) continue;
+      if (isLikelyUrlPath(filePath)) continue;
       claims.push(this.fileClaim(filePath, parsed.repoEvidence));
     }
 
@@ -148,6 +149,10 @@ function normalizePath(filePath: string): string {
 
 function isLikelyCommandToken(value: string): boolean {
   return /^(npm|pnpm|yarn|npx)$/i.test(value);
+}
+
+function isLikelyUrlPath(value: string): boolean {
+  return /^[a-z0-9-]+(?:\.[a-z0-9-]+)+\//i.test(value) || /\bhttps?:\/\//i.test(value);
 }
 
 function commandFamilyFromText(text: string): CommandEvidence["commandFamily"] | undefined {

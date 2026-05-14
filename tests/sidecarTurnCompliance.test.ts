@@ -237,6 +237,20 @@ describe("STAX turn compliance", () => {
     expect(result.issues.map((issue) => issue.message).join("\n")).toContain("Current Codex turn capture");
   });
 
+  it("normal mode downgrades current-turn capture lag when the report has the current ACK", async () => {
+    const repoPath = await createTempGitRepo("stax-turn-current-capture-lag-");
+    await attachStaxToRepo(repoPath);
+    const contract = await readTurnContract(repoPath);
+    await writeReport(repoPath, compliantReport(contract?.requiredAcknowledgement ?? ""));
+    await writeCurrentTurn(repoPath, "Captured before the final report update.");
+
+    const result = await checkTurnCompliance({ repoPath, mode: "normal", hasDiff: true });
+
+    expect(result.pass).toBe(false);
+    expect(result.severity).toBe("weak");
+    expect(result.issues.map((issue) => issue.message).join("\n")).toContain("capture lag");
+  });
+
   it("Attach protocol includes STAX acknowledgement requirement", () => {
     expect(STAX_AGENT_PROTOCOL).toContain("STAX_ACK");
     expect(STAX_AGENT_PROTOCOL).toContain("STAX acknowledgement");

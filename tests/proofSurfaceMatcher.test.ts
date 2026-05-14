@@ -39,6 +39,32 @@ describe("ProofSurfaceMatcher", () => {
     expect(match?.surface.claimType).toBe("visual_ready");
   });
 
+  it("maps Canvas Google-hosted course deploys to course_deploy_ready", async () => {
+    const pack = await readPack("proof-surfaces/canvas-helper.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "Redeploy Forensics 25 Google-hosted site after image cleanup and verify the live Firebase target."
+    });
+
+    expect(match?.surface.claimType).toBe("course_deploy_ready");
+    expect(match?.surface.requiredEvidence).toEqual(
+      expect.arrayContaining(["workspace_source_diff", "export_regenerated", "stax_collected_deploy_command", "live_target_fetch"])
+    );
+    expect(match?.surface.nextAction).toContain("source workspace");
+  });
+
+  it("routes course deploy proof gaps to the course deploy contract before generic release", async () => {
+    const pack = await readPack("proof-surfaces/canvas-helper.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "Claim-to-proof: release_deploy claim is unsupported because target_environment_proof is missing for the course deploy."
+    });
+
+    expect(match?.surface.claimType).toBe("course_deploy_ready");
+  });
+
   it("maps ADMISSION sync and docs-updated claims to publish_sync_deploy_ready", async () => {
     const pack = await readPack("proof-surfaces/admission-app.json");
 

@@ -1,0 +1,67 @@
+{
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_1dd0c244d85f_2696c1346a4d",
+  "sourceEventId": "evt_missing_proof_caught_1dd0c244d85f",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "commitSha": "0ac1b4e9d7edc54ead140094d4d6c637448a689a",
+    "branch": "main"
+  },
+  "candidateType": "regression_eval",
+  "scope": "global",
+  "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "eventType": "missing_proof_caught",
+      "task": {
+        "taskId": "task_b4990ebbaa2c",
+        "objective": "Read-only observer run for canvas-helper.\n\nGoal:\nAttach STAX to canvas-helper and collect safe local command evidence without\nchanging source files, mutating external systems, migrating projects, or\nrunning destructive commands.\n\nCommands planned:\n- npm run typecheck\n- npm run build:studio\n- npm run validate:manifests\n- npm run test:course-shell\n- npm run test:forensics35-workspace\n- npm run test:assessments\n- npm run test:exports\n- npm run test:metadata-policy\n- npm run test:progress-report\n- npm run test:report-all-progress\n- npm run test:e2e:harness\n- npm run test:learning\n\nAcceptance boundary:\nThis observer run may prove local command status for the current dirty repo\nstate. It must not claim source correctness, screen correctness, external\ndelivery correctness, or course content correctness.",
+        "finalOutcome": "needs_cleanup"
+      },
+      "stax": {
+        "verdict": "Reject",
+        "useful": true,
+        "falseAccept": false,
+        "falseBlock": false,
+        "usefulBlock": true,
+        "verifiedAccept": false
+      },
+      "evidence": {
+        "changedFileRoles": [
+          "unknown",
+          "docs",
+          "source"
+        ],
+        "commandProofStrengths": [
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output",
+          "local_stax_command_output"
+        ],
+        "claimTypes": [
+          "implementation",
+          "test",
+          "behavior"
+        ],
+        "failurePatternIds": []
+      },
+      "rationale": "Command evidence classifier: non_execution_evidence for npm run test:learning."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-14T19:30:14.271Z"
+}

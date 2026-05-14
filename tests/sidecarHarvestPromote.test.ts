@@ -48,6 +48,115 @@ describe("STAX sidecar harvest, review, promote, and dashboard", () => {
     expect(harvested.skippedPrivacyBlocked).toBe(1);
   });
 
+  it("skips non-learning sidecar event schemas instead of failing harvest", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-harvest-mixed-events-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-mixed-events-"));
+    await attachStaxToRepo(repoPath);
+    await writeSidecarLearningEvent(repoPath, baseEvent("evt_eval", "regression_eval", "global"));
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "events", "proof-surface-approved-2026-05-14T00-00-00-000Z.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-proof-surface-approval-event-v1",
+          approvedAt: "2026-05-14T00:00:00.000Z",
+          proofSurfaceCount: 3
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "events", "preflight_preflight_2026-05-14T00_01_00_000Z.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-preflight-event-v1",
+          generatedAt: "2026-05-14T00:01:00.000Z",
+          verdict: "Reject",
+          enforcement: "observer"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+
+    const harvested = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+
+    expect(harvested.imported).toBe(1);
+    expect(harvested.skippedNonLearningEvents).toBe(2);
+    expect(harvested.skippedEvents.map((event) => event.reason)).toEqual(
+      expect.arrayContaining(["non_learning_schema"])
+    );
+    expect(pending).toHaveLength(1);
+  });
+
+  it("does not materialize trace-only command evidence as learning candidates", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-harvest-trace-events-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-trace-events-"));
+    await attachStaxToRepo(repoPath);
+    await writeSidecarLearningEvent(repoPath, baseEvent("evt_trace", "none", "none"));
+
+    const harvested = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+
+    expect(harvested.imported).toBe(0);
+    expect(harvested.skippedTraceEvents).toBe(1);
+    expect(pending).toHaveLength(0);
+  });
+
+  it("extracts course-deploy proof lessons from latest sidecar status", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-harvest-status-lessons-");
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-status-lessons-"));
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "status.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-status-v1",
+          generatedAt: "2026-05-14T17:27:26.174Z",
+          repo: "canvas-helper",
+          repoPath,
+          branch: "main",
+          commitSha: "abc123",
+          task: "Redeploy Forensics 25 Google-hosted course after image cleanup.",
+          verdict: "Reject",
+          why: "Claim-to-proof: release_deploy claim is unsupported because target_environment_proof and build_proof.",
+          verified: ["Claim-to-proof: visual claim is fully supported."],
+          weak: ["Proof strength: Provisional - A local STAX command label is only strong proof after provenance verification."],
+          unverified: [
+            "Command evidence provenance is not verified: wrong_worktree.",
+            "STAX acknowledgement is stale or does not match the current turn contract.",
+            "Unsupported file_path claim: workspace/export."
+          ],
+          risk: ["Unsupported hard claim: release_deploy requires build_proof."],
+          oneNextAction: "Capture rendered visual proof and run npm run smoke:pipeline through stax:collect.",
+          proofStrength: {
+            claimType: "release_ready",
+            label: "Provisional",
+            finalScore: 0.69,
+            primaryLimiter: "A local STAX command label is only strong proof after provenance verification.",
+            capApplied: [{ id: "unverified_local_command_provenance" }]
+          },
+          protocolStatus: "failure"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+
+    const harvested = await harvestSidecarEvents({ fromRepoPath: repoPath, staxRoot });
+    const pending = await listSidecarImportCandidates(staxRoot);
+
+    expect(harvested.imported).toBe(1);
+    expect(pending[0]!.summary).toContain("Course deploy claims need a dedicated proof contract");
+    expect(pending[0]!.summary).toContain("Claim parsing should not treat URLs, prose slash phrases");
+    expect(pending[0]!.candidateType).toBe("regression_eval");
+    expect(pending[0]!.scope).toBe("archetype");
+  });
+
   it("harvests codex reports as repo-memory candidates without promoting", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-report-harvest-");
     const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-central-report-"));

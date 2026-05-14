@@ -158,6 +158,37 @@ describe("ProofStrengthGate", () => {
     expect(scoreRank(result.label)).toBeLessThanOrEqual(scoreRank("Provisional"));
   });
 
+  it("requires visual and live target proof for course_deploy_ready", () => {
+    const result = evaluate({
+      claimType: "course_deploy_ready",
+      claimText: "The Google-hosted Forensics course is deployed live.",
+      commandEvidence: [commandEvidence({ source: "local_stax_command_output", command: "npm run deploy:google-hosted" })]
+    });
+
+    expect(result.capApplied.map((cap) => cap.id)).toEqual(
+      expect.arrayContaining(["course_deploy_without_visual_proof", "course_deploy_without_target_proof"])
+    );
+    expect(scoreRank(result.label)).toBeLessThanOrEqual(scoreRank("Provisional"));
+    expect(result.oneNextAction).toContain("Prove the course deploy chain");
+  });
+
+  it("can score course_deploy_ready as strong when command, visual, and target proof are supplied", () => {
+    const result = evaluate({
+      claimType: "course_deploy_ready",
+      claimText: "The Google-hosted course deployment was verified with live target fetch and screenshot proof.",
+      commandEvidence: [commandEvidence({ source: "local_stax_command_output", command: "npm run deploy:google-hosted" })],
+      evidenceFlags: {
+        visualProof: true,
+        releasePreflight: true,
+        releaseGate: true
+      }
+    });
+
+    expect(result.capApplied).toEqual([]);
+    expect(result.rejectReasons).toEqual([]);
+    expect(result.label === "Strong" || result.label === "Audit-grade").toBe(true);
+  });
+
   it("caps security_fixed without security-specific proof at Provisional", () => {
     const result = evaluate({
       claimType: "security_fixed",

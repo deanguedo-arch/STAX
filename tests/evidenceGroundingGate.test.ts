@@ -97,6 +97,21 @@ describe("EvidenceGroundingGate", () => {
     expect(result.weakClaims.filter((claim) => claim.kind === "command")).toEqual([]);
     expect(result.unsupportedClaims).toEqual([]);
   });
+
+  it("does not treat URLs or prose slash phrases as repo file-path claims", () => {
+    const result = new EvidenceGroundingGate().evaluate({
+      output: [
+        "Live fetch https://forensics25.web.app/main.js passed.",
+        "Weak notes mention workspace/export, proof/protocol, and behavior/source/release.",
+        "The real changed file is src/index.ts."
+      ].join("\n"),
+      repoEvidence
+    });
+
+    expect(result.claims.filter((claim) => claim.kind === "file_path").map((claim) => claim.text)).toEqual(["src/index.ts"]);
+    expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("workspace/export");
+    expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("forensics25.web.app/main.js");
+  });
 });
 
 function commandEvidence(source: CommandEvidence["source"]): CommandEvidence {

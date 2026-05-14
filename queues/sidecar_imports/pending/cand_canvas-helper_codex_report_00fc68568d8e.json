@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_canvas-helper_codex_report_00fc68568d8e",
+  "sourceEventId": "codex_session_report_00fc68568d8e",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "branch": "main",
+    "commitSha": "092b52736e482c5ce1282f43f52567b59c44e8ff"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from canvas-helper: Redeploy General Psychology 20 from the recovered workspace to Firebase Hosting site `generalpsychology` and verify the live hosted course serves the recovered Next Step style.. Next: - Have the user hard-refresh or reopen `[redacted-url] and click General Psychology 20 again; if it still misbehaves, inspect the exact clicked path and browser console.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-12T13-49-14-019e1dbc-8657-76f2-94f4-425b59e0fb8a.jsonl",
+      "sessionId": "019e1dbc-8657-76f2-94f4-425b59e0fb8a",
+      "eventTimestamp": "2026-05-13T12:34:01.440Z",
+      "reportHash": "00fc68568d8e79217392fd97f85a2d43ce42d7f093b75c2a4486ee47cf802c07",
+      "sections": {
+        "objective": "Redeploy General Psychology 20 from the recovered workspace to Firebase Hosting site `generalpsychology` and verify the live hosted course serves the recovered Next Step style.",
+        "filesChanged": "- `projects/general-psychology-20-independent-studies-202633108/meta/deviation-report.json`\n- `projects/general-psychology-20-independent-studies-202633108/meta/deviation-report.md`\n- `projects/general-psychology-20-independent-studies-202633108/meta/project.json`\n- `projects/general-psychology-20-independent-studies-202633108/exports/google-hosted/` (ignored generated deploy output)\n- `.stax/task.md`\n- `.stax/codex-report.md`",
+        "testsAdded": "- None. Existing General Psychology regression coverage was rerun.",
+        "commandsRun": "- `npm run verify -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts`\n  - exitCode: 0\n- `npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run export:google-hosted -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run deploy:google-hosted -- --project general-psychology-20-independent-studies-202633108`\n  - first attempt exitCode: 1, because the rebuilt export had only Firebase template files and no deployable `firebase-config.json` / `.firebaserc`\n- Restored generated deploy config into the ignored export folder from the current live Firebase config and project id `calm-module-one`\n  - exitCode: 0\n- `npm run deploy:google-hosted -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `curl -fsSL '[redacted-url] | rg -n \"DEFAULT_THEME_MODE|THEME_PREFERENCE_VERSION|Digital forensics|Training phase|Case modules|General Psychology /|data-library-view=\\\"modules\\\"\"`\n  - exitCode: 0\n- Live browser check for `[redacted-url]\n  - result: Next Step was pressed, General Psychology module label was present, Modules label was present, and forensic labels were absent",
+        "commandOutputSummary": "- Project verifier passed: metadata policy passed, no missing local assets, no missing workspace embeds, no missing course-shell resources.\n- Focused General Psychology test passed: 13 tests, 13 pass, 0 fail.\n- Project E2E contract passed: 1 Chromium test, 1 passed.\n- Google Hosted export wrote 792 files and tracked storage key `general-psychology-20-independent-studies-202633108::workspace-state::v1`.\n- First deploy attempt exited 1 with `No deployable Google Hosted projects were found.`\n- Generated deploy config was restored in `exports/google-hosted/`.\n- Second deploy completed successfully to Firebase project `calm-module-one`, hosting site `generalpsychology`.\n- Live marker check confirmed `DEFAULT_THEME_MODE = \"next-step\"`, `THEME_PREFERENCE_VERSION = 1`, `Modules`, and `General Psychology / ... / Course module` are present in hosted `main.js`.\n- Live marker check found no `Digital forensics`, `Training phase`, or `Case modules` in hosted `main.js`.\n- Live browser check confirmed the hosted page renders with `Next Step` pressed and no forensic labels.",
+        "verified": "- `[redacted-url] was redeployed successfully.\n- The live hosted `main.js` is no longer the stale build that defaulted to `Current`.\n- The live hosted course now serves the recovered `Next Step` default/migration code.\n- The live hosted course labels are General Psychology labels, not Forensic Studies labels.\n- The local project verifier, focused regression test, and project E2E contract all passed before deploy.",
+        "weakProvisional": "- The Firebase deploy config files in `exports/google-hosted/` are generated/ignored, not tracked source.\n- The export/deploy refreshed General Psychology metadata timestamps and deviation-report paths.\n- The live browser view shows a Google sign-in/cloud resume prompt; that is the existing Google Hosted bridge behavior.",
+        "unverified": "- User acceptance after manually clicking the hosted course.\n- Whether the generated Firebase deploy config should be promoted into a tracked project-level config convention.\n- Whether unrelated untracked duplicate files in `projects/processed/**` should be deleted.",
+        "risks": "- A future clean export may again produce only Firebase template files unless the deploy config is preserved or the export pipeline is improved.\n- Browser cache may still show the old build for a user until refresh/cache clear, but the hosted `main.js` now contains the recovered code.\n- The repo still has unrelated untracked duplicate files outside this deploy task.",
+        "oneNextAction": "- Have the user hard-refresh or reopen `[redacted-url] and click General Psychology 20 again; if it still misbehaves, inspect the exact clicked path and browser console."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-14T19:30:15.876Z"
+}

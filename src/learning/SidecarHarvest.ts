@@ -18,6 +18,15 @@ export type SidecarHarvestResult = {
   sourceRepoPath: string;
   imported: number;
   skippedPrivacyBlocked: number;
+  skippedTraceEvents: number;
+  skippedNonLearningEvents: number;
+  skippedInvalidEvents: number;
+  skippedEvents: Array<{
+    eventFile: string;
+    reason: "trace_only" | "non_learning_schema" | "invalid_learning_event" | "invalid_json";
+    schemaVersion?: string;
+    eventType?: string;
+  }>;
   pendingDir: string;
   candidates: SidecarImportCandidate[];
 };
@@ -35,16 +44,51 @@ export async function harvestSidecarEvents(options: {
   const eventFiles = (await fs.readdir(eventsDir).catch(() => [])).filter((name) => name.endsWith(".json")).sort();
   const candidates: SidecarImportCandidate[] = [];
   let skippedPrivacyBlocked = 0;
+  let skippedTraceEvents = 0;
+  let skippedNonLearningEvents = 0;
+  let skippedInvalidEvents = 0;
+  const skippedEvents: SidecarHarvestResult["skippedEvents"] = [];
 
   for (const eventFile of eventFiles) {
     const raw = await readTextIfExists(path.join(eventsDir, eventFile));
     if (!raw.trim()) continue;
-    const event = SidecarLearningEventSchema.parse(JSON.parse(raw));
+    const parsedJson = parseJsonObject(raw);
+    if (!parsedJson) {
+      skippedInvalidEvents += 1;
+      skippedEvents.push({ eventFile, reason: "invalid_json" });
+      continue;
+    }
+    const eventResult = SidecarLearningEventSchema.safeParse(parsedJson);
+    if (!eventResult.success) {
+      const schemaVersion = asText(parsedJson.schemaVersion);
+      const eventType = asText(parsedJson.eventType);
+      if (schemaVersion && schemaVersion !== "sidecar-learning-v1") {
+        skippedNonLearningEvents += 1;
+        skippedEvents.push({ eventFile, reason: "non_learning_schema", schemaVersion, eventType });
+      } else {
+        skippedInvalidEvents += 1;
+        skippedEvents.push({ eventFile, reason: "invalid_learning_event", schemaVersion, eventType });
+      }
+      continue;
+    }
+    const event = eventResult.data;
     if (event.privacy.redactionStatus === "blocked") {
       skippedPrivacyBlocked += 1;
       continue;
     }
+    if (event.promotion.target === "none") {
+      skippedTraceEvents += 1;
+      skippedEvents.push({ eventFile, reason: "trace_only", schemaVersion: event.schemaVersion, eventType: event.eventType });
+      continue;
+    }
     const candidate = candidateFromEvent(event);
+    if (await writeCandidateIfNew(staxRoot, pendingDir, candidate)) {
+      candidates.push(candidate);
+    }
+  }
+
+  const statusCandidates = await candidatesFromSidecarStatus({ sourceRepoPath });
+  for (const candidate of statusCandidates) {
     if (await writeCandidateIfNew(staxRoot, pendingDir, candidate)) {
       candidates.push(candidate);
     }
@@ -64,6 +108,10 @@ export async function harvestSidecarEvents(options: {
     sourceRepoPath,
     imported: candidates.length,
     skippedPrivacyBlocked,
+    skippedTraceEvents,
+    skippedNonLearningEvents,
+    skippedInvalidEvents,
+    skippedEvents,
     pendingDir,
     candidates
   };
@@ -98,6 +146,10 @@ type CodexReportCandidateInput = {
   sessionsRoot?: string;
 };
 
+type SidecarStatusCandidateInput = {
+  sourceRepoPath: string;
+};
+
 type ParsedCodexReport = {
   objective: string;
   filesChanged: string;
@@ -118,6 +170,176 @@ type ReportSource = {
   sessionId?: string;
   eventTimestamp?: string;
 };
+
+type SidecarStatusSnapshot = {
+  generatedAt?: string;
+  repo?: string;
+  repoPath?: string;
+  branch?: string;
+  commitSha?: string;
+  task?: string;
+  verdict?: string;
+  why?: string;
+  verified?: string[];
+  weak?: string[];
+  unverified?: string[];
+  risk?: string[];
+  oneNextAction?: string;
+  proofStrength?: {
+    claimType?: string;
+    label?: string;
+    finalScore?: number;
+    primaryLimiter?: string;
+    capApplied?: Array<string | { id?: string; reason?: string }>;
+  };
+  protocolStatus?: string;
+};
+
+async function candidatesFromSidecarStatus(input: SidecarStatusCandidateInput): Promise<SidecarImportCandidate[]> {
+  const raw = await readTextIfExists(path.join(sidecarDir(input.sourceRepoPath), "status.json"));
+  if (!raw.trim()) return [];
+  const parsed = parseJsonObject(raw);
+  if (!parsed) return [];
+  const status = normalizeStatusSnapshot(parsed);
+  const lessons = observedLessonsFromStatus(status);
+  if (lessons.length === 0) return [];
+  const repoName = status.repo || path.basename(input.sourceRepoPath);
+  const sourcePath = status.repoPath || input.sourceRepoPath;
+  const statusHash = shortHash(
+    JSON.stringify({
+      generatedAt: status.generatedAt,
+      task: status.task,
+      verdict: status.verdict,
+      why: status.why,
+      lessons
+    })
+  );
+  const candidateId = `cand_${sanitizeId(`${repoName}_sidecar_status_${statusHash}`)}`;
+  const text = sidecarStatusText(status);
+  const isCourseDeploy = /course|google-hosted|firebase|hosting|forensics|psychology|canvas-helper|deploy/i.test(text);
+  const redactedLessons = lessons.map(redactText);
+  return [
+    {
+      candidateId,
+      sourceEventId: `sidecar_status_${statusHash}`,
+      sourceRepo: {
+        name: repoName,
+        pathHash: sha256(path.resolve(sourcePath)),
+        branch: status.branch,
+        commitSha: status.commitSha
+      },
+      candidateType: "regression_eval",
+      scope: isCourseDeploy ? "archetype" : "global",
+      summary: `Sidecar status from ${repoName}: ${redactedLessons.join(" ")}`,
+      proposedArtifact: {
+        destinationHint: destinationHintFor("regression_eval"),
+        payload: {
+          sourceKind: "sidecar_status",
+          sourcePath: ".stax/status.json",
+          generatedAt: status.generatedAt,
+          repo: repoName,
+          verdict: status.verdict,
+          proofStrength: status.proofStrength,
+          protocolStatus: status.protocolStatus,
+          observedLessons: redactedLessons,
+          suggestedRegressionEval: isCourseDeploy
+            ? "A course deploy claim must require source workspace proof, export regeneration, STAX-collected deploy evidence, live target verification, and rendered visual proof."
+            : "A rejected sidecar status with proof gaps must produce a bounded next proof action instead of being treated as accepted."
+        }
+      },
+      requiresHumanApproval: true,
+      status: "pending",
+      privacy: {
+        redactionStatus: redactedLessons.some((lesson, index) => lesson !== lessons[index]) ? "redacted" : "clean",
+        redactionNotes: redactedLessons.some((lesson, index) => lesson !== lessons[index])
+          ? ["URLs or secret-like values were redacted from sidecar status lessons."]
+          : []
+      },
+      createdAt: nowIso()
+    }
+  ];
+}
+
+function normalizeStatusSnapshot(raw: Record<string, unknown>): SidecarStatusSnapshot {
+  const proofStrength = raw.proofStrength && typeof raw.proofStrength === "object" && !Array.isArray(raw.proofStrength)
+    ? (raw.proofStrength as Record<string, unknown>)
+    : undefined;
+  return {
+    generatedAt: asText(raw.generatedAt),
+    repo: asText(raw.repo),
+    repoPath: asText(raw.repoPath),
+    branch: asText(raw.branch),
+    commitSha: asText(raw.commitSha),
+    task: asText(raw.task),
+    verdict: asText(raw.verdict),
+    why: asText(raw.why),
+    verified: asStringArray(raw.verified),
+    weak: asStringArray(raw.weak),
+    unverified: asStringArray(raw.unverified),
+    risk: asStringArray(raw.risk),
+    oneNextAction: asText(raw.oneNextAction),
+    proofStrength: proofStrength
+      ? {
+          claimType: asText(proofStrength.claimType),
+          label: asText(proofStrength.label),
+          finalScore: typeof proofStrength.finalScore === "number" ? proofStrength.finalScore : undefined,
+          primaryLimiter: asText(proofStrength.primaryLimiter),
+          capApplied: Array.isArray(proofStrength.capApplied)
+            ? proofStrength.capApplied.filter((item): item is string | { id?: string; reason?: string } => typeof item === "string" || (typeof item === "object" && item !== null))
+            : []
+        }
+      : undefined,
+    protocolStatus: asText(raw.protocolStatus)
+  };
+}
+
+function observedLessonsFromStatus(status: SidecarStatusSnapshot): string[] {
+  const text = sidecarStatusText(status);
+  const lessons: string[] = [];
+  if (/course|google-hosted|firebase|hosting|forensics|psychology|canvas-helper|deploy/.test(text) && /release|deploy|target|live|visual/.test(text)) {
+    lessons.push("Course deploy claims need a dedicated proof contract: workspace source change, export regeneration, STAX-collected deploy command, live target verification, and rendered visual proof.");
+  }
+  if (/visual|screenshot|rendered/.test(text)) {
+    lessons.push("Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough.");
+  }
+  if (/wrong_worktree|wrong worktree|wrong_commit|wrong commit|stale command|command evidence.*stale/.test(text)) {
+    lessons.push("Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task.");
+  }
+  if (/local stax command label|unverified_local_command_provenance|human-pasted|human pasted/.test(text)) {
+    lessons.push("Command output is strong proof only when collected through verified STAX command evidence for the target repo/worktree.");
+  }
+  if (/stax acknowledgement|current turn capture|protocolstatus.*failure|protocol failure/.test(text)) {
+    lessons.push("Sidecar protocol timing should distinguish a missing acknowledgement from a capture-lag warning when the report contains the current ACK.");
+  }
+  if (/unsupported file_path|workspace\/export|proof\/protocol|behavior\/source\/release|https?:\/\//.test(text)) {
+    lessons.push("Claim parsing should not treat URLs, prose slash phrases, or proof taxonomy labels as repo file-path claims.");
+  }
+  if (/external image|remote image|image source|lms|wikimedia|googleusercontent/.test(text)) {
+    lessons.push("Course image fixes should prefer approved local assets or explicit placeholder removal proof over remote image sources.");
+  }
+  return [...new Set(lessons)];
+}
+
+function sidecarStatusText(status: SidecarStatusSnapshot): string {
+  return [
+    status.task,
+    status.verdict,
+    status.why,
+    ...(status.verified ?? []),
+    ...(status.weak ?? []),
+    ...(status.unverified ?? []),
+    ...(status.risk ?? []),
+    status.oneNextAction,
+    status.proofStrength?.claimType,
+    status.proofStrength?.label,
+    status.proofStrength?.primaryLimiter,
+    ...(status.proofStrength?.capApplied ?? []).map((cap) => (typeof cap === "string" ? cap : `${cap.id ?? ""} ${cap.reason ?? ""}`)),
+    status.protocolStatus
+  ]
+    .filter(Boolean)
+    .join("\n")
+    .toLowerCase();
+}
 
 async function candidatesFromCodexReports(input: CodexReportCandidateInput): Promise<SidecarImportCandidate[]> {
   const snapshot = await collectGitSnapshot(input.sourceRepoPath);
@@ -282,16 +504,17 @@ async function reportSourcesFromSessionLogs(sourceRepoPath: string, sessionsRoot
     for (const line of lines) {
       const event = parseJsonObject(line);
       if (!event) continue;
+      const payload = asRecord(event.payload);
       if (event.type === "session_meta") {
-        sessionId = asText(event.payload?.id ?? event.payload?.sessionId) || sessionId;
+        sessionId = asText(payload?.id ?? payload?.sessionId) || sessionId;
         continue;
       }
       if (event.type === "turn_context") {
-        activeCwd = path.resolve(asText(event.payload?.cwd)).toLowerCase();
+        activeCwd = path.resolve(asText(payload?.cwd)).toLowerCase();
         continue;
       }
-      if (event.type !== "event_msg" || event.payload?.type !== "patch_apply_end") continue;
-      const changes = event.payload?.changes;
+      if (event.type !== "event_msg" || payload?.type !== "patch_apply_end") continue;
+      const changes = payload?.changes;
       if (!changes || typeof changes !== "object" || Array.isArray(changes)) continue;
       for (const [changedPath, change] of Object.entries(changes)) {
         const normalizedChangedPath = path.resolve(changedPath).toLowerCase();
@@ -327,11 +550,11 @@ async function listJsonlFiles(root: string): Promise<string[]> {
   return files.sort();
 }
 
-function parseJsonObject(line: string): { type?: string; timestamp?: unknown; payload?: Record<string, unknown> } | undefined {
+function parseJsonObject(line: string): Record<string, unknown> | undefined {
   try {
     const parsed = JSON.parse(line) as unknown;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return undefined;
-    return parsed as { type?: string; timestamp?: unknown; payload?: Record<string, unknown> };
+    return parsed as Record<string, unknown>;
   } catch {
     return undefined;
   }
@@ -339,6 +562,14 @@ function parseJsonObject(line: string): { type?: string; timestamp?: unknown; pa
 
 function asText(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : undefined;
+}
+
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
 export function candidateFromEvent(event: SidecarLearningEvent): SidecarImportCandidate {

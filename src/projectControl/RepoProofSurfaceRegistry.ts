@@ -42,7 +42,10 @@ const SURFACES: RepoProofSurface[] = RepoProofSurfaceRegistrySchema.parse([
       typecheck: "npm run typecheck",
       courseShellTest: "npm run test:course-shell",
       e2e: "npm run test:e2e",
-      scopedE2e: "npm run test:e2e:project"
+      scopedE2e: "npm run test:e2e:project",
+      exportGoogleHosted: "npm run export:google-hosted",
+      deployGoogleHosted: "npm run deploy:google-hosted",
+      smokePipeline: "npm run smoke:pipeline"
     },
     files: {
       sportsWellnessHtml: "projects/sportswellness/workspace/index.html",
@@ -50,14 +53,23 @@ const SURFACES: RepoProofSurface[] = RepoProofSurfaceRegistrySchema.parse([
       sportsWellnessJs: "projects/sportswellness/workspace/main.js"
     },
     blockedLiveActions: [],
-    proofArtifacts: ["rendered screenshot/checklist"],
+    proofArtifacts: [
+      "rendered screenshot/checklist",
+      "workspace source diff",
+      "Google-hosted export regeneration output",
+      "STAX-collected deploy command output",
+      "live target fetch proof"
+    ],
     stopConditions: [
       "stop if screenshot/checklist is unavailable",
-      "stop if CSS/source diff is the only visual proof"
+      "stop if CSS/source diff is the only visual proof",
+      "stop if deploy is claimed without source workspace, regenerated export, live target, and visual proof"
     ],
     notes: [
       "visual proof requires rendered screenshot/checklist",
-      "CSS diff alone is not visual proof"
+      "CSS diff alone is not visual proof",
+      "course deploy proof requires source workspace -> regenerated export -> STAX-collected deploy -> live target fetch -> rendered visual proof",
+      "direct export-only edits are fragile because regenerated exports can overwrite them"
     ]
   },
   {

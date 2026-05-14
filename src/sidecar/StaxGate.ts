@@ -832,10 +832,16 @@ async function deriveSidecarProofStrength(input: {
 }
 
 const CLAIM_FILE_PATTERN =
-  /\b(?:[A-Za-z0-9_.-]+\/)+(?:[A-Za-z0-9_.-]+)(?:\.[A-Za-z0-9]+)?\b|\b[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|json|md|css|html|yml|yaml)\b/g;
+  /\b(?:[A-Za-z0-9_.-]+\/)+(?:[A-Za-z0-9_.-]+\.[A-Za-z0-9]+)\b|\b[A-Za-z0-9_.-]+\.(?:ts|tsx|js|jsx|json|md|css|html|yml|yaml)\b/g;
 
 async function existingMentionedFiles(repoPath: string, text: string): Promise<ProjectControlChangedFile[]> {
-  const mentionedPaths = [...new Set([...text.matchAll(CLAIM_FILE_PATTERN)].map((match) => normalizeMentionedPath(match[0])).filter(Boolean))];
+  const mentionedPaths = [
+    ...new Set(
+      [...text.matchAll(CLAIM_FILE_PATTERN)]
+        .map((match) => normalizeMentionedPath(match[0]))
+        .filter((item): item is string => Boolean(item) && !isLikelyUrlPath(item))
+    )
+  ];
   const files: ProjectControlChangedFile[] = [];
   for (const mentionedPath of mentionedPaths) {
     if (isSidecarManagedPath(mentionedPath) || path.isAbsolute(mentionedPath) || mentionedPath.includes("..")) continue;
@@ -986,8 +992,9 @@ function sidecarEvidenceFlags(codexReport: string): {
 } {
   return {
     visualProof: /\b(screenshot|playwright trace|rendered preview|visual proof|browser proof)\b/i.test(codexReport),
-    releasePreflight: /\b(preflight|dry run|staging validated|build passed)\b/i.test(codexReport),
-    releaseGate: /\brelease gate\b/i.test(codexReport),
+    releasePreflight:
+      /\b(preflight|dry run|staging validated|build passed|export regenerated|regenerated export|live target fetch|target fetch|deploy command|stax-collected deploy|smoke:pipeline)\b/i.test(codexReport),
+    releaseGate: /\b(release gate|deploy gate|course deploy proof|course deploy contract)\b/i.test(codexReport),
     rollbackPlan: /\brollback\b/i.test(codexReport),
     securityProof: /\b(security test|security scan|secret scan|vulnerability scan|npm audit|prompt injection test|xss test|csrf test)\b/i.test(codexReport)
   };
@@ -1636,12 +1643,22 @@ function inferClaimTypes(report: string): string[] {
 
 function inferProofStrengthClaimTypeFromClaims(text: string): ProofStrengthClaimType | undefined {
   const claims = decomposeClaimsFromReport(text).map((claim) => claim.claimType);
-  if (claims.includes("release_deploy")) return "release_ready";
+  if (claims.includes("release_deploy")) return isCourseDeployClaimText(text) ? "course_deploy_ready" : "release_ready";
   if (claims.includes("security")) return "security_fixed";
   if (claims.includes("visual") || claims.includes("accessibility")) return "visual_behavior_verified";
   if (claims.includes("test") || claims.includes("eval")) return "tests_passed";
   if (claims.includes("implementation") || claims.includes("behavior")) return "implementation_complete";
   return undefined;
+}
+
+function isCourseDeployClaimText(text: string): boolean {
+  return /\b(course|google[-\s]?hosted|firebase|hosting|hosted site|forensics|psychology|canvas-helper|authoring[_-]?unlock)\b/i.test(text) &&
+    /\b(deploy(?:ed|ment)?|publish(?:ed|ing)?|live|release|export(?:ed|ing)?)\b/i.test(text);
+}
+
+function isLikelyUrlPath(value: string): boolean {
+  const normalized = value.trim().replace(/\\/g, "/");
+  return /^(?:https?:)?\/\//i.test(normalized) || /^[A-Za-z0-9.-]+\.[A-Za-z]{2,}\//.test(normalized);
 }
 
 function dedupe<T>(items: T[]): T[] {

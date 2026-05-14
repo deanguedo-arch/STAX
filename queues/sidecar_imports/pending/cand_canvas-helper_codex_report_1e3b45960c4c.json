@@ -1,0 +1,42 @@
+{
+  "candidateId": "cand_canvas-helper_codex_report_1e3b45960c4c",
+  "sourceEventId": "codex_session_report_1e3b45960c4c",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "branch": "main",
+    "commitSha": "092b52736e482c5ce1282f43f52567b59c44e8ff"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from canvas-helper: Run a Canvas Helper observer proof batch, fix the narrow verifier gap it found, and record fresh STAX-collected command evidence for the corrected worktree.. Next: - Rerun `stax gate` on Canvas Helper and use the verdict as this observer batch's formal readiness signal.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-10T08-24-54-019e1246-dcae-7c00-8915-6615c5fb3fe7.jsonl",
+      "sessionId": "019e1246-dcae-7c00-8915-6615c5fb3fe7",
+      "eventTimestamp": "2026-05-13T01:26:38.689Z",
+      "reportHash": "1e3b45960c4cac9f31b132c682c131b76a60206c7ce172dc0ac8af728de79ea7",
+      "sections": {
+        "objective": "Run a Canvas Helper observer proof batch, fix the narrow verifier gap it found,\nand record fresh STAX-collected command evidence for the corrected worktree.",
+        "filesChanged": "- `scripts/lib/types.ts`\n- `scripts/lib/project-manifest-policy.ts`\n- `scripts/verify-project.ts`\n- `scripts/tests/project-manifest-policy.test.ts`\n- `projects/social-studies-10-1-docx-export/meta/project.json`\n- `.stax/task.md`\n- `.stax/codex-report.md`\n- `.stax/command-evidence/*.pointer.json`\n- `.stax/status.json`\n- `.stax/proof_strength.json`\n- `.stax/reports/latest-confidence-report.md`\n- `.stax/reports/latest-proof-report.md`",
+        "testsAdded": "- Added manifest-rule coverage proving `docx` targets are preserved during\n  manifest normalization.\n\nChanges made:\n- Added `docx` to the allowed manifest target list and manifest type.\n- Converted the Social Studies DOCX pilot manifest from the old string target\n  form to the current object target form.\n- Updated `scripts/verify-project.ts` so DOCX target projects with declared\n  generated outputs check those outputs instead of requiring\n  `projects/<slug>/workspace/index.html`.",
+        "commandsRun": "- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run verify -- --project social-studies-10-1-docx-export`\n  - initial command exitCode: 1\n  - first finding: old manifest target shape normalized to missing targets\n  - second finding after metadata fix: verifier still required a workspace HTML entry\n  - fresh passing evidenceId: `cmd_2026-05-13T01_23_21_863Z_cb3811adefd8`\n  - fresh command exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run typecheck`\n  - evidenceId: `cmd_2026-05-13T01_23_39_331Z_982c1455e5e7`\n  - command exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run validate:manifests`\n  - evidenceId: `cmd_2026-05-13T01_23_56_257Z_569986fd5e82`\n  - command exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- ./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts`\n  - evidenceId: `cmd_2026-05-13T01_24_10_791Z_205f97a35092`\n  - command exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run test:e2e:harness`\n  - evidenceId: `cmd_2026-05-13T01_24_24_213Z_708ac0e4b4d0`\n  - command exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run test:e2e:smoke`\n  - evidenceId: `cmd_2026-05-13T01_24_36_700Z_d9f625a92414`\n  - command exitCode: 0",
+        "commandOutputSummary": "- The first observer verifier run found a real blocker and exited 1.\n- After the narrow code and metadata fix, the Social Studies DOCX project\n  verifier exited 0 in generated-output mode.\n- Typecheck exited 0.\n- Manifest validation exited 0.\n- Manifest-rule test exited 0.\n- E2E contract harness exited 0.\n- E2E smoke exited 0 with 1 Chromium smoke test passing.",
+        "verified": "- `docx` is now accepted by the manifest target normalizer.\n- The Social Studies DOCX pilot manifest uses the current target object shape.\n- `npm run verify -- --project social-studies-10-1-docx-export` now checks the\n  declared generated outputs for this DOCX target project and exits 0.\n- All fresh evidence listed above was collected by STAX for the current\n  auditable worktree fingerprint.\n\nProof strength summary:\n- Previous sidecar gate after the code fix reported Proof Strength: Strong\n  with finalScore 0.79.\n- The remaining blocker from that run was report wording and stale ACK, not\n  failed command proof.",
+        "weakProvisional": "- This run did not execute every Canvas Helper command.\n- This run did not run `npm run build:studio` because that command can write\n  build artifacts and was outside this observer/fix loop.\n- The checkout still has substantial pre-existing unrelated dirty, deleted, and\n  untracked project files outside this fix.",
+        "unverified": "- Deep inspection of DOCX internals by this verifier path.\n- Whether all pre-existing dirty project changes should be kept.\n- Readiness of protected branch or publish boundaries.",
+        "risks": "- The generated-output verifier path is intentionally narrow and only checks\n  declared generated outputs exist.\n- Other generated target types may need richer checks later.\n- The broad dirty checkout should be reviewed separately before protected\n  branch or publish actions.",
+        "oneNextAction": "- Rerun `stax gate` on Canvas Helper and use the verdict as this observer\n  batch's formal readiness signal."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-14T19:30:15.876Z"
+}

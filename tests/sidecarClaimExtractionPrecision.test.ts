@@ -23,6 +23,14 @@ describe("sidecar claim extraction precision", () => {
     expect(decomposeClaimsFromReport("This does not enable live blocking.")).toEqual([]);
   });
 
+  it("does not convert negative promotion-control wording into memory promotion claims", () => {
+    expect(decomposeClaimsFromReport("Do not auto-promote learning candidates.")).toEqual([]);
+    expect(decomposeClaimsFromReport("Candidates are pending review only; none were promoted.")).toEqual([]);
+    expect(decomposeClaimsFromReport("No sidecar learning candidate was promoted.")).toEqual([]);
+    expect(decomposeClaimsFromReport("Negative promotion-control language now stays negative instead of triggering a memory-promotion proof claim.")).toEqual([]);
+    expect(decomposeClaimsFromReport("Existing repo-memory candidates still need human review before any durable promotion.")).toEqual([]);
+  });
+
   it("does not convert sidecar upgrade wording into dependency claims", () => {
     expect(decomposeClaimsFromReport("Sidecar upgrade propagated the prompt contract.")).toEqual([]);
   });

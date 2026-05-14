@@ -21,8 +21,13 @@ describe("RepoProofSurfaceRegistry", () => {
     expect(surface.commands.courseShellTest).toBe("npm run test:course-shell");
     expect(surface.commands.e2e).toBe("npm run test:e2e");
     expect(surface.commands.scopedE2e).toBe("npm run test:e2e:project");
+    expect(surface.commands.exportGoogleHosted).toBe("npm run export:google-hosted");
+    expect(surface.commands.deployGoogleHosted).toBe("npm run deploy:google-hosted");
+    expect(surface.commands.smokePipeline).toBe("npm run smoke:pipeline");
     expect(surface.proofArtifacts).toContain("rendered screenshot/checklist");
+    expect(surface.proofArtifacts).toContain("live target fetch proof");
     expect(surface.notes.join(" ")).toContain("CSS diff alone is not visual proof");
+    expect(surface.notes.join(" ")).toContain("course deploy proof requires source workspace");
   });
 
   it("seeds Brightspace build, ingest, and seed-gold boundaries", () => {

@@ -16,6 +16,7 @@ export function generateProofSurfaceCandidate(input: {
   const commandsByKind = (kind: CommandSurface["kind"]) => input.commandSurfaces.filter((surface) => surface.kind === kind).map((surface) => surface.command);
   const buildCommands = [...commandsByKind("build"), ...commandsByKind("typecheck")];
   const testCommands = [...commandsByKind("test"), ...commandsByKind("e2e"), ...commandsByKind("smoke"), ...commandsByKind("validate")];
+  const exportCommands = commandsByKind("export");
   if (buildCommands.length > 0) {
     rules.push({
       claimType: "build_ready",
@@ -60,7 +61,30 @@ export function generateProofSurfaceCandidate(input: {
     ...commandsByKind("deploy"),
     ...commandsByKind("release")
   ]);
+  const hasVisualSurface =
+    input.riskSurfaces.some((risk) => risk.kind === "visual_layout") ||
+    input.detectedStack.some((stack) => ["html-css", "vite", "playwright", "cypress", "storybook"].includes(stack));
   if (liveCommands.length > 0) {
+    if (exportCommands.length > 0 && hasVisualSurface) {
+      rules.push({
+        claimType: "course_deploy_ready",
+        requiredEvidence: [
+          "workspace_source_diff",
+          "export_regenerated",
+          "stax_collected_deploy_command",
+          "live_target_fetch",
+          "rendered_screenshot",
+          "visual_checklist",
+          "target_site_identity"
+        ],
+        commands: dedupe([...exportCommands, ...liveCommands, ...commandsByKind("smoke"), ...commandsByKind("e2e")]),
+        blockedEvidence: ["deploy_command_only", "export_only_edit", "live_fetch_only", "css_diff_only", "remote_image_only"],
+        confidence: "high",
+        source: "course export/deploy script and visual workspace detection",
+        nextAction:
+          "For course deploys, prove the source workspace changed, regenerate the export, collect the deploy command through STAX, verify the live target, and capture rendered visual proof."
+      });
+    }
     rules.push({
       claimType: "publish_sync_deploy_ready",
       requiredEvidence: ["human_approval", "non_mutating_preflight", "target_validation"],

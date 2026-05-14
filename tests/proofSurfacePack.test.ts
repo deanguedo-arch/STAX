@@ -69,6 +69,26 @@ describe("repo proof-surface discovery", () => {
     expect(visual?.blockedEvidence).toContain("css_diff_only");
   });
 
+  it("detects course deploy proof requirements for Google-hosted course workspaces", async () => {
+    const repoPath = await createRepoWithPackage({
+      "export:google-hosted": "node scripts/export-google-hosted.js",
+      "deploy:google-hosted": "firebase deploy --only hosting",
+      "test:e2e:project": "playwright test",
+      "smoke:pipeline": "tsx scripts/smoke-local-pipeline.ts"
+    });
+    await fs.mkdir(path.join(repoPath, "projects", "demo", "workspace"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "projects", "demo", "workspace", "index.html"), "<main></main>\n", "utf8");
+
+    const { pack } = await discoverProofSurfaces(repoPath);
+    const courseDeploy = pack.proofSurfaces.find((surface) => surface.claimType === "course_deploy_ready");
+
+    expect(courseDeploy).toBeTruthy();
+    expect(courseDeploy?.requiredEvidence).toEqual(
+      expect.arrayContaining(["workspace_source_diff", "export_regenerated", "stax_collected_deploy_command", "live_target_fetch"])
+    );
+    expect(courseDeploy?.commands).toEqual(expect.arrayContaining(["npm run export:google-hosted", "npm run deploy:google-hosted"]));
+  });
+
   it("warns that gold or fixture updates are not repair proof", async () => {
     const repoPath = await createRepoWithPackage({ "ingest:seed-gold": "node scripts/seed-gold.js" });
 

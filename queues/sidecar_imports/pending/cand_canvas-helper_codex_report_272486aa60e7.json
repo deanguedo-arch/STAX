@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_canvas-helper_codex_report_272486aa60e7",
+  "sourceEventId": "codex_session_report_272486aa60e7",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "branch": "main",
+    "commitSha": "092b52736e482c5ce1282f43f52567b59c44e8ff"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from canvas-helper: Fix General Psychology 20 tablet/mobile sidebar drawer behavior and redeploy the hosted course.. Next: - Have the user switch the in-app browser to Tablet and Mobile, click the three-line sidebar button, then use the X/backdrop to hide it. If anything still feels wrong, inspect that exact viewport state and click path.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-12T13-49-14-019e1dbc-8657-76f2-94f4-425b59e0fb8a.jsonl",
+      "sessionId": "019e1dbc-8657-76f2-94f4-425b59e0fb8a",
+      "eventTimestamp": "2026-05-13T12:44:50.262Z",
+      "reportHash": "272486aa60e712237045858e44ca98d19abf19c70165df223c545a95fcc1b464",
+      "sections": {
+        "objective": "Fix General Psychology 20 tablet/mobile sidebar drawer behavior and redeploy the hosted course.",
+        "filesChanged": "- `projects/general-psychology-20-independent-studies-202633108/workspace/main.js`\n- `scripts/tests/general-psychology-workspace.test.ts`\n- `projects/general-psychology-20-independent-studies-202633108/meta/deviation-report.json`\n- `projects/general-psychology-20-independent-studies-202633108/meta/deviation-report.md`\n- `projects/general-psychology-20-independent-studies-202633108/meta/project.json`\n- `projects/general-psychology-20-independent-studies-202633108/exports/google-hosted/` (ignored generated deploy output)\n- `.stax/task.md`\n- `.stax/codex-report.md`",
+        "testsAdded": "- Added a focused General Psychology workspace regression that checks for a tablet/mobile drawer close path, real backdrop, mobile drawer state class, and auto-dismiss after activity selection.",
+        "commandsRun": "- `./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts`\n  - exitCode: 0\n- Rendered viewport check against local workspace preview at 1180x820, 800x1000, and 390x844\n  - exitCode: 0\n- `npm run verify -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run typecheck`\n  - exitCode: 0\n- `npm run build:studio`\n  - exitCode: 0\n- `npm run export:google-hosted -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run deploy:google-hosted -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `curl -fsSL '[redacted-url] | rg -n 'SIDEBAR_DRAWER_QUERY|mobileSidebarOpen|sidebar-close|sidebar-scrim|mobile-sidebar-open|closeSidebarAfterDrawerSelection|main::before'`\n  - exitCode: 0\n- Rendered viewport check against `[redacted-url] at 1180x820, 800x1000, and 390x844\n  - exitCode: 0\n- In-app browser opened `[redacted-url]\n  - exitCode: 0",
+        "commandOutputSummary": "- Focused General Psychology workspace tests passed: 14 tests, 14 pass, 0 fail.\n- Local rendered viewport check passed. Desktop starts expanded and the header toggle collapses/reopens the sidebar. Tablet and phone start with the drawer hidden, open from the header toggle, close from the drawer X, expose an active backdrop while open, and dismiss after selecting an activity.\n- Project verifier passed: metadata policy passed; no missing local assets; no missing workspace embeds; no missing course-shell resources. Existing Google font links remain external warnings.\n- Project E2E contract passed: 1 Chromium test, 1 passed.\n- Typecheck passed with exitCode 0.\n- Studio build passed with exitCode 0.\n- Google Hosted export wrote 794 files and tracked storage key `general-psychology-20-independent-studies-202633108::workspace-state::v1`.\n- Firebase deploy completed successfully to project `calm-module-one`, hosting site `generalpsychology`.\n- Live marker check confirmed the hosted `main.js` contains the drawer fix markers and did not match the removed `.app:not(.sidebar-hidden) .main::before` overlay rule.\n- Live rendered viewport check passed at desktop, tablet, and phone widths.\n- In-app browser is on the deployed General Psychology page and exposes the sidebar toggle.",
+        "verified": "- `[redacted-url] was redeployed after the sidebar fix.\n- Desktop sidebar collapse/reopen behavior still works.\n- Tablet and phone widths no longer inherit the desktop open sidebar as a stuck fixed drawer.\n- Tablet and phone widths can open the drawer from the three-line button.\n- Tablet and phone widths can hide the drawer from the X button or backdrop.\n- Selecting an activity on tablet/phone dismisses the drawer and returns the learner to the reading pane.\n- The live hosted file contains the updated drawer code.",
+        "weakProvisional": "- The Firebase deploy config files in `exports/google-hosted/` are generated/ignored, not tracked source.\n- The export refreshed General Psychology metadata timestamps and deviation-report paths.\n- STAX observer state may still report stale historical command evidence from previous tasks; that is sidecar proof-cache noise unless it cites this exact current command run.",
+        "unverified": "- User manual acceptance in the visible tablet/mobile preview controls.\n- Whether unrelated duplicate files under `projects/processed/**` should be deleted.\n- Whether generated Firebase deploy config should be moved into a more durable tracked convention later.",
+        "risks": "- Browser cache may need a hard refresh, though the live `main.js` now contains the drawer fix.\n- The repo still has unrelated dirty/untracked files outside this General Psychology sidebar task.\n- A future clean export/deploy could still depend on the ignored generated Firebase config being present.",
+        "oneNextAction": "- Have the user switch the in-app browser to Tablet and Mobile, click the three-line sidebar button, then use the X/backdrop to hide it. If anything still feels wrong, inspect that exact viewport state and click path."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-14T19:30:15.876Z"
+}

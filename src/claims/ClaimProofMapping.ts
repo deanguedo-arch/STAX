@@ -126,7 +126,9 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
   if (/\b(?:release|deploy(?:ment)?|publish|sync|app store|testflight|data\s+publish)\b.{0,80}\b(?:ready|readiness|candidate|done|complete|succeeded|passed|verified|published|deployed|synced|shipped|mergeable|safe|can proceed|proceed)\b|\bready to (?:publish|deploy|release|sync|ship|merge)\b|\b(?:published|deployed|synced|released)\b|\bready to ship\b|\bship it\b|\bmergeable\b|\bready to merge\b/i.test(prose)) {
     push("release_deploy", "Release/deploy readiness claim.", hardClaimFor("release_deploy"));
   }
-  if (/\bmemory\b|\bpromotion\b|\bpromoted\b|\bpromote\b|\bapproved memory\b|\bapproval exists\b/i.test(prose)) {
+  if (
+    /\bmemory\b.{0,80}\b(?:approved|approval|promot(?:e|ed|ion)?|written|write|durable|update|ready)\b|\b(?:approved|approval|promot(?:e|ed|ion)?|durable|candidate can become)\b.{0,80}\bmemory\b|\bpromotion is ready\b|\blearning should be promoted\b|\bpromote the source run\b|\bapproval exists\b/i.test(prose)
+  ) {
     push("memory_promotion", "Memory promotion or approval claim.", hardClaimFor("memory_promotion"));
   }
   if (/\bsecurity\b|\bsecret\b|\btoken\b|\bprivate key\b|\bvulnerability\b|\bxss\b|\bcsrf\b|\bauth bypass\b|\binjection\b/i.test(prose)) {
@@ -206,7 +208,10 @@ function parseReportHeading(line: string): string | undefined {
 function stripNegatedClaimLines(text: string): string {
   return text
     .split(/\r?\n/)
-    .filter((line) => !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete)\b/i.test(line))
+    .filter(
+      (line) =>
+        !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete|none (?:was|were) promoted|no .* promoted|not promoted|instead of triggering|before any durable promotion)\b/i.test(line)
+    )
     .join("\n");
 }
 

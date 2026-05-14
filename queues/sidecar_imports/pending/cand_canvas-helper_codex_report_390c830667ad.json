@@ -1,0 +1,44 @@
+{
+  "candidateId": "cand_canvas-helper_codex_report_390c830667ad",
+  "sourceEventId": "codex_session_report_390c830667ad",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "branch": "main",
+    "commitSha": "092b52736e482c5ce1282f43f52567b59c44e8ff"
+  },
+  "candidateType": "repo_memory",
+  "scope": "repo",
+  "summary": "Codex report from canvas-helper: Restyle General Psychology 20 quizzes to match the Forensics assessment format while preserving General Psychology course labels and quiz content.. Next: - If the user approves the local format, run the Google-hosted export/deploy flow for `general-psychology-20-independent-studies-202633108`.",
+  "proposedArtifact": {
+    "destinationHint": "memory/candidates/",
+    "payload": {
+      "sourceKind": "codex_session_report",
+      "sourcePath": "rollout-2026-05-12T13-49-14-019e1dbc-8657-76f2-94f4-425b59e0fb8a.jsonl",
+      "sessionId": "019e1dbc-8657-76f2-94f4-425b59e0fb8a",
+      "eventTimestamp": "2026-05-13T13:03:03.454Z",
+      "reportHash": "390c830667ad66a99eb6edd653d7609b6f90f1bac91dd0922a2cfc8b6c3848fa",
+      "sections": {
+        "objective": "Restyle General Psychology 20 quizzes to match the Forensics assessment format while preserving General Psychology course labels and quiz content.",
+        "filesChanged": "- `projects/general-psychology-20-independent-studies-202633108/workspace/main.js`\n- `scripts/tests/general-psychology-workspace.test.ts`\n- `.stax/task.md`\n- `.stax/codex-report.md`\n- `docs/ops/ACTIVE_HANDOFF.md`\n- `docs/ops/ARCHIVED_HANDOFFS.md`\n- `.stax/visual-proofs/general-psych-quiz-forensics-format.png`\n- `.stax/visual-proofs/general-psych-quiz-forensics-format-desktop.png`",
+        "testsAdded": "- Added a focused General Psychology workspace regression that checks for the Forensics-style quiz layout markers, `Final Evaluation`, `Section Breakdown`, results controls, choice-letter buttons, Forensics green/red colors, and `Next Step` theme override protection.\n- Preserved the existing tablet/mobile sidebar regression from the prior General Psychology fix.",
+        "commandsRun": "- `./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts`\n  - exitCode: 0\n- `node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js`\n  - exitCode: 0\n- In-app browser rendered `[redacted-url] completed Module 1 content through the UI, opened the Freud quiz, and captured the Forensics-format quiz DOM/screenshot.\n  - exitCode: 0\n- `npm run verify -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108`\n  - exitCode: 0\n- `npm run test:e2e:smoke`\n  - exitCode: 0\n- `npm run typecheck`\n  - exitCode: 0\n- `npm run build:studio`\n  - exitCode: 0\n- Desktop Playwright visual proof at 1180x900 against the local workspace preview, including `Final Evaluation`, `Section Breakdown`, 17 quiz choices, right-aligned desktop counter, and computed primary button background `rgb(89, 168, 68)`.\n  - exitCode: 0\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --mode observer --boundary handoff`\n  - exitCode: 1",
+        "commandOutputSummary": "- Focused General Psychology workspace tests passed: 15 tests, 15 pass, 0 fail.\n- Syntax check passed for the edited workspace `main.js`.\n- Project verifier passed: metadata policy passed; no missing local assets; no missing workspace embeds; no missing course-shell resources. Existing Google font links remain external warnings.\n- Project E2E contract passed: 1 Chromium test, 1 passed.\n- Platform smoke E2E passed: 1 Chromium test, 1 passed.\n- Typecheck passed with exitCode 0.\n- Studio build passed with exitCode 0.\n- Desktop visual proof passed and wrote `.stax/visual-proofs/general-psych-quiz-forensics-format-desktop.png`.\n- In-app browser visual proof wrote `.stax/visual-proofs/general-psych-quiz-forensics-format.png`.\n- STAX preflight could not run because this repo does not expose an `stax:preflight` npm script.",
+        "verified": "- General Psychology quiz attempts now render with a Forensics-style assessment surface.\n- The rendered Freud quiz shows `General Psychology 20 • Examination`, `Final Evaluation`, `Questions completed`, `Generate Results`, `Check answers`, `Retake Quiz`, `Back to quizzes`, `Section Breakdown`, and all questions/choices visible in one page flow.\n- The desktop evaluation counter aligns to the right side of the panel.\n- The primary results button uses the Forensics green `rgb(89, 168, 68)`.\n- The `Next Step` theme does not recolor the quiz surface away from the Forensics palette.\n- General Psychology labels remain General Psychology; test coverage rejects Forensics course labels.\n- The prior tablet/mobile sidebar drawer behavior remains covered by regression tests.",
+        "weakProvisional": "- Hosted Firebase deploy was not run for this quiz-format change because this turn did not explicitly request deploy/publish.\n- STAX observer preflight remains unavailable from this repo command surface.\n- Browser visual validation used local preview state with Module 1 completed to unlock the first quiz.",
+        "unverified": "- User visual acceptance against the Forensics reference screenshot.\n- Hosted `[redacted-url] with this quiz-format change.\n- Whether unrelated dirty/untracked checkout noise should be cleaned separately.",
+        "risks": "- A fresh learner state will still show quizzes locked until the module content is completed.\n- Future theme edits could override the quiz palette if they are more specific than the new `.quiz-detail-surface` rules.\n- The checkout still has unrelated `.stax/`, metadata, and `projects/processed/**` noise outside this task.",
+        "oneNextAction": "- If the user approves the local format, run the Google-hosted export/deploy flow for `general-psychology-20-independent-studies-202633108`."
+      }
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "URLs or secret-like values were redacted from report sections."
+    ]
+  },
+  "createdAt": "2026-05-14T19:30:15.877Z"
+}

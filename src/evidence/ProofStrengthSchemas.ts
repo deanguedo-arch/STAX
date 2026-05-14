@@ -7,6 +7,7 @@ export const ProofStrengthClaimTypeSchema = z.enum([
   "implementation_complete",
   "tests_passed",
   "visual_behavior_verified",
+  "course_deploy_ready",
   "release_ready",
   "security_fixed",
   "verification_run"

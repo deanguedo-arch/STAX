@@ -17,9 +17,9 @@ export type ProofSurfaceMatch = {
 
 const CLAIM_TYPE_SURFACES: Partial<Record<ClaimProofClaimType, string[]>> = {
   test: ["tests_passed"],
-  visual: ["visual_ready"],
+  visual: ["visual_ready", "course_deploy_ready"],
   data: ["ingest_ready", "data_pipeline_ready"],
-  release_deploy: ["publish_sync_deploy_ready", "release_ready"],
+  release_deploy: ["course_deploy_ready", "publish_sync_deploy_ready", "release_ready"],
   dependency: ["dependency_ready"],
   implementation: ["ingest_ready", "build_ready", "tests_passed"],
   behavior: ["visual_ready", "tests_passed"],
@@ -33,6 +33,17 @@ const CLAIM_TYPE_SURFACES: Partial<Record<ClaimProofClaimType, string[]>> = {
 const SURFACE_KEYWORDS: Record<string, RegExp[]> = {
   repo_identity: [/wrong[-\s]?repo/i, /wrong\s+cwd/i, /repo\s+mismatch/i, /cwd\s+mismatch/i, /target\s+repo/i],
   visual_ready: [/visual/i, /layout/i, /\bcss\b/i, /screenshot/i, /rendered/i, /rendered_visual_proof/i, /\bui\b/i, /looks\s+(?:good|correct)/i],
+  course_deploy_ready: [
+    /course/i,
+    /google[-\s]?hosted/i,
+    /firebase/i,
+    /hosting/i,
+    /live\s+target/i,
+    /hosted\s+site/i,
+    /authoring_unlock/i,
+    /forensics?\d*/i,
+    /general\s+psychology/i
+  ],
   export_ready: [/export/i, /artifact/i, /course[-\s]?shell/i],
   publish_sync_deploy_ready: [/sync/i, /publish/i, /deploy/i, /release/i, /ship/i, /merge/i, /sheets/i, /apps[-\s]?script/i],
   data_pipeline_ready: [/data/i, /pipeline/i, /schema/i, /row/i, /\bcsv\b/i, /\bjson\b/i, /validation/i],
@@ -48,11 +59,13 @@ const SURFACE_STRONG_PHRASES: Record<string, RegExp[]> = {
   build_ready: [/\bbuild\s+(?:passed|succeeded|green|ready|complete|completed)\b/i, /\btypecheck\s+(?:passed|succeeded|green)\b/i],
   tests_passed: [/\btests?\s+(?:passed|succeeded|green)\b/i, /\btest\s+suite\s+(?:passed|succeeded|green)\b/i],
   publish_sync_deploy_ready: [/\bready\s+to\s+(?:publish|deploy|release|sync|ship|merge)\b/i],
+  course_deploy_ready: [/\bcourse\s+(?:deploy|deployment|publish|publication)\b/i, /\bgoogle[-\s]?hosted\s+(?:deploy|export|site)\b/i],
   visual_ready: [/\bvisual\s+(?:pass|passed|ready|verified)\b/i, /\blayout\s+(?:pass|passed|ready|verified)\b/i]
 };
 
 const PROOF_GAP_KEYWORDS: Record<string, RegExp[]> = {
   visual_ready: [/visual\s+claim\s+is\s+unsupported/i, /rendered_visual_proof/i, /without\s+rendered\s+visual\s+proof/i],
+  course_deploy_ready: [/release_deploy\s+claim\s+is\s+unsupported/i, /target_environment_proof/i, /live\s+target/i, /deploy.*visual/i],
   publish_sync_deploy_ready: [/release_deploy\s+claim\s+is\s+unsupported/i, /rollback_plan/i, /target_environment_proof/i],
   tests_passed: [/test\s+claim\s+is\s+unsupported/i, /test_diff/i],
   build_ready: [/build_proof/i],
@@ -192,6 +205,7 @@ function mentionsOtherRepoInsteadOfTarget(text: string, repoName: string): boole
 
 function priorityForSurface(claimType: string): number {
   if (claimType === "repo_identity") return 100;
+  if (claimType === "course_deploy_ready") return 95;
   if (claimType === "ingest_ready" || claimType === "dependency_ready") return 90;
   if (claimType === "publish_sync_deploy_ready" || claimType === "visual_ready") return 80;
   return 0;

@@ -13,6 +13,7 @@ import {
 const COMMAND_REQUIRED_CLAIMS = new Set<ProofStrengthClaimType>([
   "implementation_complete",
   "tests_passed",
+  "course_deploy_ready",
   "release_ready",
   "security_fixed",
   "verification_run"
@@ -130,6 +131,27 @@ export class ProofStrengthGate {
       });
     }
 
+    if (parsed.claimType === "course_deploy_ready" && !parsed.evidenceFlags.visualProof) {
+      missingProof.push("No rendered screenshot, visual checklist, or browser proof was supplied for the course deployment.");
+      capApplied.push({
+        id: "course_deploy_without_visual_proof",
+        maxLabel: "Provisional",
+        reason: "Course deployment claims require rendered visual proof of the published course."
+      });
+    }
+
+    if (
+      parsed.claimType === "course_deploy_ready" &&
+      !(parsed.evidenceFlags.releasePreflight || parsed.evidenceFlags.releaseGate || parsed.evidenceFlags.rollbackPlan)
+    ) {
+      missingProof.push("No export regeneration, deploy collection, live target fetch, or rollback/preflight proof was supplied for the course deployment.");
+      capApplied.push({
+        id: "course_deploy_without_target_proof",
+        maxLabel: "Provisional",
+        reason: "Course deployment claims require export/deploy/live-target proof, not just a report."
+      });
+    }
+
     if (parsed.claimType === "release_ready" && !(parsed.evidenceFlags.releasePreflight || parsed.evidenceFlags.releaseGate || parsed.evidenceFlags.rollbackPlan)) {
       missingProof.push("No release preflight, release gate, dry run, or rollback proof was supplied.");
       capApplied.push({
@@ -192,6 +214,7 @@ export class ProofStrengthGate {
 }
 
 export function inferProofStrengthClaimType(text: string): ProofStrengthClaimType | undefined {
+  if (isCourseDeployClaimText(text)) return "course_deploy_ready";
   if (/\b(ui|visual|layout|screenshot|rendered|browser|resize|css|looks)\b/i.test(text)) return "visual_behavior_verified";
   if (/\b(release ready|ready to release|deploy|publish|production|rollback|preflight)\b/i.test(text)) return "release_ready";
   if (/\b(security|vulnerab|xss|csrf|injection|secret|auth bypass)\b/i.test(text)) return "security_fixed";
@@ -253,6 +276,8 @@ function rawProofScore(
   if (claimType === "implementation_complete" && input.repoSourceFiles > 0) score += 0.18;
   if (claimType === "implementation_complete" && input.repoTestFiles > 0) score += 0.12;
   if (claimType === "visual_behavior_verified" && input.visualProof) score += 0.55;
+  if (claimType === "course_deploy_ready" && input.visualProof) score += 0.28;
+  if (claimType === "course_deploy_ready" && input.releaseProof) score += 0.28;
   if (claimType === "release_ready" && input.releaseProof) score += 0.35;
   if (claimType === "security_fixed" && input.securityProof) score += 0.4;
   score -= Math.min(0.3, 0.08 * input.groundingUnsupported);
@@ -296,6 +321,9 @@ function nextActionFor(
     return "Collect command evidence from the correct repo/workspace and discard the mismatched proof.";
   }
   if (combined.includes("docs-only")) return "Provide source diff plus behavior or test evidence; docs-only proof cannot prove implementation.";
+  if (claimType === "course_deploy_ready") {
+    return "Prove the course deploy chain: source workspace diff, regenerated export, STAX-collected deploy command, live target fetch, rendered screenshot/checklist, and rollback or target-safety evidence.";
+  }
   if (combined.includes("visual")) return "Capture rendered visual proof, such as a screenshot or Playwright trace, for the claimed behavior.";
   if (combined.includes("release")) return "Run the release preflight or release gate and include rollback/dry-run evidence.";
   if (combined.includes("security")) return "Run security-specific tests or scans and attach the captured local evidence.";
@@ -309,6 +337,11 @@ function nextActionFor(
 
 function normalizePath(value: string): string {
   return value.trim().replace(/\\/g, "/").replace(/\/+$/g, "");
+}
+
+function isCourseDeployClaimText(text: string): boolean {
+  return /\b(course|google[-\s]?hosted|firebase|hosting|hosted site|forensics|psychology|canvas-helper|authoring[_-]?unlock)\b/i.test(text) &&
+    /\b(deploy(?:ed|ment)?|publish(?:ed|ing)?|live|release|export(?:ed|ing)?)\b/i.test(text);
 }
 
 function normalizeRelativePath(value: string): string {

@@ -8,6 +8,7 @@ export type CommandSurfaceKind =
   | "e2e"
   | "smoke"
   | "validate"
+  | "export"
   | "preflight"
   | "publish"
   | "sync"
@@ -42,6 +43,7 @@ function surfacesForScript(script: RepoPackageScript): CommandSurface[] {
   if (/e2e|playwright|cypress/.test(text)) add("e2e");
   if (/smoke/.test(text)) add("smoke");
   if (/validate|verify|check|audit/.test(text)) add("validate");
+  if (/\bexport\b|google[-:]?hosted|course[-:]?shell/.test(text)) add("export");
   if (/preflight|dry[-:]?run|target|canonical/.test(text)) add("preflight");
   if (/publish/.test(text)) add("publish");
   if (/\bsync\b|sheets|clasp|apps-script|google/.test(text)) add("sync");
@@ -68,6 +70,7 @@ function surfacesForDiscoveredFile(file: RepoDiscoveryResult["files"][number]): 
   if (/e2e|playwright|cypress/.test(text)) add("e2e");
   if (/smoke/.test(text)) add("smoke");
   if (/validate|verify|check|audit/.test(text)) add("validate");
+  if (/export|google[-_]?hosted|course[-_]?shell/.test(text)) add("export");
   const preflightLike = /validate|preflight|dry[-:]?run|target|canonical|structure|surface|check/.test(text);
   if (preflightLike) add("preflight");
   if (!preflightLike && /publish/.test(text)) add("publish");
