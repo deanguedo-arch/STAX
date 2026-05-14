@@ -47,10 +47,23 @@ STAX is strong for Codex/repo project-control:
 - claim extraction hardening v1
 - static known-repo proof-surface packs
 - candidate versus approved proof-surface workflow
+- ProofSurfaceMatcher v1
+- public sidecar attach flow documentation
+- GitHub-facing hardening audit artifact
 
 ## Current Technical Risks
 
 - doc/report consistency
-- proof-surface matching precision
-- real repo attach/upgrade trial coverage
+- proof-surface matching precision beyond v1 fixtures
+- real repo observer trial volume
 - unusual-repo proof-surface discovery edge cases
+- complexity debt and archived report surface area
+- large runtime, CLI, and session modules that may need focused compression
+
+## Current Audit Artifacts
+
+- docs/audits/STAX_RED_BLUE_HARDENING_AUDIT.md
+- docs/PUBLIC_SIDECAR_ATTACH_FLOW.md
+- docs/RAX_PROOF_SURFACE_MATCHER_REPORT.md
+- docs/RAX_PROOF_SURFACE_MATCHER_ADVERSARIAL_REPORT.md
+- docs/RAX_REAL_SIDECAR_UPGRADE_TRIAL_REPORT.md

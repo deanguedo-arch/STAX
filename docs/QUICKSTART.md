@@ -27,6 +27,21 @@ From the STAX repo:
 npm run stax:attach -- --repo ../my-project
 ```
 
+For a repo-specific sidecar, discover proof surfaces locally and approve them
+only after review:
+
+```bash
+npm run stax:discover-surfaces -- --repo ../my-project
+npm run stax:approve-surfaces -- --repo ../my-project
+```
+
+Candidate surfaces are suggestions. Approved surfaces are local sidecar rules.
+The full public attach workflow is in:
+
+```txt
+docs/PUBLIC_SIDECAR_ATTACH_FLOW.md
+```
+
 This creates the local sidecar files under:
 
 ```txt
@@ -113,6 +128,9 @@ npm run stax:next -- --repo ../my-project
 
 Use the next prompt when STAX returns `Reject`, `Provisional`, or
 `Human Review`.
+
+`stax:status` reads the last stored status. Use `stax:gate` when you need a
+fresh audit after a repo, report, or evidence change.
 
 ## Done Looks Like
 

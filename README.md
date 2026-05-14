@@ -43,6 +43,17 @@ Attach STAX to a project:
 npm run stax:attach -- --repo ../my-project
 ```
 
+For public sidecar use, discover and review proof surfaces before enforcing
+repo-specific rules:
+
+```bash
+npm run stax:discover-surfaces -- --repo ../my-project
+npm run stax:approve-surfaces -- --repo ../my-project
+```
+
+See `docs/PUBLIC_SIDECAR_ATTACH_FLOW.md` for the full candidate/approved
+surface workflow.
+
 Write the task:
 
 ```bash
@@ -73,6 +84,9 @@ Read the status and next correction prompt:
 npm run stax:status -- --repo ../my-project
 npm run stax:next -- --repo ../my-project
 ```
+
+`stax:status` reads the last known status. Run `stax:gate` for a fresh audit
+after repo, report, or evidence changes.
 
 ## 60-Second Demo
 

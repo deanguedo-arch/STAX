@@ -44,6 +44,13 @@ const SURFACE_KEYWORDS: Record<string, RegExp[]> = {
   proof_gate_ready: [/proof[-\s]?gate/i, /stax\s+gate/i, /sidecar\s+gate/i]
 };
 
+const SURFACE_STRONG_PHRASES: Record<string, RegExp[]> = {
+  build_ready: [/\bbuild\s+(?:passed|succeeded|green|ready|complete|completed)\b/i, /\btypecheck\s+(?:passed|succeeded|green)\b/i],
+  tests_passed: [/\btests?\s+(?:passed|succeeded|green)\b/i, /\btest\s+suite\s+(?:passed|succeeded|green)\b/i],
+  publish_sync_deploy_ready: [/\bready\s+to\s+(?:publish|deploy|release|sync|ship|merge)\b/i],
+  visual_ready: [/\bvisual\s+(?:pass|passed|ready|verified)\b/i, /\blayout\s+(?:pass|passed|ready|verified)\b/i]
+};
+
 const PROOF_GAP_KEYWORDS: Record<string, RegExp[]> = {
   visual_ready: [/visual\s+claim\s+is\s+unsupported/i, /rendered_visual_proof/i, /without\s+rendered\s+visual\s+proof/i],
   publish_sync_deploy_ready: [/release_deploy\s+claim\s+is\s+unsupported/i, /rollback_plan/i, /target_environment_proof/i],
@@ -102,6 +109,14 @@ function scoreSurface(input: {
     if (pattern.test(input.text)) {
       score += 120;
       signals.push(`proof gap matched: ${pattern.source}`);
+      break;
+    }
+  }
+
+  for (const pattern of SURFACE_STRONG_PHRASES[input.surface.claimType] ?? []) {
+    if (pattern.test(input.text)) {
+      score += 80;
+      signals.push(`strong phrase matched: ${pattern.source}`);
       break;
     }
   }

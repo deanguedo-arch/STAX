@@ -10,6 +10,8 @@ npm run stax:collect -- --repo <path> -- <command>
 npm run stax:gate -- --repo <path>
 npm run stax:status -- --repo <path>
 npm run stax:next -- --repo <path>
+npm run stax:discover-surfaces -- --repo <path>
+npm run stax:approve-surfaces -- --repo <path>
 ```
 
 The built/installed CLI shape is:
@@ -21,6 +23,25 @@ stax gate --repo <path>
 stax status --repo <path>
 stax next --repo <path>
 ```
+
+`stax:status` reads the last known status. It does not force a fresh audit.
+Use `stax:gate` whenever the repo, Codex report, or command evidence changed.
+
+Proof-surface discovery writes candidate local rules:
+
+```txt
+.stax/proof-surfaces.candidate.json
+.stax/proof-surfaces.review.md
+```
+
+Approval writes enforceable local sidecar rules:
+
+```txt
+.stax/proof-surfaces.json
+```
+
+Candidate surfaces may guide provisional next prompts, but they are not approved
+rules until `stax:approve-surfaces` runs.
 
 `stax gate` writes the status card, next prompt, and deterministic proof-strength
 artifact:
