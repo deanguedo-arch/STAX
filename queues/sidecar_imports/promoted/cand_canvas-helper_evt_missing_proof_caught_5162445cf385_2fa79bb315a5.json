@@ -1,11 +1,11 @@
 {
-  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_46b3e925dde3_2fa79bb315a5",
-  "sourceEventId": "evt_missing_proof_caught_46b3e925dde3",
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_5162445cf385_2fa79bb315a5",
+  "sourceEventId": "evt_missing_proof_caught_5162445cf385",
   "sourceRepo": {
     "name": "canvas-helper",
     "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
-    "commitSha": "e987411e880065bfce264347ac2311ecf5023659",
-    "branch": "main"
+    "branch": "main",
+    "commitSha": "e987411e880065bfce264347ac2311ecf5023659"
   },
   "candidateType": "regression_eval",
   "scope": "global",
@@ -72,14 +72,15 @@
         ],
         "failurePatternIds": []
       },
-      "rationale": ".stax/codex-report.md is missing the current STAX acknowledgement from .stax/turn-contract.json."
+      "rationale": "Command evidence classifier: failed_proof for npm run verify -- --project social-studies-10-1-docx-export."
     }
   },
   "requiresHumanApproval": true,
-  "status": "pending",
+  "status": "promoted",
   "privacy": {
     "redactionStatus": "clean",
     "redactionNotes": []
   },
-  "createdAt": "2026-05-14T19:30:14.272Z"
+  "createdAt": "2026-05-14T19:30:14.272Z",
+  "promotedAt": "2026-05-14T20:04:10.794Z"
 }

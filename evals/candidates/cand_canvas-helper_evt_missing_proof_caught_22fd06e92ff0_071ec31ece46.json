@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "sidecar-promoted-candidate-v1",
+  "promotedAt": "2026-05-14T20:04:10.194Z",
+  "decision": {
+    "candidateId": "cand_canvas-helper_evt_missing_proof_caught_22fd06e92ff0_071ec31ece46",
+    "classification": "schema_contract_rule",
+    "recommendedAction": "hold_local",
+    "promotable": false,
+    "strengthScore": 4,
+    "strengthLabel": "moderate",
+    "blockers": [
+      "no test backing"
+    ],
+    "boosters": [
+      "real-run backed",
+      "cross-repo reusable"
+    ],
+    "recommendedQueueType": "trace_only",
+    "promotionTarget": "none",
+    "reason": "The candidate describes a structured contract weakness rather than a single result. It remains local evidence for now because no test backing.",
+    "requiredEvidence": [
+      "source trace",
+      "original report or command evidence"
+    ],
+    "expectedFutureBehaviorChange": "No durable behavior change until a reusable pattern is proven.",
+    "autoPromote": false,
+    "requiresHumanApproval": true
+  },
+  "candidate": {
+    "candidateId": "cand_canvas-helper_evt_missing_proof_caught_22fd06e92ff0_071ec31ece46",
+    "sourceEventId": "evt_missing_proof_caught_22fd06e92ff0",
+    "sourceRepo": {
+      "name": "canvas-helper",
+      "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+      "branch": "main",
+      "commitSha": "e987411e880065bfce264347ac2311ecf5023659"
+    },
+    "candidateType": "regression_eval",
+    "scope": "global",
+    "summary": "missing_proof_caught from canvas-helper: needs_cleanup. Patterns: visual_claim_without_rendered_proof.",
+    "proposedArtifact": {
+      "destinationHint": "evals/candidates/",
+      "payload": {
+        "eventType": "missing_proof_caught",
+        "task": {
+          "taskId": "task_7b22cb873252",
+          "objective": "Run a Canvas Helper STAX observer proof batch without changing source code.\n\nGoal:\nUse STAX command collection to measure the current Canvas Helper repo state\nagainst safe local verification commands, record pass/fail evidence, and\nidentify what blocks an audit-ready label.\n\nEvidence commands:\n- TypeScript typecheck\n- project metadata validation\n- E2E contract harness\n- active Social Studies DOCX export project verifier\n- E2E smoke test\n\nAcceptance boundary:\nThis observer batch proves only the collected command outcomes for the current\nCanvas Helper worktree. It does not claim the repo is clean, release-ready,\nhard-gate-ready, or that the active Social Studies DOCX export is accepted.",
+          "finalOutcome": "needs_cleanup"
+        },
+        "stax": {
+          "verdict": "Reject",
+          "useful": true,
+          "falseAccept": false,
+          "falseBlock": false,
+          "usefulBlock": true,
+          "verifiedAccept": false
+        },
+        "evidence": {
+          "changedFileRoles": [
+            "docs",
+            "unknown",
+            "source",
+            "visual_style",
+            "script"
+          ],
+          "commandProofStrengths": [
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output"
+          ],
+          "claimTypes": [
+            "data",
+            "protocol_compliance"
+          ],
+          "failurePatternIds": [
+            "visual_claim_without_rendered_proof"
+          ]
+        },
+        "rationale": "Command evidence classifier: non_execution_evidence for npm run verify -- --project social-studies-10-1-docx-export."
+      }
+    },
+    "requiresHumanApproval": true,
+    "status": "pending",
+    "privacy": {
+      "redactionStatus": "clean",
+      "redactionNotes": []
+    },
+    "createdAt": "2026-05-14T19:30:14.271Z"
+  }
+}

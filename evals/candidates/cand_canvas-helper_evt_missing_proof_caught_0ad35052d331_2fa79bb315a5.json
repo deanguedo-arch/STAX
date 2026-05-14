@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "sidecar-promoted-candidate-v1",
+  "promotedAt": "2026-05-14T20:04:09.599Z",
+  "decision": {
+    "candidateId": "cand_canvas-helper_evt_missing_proof_caught_0ad35052d331_2fa79bb315a5",
+    "classification": "schema_contract_rule",
+    "recommendedAction": "hold_local",
+    "promotable": false,
+    "strengthScore": 4,
+    "strengthLabel": "moderate",
+    "blockers": [
+      "no test backing"
+    ],
+    "boosters": [
+      "real-run backed",
+      "cross-repo reusable"
+    ],
+    "recommendedQueueType": "trace_only",
+    "promotionTarget": "none",
+    "reason": "The candidate describes a structured contract weakness rather than a single result. It remains local evidence for now because no test backing.",
+    "requiredEvidence": [
+      "source trace",
+      "original report or command evidence"
+    ],
+    "expectedFutureBehaviorChange": "No durable behavior change until a reusable pattern is proven.",
+    "autoPromote": false,
+    "requiresHumanApproval": true
+  },
+  "candidate": {
+    "candidateId": "cand_canvas-helper_evt_missing_proof_caught_0ad35052d331_2fa79bb315a5",
+    "sourceEventId": "evt_missing_proof_caught_0ad35052d331",
+    "sourceRepo": {
+      "name": "canvas-helper",
+      "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+      "branch": "main",
+      "commitSha": "e987411e880065bfce264347ac2311ecf5023659"
+    },
+    "candidateType": "regression_eval",
+    "scope": "global",
+    "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+    "proposedArtifact": {
+      "destinationHint": "evals/candidates/",
+      "payload": {
+        "eventType": "missing_proof_caught",
+        "task": {
+          "taskId": "task_4e7fd670adc9",
+          "objective": "Run a Canvas Helper STAX observer proof batch and fix the proof blocker it finds.\n\nGoal:\nUse STAX command collection to measure the current Canvas Helper repo state,\nrepair the narrow verifier gap found by the observer run, and record the\nfresh command proof for the corrected worktree.\n\nEvidence commands:\n- TypeScript typecheck\n- project metadata validation\n- project manifest policy unit test\n- E2E contract harness\n- active Social Studies DOCX project verifier\n- E2E smoke test\n\nAcceptance boundary:\nThis run records STAX-collected evidence for the selected Canvas Helper\nverifier commands on the current worktree and for the DOCX generated-output\nverifier path. It does not claim a clean checkout or any branch-control or\nexternal-action decision.",
+          "finalOutcome": "needs_cleanup"
+        },
+        "stax": {
+          "verdict": "Reject",
+          "useful": true,
+          "falseAccept": false,
+          "falseBlock": false,
+          "usefulBlock": true,
+          "verifiedAccept": false
+        },
+        "evidence": {
+          "changedFileRoles": [
+            "docs",
+            "unknown",
+            "source",
+            "visual_style",
+            "script"
+          ],
+          "commandProofStrengths": [
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "local_stax_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output",
+            "human_pasted_command_output"
+          ],
+          "claimTypes": [
+            "protocol_compliance"
+          ],
+          "failurePatternIds": []
+        },
+        "rationale": "Command evidence classifier: non_execution_evidence for npm run validate:manifests."
+      }
+    },
+    "requiresHumanApproval": true,
+    "status": "pending",
+    "privacy": {
+      "redactionStatus": "clean",
+      "redactionNotes": []
+    },
+    "createdAt": "2026-05-14T19:30:14.269Z"
+  }
+}

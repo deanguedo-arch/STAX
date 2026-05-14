@@ -1,11 +1,11 @@
 {
-  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_1dd0c244d85f_2696c1346a4d",
-  "sourceEventId": "evt_missing_proof_caught_1dd0c244d85f",
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_5288f99c4f3e_2696c1346a4d",
+  "sourceEventId": "evt_missing_proof_caught_5288f99c4f3e",
   "sourceRepo": {
     "name": "canvas-helper",
     "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
-    "commitSha": "0ac1b4e9d7edc54ead140094d4d6c637448a689a",
-    "branch": "main"
+    "branch": "main",
+    "commitSha": "0ac1b4e9d7edc54ead140094d4d6c637448a689a"
   },
   "candidateType": "regression_eval",
   "scope": "global",
@@ -54,14 +54,15 @@
         ],
         "failurePatternIds": []
       },
-      "rationale": "Command evidence classifier: non_execution_evidence for npm run test:learning."
+      "rationale": "Command evidence classifier: not_relevant_to_claim for npm run test:learning."
     }
   },
   "requiresHumanApproval": true,
-  "status": "pending",
+  "status": "promoted",
   "privacy": {
     "redactionStatus": "clean",
     "redactionNotes": []
   },
-  "createdAt": "2026-05-14T19:30:14.271Z"
+  "createdAt": "2026-05-14T19:30:14.273Z",
+  "promotedAt": "2026-05-14T20:04:10.994Z"
 }

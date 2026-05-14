@@ -1,11 +1,11 @@
 {
-  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_b5f95e7c68a7_429c97bb9ad7",
-  "sourceEventId": "evt_missing_proof_caught_b5f95e7c68a7",
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_ea3ed4efa7a9_2fa79bb315a5",
+  "sourceEventId": "evt_missing_proof_caught_ea3ed4efa7a9",
   "sourceRepo": {
     "name": "canvas-helper",
     "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
-    "commitSha": "e987411e880065bfce264347ac2311ecf5023659",
-    "branch": "main"
+    "branch": "main",
+    "commitSha": "e987411e880065bfce264347ac2311ecf5023659"
   },
   "candidateType": "regression_eval",
   "scope": "global",
@@ -41,21 +41,46 @@
           "local_stax_command_output",
           "local_stax_command_output",
           "local_stax_command_output",
-          "local_stax_command_output"
+          "local_stax_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output"
         ],
         "claimTypes": [
           "protocol_compliance"
         ],
         "failurePatternIds": []
       },
-      "rationale": "Command evidence classifier: not_relevant_to_claim for npm run test:e2e:smoke."
+      "rationale": ".stax/codex-report.md is missing the current STAX acknowledgement from .stax/turn-contract.json."
     }
   },
   "requiresHumanApproval": true,
-  "status": "pending",
+  "status": "promoted",
   "privacy": {
     "redactionStatus": "clean",
     "redactionNotes": []
   },
-  "createdAt": "2026-05-14T19:30:14.274Z"
+  "createdAt": "2026-05-14T19:30:14.274Z",
+  "promotedAt": "2026-05-14T20:04:11.584Z"
 }

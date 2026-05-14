@@ -4,8 +4,8 @@
   "sourceRepo": {
     "name": "canvas-helper",
     "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
-    "commitSha": "0ac1b4e9d7edc54ead140094d4d6c637448a689a",
-    "branch": "main"
+    "branch": "main",
+    "commitSha": "0ac1b4e9d7edc54ead140094d4d6c637448a689a"
   },
   "candidateType": "regression_eval",
   "scope": "global",
@@ -51,10 +51,11 @@
     }
   },
   "requiresHumanApproval": true,
-  "status": "pending",
+  "status": "promoted",
   "privacy": {
     "redactionStatus": "clean",
     "redactionNotes": []
   },
-  "createdAt": "2026-05-14T19:30:14.275Z"
+  "createdAt": "2026-05-14T19:30:14.275Z",
+  "promotedAt": "2026-05-14T20:04:12.161Z"
 }

@@ -43,10 +43,11 @@
     }
   },
   "requiresHumanApproval": true,
-  "status": "pending",
+  "status": "promoted",
   "privacy": {
     "redactionStatus": "clean",
     "redactionNotes": []
   },
-  "createdAt": "2026-05-14T19:30:14.279Z"
+  "createdAt": "2026-05-14T19:30:14.279Z",
+  "promotedAt": "2026-05-14T20:04:12.761Z"
 }

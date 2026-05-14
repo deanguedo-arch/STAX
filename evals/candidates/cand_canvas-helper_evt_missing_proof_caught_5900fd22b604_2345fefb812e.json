@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "sidecar-promoted-candidate-v1",
+  "promotedAt": "2026-05-14T20:04:11.191Z",
+  "decision": {
+    "candidateId": "cand_canvas-helper_evt_missing_proof_caught_5900fd22b604_2345fefb812e",
+    "classification": "proof_boundary_rule",
+    "recommendedAction": "hold_local",
+    "promotable": false,
+    "strengthScore": 4,
+    "strengthLabel": "moderate",
+    "blockers": [
+      "no test backing"
+    ],
+    "boosters": [
+      "real-run backed",
+      "cross-repo reusable"
+    ],
+    "recommendedQueueType": "trace_only",
+    "promotionTarget": "none",
+    "reason": "The candidate defines a reusable proof boundary that should be replay-tested. It remains local evidence for now because no test backing.",
+    "requiredEvidence": [
+      "source trace",
+      "original report or command evidence"
+    ],
+    "expectedFutureBehaviorChange": "No durable behavior change until a reusable pattern is proven.",
+    "autoPromote": false,
+    "requiresHumanApproval": true
+  },
+  "candidate": {
+    "candidateId": "cand_canvas-helper_evt_missing_proof_caught_5900fd22b604_2345fefb812e",
+    "sourceEventId": "evt_missing_proof_caught_5900fd22b604",
+    "sourceRepo": {
+      "name": "canvas-helper",
+      "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+      "branch": "main",
+      "commitSha": "0ac1b4e9d7edc54ead140094d4d6c637448a689a"
+    },
+    "candidateType": "regression_eval",
+    "scope": "global",
+    "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+    "proposedArtifact": {
+      "destinationHint": "evals/candidates/",
+      "payload": {
+        "eventType": "missing_proof_caught",
+        "task": {
+          "taskId": "task_600f8c97f4bb",
+          "objective": "Read-only observer run for canvas-helper.\n\nGoal:\nAttach STAX to canvas-helper and collect safe local test/build proof without\nchanging source files, mutating external systems, migrating projects, or\nrunning destructive commands.\n\nCommands planned:\n- npm run typecheck\n- npm run build:studio\n\nAcceptance boundary:\nThis observer run may prove local typecheck/build status for the current dirty\nrepo state. It must not claim source correctness, UI correctness,\nexternal-delivery correctness, or course-content correctness.",
+          "finalOutcome": "needs_cleanup"
+        },
+        "stax": {
+          "verdict": "Reject",
+          "useful": true,
+          "falseAccept": false,
+          "falseBlock": false,
+          "usefulBlock": true,
+          "verifiedAccept": false
+        },
+        "evidence": {
+          "changedFileRoles": [
+            "unknown",
+            "docs",
+            "source"
+          ],
+          "commandProofStrengths": [
+            "local_stax_command_output",
+            "local_stax_command_output"
+          ],
+          "claimTypes": [
+            "implementation",
+            "test",
+            "behavior"
+          ],
+          "failurePatternIds": []
+        },
+        "rationale": "Current Codex turn capture does not contain the current STAX acknowledgement."
+      }
+    },
+    "requiresHumanApproval": true,
+    "status": "pending",
+    "privacy": {
+      "redactionStatus": "clean",
+      "redactionNotes": []
+    },
+    "createdAt": "2026-05-14T19:30:14.273Z"
+  }
+}

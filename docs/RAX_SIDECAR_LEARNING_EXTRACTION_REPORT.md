@@ -37,6 +37,27 @@ Candidate mix:
 - 16 global regression candidates from explicit sidecar learning events
 - 1 archetype regression candidate from latest sidecar status
 
+## Promotion Review Result
+
+After human approval, STAX promoted the reusable regression/archetype candidates only:
+
+- Promoted: 17 candidates
+- Destination: `evals/candidates/`
+- Queue record: `queues/sidecar_imports/promoted/`
+- Left pending: 10 Canvas Helper repo-memory candidates
+
+Promoted classes:
+
+- Missing-proof catches
+- Unsafe publish/deploy/release blocks
+- Course-deploy proof contract archetype
+
+Not promoted:
+
+- Canvas Helper repo-memory notes from Codex reports
+- Repo-specific task facts
+- Trace-only sidecar observations
+
 ## Lessons Extracted From Canvas Helper Status
 
 The status-derived candidate captured these reusable lessons:
