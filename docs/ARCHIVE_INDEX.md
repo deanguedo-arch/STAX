@@ -8,6 +8,12 @@ Historical reports are evidence records, not the source of truth for the current
 
 - [CURRENT_STATUS.md](./CURRENT_STATUS.md)
 
+## Current Operational Proof Reports
+
+- [Pattern Promotion Impact Report](./RAX_PATTERN_PROMOTION_IMPACT_REPORT.md)
+- [Operating Window Today Report](./RAX_OPERATING_WINDOW_TODAY_REPORT.md)
+- [Public Sidecar Attach Flow](./PUBLIC_SIDECAR_ATTACH_FLOW.md)
+
 ## Historical Campaign And Promotion Reports
 
 - [STAX 9.5 Promotion Report](./STAX_9_5_PROMOTION_REPORT.md)

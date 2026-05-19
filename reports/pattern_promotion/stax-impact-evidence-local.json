@@ -1,0 +1,1694 @@
+{
+  "schemaVersion": "stax-impact-evidence-bundle-v1",
+  "generatedAt": "2026-05-19T16:46:35.308Z",
+  "repo": {
+    "path": "/Users/deanguedo/Documents/GitHub/STAX",
+    "name": "STAX",
+    "branch": "main",
+    "head": "40978543f62801186c8117cded73b91f8b41b6cb",
+    "dirtyStatus": " M docs/ARCHIVE_INDEX.md\n M docs/CURRENT_STATUS.md\n M package.json\n M src/index.ts\n M src/projectControl/ProofSurfaceMatcher.ts\n M tests/proofSurfaceMatcherAdversarial.test.ts\n?? docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md\n?? fixtures/pattern_promotion/\n?? reports/pattern_promotion/\n?? scripts/runPatternPromotionImpact.ts\n?? scripts/staxExportImpactEvidence.ts\n?? src/learning/PatternPromotionImpactSchemas.ts\n?? src/learning/PatternPromotionImpactTracker.ts\n?? tests/patternPromotionImpactTracker.test.ts"
+  },
+  "stax": {
+    "commit": "40978543f62801186c8117cded73b91f8b41b6cb",
+    "sidecarProtocolVersion": "stax-project-control-protocol-v1"
+  },
+  "task": "Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\n\nAcceptance boundary:\n- Answer as process guidance only.\n- Do not change STAX runtime behavior.\n- Do not promote any policy, schema, eval, memory, or training data.\n- Do not claim implementation proof beyond the commands actually run in this turn.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-14T20:23:45.947Z\",\n  \"repo\": \"STAX\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/STAX\",\n  \"branch\": \"main\",\n  \"commitSha\": \"85a0621974ceb8961b25aa3e8ac018b7a36d396b\",\n  \"task\": \"Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\\n\\nAcceptance boundary:\\n- Answer as process guidance only.\\n- Do not change STAX runtime behavior.\\n- Do not promote any policy, schema, eval, memory, or training data.\\n- Do not claim implementation proof beyond the commands actually run in this turn.\",\n  \"verdict\": \"Provisional\",\n  \"exitCode\": 2,\n  \"why\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\",\n  \"verified\": [\n    \"No working-tree diff is currently present.\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Diff audit: accept.\",\n    \"Command evidence classifier: strong_local_proof for npm run typecheck.\",\n    \"Claim-to-proof: behavior claim is fully supported.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_20_32_110Z_328e123c6385.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_20_32_110Z_328e123c6385 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_18_54_427Z_31b060f341fa.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_18_54_427Z_31b060f341fa matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_18_03_975Z_092594e366f2.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_18_03_975Z_092594e366f2 matches the current auditable worktree.\",\n    \"Historical command evidence ignored for current proof because npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimExtractionHardening.test.ts tests/sidecarHarvestPromote.test.ts tests/proofStrengthGate.test.ts tests/evidenceGroundingGate.test.ts tests/sidecarTurnCompliance.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfacePack.test.ts tests/repoProofSurfaceRegistry.test.ts is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because npm run stax:harvest -- --from /Users/deanguedo/Documents/GitHub/canvas-helper is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because npm test -- tests/cliProofGate.test.ts tests/sidecarAttachGate.test.ts is wrong_commit.\",\n    \"Earlier failed command evidence exists but is superseded by a later passing npm test run.\",\n    \"Proof strength: Strong (0.86) - Available proof is strong enough for this claim type.\",\n    \"Fresh STAX sidecar heartbeat is present (44120ms old).\",\n    \"Fresh Codex turn capture is present for session 019e2820-9d25-7e93-b499-c04958e2fa0d with 16 message(s).\"\n  ],\n  \"weak\": [\n    \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"unverified\": [],\n  \"risk\": [],\n  \"oneNextAction\": \"Ask Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.\",\n  \"codexPrompt\": \"STAX Sidecar rejected or held this task because proof is incomplete.\\n\\nDo exactly one cleanup pass:\\nAsk Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.\\n\\nAddress these proof gaps:\\n- No specific unverified item was recorded.\\n\\nDo not broaden scope. Do not claim tests passed without local command evidence. Update .stax/codex-report.md, then stop.\\nRisk to avoid: fake-complete reporting.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"implementation_complete\",\n    \"claimText\": \"Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\\n\\nAcceptance boundary:\\n- Answer as process guidance only.\\n- Do not change STAX runtime behavior.\\n- Do not promote any policy, schema, eval, memory, or training data.\\n- Do not claim implementation proof beyond the commands actually run in this turn.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-14T20-22-39-241Z_5861 337f33d4 8e270746\\n\\nObjective:\\nExplain, in simple fifth-grade-level steps, how STAX should assess whether an agent actually did what it claimed.\\n\\nFiles changed:\\n- .stax/task.md\\n- .stax/codex-report.md\\n- .stax sidecar status/proof artifacts generated by observer preflight\\n- .stax command-evidence pointer files generated by `stax:collect`\\n\\nTests added:\\n- None. This turn is a conceptual/process explanation only.\\n\\nCommands run:\\n- `sed -n '1,220p' .stax/turn-contract.json`\\n  - exitCode: 0\\n- `sed -n '1,220p' .stax/status.json`\\n  - exitCode: 0\\n- `sed -n '1,220p' .stax/next-codex-prompt.md`\\n  - exitCode: 0\\n- `sed -n '1,160p' .stax/task.md`\\n  - exitCode: 0\\n- `rg -n \\\"proof|confidence|completion|claim|Evidence Required|Fake-Complete|process|outcome\\\" /Users/deanguedo/.codex/memories/MEMORY.md`\\n  - exitCode: 0\\n- `rg -n \\\"stax:preflight|preflight|sidecar:refresh|stax:collect\\\" package.json`\\n  - exitCode: 0\\n- `sed -n '1,240p' scripts/staxPreflight.ts`\\n  - exitCode: 0\\n- `git status --short`\\n  - exitCode: 0\\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/STAX --mode observer --boundary handoff`\\n  - exitCode: 0\\n  - recorded verdict: Reject in observer mode\\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\\n  - exitCode: 0\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_18_03_975Z_092594e366f2\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_18_54_427Z_31b060f341fa\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_20_32_110Z_328e123c6385\\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/STAX --mode observer --boundary handoff`\\n  - exitCode: 0\\n  - recorded verdict: Provisional in observer mode\\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\\n  - exitCode: 0\\n\\nCommand output summary with exit codes:\\n- Current turn contract read successfully and required acknowledgement is recorded above.\\n- Initial STAX status read successfully; the first observed verdict was `Accept` for the prior repo state.\\n- The first observer preflight recorded `Reject` because command evidence for smoke/eval/typecheck/test was stale and tied to an older commit.\\n- `.stax/task.md` was narrowed to the current conceptual explanation task.\\n- `stax:sidecar:refresh` refreshed the heartbeat/current-turn artifacts.\\n- Fresh command evidence was collected for current commit `85a0621974ceb8961b25aa3e8ac018b7a36d396b`.\\n- `npm run smoke:stax`, `npm run rax -- eval`, `npm run typecheck`, and `npm test` all exited 0 through `stax:collect`.\\n- The second observer preflight recorded `Provisional`; command proof was strong and no unverified proof gaps remained, but heartbeat/current-turn freshness was stale before the final refresh.\\n\\nWhat is verified:\\n- The user asked for a plain-language process explanation, not an implementation change.\\n- No STAX runtime behavior was intentionally changed.\\n- The required repo commands have fresh local STAX evidence on the current commit and exited 0.\\n- The stale-proof gap identified by observer preflight was addressed with new command evidence.\\n\\nWhat is weak/provisional:\\n- This answer is process guidance. It does not itself prove an arbitrary future agent outcome.\\n- The initial observer preflight rejected before the fresh command evidence was collected.\\n- The second observer preflight was provisional due to sidecar heartbeat/current-turn freshness before the final refresh.\\n\\nWhat is unverified:\\n- No new STAX evaluator, schema, CLI behavior, or runtime behavior was added or modified.\\n- The final answer has not been promoted into policy, memory, evals, schemas, or training data.\\n\\nRisks:\\n- A simple explanation can make proof sound easier than it is; the final answer should preserve the distinction between \\\"the agent said it\\\" and \\\"local evidence proves it.\\\"\\n- STAX sidecar artifacts were generated locally as proof/reporting state and are not product changes.\\n\\nOne next action:\\n- Use the simple process as the checklist for future outcome claims: claim, evidence, replay, compare, risk check, verdict, record.\",\n    \"rawScore\": 0.86,\n    \"finalScore\": 0.86,\n    \"label\": \"Strong\",\n    \"capApplied\": [],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"Available proof is strong enough for this claim type.\",\n    \"missingProof\": [],\n    \"weakProof\": [\n      \"Weak command claim: npm run stax:preflight -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:sidecar:refresh -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: package.json.\",\n      \"Grounded file_path claim: scripts/staxPreflight.ts.\",\n      \"Grounded command claim: npm run smoke:stax.\",\n      \"Grounded command claim: npm run rax -- eval.\",\n      \"Grounded command claim: npm run typecheck.\",\n      \"Grounded command claim: npm test.\",\n      \"Grounded completion claim: - `rg -n \\\"proof|confidence|completion|claim|Evidence Required|Fake-Complete|process|outcome\\\" <path>`.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Local STAX command evidence passed: npm test exited 0.\",\n      \"Local STAX command evidence passed: npm run typecheck exited 0.\",\n      \"Local STAX command evidence passed: npm run rax -- eval exited 0.\",\n      \"Local STAX command evidence passed: npm run smoke:stax exited 0.\",\n      \"Repo evidence enumerated source files.\",\n      \"Release preflight proof was supplied.\"\n    ],\n    \"oneNextAction\": \"No proof-strength correction is needed for this claim.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-14T20:23:45.947Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-14T20-22-39-241Z_5861 337f33d4 8e270746\",\n    \"contractTurnId\": \"turn_2026-05-14T20-22-39-241Z_5861\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-14T20-23-45-951Z_e623 5bff2e3f 8e270746\n\nObjective:\nFix the Canvas Helper sidecar visual-proof workflow so agents can collect screenshot proof directly, then use it on Canvas Helper to repair the actual course-shell regressions STAX exposed and reach an accepted sidecar verdict.\n\nFiles changed:\n- `package.json`\n- `scripts/staxCollectVisual.ts`\n- `src/sidecar/VisualEvidenceCollector.ts`\n- `src/sidecar/StaxGate.ts`\n- `src/sidecar/AttachStax.ts`\n- `src/sidecar/UpgradeSidecar.ts`\n- `src/evidence/VisualProofAnalyzer.ts`\n- `src/projectControl/ProjectControlEvidencePacket.ts`\n- `src/projectControl/ProjectControlProofStack.ts`\n- `tests/visualProofAnalyzer.test.ts`\n- `tests/sidecarAttachGate.test.ts`\n- `tests/projectControlProofStackIntegration.test.ts`\n- `tests/sidecarTurnCompliance.test.ts`\n- `docs/COMMANDS.md`\n- `docs/CODEX_WORKFLOW.md`\n- `docs/PUBLIC_SIDECAR_ATTACH_FLOW.md`\n- Canvas Helper sidecar/course files were also updated under `/Users/deanguedo/Documents/GitHub/canvas-helper`.\n\nTests added:\n- Visual proof analyzer regression for generic layout screenshots without accessibility claims.\n- Sidecar attach/gate coverage for current screenshot proof, stale screenshot rejection, and stale visual history being superseded by current proof.\n- Project-control proof-stack coverage proving verified e2e command evidence can satisfy `behavior_test`, while typecheck-only evidence cannot.\n- Sidecar turn-compliance gate coverage proving current-turn capture lag is non-blocking when the report has the current ACK.\n\nCommands run:\n- `npm test -- tests/visualProofAnalyzer.test.ts tests/sidecarAttachGate.test.ts tests/projectControlProofStackIntegration.test.ts tests/projectControlEvidencePacket.test.ts`\n  - exitCode: 0\n- `npm test -- tests/projectControlProofStackIntegration.test.ts tests/projectControlEvidencePacket.test.ts tests/claimProofMapping.test.ts`\n  - exitCode: 0\n- `npm test -- tests/sidecarAttachGate.test.ts tests/projectControlProofStackIntegration.test.ts`\n  - exitCode: 0\n- `npm test -- tests/sidecarTurnCompliance.test.ts tests/sidecarAttachGate.test.ts tests/projectControlProofStackIntegration.test.ts`\n  - exitCode: 0\n- `npm run typecheck`\n  - exitCode: 0\n- `npm test`\n  - exitCode: 0\n  - result: 207 files, 1062 tests passed\n- `npm run smoke:stax`\n  - exitCode: 0\n- `npm run rax -- eval`\n  - exitCode: 0\n  - result: 16/16 passed, 0 critical failures\n- Canvas Helper STAX collect/gate commands were run from this repo against `/Users/deanguedo/Documents/GitHub/canvas-helper`; final `stax:gate` exited 0 with `Status: Accept`.\n\nCommand output summary with exit codes:\n- The STAX sidecar visual collector captures or imports screenshots, writes `.stax/visual-proofs/manifest.json`, hashes artifacts, records worktree fingerprints, and exposes `stax:collect-visual`.\n- Canvas Helper fresh STAX command collection first exposed 6 real focused test failures; those were repaired in the Canvas Helper workspace.\n- Canvas Helper focused course tests, project verifiers, typecheck, build, project E2E, smoke E2E, and fresh visual screenshots all passed or verified through sidecar evidence.\n- Canvas Helper final `stax:gate` returned `Accept`; proof strength was `Audit-grade (0.99)`, with current command evidence and current visual evidence verified.\n- STAX full validation passed after the proof-stack and sidecar-gate patches.\n\nWhat is verified:\n- The sidecar now gives agents a concrete command to collect visual proof instead of relying on manual screenshots or report text.\n- STAX no longer treats stale historical screenshots as a downgrade when newer current screenshots exist.\n- STAX can accept verified e2e/focused test command evidence as behavior proof without requiring a changed test file in the diff.\n- Current-turn capture lag is recorded as a non-blocking warning when the Codex report has the current ACK.\n- Canvas Helper reached sidecar `Accept` with fresh proof for the actual current worktree.\n\nWhat is weak/provisional:\n- Canvas Helper protocol status still records a warning for capture lag, but the final sidecar verdict is Accept because the report ACK is present.\n- Proof strength reports still include a harmless URL/file-path grounding limiter for localhost preview paths; it did not cap or block the final verdict.\n\nWhat is unverified:\n- No live Firebase deploy/export was run for Canvas Helper.\n- No commit or push was performed in this turn.\n\nRisks:\n- Canvas Helper still has sidecar-generated dirty files and should be committed with intentional staging, not swept wholesale.\n- Future visual proof should be collected after source edits; otherwise worktree fingerprinting will correctly mark screenshots stale.\n\nOne next action:\n- Review the dirty file sets in STAX and Canvas Helper, then commit the STAX visual-proof/proof-stack changes and the narrow Canvas Helper course-shell repair separately.\n",
+  "commandEvidence": [
+    {
+      "evidenceId": "cmd_2026-05-12T03_53_38_885Z_b9189adddec0",
+      "command": "npm run stax:dogfood:observer",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "e4d944d7637e1ca51f03124546f13353288286ebd9ea0123d432930792cc87b2",
+      "recordedAt": "2026-05-12T03:53:39.117Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T03_54_51_597Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "2dc467ad8d13327e1eb7dda674f130c1d08eb62e86693efa16b1a206e97a45f0",
+      "recordedAt": "2026-05-12T03:54:53.403Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T03_55_37_622Z_c34e8e9361b4",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "897bf4d290809bdd57b58161426fc014cb4f454397206abb111607b8bcae284a",
+      "recordedAt": "2026-05-12T03:55:39.778Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T03_56_23_536Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "c403d0ffa9215e1660198359ba542e0b6b31e1b604cfbaee53666080744c65f4",
+      "recordedAt": "2026-05-12T03:56:38.295Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T03_58_10_350Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "9cf981694dc66922abcce36b3c0bb1189d71a1eb5ccafa0f72b42c56b4a201cc",
+      "recordedAt": "2026-05-12T03:58:10.857Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T03_58_59_495Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "aa58e876cf03caaed441cfb9427e37645fbab7c3dddf5c1acdd5eedf970c1008",
+      "recordedAt": "2026-05-12T03:59:00.177Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T03_59_47_360Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "61988234917bf8e246b0631da0eacf01cd829e7d72c17a2711230acd2497fb4f",
+      "recordedAt": "2026-05-12T03:59:53.773Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_00_39_670Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "26eb3462c53bf602ee9ba0fb942ca50c61107368b8238eb3c19a43b69daee097",
+      "canonicalEvidenceHash": "c4b922ab6769b208f74bcfd985994c4273f86b2b47398c9d650e5f39ff04f611",
+      "recordedAt": "2026-05-12T04:01:04.483Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_07_57_631Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "900016d00a690fbcbebf8cbbc78c9bf63f9bedd8b76e9888d76014ebb6965d56",
+      "recordedAt": "2026-05-12T04:07:59.359Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_08_43_271Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "206aa1332826386c56a0f435e3765d89ec4567132fc6b5fefab5c56c5637072f",
+      "recordedAt": "2026-05-12T04:08:50.168Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_09_34_198Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "baca99614f15d0b4a177e9794e766b9aecdf5874ebbc2e286adda25ed2a3c836",
+      "recordedAt": "2026-05-12T04:09:48.944Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_10_39_191Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "6f87ec70407116ec359f364a473a507ef95b335f291dbf940a8700121a2d6d63",
+      "recordedAt": "2026-05-12T04:10:39.705Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_11_25_577Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "2112bf337bc71a1a95355379514e08c61423c4ef82e408ed67cedd196841f6a6",
+      "recordedAt": "2026-05-12T04:11:26.241Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_12_15_972Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "a7a838517bfd9b8f56bf731d5e0a9b086bcb68eaf51ed67bf25663397d14cc8b",
+      "recordedAt": "2026-05-12T04:12:24.965Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_13_11_664Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4867bdeae2d3dfcd87f5a0ba9b086a9c005fcbe4e75946e267008f3e4450bc9c",
+      "canonicalEvidenceHash": "e01a83be3af5202c38a360d9fbba1271654cd9af23b90721cf273cd23d6d2af1",
+      "recordedAt": "2026-05-12T04:13:41.174Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_30_51_622Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "d21c09ef720deda2566a15497653a12efa6ec159b5618825c2d59afcf7955ef3",
+      "recordedAt": "2026-05-12T04:30:53.342Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_31_50_669Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "8056f95ff784c54e07a7d58c092200110fa7cd4ecca46ac2d87d5eeb00b54352",
+      "recordedAt": "2026-05-12T04:32:01.259Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_32_48_061Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "783a388d0e51e1cd06e71554c99cda6ed2edcf5bf70a051991b5d9cdb2fb6ff6",
+      "recordedAt": "2026-05-12T04:33:18.025Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_34_11_312Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "2c108d884de57394a92bda15ea443fc3ff0d90f599b22ae99dd0d44c92fa670b",
+      "recordedAt": "2026-05-12T04:34:12.760Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_35_07_649Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "117e336b1566da18ea61f46de2c75a39e47e0ad0b5569bab44e718744868ca06",
+      "recordedAt": "2026-05-12T04:35:08.387Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_35_55_977Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "b8db8d0d9c5e7d57a45504f0ab394138ced3b64a77b54eee5122767a9c73fd7d",
+      "recordedAt": "2026-05-12T04:36:04.651Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_36_51_986Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33b367207953dc17354401511e72e0036f3c306ae78b173a5242702c8842cf37",
+      "canonicalEvidenceHash": "9255fd0cb93655c336db47bf5132ccc3ee7b070c9fe973479c1a6014c817c38e",
+      "recordedAt": "2026-05-12T04:37:24.658Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_39_44_443Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "dd942622bd57f5262a028d7220ea3950a2bebd62237b846d0eb9da3ea4c33107",
+      "recordedAt": "2026-05-12T04:39:47.349Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_40_41_235Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "61b85b3d9138576eaba71a1d32bfea7b7065273fcf9600c5ca540c0374a6f15a",
+      "recordedAt": "2026-05-12T04:40:52.093Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_41_42_254Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "5a891de201a92ce26bfde42db10642e8610598bdb9835688a0051786b8bfc099",
+      "recordedAt": "2026-05-12T04:42:09.653Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_43_45_263Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "ab6729752daac36fe19128dbd054ba7c72c4c9cdc6c87fc440e23daa31989b89",
+      "recordedAt": "2026-05-12T04:43:45.777Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_44_35_843Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "de4ab188c3ef192a58d39d01f7c175678783ce61de295b3797bc5cb7607ad9eb",
+      "recordedAt": "2026-05-12T04:44:36.505Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_45_29_603Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "f2712b69c23758714fe2b9cf8428d5333b346d4929ac7f924344f277091ff16f",
+      "recordedAt": "2026-05-12T04:45:40.890Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T04_46_35_915Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8739b86fe3cd088f576950364c7caab46c74530911adae34d9fcdf92a5615aa6",
+      "canonicalEvidenceHash": "14855310e3303ace8a3cce063c07c5a885ed02a3a50369d9c96fa5dbd9091961",
+      "recordedAt": "2026-05-12T04:51:35.960Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T05_41_01_490Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e72cffa95dfeb6f404f4cb1bd9c613423b0f319e804a8f2f6e6b662307a0a4a9",
+      "canonicalEvidenceHash": "7d8ed42af409c346d2a4d564366f05ca732455c7aa19d80cd053006e227abe06",
+      "recordedAt": "2026-05-12T05:41:03.442Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T06_00_22_460Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e72cffa95dfeb6f404f4cb1bd9c613423b0f319e804a8f2f6e6b662307a0a4a9",
+      "canonicalEvidenceHash": "117081cbf354d5d10c352693ff5e244a10a1befb84de8a0dbb8dcfdeea9bf689",
+      "recordedAt": "2026-05-12T06:15:45.544Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T08_31_35_233Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e72cffa95dfeb6f404f4cb1bd9c613423b0f319e804a8f2f6e6b662307a0a4a9",
+      "canonicalEvidenceHash": "1096fbab45314d8a6c925de5f9be556e67fe36e755f44f2f78b8510c1523abd2",
+      "recordedAt": "2026-05-12T08:48:41.598Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_08_49_536Z_fd65c7564b56",
+      "command": "./node_modules/.bin/vitest run tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e72cffa95dfeb6f404f4cb1bd9c613423b0f319e804a8f2f6e6b662307a0a4a9",
+      "canonicalEvidenceHash": "a38485e6442e86c3f1a31be94b906368864842ac4593e4d80cd2d71474dda4d7",
+      "recordedAt": "2026-05-12T11:08:56.865Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_11_02_357Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "1e6acb416f9357c49ff6eb35bb549800ac6012c465f4c94c71470d2dcc75145b",
+      "recordedAt": "2026-05-12T11:11:09.716Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_11_58_885Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "defc82bd58e03a0459e3f9df7391b421148249e384ec07d33a3b38305edc5f66",
+      "recordedAt": "2026-05-12T11:12:00.704Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_12_46_114Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "4f08b9c8ead3794cb53f70dbd8f5963445137fa11d8602b9c1885f2b26f8b156",
+      "recordedAt": "2026-05-12T11:13:01.455Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_13_50_334Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "5d0e39333d512673e9899e11a729067fd9aa06a31bc5689289399cf618eb882e",
+      "recordedAt": "2026-05-12T11:13:50.865Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_14_41_423Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "f248e629e5056228b63be9a625de44d3bded2b51f350b03466beabbcdb7e0855",
+      "recordedAt": "2026-05-12T11:14:42.073Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_15_26_561Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "dc18be620ca8b835691b40d9ae7f2a9107eaffe89df07f5b10f1de6564e1adff",
+      "recordedAt": "2026-05-12T11:15:32.938Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_16_20_320Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "24c5d4c6a804e5d99ca5dccffd2f9afe52d551468afadd3d504bbedb0b5f4b17",
+      "canonicalEvidenceHash": "96b616ee1968e7706963e9c65b948ee20d8456e4786af77f9c48bd2aa6d5c54f",
+      "recordedAt": "2026-05-12T11:16:43.406Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_22_02_892Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "5ddafca54b01e66c6defc73a886eaa2c72fcaf96b3a64a9c696db4b92efc9d65",
+      "canonicalEvidenceHash": "1dba36105bc9eb39453492446e9e162aa24ccf15d548df8b5d72fbd694afc4e1",
+      "recordedAt": "2026-05-12T11:22:04.694Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_22_54_135Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "5ddafca54b01e66c6defc73a886eaa2c72fcaf96b3a64a9c696db4b92efc9d65",
+      "canonicalEvidenceHash": "acb45ab17cc21ac30034a303c4b9cbcbb0b579745410d30bc423179e0f40e301",
+      "recordedAt": "2026-05-12T11:23:01.623Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_24_14_185Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "5325859f70477cc1d250b5ab4e5369987de7613ab62d328fc820071d68eaeb30",
+      "recordedAt": "2026-05-12T11:24:16.082Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_25_06_265Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "3e82dbd373ae773273f658b664bef9062a2b348818aa01c8e38e7b3ac593f9a2",
+      "recordedAt": "2026-05-12T11:25:14.703Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_26_06_208Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "0a13489435b785f663b11d654107b124a39c2d1617cacf527decd32ec830e4a8",
+      "recordedAt": "2026-05-12T11:26:23.907Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_27_26_373Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "7e8f1fd00a50253bf8dbfe7d8a83848ca5252454e707009353aacf817a70f8e5",
+      "recordedAt": "2026-05-12T11:27:26.920Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_28_18_262Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "fd51963a4fc7f6e7ea02f18e67d680002902bf3fdf19c2fc22681b2efd11e587",
+      "recordedAt": "2026-05-12T11:28:18.925Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_29_04_850Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "bd82bdd7ba0bbf13d554d38a9613eb7336c8c3451ffe0e90e48c616961cbf93b",
+      "recordedAt": "2026-05-12T11:29:10.773Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_30_30_587Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "723c05291d2abd51d4b6e36c0cce8937d9cc66ac3069e9937ffbbe9084cba3e8",
+      "canonicalEvidenceHash": "ceb551b3c67c25b3a0ea637936c29d048001f84bc342fabb03d85abb1066f7ba",
+      "recordedAt": "2026-05-12T11:46:33.017Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_49_16_298Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "05131a30415fa14f5d6d390aa2819d24727de412a66e5fdaf972e105d415b4c2",
+      "recordedAt": "2026-05-12T11:49:18.161Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_50_16_558Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "fab39466c1db57a38c0649ffd48fdc15efa540ad7540d6128b2fb14a8a6a3778",
+      "recordedAt": "2026-05-12T11:50:27.249Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_52_51_863Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "36f57f689b03228f28c27e2408ca11081b42e1f7f23c49dbbda355e0de18cefe",
+      "recordedAt": "2026-05-12T11:53:17.674Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_54_11_777Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "9fc16a7bc3e8465b1defb84bb4ab795cc1e1c6c043617927b0486b799f8ba655",
+      "recordedAt": "2026-05-12T11:54:12.287Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_55_07_597Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "11298f10f5545fab8280b80e41018e3e64310057beef6740aa0ee713cb04ade3",
+      "recordedAt": "2026-05-12T11:55:08.231Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_56_05_667Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "2399a1478ffcf40b2757b326fe422e627dc09e9a1f45f193d27cfcfa6cd8946e",
+      "recordedAt": "2026-05-12T11:56:19.296Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T11_57_13_795Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "733356d80ac6e84760e7033b189be63cb35d1a56175546cc09b8533d1c0a4f75",
+      "canonicalEvidenceHash": "c2c1dc2394c72afaa2aaf1abd0ff1b51de1b310b46c7a01a9c2ba83ce1d6d20d",
+      "recordedAt": "2026-05-12T11:57:52.956Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_26_02_875Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "fbb49db2cbb75cb4aec31f128d697bbe17107a1bf0cd2af3013046fde6413c52",
+      "recordedAt": "2026-05-12T12:26:04.782Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_27_37_533Z_7a0c8cb3d975",
+      "command": "npm test -- tests/staxDogfoodLeague.test.ts tests/dogfoodLedgerIntegrity.test.ts tests/rolloutPhaseGate.test.ts tests/rolloutPhaseArtifacts.test.ts tests/staxSoftGateTrial.test.ts tests/commandRiskPolicy.test.ts tests/preflightApproval.test.ts tests/productSurfaceArtifacts.test.ts tests/limitedHardGatePolicy.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "f1618b26aee0bb563a64bea33c2942a1482f428c69c1fa3f972673a54605d01c",
+      "recordedAt": "2026-05-12T12:27:38.462Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_37_46_620Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "1ae8b90ac72d51251076e5da8bcf6bcc8bb792e252c5c1712bc6cf90950a5c3f",
+      "recordedAt": "2026-05-12T12:38:01.058Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_41_05_937Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "4bac9b0ca47f3126fed1bc26a7a22147a0e2c8ea04ea8ff049cb476e18724307",
+      "recordedAt": "2026-05-12T12:41:06.477Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_41_55_359Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "6e7911662b2dcba6b903cf8d6ac660ef0c74da5687f066d721233931cc311320",
+      "recordedAt": "2026-05-12T12:41:56.056Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_42_43_532Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "fde96cc10a27acb24a869c1972e011137baea6bca21f1f4060f074d9ac5ca44f",
+      "recordedAt": "2026-05-12T12:42:49.868Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_43_36_504Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "5aa9ae96f7073d12497a505d7795287e3daf20c612c4dcee845b5c00b02acc0b",
+      "recordedAt": "2026-05-12T12:43:58.650Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T12_52_01_705Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "84a664cd3deef788c7ba49b0cdaa5ca5a3b4bcba153c6fe5b3bc778c225f48ea",
+      "canonicalEvidenceHash": "5e751738bda1e82f988acd670dafe8cc8d0a2b5fdc7f58ff9710f6300246a2f0",
+      "recordedAt": "2026-05-12T12:52:09.194Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_22_34_516Z_c2a8e3e0c806",
+      "command": "npm run stax:rollout:gate",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "fc39dd802542196fa78b7e3b28e5deffa653ad683a8c67377b372fd036995830",
+      "recordedAt": "2026-05-12T15:22:34.741Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_23_27_128Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "2d33f4b28a76444714a5752fc2c6523b68c22650d6dd1bab997818170b0851ff",
+      "recordedAt": "2026-05-12T15:23:29.053Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_24_21_637Z_3fe647692ed7",
+      "command": "npm test -- tests/commandRiskPolicy.test.ts tests/sidecarProtocolPreflight.test.ts tests/limitedHardGatePolicy.test.ts tests/rolloutPhaseGate.test.ts tests/rolloutPhaseArtifacts.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "cff6ac131df3dfa25e5b7eed177b5e182b14779fb4292c224f2a21c5e75129b3",
+      "recordedAt": "2026-05-12T15:24:23.372Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_27_39_337Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "3ae3a93763fdc64daba49b82915f1bac89e6b9da631221f462c4a02702d64d39",
+      "recordedAt": "2026-05-12T15:27:53.916Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_28_50_198Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "a043927ceeb8e077fdd659a1ad573831529b88fd4182f875ee80088212e10bdf",
+      "recordedAt": "2026-05-12T15:28:56.694Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_29_49_022Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "2f6c8cbbf137e9ebbf0546cbfa27752facc7f27b2489c4d83e8380c4220689b5",
+      "recordedAt": "2026-05-12T15:30:12.044Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_32_42_903Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "81c6942f3df7e0ca779ddfcafe09102d505ab01e8ed640778e101af2f938bbfa",
+      "recordedAt": "2026-05-12T15:32:43.404Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_36_11_171Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "fe79b60c1017de0bfde6ff65178854ccaf827f134b4d9d257a60295472ecbe1f",
+      "recordedAt": "2026-05-12T15:36:11.857Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T15_43_38_995Z_71da7dd10231",
+      "command": "npm test -- tests/claimExtractionHardening.test.ts tests/claimProofMapping.test.ts tests/staxTrialLeague.test.ts tests/sidecarAttachGate.test.ts tests/staxDogfoodLeague.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "4981c147be0f2942c9767938624b12d5bd8c5e00480b2bc2546bc258663ad8ff",
+      "canonicalEvidenceHash": "9b51b22c0b774a8eae843128aa3f30c9af28c6736b29f386439f43dfc9d47f1b",
+      "recordedAt": "2026-05-12T15:43:46.575Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_05_00_296Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "231cf2c0fc6bf91fa37c390289af252177fbb15862e4a28de8954c4ec8af821a",
+      "recordedAt": "2026-05-12T17:05:02.238Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_05_51_676Z_a50f06997c59",
+      "command": "npm test -- tests/claimProofMapping.test.ts tests/claimExtractionHardening.test.ts tests/staxTrialLeague.test.ts tests/prArtifactTrial.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "99603ba6e3e0c5c4bcfc3671e3a554ffba5e959448b6769934f0f031bbc134e5",
+      "recordedAt": "2026-05-12T17:05:52.553Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_06_44_065Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "5b03cf967403c37dac3d6cd21f3b897c83224364bd0ec5f4ce1a04b608cbc6ce",
+      "recordedAt": "2026-05-12T17:06:59.596Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_07_51_053Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "8892aa8e8575891f5585e55bdf3f62b8846a0223e42c98e03a27635e7b2b68d6",
+      "recordedAt": "2026-05-12T17:07:57.579Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_08_49_326Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "2f046c6ce37352304538041df3fd7054e0e92c0f3a218b00048ea146f83ab4b3",
+      "recordedAt": "2026-05-12T17:09:12.524Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_10_03_443Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "75419ceb0dc61c23401ae54fd7df04780e87d821d7d97891c8ef62313012a42b",
+      "recordedAt": "2026-05-12T17:10:03.945Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_11_46_643Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fa7fa621a23a2864a838e0fb0a7797f20e57040af59a9967776de176c56fc5cb",
+      "canonicalEvidenceHash": "b81efd6c16ba0a1c6d69927f9d186bf5d2cbda2f3217d76696aef570c4d0d416",
+      "recordedAt": "2026-05-12T17:11:47.313Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_33_13_203Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "5299c79e2e610e9c3d9a751a72444bfaaa0cde6bd012178a2d813517abb3d9e4",
+      "recordedAt": "2026-05-12T17:33:15.098Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_34_11_153Z_940027771bb8",
+      "command": "npm test -- tests/claimProofMapping.test.ts tests/claimExtractionHardening.test.ts tests/staxTrialLeague.test.ts tests/prArtifactTrial.test.ts tests/sidecarAttachGate.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "b56d767f645c88f025293dc5565d7da8b56a57e4af51d26dcd1cdcf0a54edb33",
+      "recordedAt": "2026-05-12T17:34:13.795Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_35_00_686Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "fb0afe59697066313d7b54d8ac51d00127eb4b383403a69d087c81704231696c",
+      "recordedAt": "2026-05-12T17:35:15.089Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_36_08_821Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "ede260a25f3c7fd14e270a98163e8efc9d16634e6bdd01d9214e1d41e99b2fc2",
+      "recordedAt": "2026-05-12T17:36:15.151Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T17_37_05_215Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "878c721f5fb2ff5a61000ccb760edb3c658e73ba6a937b917258260e13b8f91b",
+      "recordedAt": "2026-05-12T17:59:09.612Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T18_03_56_867Z_12c148717ffb",
+      "command": "npm run validate:staxcore:strict",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "7bb35677e16e08f394a2b91fbfc1946a1e09fada2619bd4f61ffd3f8b2beaf9e",
+      "recordedAt": "2026-05-12T18:04:19.236Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T18_05_14_747Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "2a75400b37d54c250d003c0893b72d5b60644c4c3d6a46c5d4c9668edbda0d1a",
+      "recordedAt": "2026-05-12T18:05:15.289Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T18_06_08_389Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "db18b5cd62af9b7048796d624b6077737daa392ff44f4e5aa56bd31b03098e6f",
+      "canonicalEvidenceHash": "7a393dbbc0343ebc7ccce21c440b870a876448a2a3b354aa2d48e946923ece68",
+      "recordedAt": "2026-05-12T18:06:09.087Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_33_13_559Z_04063d4c01bb",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "082047f888df9928966758fb2d02ac0bed28c112c5d444e947b226ec6040a02c",
+      "canonicalEvidenceHash": "7682b011a26cd23382fcb7c3b490099dfa4b9fac3b4bb5fa860f7d57a309a40f",
+      "recordedAt": "2026-05-13T01:33:14.016Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_33_13_559Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "082047f888df9928966758fb2d02ac0bed28c112c5d444e947b226ec6040a02c",
+      "canonicalEvidenceHash": "1c204008bcda733bfd3fa2baca3663006756d54c3d156a9546a2ed141526b637",
+      "recordedAt": "2026-05-13T01:33:16.014Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_35_09_719Z_04063d4c01bb",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "13a682b26859ca29a56291cb8eca3655f3a21fefe176aa7a69776de0d1f7eece",
+      "canonicalEvidenceHash": "9e36e519e80a64ee9ba42879afc3bace24df2b3a095bb7e92b462c6485b21fcd",
+      "recordedAt": "2026-05-13T01:35:10.155Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_35_09_719Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "13a682b26859ca29a56291cb8eca3655f3a21fefe176aa7a69776de0d1f7eece",
+      "canonicalEvidenceHash": "45c663997ab8df44a19a240464149f09227a79b5bf2d0bf47c55ce76198a5bdf",
+      "recordedAt": "2026-05-13T01:35:12.594Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_37_32_642Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fb47669b4e48723b96868ed153d570dfc4ecc26f5f977e104f9b6b801480fa4f",
+      "canonicalEvidenceHash": "d9a9d8376328d3cf7f5f24bfd62fbc68965b856c9b9261b25412fd5286139dfb",
+      "recordedAt": "2026-05-13T01:37:34.668Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_54_21_036Z_5996a18fe551",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fb47669b4e48723b96868ed153d570dfc4ecc26f5f977e104f9b6b801480fa4f",
+      "canonicalEvidenceHash": "91da936f94585a56f3e29047e7860183ace2723d2b4fc85b13d335a91600fcb3",
+      "recordedAt": "2026-05-13T01:54:22.123Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_59_51_147Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b90f93053769b6e7503eebbdb8c2cdfeaeed91b96115a25df76c72037fb0222e",
+      "canonicalEvidenceHash": "331e51ac763acca3cc31daf60a405e9fc4ead4c43b2d98cdd89ca547411051cd",
+      "recordedAt": "2026-05-13T01:59:53.298Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_00_58_097Z_5996a18fe551",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b90f93053769b6e7503eebbdb8c2cdfeaeed91b96115a25df76c72037fb0222e",
+      "canonicalEvidenceHash": "a72614ec1f2159c5adb0901fec0ab6d6ba63211ee5ce5627e89aaae8ac0b0985",
+      "recordedAt": "2026-05-13T02:00:59.134Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_02_53_185Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8359bd81dad9c23aa874967147ec518662d377275b1837d022f150073704924f",
+      "canonicalEvidenceHash": "9f07af1667f501438eafdaf5ac1de8ea4fa22561dd86dcd27edf50e551252f8a",
+      "recordedAt": "2026-05-13T02:02:55.258Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_04_03_345Z_5996a18fe551",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8359bd81dad9c23aa874967147ec518662d377275b1837d022f150073704924f",
+      "canonicalEvidenceHash": "2aec75c26a9f884a65279315c6d060ea4461254ec085f5f49dcb946b4671cdea",
+      "recordedAt": "2026-05-13T02:04:05.426Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_06_11_452Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "063b112fc9bf124fc106214fe73a797ffac88f66b0e2aed339409c494eef53e8",
+      "canonicalEvidenceHash": "88d0547749aa945d0d4de84433f9a6e4a45dbfea1f616275eb71edd1d336ec84",
+      "recordedAt": "2026-05-13T02:06:16.078Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_07_31_694Z_5996a18fe551",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "063b112fc9bf124fc106214fe73a797ffac88f66b0e2aed339409c494eef53e8",
+      "canonicalEvidenceHash": "f499f1d8aceaadc5da54c92c4a304f8257df1516a84b94ec6fb70979d2488356",
+      "recordedAt": "2026-05-13T02:07:34.455Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_10_04_203Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d1e1f2df63e4215df35e176a7cae985dc440eae14883b86216ba073129a56e32",
+      "canonicalEvidenceHash": "ebd4af4985180270d9fc88eb4f1ae3d5737a23a1dcfb8b31e9a0993776a08344",
+      "recordedAt": "2026-05-13T02:10:08.601Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_11_13_979Z_4d04cb7a479b",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts tests/sidecarWatchCollect.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d1e1f2df63e4215df35e176a7cae985dc440eae14883b86216ba073129a56e32",
+      "canonicalEvidenceHash": "0d7bc0ccea0e893fb2892407850306fd0f41c7fe119961ac7ccf66e75828778c",
+      "recordedAt": "2026-05-13T02:11:31.572Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_14_02_105Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ca0f38a0637f0dec518a2f1e3a9b2e7271f376b842fe646b8b01cfc83ce9befe",
+      "canonicalEvidenceHash": "89b37f8b9f96927b54296163fcdf9efd25cf4a4a0dcdf75b4e9a0052f7a677e2",
+      "recordedAt": "2026-05-13T02:14:06.114Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_19_31_466Z_d9cd616b6851",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ca0f38a0637f0dec518a2f1e3a9b2e7271f376b842fe646b8b01cfc83ce9befe",
+      "canonicalEvidenceHash": "0673e54ff5abbb6777325a9fe9191f7134d379fc27a717a804c3929110c85104",
+      "recordedAt": "2026-05-13T02:19:46.836Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_26_15_592Z_d9cd616b6851",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a6dad3c9288fa234bd3ac79e2037b151aeb09f3f63a18fe5f46cff9bb9563bc4",
+      "canonicalEvidenceHash": "f1f1b25559e7acda0b16248eac314c2a87a6b0b6325252cbc478de87bfc92e65",
+      "recordedAt": "2026-05-13T02:26:24.120Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_27_44_128Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a6dad3c9288fa234bd3ac79e2037b151aeb09f3f63a18fe5f46cff9bb9563bc4",
+      "canonicalEvidenceHash": "35419c087553582748c5691f2e53cb0bd1a7a9fa387d6329f3a0c9c31974adce",
+      "recordedAt": "2026-05-13T02:27:46.204Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_31_32_904Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "3e24b579f271fb25c701d348f36265b68eabffd9b95d88552b8e327c88643e7a",
+      "canonicalEvidenceHash": "48b3dedebab296acfcf989a8f72e79bc37b3a6aba1ca93ab22f7ed4f04f5f356",
+      "recordedAt": "2026-05-13T02:31:34.942Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_32_22_517Z_dbc1a3d77676",
+      "command": "npm test -- tests/commandEvidenceLedger.test.ts tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "3e24b579f271fb25c701d348f36265b68eabffd9b95d88552b8e327c88643e7a",
+      "canonicalEvidenceHash": "2284649854b440e304e980cbfc1583def02f360e231986478bee038a0954e251",
+      "recordedAt": "2026-05-13T02:32:36.875Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_35_01_498Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0cb8926d52e999909e725067101c6a599af8291f705f9d3324bb28dee99f0052",
+      "canonicalEvidenceHash": "eeaccb14eef5be91e613e3e30eca21b667ecc582f753e1663e1790aa5a429567",
+      "recordedAt": "2026-05-13T02:35:04.612Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_35_49_180Z_e74a24d6961a",
+      "command": "npm test -- tests/sidecarWatchCollect.test.ts tests/commandEvidenceLedger.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0cb8926d52e999909e725067101c6a599af8291f705f9d3324bb28dee99f0052",
+      "canonicalEvidenceHash": "4966ddef37d62c504fde5136de530625d13a3d89d990b25c19ab914462290872",
+      "recordedAt": "2026-05-13T02:36:07.454Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T02_37_52_072Z_dbc1a3d77676",
+      "command": "npm test -- tests/commandEvidenceLedger.test.ts tests/commandEvidenceIntelligence.test.ts tests/sidecarLearningEvent.test.ts tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0cb8926d52e999909e725067101c6a599af8291f705f9d3324bb28dee99f0052",
+      "canonicalEvidenceHash": "5bdf173f12d2374967ac5e6d2f23454e40746d464a18ac7ad0bb42699c53c82f",
+      "recordedAt": "2026-05-13T02:38:05.098Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_42_38_280Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "53d562ec0642ae45e886ca242ac6f6da1c51d91fa48e08aa8e31eb612eb4c9df",
+      "canonicalEvidenceHash": "259e38a55bda9b6dd91fe8df9769ef9416e0ba2a5b953d6698602945eaa5608b",
+      "recordedAt": "2026-05-13T12:42:41.652Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_43_49_992Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "53d562ec0642ae45e886ca242ac6f6da1c51d91fa48e08aa8e31eb612eb4c9df",
+      "canonicalEvidenceHash": "86ca8b9407bf74aa5a7667338ed1e4968e5745a7c7a6861dd080bc99bb5726a2",
+      "recordedAt": "2026-05-13T12:44:08.538Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_45_08_524Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "53d562ec0642ae45e886ca242ac6f6da1c51d91fa48e08aa8e31eb612eb4c9df",
+      "canonicalEvidenceHash": "b54a4deee8ea16b2cbf4c312fa9843a432d357a7a9fd8c7b87910cb8e9164b84",
+      "recordedAt": "2026-05-13T12:45:10.014Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_46_18_441Z_9a21cc515a9d",
+      "command": "npm run rax -- eval --regression",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "53d562ec0642ae45e886ca242ac6f6da1c51d91fa48e08aa8e31eb612eb4c9df",
+      "canonicalEvidenceHash": "53f14d8d6e828249fab383fa16c9d13c5a0a169c02fd29aee1cf04bd4e335718",
+      "recordedAt": "2026-05-13T12:46:22.265Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_47_30_019Z_efa8b0bbf502",
+      "command": "npm run rax -- eval --redteam",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "53d562ec0642ae45e886ca242ac6f6da1c51d91fa48e08aa8e31eb612eb4c9df",
+      "canonicalEvidenceHash": "78d58c69af13bbed7851053e074aaec08aabbe3cd3e9b973613e4a148cf1f325",
+      "recordedAt": "2026-05-13T12:47:31.448Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_48_27_731Z_f2b9dc6f5f79",
+      "command": "npm run campaign:operating-window:today",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "53d562ec0642ae45e886ca242ac6f6da1c51d91fa48e08aa8e31eb612eb4c9df",
+      "canonicalEvidenceHash": "d048c75d3f090eae8b8ac76af90a44477a816bdaf54093f41d95ca7d00ced464",
+      "recordedAt": "2026-05-13T12:48:27.987Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_55_08_339Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bb623535e23e160e21710bb8a378c112dc6f1d91c4f8badfd70d45e65f6632c3",
+      "canonicalEvidenceHash": "5fe8ccffaca30625d06268b30d7e178c6af11def95b451fa61d045e4721d09a6",
+      "recordedAt": "2026-05-13T12:55:10.861Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_56_00_913Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bb623535e23e160e21710bb8a378c112dc6f1d91c4f8badfd70d45e65f6632c3",
+      "canonicalEvidenceHash": "ea5359e4749bdb76804e17c8461beebcc9fb555d4457879ca0bcb534c05197d2",
+      "recordedAt": "2026-05-13T12:56:16.931Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_58_14_144Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "e46b7ac5c431d179851868b39ac8f0bab19aecfbbe1e4be533c087b9104ba29c",
+      "recordedAt": "2026-05-13T12:58:19.884Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T12_59_32_266Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "ce6c13ebc753adaa4a1e8fd95ddb87fe9d222009e3aa7646939625e494e3f164",
+      "recordedAt": "2026-05-13T13:00:00.449Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T13_01_33_458Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "47c1b0db00998f21d1013586a2ba908deee0f81a418cdf3bd4de8b4b126c03f1",
+      "recordedAt": "2026-05-13T13:01:34.733Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T13_02_39_985Z_9a21cc515a9d",
+      "command": "npm run rax -- eval --regression",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "f2eb9c0313312f068851707676a1ce6c6d530260bf1708b1a77a788591a07973",
+      "recordedAt": "2026-05-13T13:02:43.299Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T13_03_49_696Z_efa8b0bbf502",
+      "command": "npm run rax -- eval --redteam",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "0b1ccb03ccde126ba85db08aeb245e88d8499a8bb9ae0eafd0b966e8e420a626",
+      "recordedAt": "2026-05-13T13:03:50.978Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T13_04_56_413Z_f2b9dc6f5f79",
+      "command": "npm run campaign:operating-window:today",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "52dd0863ca41e72b7605781489ee84c7af0fc89c47007edb263b6025edebeea2",
+      "recordedAt": "2026-05-13T13:04:56.645Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T13_06_08_603Z_de8fbc56fd82",
+      "command": "npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --discover-surfaces",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "eff966415cbba65830ffb38ae7270328312f7f131e0ed659134c02ec515691d7",
+      "recordedAt": "2026-05-13T13:06:09.102Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T13_07_10_031Z_bf1f3a68e405",
+      "command": "npm run stax:next-prompt -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --no-gate",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e451fc7937db3905de851229cea7f659f82d4e94e747d753a1414edfae0873ee",
+      "canonicalEvidenceHash": "5582e54e933000358b62c6ad0019665fdae74394db3749f382ae90b80f135027",
+      "recordedAt": "2026-05-13T13:07:10.520Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_31_21_969Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "6d789712c507105f239aedbf7867bafe6b77654ff8d93e2f93bb6857fd3a1c87",
+      "recordedAt": "2026-05-13T15:31:24.773Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_32_40_669Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "488bb422b9a7ea177b1517a629e7d7c58d133222fa7ba305d28b32a6e85ea391",
+      "recordedAt": "2026-05-13T15:33:11.618Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_34_07_404Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "2578003eec1861bf127c38fba8a69ed2649166eecdb22eb24e0c684c6ce13ce1",
+      "recordedAt": "2026-05-13T15:34:08.403Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_35_03_179Z_9a21cc515a9d",
+      "command": "npm run rax -- eval --regression",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "d0f6cbc00e8991080a3470a0489e496b5778af1121a418b70812118c80760eba",
+      "recordedAt": "2026-05-13T15:35:05.191Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_35_57_525Z_efa8b0bbf502",
+      "command": "npm run rax -- eval --redteam",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "67aca4ecd1109a4be7a7a714cb8d5e2a2d482f1935f40b8691c03fc82a202243",
+      "recordedAt": "2026-05-13T15:35:59.129Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_36_54_724Z_f2b9dc6f5f79",
+      "command": "npm run campaign:operating-window:today",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "c663811b9316abe980b9e6954313126c025ff560d294350509bc802adf637e02",
+      "recordedAt": "2026-05-13T15:36:54.963Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_37_55_076Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "9afd1c71e354a271138bb4f9a94b1477c9a06692f082e2ff37e7f17c10500772",
+      "recordedAt": "2026-05-13T15:37:55.625Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_42_10_578Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "9e4aa5dd41d1ffbcc740c85141aa27d17f07e5891fad2888f05d9566a874ef1b",
+      "recordedAt": "2026-05-13T15:42:12.702Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_43_02_769Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "5fbe0c656a1e2aeee2d25114909c71e29836f066940209cd2df4d5c3ebecf2e9",
+      "recordedAt": "2026-05-13T15:43:25.123Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_44_28_880Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "bc2a30c7391431ab62b6b2834750dae8ec96779f42fa3f758f5e34b91312dbe6",
+      "recordedAt": "2026-05-13T15:44:29.706Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_45_23_455Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "94d66d284c9518f99b28c2e5166d2c9a26bd5e6233336e0c579f1afe901f72c4",
+      "recordedAt": "2026-05-13T15:45:25.183Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_46_28_031Z_9a21cc515a9d",
+      "command": "npm run rax -- eval --regression",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "d21bf2203d36f913b9e83446d407d0d0a39b3bc965fd6f27f8cc5e22f6df5191",
+      "recordedAt": "2026-05-13T15:46:30.335Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_47_26_455Z_efa8b0bbf502",
+      "command": "npm run rax -- eval --redteam",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "d9848dc34820d3572a0e9d86c03128de2b09e7261b2c9d7bdd2ada1dd6490129",
+      "recordedAt": "2026-05-13T15:47:27.942Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T15_48_25_124Z_f2b9dc6f5f79",
+      "command": "npm run campaign:operating-window:today",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "39ec4379af19338a59d87863fcb11db982d0633d1527d7e24d462a5f7d63afb9",
+      "recordedAt": "2026-05-13T15:48:25.375Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_44_10_002Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "98231ddc7eb20e3acdb089c65c31e629c9b469f2ddb31539d11b4865c0dc0410",
+      "recordedAt": "2026-05-13T17:44:12.097Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_45_04_487Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "7a9b747f11d5cbc4c83e1192155f2d928aeeb772509eef68f1d138692b09e419",
+      "recordedAt": "2026-05-13T17:45:27.741Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_46_22_738Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "0b490a1d84a6c41a63dee8eff000f6d4143d298b8b828baf8d3f927b7163fdc1",
+      "recordedAt": "2026-05-13T17:46:23.664Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_47_17_140Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "d5ca9b422227e25cc3b9151d54258250a29920625ace2a4bab22b84157fa1942",
+      "recordedAt": "2026-05-13T17:47:18.027Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_48_13_008Z_f2b9dc6f5f79",
+      "command": "npm run campaign:operating-window:today",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "569b195b3bbedb7e1dacf27cca34126ea57032dbc3e75a0fb900aed2c4b3277d",
+      "recordedAt": "2026-05-13T17:48:13.475Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_59_35_177Z_9a21cc515a9d",
+      "command": "npm run rax -- eval --regression",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "841e61b562de6731e78152e846ab777456aa0d3e62b3e9b13af11f5f942956ef",
+      "recordedAt": "2026-05-13T17:59:37.631Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T17_59_35_177Z_efa8b0bbf502",
+      "command": "npm run rax -- eval --redteam",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "dc058bd34eb7423a6be855fd8ac56b06793642eb5414bac3df4f5b584c208428",
+      "canonicalEvidenceHash": "86c7baf10ae1f3009e0eb67c15e3ead3514a989b766ae9ffa6b4198ab71df093",
+      "recordedAt": "2026-05-13T17:59:36.283Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T11_57_42_740Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "004d7c0326deb6a77b55052e37ab56d621a167cb746102641a28ad007cf78603",
+      "recordedAt": "2026-05-14T11:57:44.659Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T11_58_44_266Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "dee9224fa92cd7c7d267639099d49d28d9130403df2fdac3aeae959789b9123d",
+      "recordedAt": "2026-05-14T11:59:00.331Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T11_59_55_104Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "973f423eba9bc0b31ab4e32f590a6daf64c91ac8d4a7afd1b4aaf64b12bc2447",
+      "recordedAt": "2026-05-14T11:59:55.659Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_00_46_291Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "2b439c31ac8b5c0ca25a2296363d814b989a15bb0cb7c81e271efc49a46fc2ff",
+      "recordedAt": "2026-05-14T12:00:46.965Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_01_40_177Z_f2b9dc6f5f79",
+      "command": "npm run campaign:operating-window:today",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "b1e2cdd6734e59b0126fdd7de63c6f1345d180a0fe3a19bcff6d13c64825e3ad",
+      "recordedAt": "2026-05-14T12:01:40.401Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_02_30_576Z_d2fd4393b631",
+      "command": "npm test -- tests/proofSurfaceMatcher.test.ts tests/proofSurfaceMatcherAdversarial.test.ts tests/proofSurfacePack.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "27cafd2dfcac99473871b2aa4870276a7d9072de427eba8dcc59188f0e701b0e",
+      "recordedAt": "2026-05-14T12:02:31.400Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_03_21_191Z_9a21cc515a9d",
+      "command": "npm run rax -- eval --regression",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "463aa3a0e6600f90eea589eb6485c45feec3a2c4d798a10ea90b576c3a2ca957",
+      "recordedAt": "2026-05-14T12:03:23.010Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_04_15_082Z_efa8b0bbf502",
+      "command": "npm run rax -- eval --redteam",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d5d531c7d77fd1a06b41080db8d51367b5213da441b8ea6f5cf10150400ddcd1",
+      "canonicalEvidenceHash": "742d4b131ec752397d2434e4a31512631e0260ab8a96d49be567c69d7c5467e0",
+      "recordedAt": "2026-05-14T12:04:15.901Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_19_47_121Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7e197e9488b5cead28328795352008d5a529b474b4be88e131b01b4a91107091",
+      "canonicalEvidenceHash": "0c15fa5e513fce0de9c56665805b5989593e54489336d663b78848e779d2cd77",
+      "recordedAt": "2026-05-14T12:19:49.026Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_20_39_854Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7e197e9488b5cead28328795352008d5a529b474b4be88e131b01b4a91107091",
+      "canonicalEvidenceHash": "4c2c722b1840c767d59816586ac2488231c3c3677108c10b1a4c87e9d9e7a9a1",
+      "recordedAt": "2026-05-14T12:20:54.656Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_21_47_741Z_0163a3bb0bf7",
+      "command": "npm test -- tests/cliProofGate.test.ts tests/sidecarAttachGate.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7e197e9488b5cead28328795352008d5a529b474b4be88e131b01b4a91107091",
+      "canonicalEvidenceHash": "79a4a60eb9fee8092df0641c6b2859bca4bef028796358d20f5f8cb55e909daf",
+      "recordedAt": "2026-05-14T12:21:50.741Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_22_39_112Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7e197e9488b5cead28328795352008d5a529b474b4be88e131b01b4a91107091",
+      "canonicalEvidenceHash": "2a8bfea4a03882d8a4f7e5e42cbe891c22dbb9cabde9c462354718673774900a",
+      "recordedAt": "2026-05-14T12:22:39.657Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T12_23_30_271Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7e197e9488b5cead28328795352008d5a529b474b4be88e131b01b4a91107091",
+      "canonicalEvidenceHash": "e17614b4d988e85c0bea891c94096b7b17a25b89ed4d0f8f22407ac2582b20ef",
+      "recordedAt": "2026-05-14T12:23:30.933Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_35_19_690Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b5d01d18f4f2b986b40041ad82b74604dceb44973742f326a957971d3e8070ad",
+      "canonicalEvidenceHash": "bf7d45d3bfc60c07b667fc99d2605a9df56687307bafe3b79c067aa67ed3a5a9",
+      "recordedAt": "2026-05-14T19:35:21.572Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_36_13_260Z_841c26f78f4f",
+      "command": "npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimExtractionHardening.test.ts tests/sidecarHarvestPromote.test.ts tests/proofStrengthGate.test.ts tests/evidenceGroundingGate.test.ts tests/sidecarTurnCompliance.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfacePack.test.ts tests/repoProofSurfaceRegistry.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b5d01d18f4f2b986b40041ad82b74604dceb44973742f326a957971d3e8070ad",
+      "canonicalEvidenceHash": "be95b5335c68d910fb1026b95953df258663369c951af933c11aeec4fac53b88",
+      "recordedAt": "2026-05-14T19:36:14.993Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_37_08_453Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b5d01d18f4f2b986b40041ad82b74604dceb44973742f326a957971d3e8070ad",
+      "canonicalEvidenceHash": "3a677e06f2cd3df92a87bf756b4ba69b80b3a4e505ef96bce38ad0d9c6195fdf",
+      "recordedAt": "2026-05-14T19:37:24.594Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_38_20_640Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b5d01d18f4f2b986b40041ad82b74604dceb44973742f326a957971d3e8070ad",
+      "canonicalEvidenceHash": "8e3f4af8276e92c62757abb1780d7ec5dba0bcc6b5d48010141afdb02faf9910",
+      "recordedAt": "2026-05-14T19:38:21.250Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_38_20_640Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b5d01d18f4f2b986b40041ad82b74604dceb44973742f326a957971d3e8070ad",
+      "canonicalEvidenceHash": "6261c6eee425e5377cd07d131ca8f6155f4732bea546d90dd2ed9f98246db72c",
+      "recordedAt": "2026-05-14T19:38:21.410Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_39_22_046Z_db7859c706fc",
+      "command": "npm run stax:harvest -- --from /Users/deanguedo/Documents/GitHub/canvas-helper",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b5d01d18f4f2b986b40041ad82b74604dceb44973742f326a957971d3e8070ad",
+      "canonicalEvidenceHash": "93089458311d7b419f16adf58a1df31063dec5382bd26acaa9dd0d0af68870c1",
+      "recordedAt": "2026-05-14T19:39:23.980Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_44_17_948Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ebf523fc908894b30ca8e29321030718068d15b7aad62fc489ac7b49d6fd1965",
+      "canonicalEvidenceHash": "c3e6b3ae4f0244995ca7b884447354864748c79bae9a577661f596d249398041",
+      "recordedAt": "2026-05-14T19:44:19.866Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_45_07_877Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ebf523fc908894b30ca8e29321030718068d15b7aad62fc489ac7b49d6fd1965",
+      "canonicalEvidenceHash": "96773240f7f11e000b6bf27057fbb0b9d76cc485a546f580b49bcfc5b0bff7de",
+      "recordedAt": "2026-05-14T19:45:23.105Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_46_14_910Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ebf523fc908894b30ca8e29321030718068d15b7aad62fc489ac7b49d6fd1965",
+      "canonicalEvidenceHash": "4d2ea346e72763637543a12c758458387fca586f3ed24206f2bc0128511b79af",
+      "recordedAt": "2026-05-14T19:46:15.454Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_47_12_576Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ebf523fc908894b30ca8e29321030718068d15b7aad62fc489ac7b49d6fd1965",
+      "canonicalEvidenceHash": "b754248f2313272822cfe60e1139209aba95899400ce0002fec884b4e9b590c4",
+      "recordedAt": "2026-05-14T19:47:13.280Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_48_06_763Z_db7859c706fc",
+      "command": "npm run stax:harvest -- --from /Users/deanguedo/Documents/GitHub/canvas-helper",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ebf523fc908894b30ca8e29321030718068d15b7aad62fc489ac7b49d6fd1965",
+      "canonicalEvidenceHash": "b460dd205e1090d78f674517d581b98c84d8a29967cebc07fa0637d37393018f",
+      "recordedAt": "2026-05-14T19:48:08.730Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T19_49_25_154Z_841c26f78f4f",
+      "command": "npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimExtractionHardening.test.ts tests/sidecarHarvestPromote.test.ts tests/proofStrengthGate.test.ts tests/evidenceGroundingGate.test.ts tests/sidecarTurnCompliance.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfacePack.test.ts tests/repoProofSurfaceRegistry.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "ebf523fc908894b30ca8e29321030718068d15b7aad62fc489ac7b49d6fd1965",
+      "canonicalEvidenceHash": "ce1122b6ff84f504e5c44c2cf494ee66f31a0022803b8db2065ee949b1a61042",
+      "recordedAt": "2026-05-14T19:49:26.893Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_05_28_146Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "225d9e26282962d1ec763ff19328406626c6084a84871f3d66c6d0eb81d2b2a2",
+      "canonicalEvidenceHash": "f8b48b61a5572ccc26cfee3f583a34a76a7ec091a9a47e1296381b8747d1999f",
+      "recordedAt": "2026-05-14T20:05:30.020Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_06_38_820Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "be76dbb6e02f355ffb095802e60d4b21f59e98e4c6ff0b60c881f4ac4de10794",
+      "canonicalEvidenceHash": "de14d00451c591226426257b5a5bb1397ed11f595460a2645b9a6e3bc636c560",
+      "recordedAt": "2026-05-14T20:06:40.739Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_07_29_303Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "be76dbb6e02f355ffb095802e60d4b21f59e98e4c6ff0b60c881f4ac4de10794",
+      "canonicalEvidenceHash": "9b2815584323489ac4025c77b547d26a4a01e3ae158dbda0e8a5e4b96e49f574",
+      "recordedAt": "2026-05-14T20:07:44.635Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_08_35_644Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "be76dbb6e02f355ffb095802e60d4b21f59e98e4c6ff0b60c881f4ac4de10794",
+      "canonicalEvidenceHash": "7153eab5bf88ee704bcdaf89daaff21bf345bb5ce36b55c348facea67fd198d3",
+      "recordedAt": "2026-05-14T20:08:36.320Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_09_31_989Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "be76dbb6e02f355ffb095802e60d4b21f59e98e4c6ff0b60c881f4ac4de10794",
+      "canonicalEvidenceHash": "b6194073e56b69db34641f8b336c87d53bfc9751396604489de787d0361accb9",
+      "recordedAt": "2026-05-14T20:09:32.553Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_18_03_975Z_092594e366f2",
+      "command": "npm run smoke:stax",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "cfa24b688161c5c8d805c5dbcf8a241542035257da32ec9e336197df15e50fd9",
+      "recordedAt": "2026-05-14T20:18:04.656Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_18_54_427Z_31b060f341fa",
+      "command": "npm run rax -- eval",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "90153b446c0a4ea6bd598b7911d3bcaee47edb88badb08017e9d9b9c6064a1d7",
+      "recordedAt": "2026-05-14T20:18:55.143Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_19_42_591Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "e3313b4ce942614974c37e7d42f620510a4b6ada5ffdd4d1e0231e5a8e02606e",
+      "recordedAt": "2026-05-14T20:19:44.680Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-14T20_20_32_110Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "5943cdea04f8f29675f7f15b6d8d4b0f29c6b2ae6f9825376636fedc9ad67d0f",
+      "recordedAt": "2026-05-14T20:20:47.414Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "status",
+      "path": ".stax/status.json",
+      "hash": "5bff2e3f55c7ea2d4e57ace40c9498389ff4584babce5cac9df87b13c8395a46",
+      "summary": "status.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof_strength.json",
+      "hash": "5cfb09cdf14f29e037f8ebdfa1e72426d5d808b1de6ace1feae853fb72859212",
+      "summary": "proof_strength.json present"
+    },
+    {
+      "kind": "next_prompt",
+      "path": ".stax/next-codex-prompt.md",
+      "hash": "8e2707465f396522bf1abe96654784a633c7c2412b20d67e2fd0130378f27e44",
+      "summary": "next-codex-prompt.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/reports/latest-proof-report.md",
+      "hash": "0375f08f1013ac993ba48473ae7a08d2031c4243d9784d8af2d684568c31382b",
+      "summary": "reports/latest-proof-report.md present"
+    },
+    {
+      "kind": "sidecar_artifact",
+      "path": ".stax/reports/latest-confidence-report.md",
+      "hash": "8c2df35a156f6633200cec1d6cb5cb7c31944b511acb58e85c6ede8c55da9dcc",
+      "summary": "reports/latest-confidence-report.md present"
+    }
+  ],
+  "criticalMiss": false,
+  "cleanupPromptNeeded": true,
+  "fullHandoffContractPresent": true,
+  "proofArtifactRequested": true
+}

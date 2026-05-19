@@ -27,6 +27,20 @@ describe("ProofSurfaceMatcher adversarial routing", () => {
     expect(match?.surface.nextAction).toContain("preflight validation");
   });
 
+  it("routes release-note deploy mentions to deploy proof requirements, not deploy readiness", async () => {
+    const pack = await readPack("proof-surfaces/admission-app.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "The release notes mention deploy and publish, so the sync is ready."
+    });
+
+    expect(match?.surface.claimType).toBe("publish_sync_deploy_ready");
+    expect(match?.surface.requiredEvidence).toEqual(
+      expect.arrayContaining(["preflight_output", "target_validation", "explicit_human_approval"])
+    );
+  });
+
   it("routes package test script existence to required test proof, not a passed-test claim", async () => {
     const pack = await readPack("proof-surfaces/stax.json");
 
@@ -39,6 +53,32 @@ describe("ProofSurfaceMatcher adversarial routing", () => {
     expect(match?.surface.requiredEvidence).toEqual(
       expect.arrayContaining(["local_command_output", "target_repo_cwd", "matching_worktree_fingerprint"])
     );
+    expect(match?.surface.nextAction).toContain("Run the relevant test command");
+  });
+
+  it("routes workflow existence to CI/test proof requirements, not CI passed", async () => {
+    const pack = await readPack("proof-surfaces/stax.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: ".github/workflows/staxcore-strict.yml exists, so CI passed."
+    });
+
+    expect(match?.surface.claimType).toBe("tests_passed");
+    expect(match?.surface.requiredEvidence).toEqual(
+      expect.arrayContaining(["local_command_output", "target_repo_cwd", "matching_worktree_fingerprint"])
+    );
+  });
+
+  it("routes coverage report existence to test proof requirements, not coverage acceptance", async () => {
+    const pack = await readPack("proof-surfaces/stax.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "coverage/index.html exists, so coverage is acceptable."
+    });
+
+    expect(match?.surface.claimType).toBe("tests_passed");
     expect(match?.surface.nextAction).toContain("Run the relevant test command");
   });
 
@@ -77,6 +117,31 @@ describe("ProofSurfaceMatcher adversarial routing", () => {
 
     expect(match?.surface.claimType).toBe("publish_sync_deploy_ready");
     expect(match?.surface.blockedEvidence).toContain("script_exists_only");
+  });
+
+  it("routes config example existence to sync proof requirements, not real config proof", async () => {
+    const pack = await readPack("proof-surfaces/admission-app.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "config/sheets_sync.json.example exists, so Sheets sync is configured."
+    });
+
+    expect(match?.surface.claimType).toBe("publish_sync_deploy_ready");
+    expect(match?.surface.requiredEvidence).toEqual(expect.arrayContaining(["preflight_output", "target_validation"]));
+  });
+
+  it("routes preflight script existence to preflight output requirements, not preflight passed", async () => {
+    const pack = await readPack("proof-surfaces/admission-app.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "tools/validate-sync-surface.ps1 exists, so preflight passed."
+    });
+
+    expect(match?.surface.claimType).toBe("publish_sync_deploy_ready");
+    expect(match?.surface.blockedEvidence).toContain("script_exists_only");
+    expect(match?.surface.nextAction).toContain("Run sync/app-script/canonical preflight validation");
   });
 
   it("routes wrong-repo command output to repo identity before test proof", async () => {

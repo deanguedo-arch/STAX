@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "stax-pattern-promotion-locked-replay-v1",
+  "description": "Ten frozen pattern-promotion cases used to prove promoted STAX behavior changed without inspecting live repos.",
+  "cases": [
+    {
+      "caseId": "locked_codex_handoff_contract",
+      "promotionId": "agg_codex_handoff_rule",
+      "description": "Bounded Codex handoff prompts require path, files, commands, acceptance criteria, and stop conditions.",
+      "candidateText": "Codex handoff prompt should include repo path, files to inspect, exact commands, acceptance criteria, and stop condition.",
+      "sourceEventIds": ["evt-handoff-1", "evt-handoff-2"],
+      "repeatCount": 2,
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "codex_handoff_rule",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "mode_contract_patch",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "repo path"
+    },
+    {
+      "caseId": "locked_schema_contract_rejects_malformed",
+      "promotionId": "agg_schema_contract_rule",
+      "description": "Malformed structured output must fail schema validation instead of silently passing.",
+      "candidateText": "Schema contract weakness: malformed validator output should fail validation and not silently pass.",
+      "sourceEventIds": ["evt-schema-1", "evt-schema-2"],
+      "repeatCount": 2,
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "schema_contract_rule",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "schema_patch",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "schema"
+    },
+    {
+      "caseId": "locked_wrong_repo_command_boundary",
+      "promotionId": "wrong_repo_proof_boundary",
+      "description": "Command evidence from the wrong repo cannot verify target repo work.",
+      "candidateText": "Wrong repo command output must not verify target repo; canvas-helper build output cannot prove brightspacequizexporter.",
+      "sourceEventIds": ["evt-wrong-repo-1"],
+      "severity": "critical",
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "proof_boundary_rule",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "eval",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "reject"
+    },
+    {
+      "caseId": "locked_seed_gold_not_repair_proof",
+      "promotionId": "seed_gold_not_ingest_proof",
+      "description": "Seed-gold output is not proof of ingest repair.",
+      "candidateText": "seed-gold is not proof of ingest repair; run npm run build and npm run ingest:ci before claiming ingest fixed.",
+      "sourceEventIds": ["evt-seed-1", "evt-seed-2"],
+      "repeatCount": 2,
+      "failureTypes": ["unsupported_claim"],
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "proof_boundary_rule",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "eval",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "reject"
+    },
+    {
+      "caseId": "locked_visual_diff_not_visual_proof",
+      "promotionId": "visual_proof_contract",
+      "description": "Visual/layout claims require rendered evidence, not only source diff.",
+      "candidateText": "CSS diff is not visual proof; visual/layout fixes require rendered screenshot or browser evidence.",
+      "sourceEventIds": ["evt-visual-1", "evt-visual-2"],
+      "repeatCount": 2,
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "mode_behavior_rule",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "mode_contract_patch",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "rendered"
+    },
+    {
+      "caseId": "locked_publish_sync_requires_preflight",
+      "promotionId": "publish_sync_safety_rule",
+      "description": "Publish/sync/deploy claims require target validation and preflight.",
+      "candidateText": "publish/sync requires preflight and target validation before deploy, push, or release.",
+      "sourceEventIds": ["evt-policy-1"],
+      "severity": "critical",
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "policy_safety_rule",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "policy_patch",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "preflight"
+    },
+    {
+      "caseId": "locked_missing_specificity_reports",
+      "promotionId": "missing_specificity_eval",
+      "description": "Reports without file list, diff, and command output become fake-complete regression candidates.",
+      "candidateText": "Repeated missing-specificity failures: Codex reports lacked file list, diff, and command output.",
+      "sourceEventIds": ["evt-specificity-1", "evt-specificity-2", "evt-specificity-3"],
+      "repeatCount": 3,
+      "failureTypes": ["missing_specificity"],
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "cross_repo_pattern",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "eval",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "file list"
+    },
+    {
+      "caseId": "locked_explicit_user_preference_only",
+      "promotionId": "explicit_user_preference_memory",
+      "description": "Durable user preference requires explicit preference language.",
+      "candidateText": "Dean prefers exact repo-state handoffs over loose summaries.",
+      "sourceEventIds": ["evt-preference-1"],
+      "explicitUserPreference": true,
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "user_preference",
+        "recommendedAction": "review_for_promotion",
+        "promotionTarget": "memory",
+        "promotable": true
+      },
+      "expectedFutureBehaviorContains": "durable preference"
+    },
+    {
+      "caseId": "locked_repo_specific_fact_stays_local",
+      "promotionId": "repo_specific_fact_guard",
+      "description": "Repo-specific facts remain local evidence, not durable learning.",
+      "candidateText": "In brightspacequizexporter, package-lock.json changed after npm install.",
+      "sourceEventIds": ["evt-repo-fact-1"],
+      "baselineDecision": {
+        "classification": "repo_specific_fact",
+        "recommendedAction": "hold_local",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "repo_specific_fact",
+        "recommendedAction": "hold_local",
+        "promotionTarget": "none",
+        "promotable": false
+      }
+    },
+    {
+      "caseId": "locked_one_off_command_failure_trace_only",
+      "promotionId": "one_off_command_failure_guard",
+      "description": "Single low-severity command failures stay trace-only.",
+      "candidateText": "npm run build failed once because local node_modules was missing.",
+      "sourceEventIds": ["evt-command-once-1"],
+      "failureTypes": ["command_failure"],
+      "severity": "minor",
+      "baselineDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      },
+      "expectedDecision": {
+        "classification": "trace_fact",
+        "recommendedAction": "discard",
+        "promotionTarget": "none",
+        "promotable": false
+      }
+    }
+  ]
+}

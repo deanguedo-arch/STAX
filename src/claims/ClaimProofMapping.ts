@@ -157,7 +157,9 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
 }
 
 function normalizeClaimProse(text: string): string {
-  return stripNegatedClaimLines(stripCommandTokens(stripCodeAndPathTokens(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))));
+  return stripNegatedClaimLines(
+    stripNegatedClaimBlocks(stripCommandTokens(stripCodeAndPathTokens(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))))
+  );
 }
 
 function stripGeneratedStaxBlocks(text: string): string {
@@ -211,8 +213,34 @@ function stripNegatedClaimLines(text: string): string {
     .filter(
       (line) =>
         !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete|none (?:was|were) promoted|no .* promoted|not promoted|instead of triggering|before any durable promotion)\b/i.test(line)
+        && !/\b(?:prevent|prevents|preventing|blocked|blocks|blocking)\b.{0,80}\b(?:becoming|turning into|being treated as)\b.{0,80}\b(?:proof|claim|readiness|passed|acceptable)\b/i.test(line)
     )
     .join("\n");
+}
+
+function stripNegatedClaimBlocks(text: string): string {
+  const output: string[] = [];
+  let skippingNegatedList = false;
+
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (/^(?:do not|don't|not in scope|out of scope|blocked|forbidden)\s*:$/i.test(trimmed)) {
+      skippingNegatedList = true;
+      continue;
+    }
+    if (skippingNegatedList) {
+      if (!trimmed) {
+        skippingNegatedList = false;
+        output.push(line);
+        continue;
+      }
+      if (/^\s*[-*]\s+/.test(line)) continue;
+      skippingNegatedList = false;
+    }
+    output.push(line);
+  }
+
+  return output.join("\n");
 }
 
 function stripCommandTokens(text: string): string {

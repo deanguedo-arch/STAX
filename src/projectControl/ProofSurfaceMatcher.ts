@@ -51,7 +51,7 @@ const SURFACE_KEYWORDS: Record<string, RegExp[]> = {
   dependency_ready: [/dependenc(?:y|ies)/i, /rollup/i, /package[-\s]?lock/i, /npm\s+ls/i, /\bvite\b/i, /node_modules/i, /install/i],
   gold_fixture_update: [/seed[-:]?gold/i, /update[-:]?gold/i, /snapshot/i, /fixture/i, /expected/i],
   build_ready: [/build/i, /typecheck/i, /compile/i],
-  tests_passed: [/\btests?\b/i, /\bpassed\b/i, /\bgreen\b/i, /\bci\b/i],
+  tests_passed: [/\btests?\b/i, /\bpassed\b/i, /\bgreen\b/i, /\bci\b/i, /\bworkflow\b/i, /\bcoverage\b/i],
   proof_gate_ready: [/proof[-\s]?gate/i, /stax\s+gate/i, /sidecar\s+gate/i]
 };
 
@@ -175,7 +175,7 @@ function tokenVariants(token: string): string[] {
   const variants = new Set<string>([token]);
   if (token.startsWith("npm run ")) variants.add(token.slice("npm run ".length));
   if (token.startsWith("npx ")) variants.add(token.slice("npx ".length));
-  variants.add(token.replace(/^.*\//, ""));
+  if (!/\s/.test(token) && token.includes("/")) variants.add(token.replace(/^.*\//, ""));
   return [...variants].filter(Boolean);
 }
 

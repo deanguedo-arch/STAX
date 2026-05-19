@@ -23,6 +23,26 @@ describe("sidecar claim extraction precision", () => {
     expect(decomposeClaimsFromReport("This does not enable live blocking.")).toEqual([]);
   });
 
+  it("keeps do-not bullet lists negative", () => {
+    expect(
+      decomposeClaimsFromReport([
+        "Do not:",
+        "- deploy, publish, sync, push, or auto-promote anything.",
+        "- treat this as release ready.",
+        "",
+        "The work is a local-only report update."
+      ].join("\n"))
+    ).toEqual([]);
+  });
+
+  it("does not treat proof-prevention wording as the prevented claim", () => {
+    expect(
+      decomposeClaimsFromReport(
+        'Additional adversarial cases prevent "exists" language from becoming proof of passed CI, deploy readiness, real config, preflight pass, screenshot pass, or acceptable coverage.'
+      )
+    ).toEqual([]);
+  });
+
   it("does not convert negative promotion-control wording into memory promotion claims", () => {
     expect(decomposeClaimsFromReport("Do not auto-promote learning candidates.")).toEqual([]);
     expect(decomposeClaimsFromReport("Candidates are pending review only; none were promoted.")).toEqual([]);

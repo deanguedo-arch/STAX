@@ -39,6 +39,8 @@ STAX is strong for Codex/repo project-control:
 - investor proof: STAX 7, ChatGPT 0, ties 3
 - Phase B executable: STAX 7, ChatGPT 0, ties 13
 - zero STAX critical misses in promotion window
+- pattern promotion locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe
+- local STAX impact evidence import: 1 bundle, 0 critical misses, full handoff/proof-artifact request present
 
 ## Implemented Since Current Baseline
 
@@ -48,14 +50,17 @@ STAX is strong for Codex/repo project-control:
 - static known-repo proof-surface packs
 - candidate versus approved proof-surface workflow
 - ProofSurfaceMatcher v1
+- PatternPromotionImpactTracker with locked replay versus imported live-evidence separation
+- impact evidence export/import bundle flow for cross-machine repo proof
 - public sidecar attach flow documentation
 - GitHub-facing hardening audit artifact
 
 ## Current Technical Risks
 
 - doc/report consistency
-- proof-surface matching precision beyond v1 fixtures
+- proof-surface matching precision beyond adversarial v1 fixtures
 - real repo observer trial volume
+- multi-repo current operating-window imports from the work-terminal repos are still pending
 - unusual-repo proof-surface discovery edge cases
 - complexity debt and archived report surface area
 - large runtime, CLI, and session modules that may need focused compression
@@ -67,3 +72,4 @@ STAX is strong for Codex/repo project-control:
 - docs/RAX_PROOF_SURFACE_MATCHER_REPORT.md
 - docs/RAX_PROOF_SURFACE_MATCHER_ADVERSARIAL_REPORT.md
 - docs/RAX_REAL_SIDECAR_UPGRADE_TRIAL_REPORT.md
+- docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
