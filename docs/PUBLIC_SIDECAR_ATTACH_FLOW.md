@@ -125,6 +125,28 @@ The gate verifies the external ledger, stream hashes, evidence hash, repo path,
 cwd, branch, commit, and worktree fingerprint before treating command output as
 strong local proof.
 
+For visual/layout work, collect screenshot proof through STAX too:
+
+```bash
+npm run stax:collect-visual -- --repo <repo> \
+  --path <screenshot.png> \
+  --description "<page and state verified>" \
+  --checklist "<visible outcome>"
+```
+
+If the repo has Playwright available, STAX can capture the URL directly:
+
+```bash
+npm run stax:collect-visual -- --repo <repo> \
+  --url <local-preview-url> \
+  --viewport 1280,800 \
+  --description "<rendered state verified>"
+```
+
+Candidate proof surfaces can suggest screenshots, but only collected visual
+proof in `.stax/visual-proofs/manifest.json` is treated as first-class sidecar
+visual evidence.
+
 ## 7. Run A Fresh Gate
 
 Run:

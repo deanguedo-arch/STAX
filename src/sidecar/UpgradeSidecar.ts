@@ -137,6 +137,7 @@ async function ensureSidecarDirectories(staxPath: string): Promise<void> {
   await ensureDirectory(path.join(staxPath, "reports"));
   await ensureDirectory(path.join(staxPath, "runtime"));
   await ensureDirectory(path.join(staxPath, "turns"));
+  await ensureDirectory(path.join(staxPath, "visual-proofs"));
 }
 
 async function mergedConfig(configPath: string, snapshot: Awaited<ReturnType<typeof collectGitSnapshot>>): Promise<JsonObject> {
@@ -232,6 +233,7 @@ function promptContract(): JsonObject {
       "publish/sync/deploy ready",
       "code correctness proved"
     ],
+    visualProofCommand: "npm run stax:collect-visual -- --repo <repo> --path <screenshot.png> --description <what was verified> --checklist <check>",
     reportSections: [
       "STAX acknowledgement",
       "Objective",

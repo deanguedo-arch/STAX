@@ -179,6 +179,7 @@ export function buildProjectControlProofStack(
       input.dataProofArtifacts,
       input.releaseProofArtifacts,
       commandInsight,
+      input.commandEvidenceEntries,
       combined
     );
     const mapped = mapClaimToProof({
@@ -392,6 +393,7 @@ function deriveProofItems(
   dataProofArtifacts: ProjectControlDataProofArtifact[] | undefined,
   releaseProofArtifacts: ProjectControlReleaseProofArtifact[] | undefined,
   commandInsight: CommandInsight | undefined,
+  commandEvidenceEntries: ProjectControlCommandEvidenceEntry[] | undefined,
   combined: string
 ): ClaimProofItem[] {
   const files = dedupe(changedFiles.map((file) => file.path));
@@ -406,6 +408,7 @@ function deriveProofItems(
   const visualQuality = evaluateVisualProof(visualEvidence, files, claim.claimType);
   const dataQuality = evaluateDataProof(dataProofArtifacts, claim.claimType, combined);
   const releaseQuality = evaluateReleaseProof(releaseProofArtifacts, claim.claimType, combined);
+  const hasBehaviorCommand = hasStrongBehaviorCommandEvidence(commandEvidenceEntries, commandInsight);
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -424,11 +427,15 @@ function deriveProofItems(
                 ? "weak"
                 : "missing"
             : "strong"
+          : hasBehaviorCommand
+            ? "strong"
           : "missing",
         hasTests
           ? testQuality
             ? renderTestQualityDescription(testQuality, "behavior")
             : "Test files detected."
+          : hasBehaviorCommand
+            ? "Verified behavior/e2e command evidence detected."
           : "No behavior test evidence detected."
       );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
@@ -464,11 +471,15 @@ function deriveProofItems(
                 ? "weak"
                 : "missing"
             : "strong"
+          : hasBehaviorCommand
+            ? "strong"
           : "missing",
         hasTests
           ? testQuality
             ? renderTestQualityDescription(testQuality, "behavior")
             : "Behavior test evidence detected."
+          : hasBehaviorCommand
+            ? "Verified behavior/e2e command evidence detected."
           : "No behavior test evidence detected."
       );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
@@ -669,6 +680,23 @@ function deriveScopePaths(changedFiles: DiffChangedFileInput[]): string[] {
   }));
 }
 
+function hasStrongBehaviorCommandEvidence(
+  entries: ProjectControlCommandEvidenceEntry[] | undefined,
+  commandInsight: CommandInsight | undefined
+): boolean {
+  const commands = [
+    ...(entries ?? [])
+      .filter((entry) => entry.source === "local_stax_command_output" && entry.exitCode === 0)
+      .map((entry) => entry.command),
+    commandInsight?.proofStrength === "strong_local_proof" ? commandInsight.command : ""
+  ];
+
+  return commands.some((command) =>
+    /\b(?:test|e2e|playwright|cypress|vitest|tsx\s+--test|node\s+--test|pytest|rspec|phpunit|verify)\b/i.test(command)
+      && !/\b(?:typecheck|tsc\s+--noEmit|lint|format|build:studio|build)\b/i.test(command)
+  );
+}
+
 function evaluateTestQuality(
   changedFiles: ProjectControlChangedFile[] | undefined,
   claimType: ClaimProofClaimType
@@ -689,9 +717,9 @@ function evaluateVisualProof(
   claimType: ClaimProofClaimType
 ) {
   if (claimType !== "visual") return undefined;
-  if (!files.some((file) => /\.(css|scss|sass|less|html|tsx|jsx|vue|svelte)$/i.test(file) || file.includes("/workspace/"))) return undefined;
   const primary = visualEvidence?.[0];
   if (!primary) return undefined;
+  const checklistItems = Array.isArray(primary.checklistItems) ? primary.checklistItems : [];
   return analyzeVisualProof({
     task: primary.description,
     changedFiles: files,
@@ -699,7 +727,7 @@ function evaluateVisualProof(
     source: primary.source,
     capturedAt: primary.capturedAt,
     expectedPage: /sports wellness/i.test(primary.description) ? "Sports Wellness" : undefined,
-    checklistItems: extractChecklistItems(primary.description)
+    checklistItems: checklistItems.length > 0 ? checklistItems : extractChecklistItems(primary.description)
   });
 }
 

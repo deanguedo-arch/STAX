@@ -13,6 +13,7 @@ import {
 import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
 import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
+import { collectVisualEvidence } from "../src/sidecar/VisualEvidenceCollector.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 function useTestExternalEvidenceRoot(repoPath: string): void {
@@ -393,6 +394,211 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.verdict).toBe("Accept");
     expect(status.risk.join("\n")).not.toContain("Stale command evidence");
     expect(status.verified.join("\n")).toContain("predates current head only by STAX sidecar artifact commits");
+  });
+
+  it("accepts visual claims when screenshot proof is collected through the sidecar", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-proof-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(repoPath, "projects/course/workspace/index.html", "<main class=\"card\">Old</main>\n");
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/index.html"), "<main class=\"card\">Updated visual layout</main>\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "manual-shot.png"), "fake screenshot bytes\n", "utf8");
+    const visual = await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "manual-shot.png"),
+      description: "Course page screenshot after the visual layout update with responsive and accessibility checks.",
+      checklistItems: ["Course page", "responsive", "accessibility"]
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify visual layout",
+        "Files changed: projects/course/workspace/index.html",
+        "Tests added: none",
+        "Commands run: none",
+        "Command output summary with exit codes: none",
+        `What is verified: visual layout was visually verified using ${visual.proofPath}`,
+        "What is weak/provisional: no command proof needed for visual-only proof",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.verified.join("\n")).toContain("Visual evidence verified:");
+    expect(status.verified.join("\n")).toContain("Claim-to-proof: visual claim is fully supported.");
+    expect(status.proofStrength?.claimType).toBe("visual_behavior_verified");
+    expect(status.proofStrength?.capApplied.map((cap) => cap.id)).not.toContain("visual_claim_without_visual_proof");
+    const latestProofReport = await fs.readFile(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"), "utf8");
+    expect(latestProofReport).toContain("## Visual Evidence");
+    expect(latestProofReport).toContain("verified_current_visual_proof");
+  });
+
+  it("rejects visual claims until screenshot proof is collected through the sidecar", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-proof-missing-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(repoPath, "projects/course/workspace/styles.css", ".card { color: red; }\n");
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: green; }\n", "utf8");
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify visual layout",
+        "Files changed: projects/course/workspace/styles.css",
+        "Tests added: none",
+        "Commands run: none",
+        "Command output summary with exit codes: none",
+        "What is verified: visual layout was visually verified",
+        "What is weak/provisional: none",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.unverified.join("\n")).toContain("Visual/style claim lacks STAX-collected rendered visual proof.");
+    expect(status.oneNextAction).toContain("stax:collect-visual");
+  });
+
+  it("does not accept stale screenshot proof after the auditable worktree changes", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-proof-stale-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(repoPath, "projects/course/workspace/styles.css", ".card { color: red; }\n");
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: green; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "manual-shot.png"), "fake screenshot bytes\n", "utf8");
+    await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "manual-shot.png"),
+      description: "Course page screenshot after the green card visual update.",
+      checklistItems: ["Course page", "responsive"]
+    });
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: blue; }\n", "utf8");
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify visual layout",
+        "Files changed: projects/course/workspace/styles.css",
+        "Tests added: none",
+        "Commands run: none",
+        "Command output summary with exit codes: none",
+        "What is verified: visual layout was visually verified",
+        "What is weak/provisional: none",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Reject");
+    expect(status.weak.join("\n")).toContain("stale_visual_proof");
+    expect(status.unverified.join("\n")).toContain("Visual/style claim lacks STAX-collected rendered visual proof.");
+  });
+
+  it("does not let stale screenshot history downgrade newer current visual proof", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-proof-current-over-stale-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(repoPath, "projects/course/workspace/styles.css", ".card { color: red; }\n");
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: green; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "old-shot.png"), "old screenshot bytes\n", "utf8");
+    await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "old-shot.png"),
+      description: "Course page screenshot after the green card visual update.",
+      checklistItems: ["Course page", "responsive"]
+    });
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: blue; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "new-shot.png"), "new screenshot bytes\n", "utf8");
+    await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "new-shot.png"),
+      description: "Course page screenshot after the blue card visual update.",
+      checklistItems: ["Course page", "responsive"]
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify visual layout",
+        "Files changed: projects/course/workspace/styles.css",
+        "Tests added: none",
+        "Commands run: none",
+        "Command output summary with exit codes: none",
+        "What is verified: visual layout was visually verified",
+        "What is weak/provisional: none",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.verified.join("\n")).toContain("Visual evidence verified:");
+    expect(status.verified.join("\n")).toContain("Historical visual evidence ignored for current proof");
+    expect(status.weak.join("\n")).not.toContain("stale_visual_proof");
+    expect(status.unverified.join("\n")).not.toContain("Visual/style claim lacks STAX-collected rendered visual proof.");
   });
 
   it("rejects docs-only implementation claims", async () => {

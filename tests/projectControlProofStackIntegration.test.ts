@@ -137,6 +137,125 @@ describe("project_control proof stack integration", () => {
     expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
   });
 
+  it("lets verified e2e command evidence satisfy a behavior proof lane without a test diff", () => {
+    const result = buildProjectControlProofStack({
+      task: "Audit whether course sidebar behavior is proven.",
+      repoEvidence: [
+        "Target repo path: /repo",
+        "Changed files: projects/course/workspace/main.js"
+      ].join("\n"),
+      commandEvidence: "",
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: verify course sidebar behavior.",
+        "Files changed:",
+        "- projects/course/workspace/main.js",
+        "Tests added:",
+        "- none",
+        "Commands run:",
+        "- `npm run test:e2e:project -- --project course` exited 0.",
+        "Command output summary with exit codes:",
+        "- Project e2e exited 0.",
+        "What is verified:",
+        "- Sidebar behavior is proven for the project.",
+        "What is weak/provisional:",
+        "- Wider projects not checked.",
+        "What is unverified:",
+        "- Hosted deploy.",
+        "Risks:",
+        "- Generated export drift.",
+        "One next action:",
+        "- Stop."
+      ].join("\n"),
+      changedFiles: [
+        {
+          path: "projects/course/workspace/main.js",
+          changeType: "modified",
+          fileRole: "source"
+        }
+      ],
+      targetRepoPath: "/repo",
+      expectedRepo: "/repo",
+      expectedCwd: "/repo",
+      expectedBranch: "main",
+      expectedCommitSha: "abc",
+      commandEvidenceEntries: [
+        {
+          command: "npm run test:e2e:project -- --project course",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "project e2e passed",
+          stderr: "",
+          source: "local_stax_command_output"
+        }
+      ]
+    });
+
+    expect(result.verified).toContain("Claim-to-proof: behavior claim is fully supported.");
+    expect(result.unverified.join("\n")).not.toContain("behavior_test");
+  });
+
+  it("does not let typecheck-only command evidence satisfy a behavior proof lane", () => {
+    const result = buildProjectControlProofStack({
+      task: "Audit whether runtime behavior is proven.",
+      repoEvidence: "Target repo path: /repo\nChanged files: projects/course/workspace/main.js",
+      commandEvidence: "",
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: verify runtime behavior.",
+        "Files changed:",
+        "- projects/course/workspace/main.js",
+        "Tests added:",
+        "- none",
+        "Commands run:",
+        "- `npm run typecheck` exited 0.",
+        "Command output summary with exit codes:",
+        "- Typecheck exited 0.",
+        "What is verified:",
+        "- Runtime behavior is proven.",
+        "What is weak/provisional:",
+        "- No e2e run.",
+        "What is unverified:",
+        "- Hosted deploy.",
+        "Risks:",
+        "- Static checks are not behavior proof.",
+        "One next action:",
+        "- Run behavior proof."
+      ].join("\n"),
+      changedFiles: [
+        {
+          path: "projects/course/workspace/main.js",
+          changeType: "modified",
+          fileRole: "source"
+        }
+      ],
+      targetRepoPath: "/repo",
+      expectedRepo: "/repo",
+      expectedCwd: "/repo",
+      expectedBranch: "main",
+      expectedCommitSha: "abc",
+      commandEvidenceEntries: [
+        {
+          command: "npm run typecheck",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "typecheck passed",
+          stderr: "",
+          source: "local_stax_command_output"
+        }
+      ]
+    });
+
+    expect(result.unverified.join("\n")).toContain("Claim-to-proof: behavior claim is unsupported because behavior_test");
+    expect(result.risk.join("\n")).toContain("Unsupported hard claim: behavior requires behavior_test");
+  });
+
   it("keeps a 20-case proof-stack integration gate with zero false accepts and low false blocks", async () => {
     const runtime = await createDefaultRuntime();
     const cases = [

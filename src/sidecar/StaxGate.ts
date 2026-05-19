@@ -6,6 +6,7 @@ import { classifyFileRole } from "../diffAudit/DiffAudit.js";
 import { parseUnifiedDiff } from "../diffAudit/UnifiedDiffParser.js";
 import { commandFamilyFor, type CommandEvidence } from "../evidence/CommandEvidenceStore.js";
 import { EvidenceGroundingGate } from "../evidence/EvidenceGroundingGate.js";
+import type { EvidenceGroundingResult, GroundedClaim } from "../evidence/EvidenceGroundingSchemas.js";
 import { ProofStrengthGate } from "../evidence/ProofStrengthGate.js";
 import type { ProofStrengthClaimType, ProofStrengthResult } from "../evidence/ProofStrengthSchemas.js";
 import { buildProjectControlProofStack } from "../projectControl/ProjectControlProofStack.js";
@@ -59,6 +60,10 @@ import {
   isWorktreeFingerprintExcludedPath,
   type WorktreeFingerprint
 } from "./WorktreeFingerprint.js";
+import {
+  readVisualEvidenceForGate,
+  type VerifiedVisualEvidence
+} from "./VisualEvidenceCollector.js";
 
 export type StaxGateVerdict = ProjectControlCardStatus;
 
@@ -128,6 +133,8 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   const task = (await readTextIfExists(path.join(staxPath, "task.md"))).trim() || `STAX sidecar audit for ${snapshot.repoName}.`;
   const codexReport = stripGeneratedProofStrengthSection(await readTextIfExists(path.join(staxPath, "codex-report.md"))).trim();
   const currentFingerprint = await collectWorktreeFingerprint(repoPath);
+  const visualEvidenceEntries = await readVisualEvidenceForGate(repoPath, currentFingerprint);
+  const currentVisualEvidenceEntries = visualEvidenceEntries.filter((entry) => entry.verificationStatus === "verified_current_visual_proof");
   const commandEvidenceEntries = await readCommandEvidenceEntries(repoPath, snapshot, currentFingerprint);
   const currentCommandEvidenceEntries = latestCurrentCommandEvidenceForProof(commandEvidenceEntries);
   const proofStackCommandEvidenceEntries = await normalizeSidecarOnlyCommandEvidence(
@@ -150,7 +157,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     unifiedDiff: auditableUnifiedDiff,
     commandEvidence: proofStackCommandEvidenceEntries,
     codexReport,
-    visualEvidence: [],
+    visualEvidence: currentVisualEvidenceEntries,
     dataProofArtifacts: [],
     releaseProofArtifacts: [],
     humanApproval: []
@@ -164,6 +171,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     changedFiles,
     unifiedDiff: auditableUnifiedDiff,
     commandEvidenceEntries: proofStackCommandEvidenceEntries,
+    visualEvidence: currentVisualEvidenceEntries,
     targetRepoPath: repoPath,
     expectedRepo: snapshot.repoName,
     expectedBranch: snapshot.branch,
@@ -176,6 +184,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     changedFiles,
     codexReport,
     commandEvidenceEntries,
+    visualEvidenceEntries,
     repoPath,
     snapshot
   });
@@ -184,6 +193,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     codexReport,
     changedFiles,
     commandEvidenceEntries,
+    visualEvidenceEntries,
     repoPath,
     snapshot,
     generatedAt: nowIso()
@@ -262,7 +272,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     cardShapeIssues
   };
 
-  await writeSidecarStatus(repoPath, status, commandEvidenceEntries);
+  await writeSidecarStatus(repoPath, status, commandEvidenceEntries, visualEvidenceEntries);
   const turnContract = await writeTurnContract({ repoPath });
   status.turnContract = {
     turnId: turnContract.turnId,
@@ -411,8 +421,9 @@ function protocolComplianceFindings(
     };
   }
 
+  const nonBlockingWarnings = protocol.findings.filter((finding) => isNonBlockingProtocolWarning(protocol, finding));
   const weak = protocol.findings
-    .filter((finding) => finding.severity === "warning")
+    .filter((finding) => finding.severity === "warning" && !isNonBlockingProtocolWarning(protocol, finding))
     .map((finding) => finding.message);
   const humanReview = protocol.findings
     .filter((finding) => finding.severity === "human_review")
@@ -427,11 +438,18 @@ function protocolComplianceFindings(
       : [])
   ];
   return {
-    verified: [],
+    verified: nonBlockingWarnings.map((finding) => `Protocol warning recorded as non-blocking: ${finding.message}`),
     weak,
     unverified,
     risk
   };
+}
+
+function isNonBlockingProtocolWarning(protocol: ProtocolComplianceResult, finding: ProtocolComplianceFinding): boolean {
+  return finding.severity === "warning"
+    && finding.id === "current_turn_capture_missing_ack"
+    && Boolean(protocol.acknowledgement)
+    && /report acknowledgement is present/i.test(finding.message);
 }
 
 function parseJsonObject(raw: string): Record<string, unknown> | undefined {
@@ -452,7 +470,8 @@ function parseTimestampMs(value: unknown): number | undefined {
 async function writeSidecarStatus(
   repoPath: string,
   status: StaxGateStatus,
-  commandEvidenceEntries: SidecarCommandEvidenceEntry[] = []
+  commandEvidenceEntries: SidecarCommandEvidenceEntry[] = [],
+  visualEvidenceEntries: VerifiedVisualEvidence[] = []
 ): Promise<void> {
   const staxPath = sidecarDir(repoPath);
   await ensureDirectory(staxPath);
@@ -465,7 +484,7 @@ async function writeSidecarStatus(
     await fs.rm(path.join(staxPath, "proof_strength.json"), { force: true });
   }
   await writeCodexReportProofStrengthSection(repoPath, status.proofStrength);
-  await writeLatestProofReport(repoPath, status, commandEvidenceEntries);
+  await writeLatestProofReport(repoPath, status, commandEvidenceEntries, visualEvidenceEntries);
   await writeLatestConfidenceReport(repoPath, status);
   await fs.writeFile(
     path.join(staxPath, "next-codex-prompt.md"),
@@ -602,11 +621,12 @@ function stripGeneratedProofStrengthSection(input: string): string {
 async function writeLatestProofReport(
   repoPath: string,
   status: StaxGateStatus,
-  commandEvidenceEntries: SidecarCommandEvidenceEntry[]
+  commandEvidenceEntries: SidecarCommandEvidenceEntry[],
+  visualEvidenceEntries: VerifiedVisualEvidence[]
 ): Promise<void> {
   const reportPath = path.join(repoPath, STAX_PROOF_REPORT_RELATIVE_PATH);
   await ensureDirectory(path.dirname(reportPath));
-  await fs.writeFile(reportPath, renderLatestProofReport(status, commandEvidenceEntries), "utf8");
+  await fs.writeFile(reportPath, renderLatestProofReport(status, commandEvidenceEntries, visualEvidenceEntries), "utf8");
 }
 
 async function writeLatestConfidenceReport(repoPath: string, status: StaxGateStatus): Promise<void> {
@@ -617,7 +637,8 @@ async function writeLatestConfidenceReport(repoPath: string, status: StaxGateSta
 
 function renderLatestProofReport(
   status: StaxGateStatus,
-  commandEvidenceEntries: SidecarCommandEvidenceEntry[]
+  commandEvidenceEntries: SidecarCommandEvidenceEntry[],
+  visualEvidenceEntries: VerifiedVisualEvidence[]
 ): string {
   const proofStrength = status.proofStrength;
   const repoLines = [
@@ -657,6 +678,9 @@ function renderLatestProofReport(
     "## Command Evidence",
     ...renderCommandEvidenceReportLines(commandEvidenceEntries),
     "",
+    "## Visual Evidence",
+    ...renderVisualEvidenceReportLines(visualEvidenceEntries, status.repoPath),
+    "",
     "## Verified",
     ...renderDurableProofBullets(status.verified, status.repoPath, "No durable verified proof recorded."),
     "",
@@ -676,6 +700,7 @@ function renderLatestProofReport(
     "- Next Codex prompt: .stax/next-codex-prompt.md",
     "- Raw Codex working report: .stax/codex-report.md (local sidecar input)",
     "- Command evidence proof: external STAX evidence store; .stax/command-evidence/ contains repo-local pointers only.",
+    "- Visual evidence proof: .stax/visual-proofs/manifest.json plus screenshot artifacts.",
     "",
     "## One Next Action",
     `- ${sanitizeProofReportText(status.oneNextAction, status.repoPath)}`,
@@ -763,6 +788,16 @@ function renderCommandEvidenceReportLines(commandEvidenceEntries: SidecarCommand
   });
 }
 
+function renderVisualEvidenceReportLines(visualEvidenceEntries: VerifiedVisualEvidence[], repoPath: string): string[] {
+  if (visualEvidenceEntries.length === 0) return ["- No visual evidence captured."];
+  return visualEvidenceEntries.slice(0, 10).map((entry) => {
+    const proofPath = entry.path ? sanitizeProofReportText(entry.path, repoPath) : "no artifact path";
+    const checklist = entry.checklistItems.length > 0 ? `, checklist ${entry.checklistItems.join(", ")}` : "";
+    const issues = entry.verificationIssues.length > 0 ? `, issues ${entry.verificationIssues.join("; ")}` : "";
+    return `- ${entry.proofId}: ${entry.verificationStatus}, ${entry.source}, ${proofPath}${checklist}${issues}`;
+  });
+}
+
 function renderDurableProofBullets(items: string[], repoPath: string, fallback: string): string[] {
   const durableItems = items
     .filter((item) => !isLocalRuntimeFinding(item))
@@ -799,6 +834,7 @@ async function deriveSidecarProofStrength(input: {
   codexReport: string;
   changedFiles: ProjectControlChangedFile[];
   commandEvidenceEntries: SidecarCommandEvidenceEntry[];
+  visualEvidenceEntries: VerifiedVisualEvidence[];
   repoPath: string;
   snapshot: { repoName: string; branch?: string; commitSha?: string; gitStatusShort?: string };
   generatedAt: string;
@@ -815,11 +851,16 @@ async function deriveSidecarProofStrength(input: {
     changedFiles: evidenceFiles,
     createdAt: input.generatedAt
   });
-  const groundingResult = new EvidenceGroundingGate().evaluate({
+  const initialGroundingResult = new EvidenceGroundingGate().evaluate({
     output: claimTextForGrounding(claimText, input.repoPath, input.snapshot.branch),
     repoEvidence,
     commandEvidence
   });
+  const groundingResult = supportVisualGroundingClaims(
+    initialGroundingResult,
+    claimType,
+    input.visualEvidenceEntries
+  );
   return new ProofStrengthGate().evaluate({
     claimType,
     claimText,
@@ -827,7 +868,7 @@ async function deriveSidecarProofStrength(input: {
     commandEvidence,
     repoEvidence,
     expectedRepoPath: input.repoPath,
-    evidenceFlags: sidecarEvidenceFlags(input.codexReport)
+    evidenceFlags: sidecarEvidenceFlags(input.codexReport, input.visualEvidenceEntries)
   });
 }
 
@@ -983,20 +1024,56 @@ function compactCommandSummary(entry: ProjectControlCommandEvidenceEntry): strin
   return text.slice(0, 2400) || `${entry.command} exited ${entry.exitCode ?? "unknown"}.`;
 }
 
-function sidecarEvidenceFlags(codexReport: string): {
+function sidecarEvidenceFlags(codexReport: string, visualEvidenceEntries: VerifiedVisualEvidence[] = []): {
   visualProof: boolean;
   releasePreflight: boolean;
   releaseGate: boolean;
   rollbackPlan: boolean;
   securityProof: boolean;
 } {
+  const hasVerifiedVisualProof = visualEvidenceEntries.some((entry) => entry.verificationStatus === "verified_current_visual_proof");
   return {
-    visualProof: /\b(screenshot|playwright trace|rendered preview|visual proof|browser proof)\b/i.test(codexReport),
+    visualProof: hasVerifiedVisualProof || /\b(screenshot|playwright trace|rendered preview|visual proof|browser proof)\b/i.test(codexReport),
     releasePreflight:
       /\b(preflight|dry run|staging validated|build passed|export regenerated|regenerated export|live target fetch|target fetch|deploy command|stax-collected deploy|smoke:pipeline)\b/i.test(codexReport),
     releaseGate: /\b(release gate|deploy gate|course deploy proof|course deploy contract)\b/i.test(codexReport),
     rollbackPlan: /\brollback\b/i.test(codexReport),
     securityProof: /\b(security test|security scan|secret scan|vulnerability scan|npm audit|prompt injection test|xss test|csrf test)\b/i.test(codexReport)
+  };
+}
+
+function supportVisualGroundingClaims(
+  groundingResult: EvidenceGroundingResult,
+  claimType: ProofStrengthClaimType,
+  visualEvidenceEntries: VerifiedVisualEvidence[]
+): EvidenceGroundingResult {
+  const hasVerifiedVisualProof = visualEvidenceEntries.some((entry) => entry.verificationStatus === "verified_current_visual_proof");
+  if (claimType !== "visual_behavior_verified" || !hasVerifiedVisualProof) return groundingResult;
+  const claims = groundingResult.claims.map((claim): GroundedClaim => {
+    if (
+      claim.status === "unsupported" &&
+      (claim.kind === "completion" || claim.kind === "verification") &&
+      /\b(visual|layout|ui|rendered|screenshot|browser|responsive|accessibility)\b/i.test(claim.text)
+    ) {
+      return {
+        ...claim,
+        status: "supported",
+        support: "stax_visual_proof_manifest",
+        reason: undefined
+      };
+    }
+    return claim;
+  });
+  const supportedClaims = claims.filter((claim) => claim.status === "supported");
+  const weakClaims = claims.filter((claim) => claim.status === "weak");
+  const unsupportedClaims = claims.filter((claim) => claim.status === "unsupported");
+  return {
+    pass: unsupportedClaims.length === 0,
+    claims,
+    supportedClaims,
+    weakClaims,
+    unsupportedClaims,
+    requiredFixes: unsupportedClaims.map((claim) => `Remove or qualify unsupported ${claim.kind} claim: ${claim.text}`)
   };
 }
 
@@ -1067,6 +1144,9 @@ function deriveNextAction(
   if (verdict === "Accept") return `Record the STAX sidecar Accept, keep scope unchanged, and stop. ${STAX_ACCEPT_BOUNDARY}`;
   if (!codexReport.trim()) return "Ask Codex to write .stax/codex-report.md using the required STAX report fields.";
   if (proofSurfaceHint && (unverified.length > 0 || risk.length > 0)) return proofSurfaceHint;
+  if (/visual|screenshot|rendered|layout|ui\/layout/i.test(combined)) {
+    return `Capture first-class visual proof with npm run stax:collect-visual -- --repo ${repoPath} --path <screenshot.png> --description "<page/state verified>" --checklist "<visible outcome>", then rerun stax:gate.`;
+  }
   if (commandEvidenceEntries.length === 0 && /test|command|proof|exit code|passed/i.test(combined)) {
     return `Run npm run stax:collect -- --repo ${repoPath} -- npm test, or collect the repo's canonical proof command.`;
   }
@@ -1185,6 +1265,7 @@ async function deriveSidecarFindings(input: {
   changedFiles: ProjectControlChangedFile[];
   codexReport: string;
   commandEvidenceEntries: SidecarCommandEvidenceEntry[];
+  visualEvidenceEntries: VerifiedVisualEvidence[];
   repoPath: string;
   snapshot: { repoName: string; branch?: string; commitSha?: string };
 }): Promise<Pick<StaxGateStatus, "verified" | "weak" | "unverified" | "risk">> {
@@ -1201,8 +1282,11 @@ async function deriveSidecarFindings(input: {
   const visualChanged = roles.has("visual_style");
   const reportClaims = decomposeClaimsFromReport(report);
   const riskyRelease = reportClaims.some((claim) => claim.claimType === "release_deploy");
+  const visualClaim = reportClaims.some((claim) => claim.claimType === "visual") || /\b(visual|layout|css|screenshot|rendered|looks good)\b/i.test(report);
   const implementationClaim = /\b(implemented|fixed|done|complete|ready|works|behavior|runtime)\b/i.test(report);
   const testsPassedClaim = /\b(tests? passed|npm test passed|all tests passed|test suite passed)\b/i.test(report);
+  const currentVisualEvidence = input.visualEvidenceEntries.filter((entry) => entry.verificationStatus === "verified_current_visual_proof");
+  const nonCurrentVisualEvidence = input.visualEvidenceEntries.filter((entry) => entry.verificationStatus !== "verified_current_visual_proof");
 
   if (input.hasDiff && report.trim().length === 0) {
     unverified.push("Diff exists but .stax/codex-report.md is missing.");
@@ -1224,9 +1308,24 @@ async function deriveSidecarFindings(input: {
     unverified.push("Source/script implementation claim lacks test diff and local command evidence.");
     risk.push("Source-only no-test/proof claim blocked.");
   }
-  if (visualChanged && /\b(visual|layout|css|screenshot|rendered|looks good)\b/i.test(report) && !/\b(screenshot|playwright|rendered preview)\b/i.test(report)) {
-    unverified.push("Visual/style claim lacks rendered visual proof.");
-    risk.push("Visual proof required before accepting UI/layout claims.");
+  if (currentVisualEvidence.length > 0) {
+    for (const entry of currentVisualEvidence.slice(0, 3)) {
+      verified.push(`Visual evidence verified: ${entry.proofId} (${entry.source}) matches the current auditable worktree.`);
+    }
+  }
+  if (nonCurrentVisualEvidence.length > 0 && currentVisualEvidence.length === 0) {
+    for (const entry of nonCurrentVisualEvidence.slice(0, 3)) {
+      weak.push(`Visual evidence ignored for current proof: ${entry.proofId} is ${entry.verificationStatus}.`);
+      for (const issue of entry.verificationIssues.slice(0, 2)) weak.push(issue);
+    }
+  } else if (nonCurrentVisualEvidence.length > 0) {
+    for (const entry of nonCurrentVisualEvidence.slice(0, 3)) {
+      verified.push(`Historical visual evidence ignored for current proof because ${entry.proofId} is ${entry.verificationStatus}.`);
+    }
+  }
+  if (visualChanged && visualClaim && currentVisualEvidence.length === 0) {
+    unverified.push("Visual/style claim lacks STAX-collected rendered visual proof.");
+    risk.push("Visual proof required before accepting UI/layout claims; collect it with stax:collect-visual.");
   }
   if (riskyRelease && !/\b(approval|rollback|dry run|preflight|build passed)\b/i.test(report)) {
     unverified.push("Deploy/publish/sync/release claim lacks approval, rollback, or preflight proof.");

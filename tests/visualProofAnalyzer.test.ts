@@ -40,4 +40,18 @@ describe("visual proof analyzer", () => {
     expect(result.verdict).toBe("accept");
     expect(result.supportsVisualClaim).toBe(true);
   });
+
+  it("does not require accessibility proof for a generic layout screenshot claim", () => {
+    const result = analyzeVisualProof({
+      task: "Audit whether the course sidebar layout fix is proven.",
+      changedFiles: [],
+      description: "Course sidebar screenshot with the top menu open after responsive layout fix.",
+      source: "rendered_screenshot",
+      checklistItems: ["course page", "top menu opens", "responsive layout checked"],
+      capturedAt: "2026-05-03T12:00:00.000Z"
+    });
+
+    expect(result.verdict).toBe("accept");
+    expect(result.supportsVisualClaim).toBe(true);
+  });
 });

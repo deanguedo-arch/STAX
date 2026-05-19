@@ -1,0 +1,46 @@
+{
+  "candidateId": "cand_canvas-helper_sidecar_status_0bf013466c2c",
+  "sourceEventId": "sidecar_status_0bf013466c2c",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "170684dacc45318af746d29668dff4c0c2f3870cc376191697e32cf2364a2dc6",
+    "branch": "main",
+    "commitSha": "092b52736e482c5ce1282f43f52567b59c44e8ff"
+  },
+  "candidateType": "regression_eval",
+  "scope": "archetype",
+  "summary": "Sidecar status from canvas-helper: Course deploy claims need a dedicated proof contract: workspace source change, export regeneration, STAX-collected deploy command, live target verification, and rendered visual proof. Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough. Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task. Sidecar protocol timing should distinguish a missing acknowledgement from a capture-lag warning when the report contains the current ACK. Claim parsing should not treat URLs, prose slash phrases, or proof taxonomy labels as repo file-path claims.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "sourceKind": "sidecar_status",
+      "sourcePath": ".stax/status.json",
+      "generatedAt": "2026-05-15T21:08:58.836Z",
+      "repo": "canvas-helper",
+      "verdict": "Reject",
+      "proofStrength": {
+        "claimType": "visual_behavior_verified",
+        "label": "Strong",
+        "finalScore": 0.85,
+        "primaryLimiter": "Unsupported file_path claim: admin/profile (File path was not present in the repo evidence pack.).",
+        "capApplied": []
+      },
+      "protocolStatus": "failure",
+      "observedLessons": [
+        "Course deploy claims need a dedicated proof contract: workspace source change, export regeneration, STAX-collected deploy command, live target verification, and rendered visual proof.",
+        "Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough.",
+        "Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task.",
+        "Sidecar protocol timing should distinguish a missing acknowledgement from a capture-lag warning when the report contains the current ACK.",
+        "Claim parsing should not treat URLs, prose slash phrases, or proof taxonomy labels as repo file-path claims."
+      ],
+      "suggestedRegressionEval": "A course deploy claim must require source workspace proof, export regeneration, STAX-collected deploy evidence, live target verification, and rendered visual proof."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-16T12:41:54.091Z"
+}

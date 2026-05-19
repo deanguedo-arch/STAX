@@ -99,6 +99,34 @@ worktree fingerprint before accepting the command as strong local evidence.
 This matters because a report saying "tests passed" is weaker than a captured
 command with cwd, exit code, output, and repo context.
 
+## Visual Evidence
+
+Visual claims need first-class screenshot or checklist proof, not just prose in
+the Codex report.
+
+Register an existing screenshot:
+
+```bash
+npm run stax:collect-visual -- --repo ../my-project \
+  --path screenshot.png \
+  --description "Dashboard card after resize fix" \
+  --checklist "text fits" \
+  --checklist "mobile layout checked"
+```
+
+Or capture a URL with repo-local Playwright:
+
+```bash
+npm run stax:collect-visual -- --repo ../my-project \
+  --url http://127.0.0.1:5173/preview \
+  --viewport 1280,800 \
+  --description "Rendered preview after layout fix"
+```
+
+STAX writes a visual-proof manifest under `.stax/visual-proofs/` and verifies
+that the screenshot still matches the current auditable worktree during
+`stax:gate`.
+
 ## Gate
 
 Run:

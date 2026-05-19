@@ -1,82 +1,93 @@
 {
   "schemaVersion": "stax-sidecar-status-v1",
-  "generatedAt": "2026-05-14T20:15:04.247Z",
+  "generatedAt": "2026-05-14T20:23:45.947Z",
   "repo": "STAX",
   "repoPath": "/Users/deanguedo/Documents/GitHub/STAX",
   "branch": "main",
-  "commitSha": "4fb6f383ba33482727e289371761e6d0b573d4ea",
-  "task": "Route selected Canvas Helper sidecar candidates.\n\nGoal:\nMove selected regression/archetype candidates from the Canvas Helper sidecar\nharvest into eval-candidate review artifacts and keep Canvas Helper repo notes\nlocal/pending.\n\nAcceptance boundary:\n- Do not route Canvas Helper repo notes into global artifacts.\n- Do not route trace-only observations into durable artifacts.\n- Do not weaken proof gates.\n- Keep routed artifacts reviewable as candidates; do not convert them into active runtime rules in this turn.",
-  "verdict": "Accept",
-  "exitCode": 0,
-  "why": "Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.",
+  "commitSha": "85a0621974ceb8961b25aa3e8ac018b7a36d396b",
+  "task": "Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\n\nAcceptance boundary:\n- Answer as process guidance only.\n- Do not change STAX runtime behavior.\n- Do not promote any policy, schema, eval, memory, or training data.\n- Do not claim implementation proof beyond the commands actually run in this turn.",
+  "verdict": "Provisional",
+  "exitCode": 2,
+  "why": "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.",
   "verified": [
-    "Working-tree diff detected with 36 changed file(s).",
+    "No working-tree diff is currently present.",
     "Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.",
+    "Diff audit: accept.",
     "Command evidence classifier: strong_local_proof for npm run typecheck.",
+    "Claim-to-proof: behavior claim is fully supported.",
     "Claim-to-proof: protocol_compliance claim is fully supported.",
-    "Command evidence provenance verified: cmd_2026-05-14T20_09_31_989Z_092594e366f2.",
-    "Command evidence freshness verified: cmd_2026-05-14T20_09_31_989Z_092594e366f2 matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-14T20_08_35_644Z_31b060f341fa.",
-    "Command evidence freshness verified: cmd_2026-05-14T20_08_35_644Z_31b060f341fa matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-14T20_07_29_303Z_328e123c6385.",
-    "Command evidence freshness verified: cmd_2026-05-14T20_07_29_303Z_328e123c6385 matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-14T20_06_38_820Z_982c1455e5e7.",
-    "Command evidence freshness verified: cmd_2026-05-14T20_06_38_820Z_982c1455e5e7 matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-14T20_20_32_110Z_328e123c6385.",
+    "Command evidence freshness verified: cmd_2026-05-14T20_20_32_110Z_328e123c6385 matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7.",
+    "Command evidence freshness verified: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7 matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-14T20_18_54_427Z_31b060f341fa.",
+    "Command evidence freshness verified: cmd_2026-05-14T20_18_54_427Z_31b060f341fa matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-14T20_18_03_975Z_092594e366f2.",
+    "Command evidence freshness verified: cmd_2026-05-14T20_18_03_975Z_092594e366f2 matches the current auditable worktree.",
     "Historical command evidence ignored for current proof because npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimExtractionHardening.test.ts tests/sidecarHarvestPromote.test.ts tests/proofStrengthGate.test.ts tests/evidenceGroundingGate.test.ts tests/sidecarTurnCompliance.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfacePack.test.ts tests/repoProofSurfaceRegistry.test.ts is wrong_commit.",
     "Historical command evidence ignored for current proof because npm run stax:harvest -- --from /Users/deanguedo/Documents/GitHub/canvas-helper is wrong_commit.",
     "Historical command evidence ignored for current proof because npm test -- tests/cliProofGate.test.ts tests/sidecarAttachGate.test.ts is wrong_commit.",
     "Earlier failed command evidence exists but is superseded by a later passing npm test run.",
-    "Proof strength: Audit-grade (1) - Available proof is strong enough for this claim type.",
-    "Fresh STAX sidecar heartbeat is present (28146ms old).",
-    "Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 1382 message(s).",
-    "Protocol compliance verified: Codex acknowledged current STAX turn contract: STAX_ACK turn_2026-05-14T20-14-05-331Z_593b 88f68d9a 8e270746"
+    "Proof strength: Strong (0.86) - Available proof is strong enough for this claim type.",
+    "Fresh STAX sidecar heartbeat is present (44120ms old).",
+    "Fresh Codex turn capture is present for session 019e2820-9d25-7e93-b499-c04958e2fa0d with 16 message(s)."
   ],
-  "weak": [],
+  "weak": [
+    "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
+  ],
   "unverified": [],
   "risk": [],
-  "oneNextAction": "Record the STAX sidecar Accept, keep scope unchanged, and stop. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.",
-  "codexPrompt": "Report the STAX sidecar Accept as proof-gate status only. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness. Keep the scope unchanged, and stop.",
+  "oneNextAction": "Ask Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.",
+  "codexPrompt": "STAX Sidecar rejected or held this task because proof is incomplete.\n\nDo exactly one cleanup pass:\nAsk Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.\n\nAddress these proof gaps:\n- No specific unverified item was recorded.\n\nDo not broaden scope. Do not claim tests passed without local command evidence. Update .stax/codex-report.md, then stop.\nRisk to avoid: fake-complete reporting.",
   "proofStrength": {
     "schemaVersion": "proof-strength-v1",
-    "claimType": "verification_run",
-    "claimText": "Route selected Canvas Helper sidecar candidates.\n\nGoal:\nMove selected regression/archetype candidates from the Canvas Helper sidecar\nharvest into eval-candidate review artifacts and keep Canvas Helper repo notes\nlocal/pending.\n\nAcceptance boundary:\n- Do not route Canvas Helper repo notes into global artifacts.\n- Do not route trace-only observations into durable artifacts.\n- Do not weaken proof gates.\n- Keep routed artifacts reviewable as candidates; do not convert them into active runtime rules in this turn.\n\nSTAX acknowledgement: STAX_ACK turn_2026-05-14T20-14-05-331Z_593b 88f68d9a 8e270746\n\nObjective:\nRoute the user-approved Canvas Helper sidecar learning candidates into reviewable eval-candidate artifacts while keeping repo notes local.\n\nFiles changed:\n- docs/RAX_SIDECAR_LEARNING_EXTRACTION_REPORT.md\n- evals/candidates/cand_canvas-helper_*.json\n- queues/sidecar_imports/promoted/cand_canvas-helper_*.json\n- queues/sidecar_imports/pending/ Canvas Helper regression/archetype entries moved out\n- reports/sidecar_learning/promotion_log.jsonl\n\nTests added:\n- None. This was a governed artifact-routing step for already-harvested candidates.\n\nCommands run:\n- `npm run stax:promote-import -- --candidate <17 approved Canvas Helper regression/archetype ids> --approve`\n  - exitCode: 0 for each selected candidate\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_06_38_820Z_982c1455e5e7\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_07_29_303Z_328e123c6385\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_08_35_644Z_31b060f341fa\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_09_31_989Z_092594e366f2\n\nCommand output summary with exit codes:\n- Selected Canvas Helper candidates routed: 17.\n- Canvas Helper repo-note candidates left pending: 10.\n- Eval-candidate artifact count for Canvas Helper: 17.\n- Promoted queue record count for Canvas Helper: 17.\n- Typecheck command exitCode: 0.\n- Full test command exitCode: 0.\n- Standard eval command exitCode: 0.\n- STAX smoke command exitCode: 0.\n\nWhat is verified:\n- Selected reusable Canvas Helper lessons are now present under `evals/candidates/`.\n- Matching queue records are now present under `queues/sidecar_imports/promoted/`.\n- Canvas Helper repo-note candidates remain under `queues/sidecar_imports/pending/`.\n- The selected artifacts were staged before proof collection, so the command evidence is bound to this worktree state.\n\nWhat is weak/provisional:\n- The new eval-candidate artifacts are review inputs. They are not active runtime rules.\n\nWhat is unverified:\n- No Canvas Helper source code was changed.\n- No external command outside the STAX repo was run.\n- The remaining 10 repo-note candidates were not individually reviewed in this turn.\n\nRisks:\n- Several selected artifacts come from single-event evidence. They should become runnable regression cases before they influence runtime behavior.\n\nOne next action:\n- Convert the strongest course-delivery candidate into a focused regression eval for missing source, generated artifact, command, live-target, and visual proof.",
-    "rawScore": 1,
-    "finalScore": 1,
-    "label": "Audit-grade",
+    "claimType": "implementation_complete",
+    "claimText": "Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\n\nAcceptance boundary:\n- Answer as process guidance only.\n- Do not change STAX runtime behavior.\n- Do not promote any policy, schema, eval, memory, or training data.\n- Do not claim implementation proof beyond the commands actually run in this turn.\n\nSTAX acknowledgement: STAX_ACK turn_2026-05-14T20-22-39-241Z_5861 337f33d4 8e270746\n\nObjective:\nExplain, in simple fifth-grade-level steps, how STAX should assess whether an agent actually did what it claimed.\n\nFiles changed:\n- .stax/task.md\n- .stax/codex-report.md\n- .stax sidecar status/proof artifacts generated by observer preflight\n- .stax command-evidence pointer files generated by `stax:collect`\n\nTests added:\n- None. This turn is a conceptual/process explanation only.\n\nCommands run:\n- `sed -n '1,220p' .stax/turn-contract.json`\n  - exitCode: 0\n- `sed -n '1,220p' .stax/status.json`\n  - exitCode: 0\n- `sed -n '1,220p' .stax/next-codex-prompt.md`\n  - exitCode: 0\n- `sed -n '1,160p' .stax/task.md`\n  - exitCode: 0\n- `rg -n \"proof|confidence|completion|claim|Evidence Required|Fake-Complete|process|outcome\" /Users/deanguedo/.codex/memories/MEMORY.md`\n  - exitCode: 0\n- `rg -n \"stax:preflight|preflight|sidecar:refresh|stax:collect\" package.json`\n  - exitCode: 0\n- `sed -n '1,240p' scripts/staxPreflight.ts`\n  - exitCode: 0\n- `git status --short`\n  - exitCode: 0\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/STAX --mode observer --boundary handoff`\n  - exitCode: 0\n  - recorded verdict: Reject in observer mode\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\n  - exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_18_03_975Z_092594e366f2\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_18_54_427Z_31b060f341fa\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 0\n  - evidenceId: cmd_2026-05-14T20_20_32_110Z_328e123c6385\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/STAX --mode observer --boundary handoff`\n  - exitCode: 0\n  - recorded verdict: Provisional in observer mode\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\n  - exitCode: 0\n\nCommand output summary with exit codes:\n- Current turn contract read successfully and required acknowledgement is recorded above.\n- Initial STAX status read successfully; the first observed verdict was `Accept` for the prior repo state.\n- The first observer preflight recorded `Reject` because command evidence for smoke/eval/typecheck/test was stale and tied to an older commit.\n- `.stax/task.md` was narrowed to the current conceptual explanation task.\n- `stax:sidecar:refresh` refreshed the heartbeat/current-turn artifacts.\n- Fresh command evidence was collected for current commit `85a0621974ceb8961b25aa3e8ac018b7a36d396b`.\n- `npm run smoke:stax`, `npm run rax -- eval`, `npm run typecheck`, and `npm test` all exited 0 through `stax:collect`.\n- The second observer preflight recorded `Provisional`; command proof was strong and no unverified proof gaps remained, but heartbeat/current-turn freshness was stale before the final refresh.\n\nWhat is verified:\n- The user asked for a plain-language process explanation, not an implementation change.\n- No STAX runtime behavior was intentionally changed.\n- The required repo commands have fresh local STAX evidence on the current commit and exited 0.\n- The stale-proof gap identified by observer preflight was addressed with new command evidence.\n\nWhat is weak/provisional:\n- This answer is process guidance. It does not itself prove an arbitrary future agent outcome.\n- The initial observer preflight rejected before the fresh command evidence was collected.\n- The second observer preflight was provisional due to sidecar heartbeat/current-turn freshness before the final refresh.\n\nWhat is unverified:\n- No new STAX evaluator, schema, CLI behavior, or runtime behavior was added or modified.\n- The final answer has not been promoted into policy, memory, evals, schemas, or training data.\n\nRisks:\n- A simple explanation can make proof sound easier than it is; the final answer should preserve the distinction between \"the agent said it\" and \"local evidence proves it.\"\n- STAX sidecar artifacts were generated locally as proof/reporting state and are not product changes.\n\nOne next action:\n- Use the simple process as the checklist for future outcome claims: claim, evidence, replay, compare, risk check, verdict, record.",
+    "rawScore": 0.86,
+    "finalScore": 0.86,
+    "label": "Strong",
     "capApplied": [],
     "rejectReasons": [],
     "primaryLimiter": "Available proof is strong enough for this claim type.",
     "missingProof": [],
     "weakProof": [
-      "Weak command claim: npm run stax:promote-import -- --candidate (Command is named, but no command output was cited.).",
+      "Weak command claim: npm run stax:preflight -- --repo (Command is named, but no command output was cited.).",
+      "Weak command claim: npm run stax:sidecar:refresh -- --repo (Command is named, but no command output was cited.).",
       "Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.)."
     ],
     "strongProof": [
-      "Grounded file_path claim: docs/RAX_SIDECAR_LEARNING_EXTRACTION_REPORT.md.",
-      "Grounded file_path claim: reports/sidecar_learning/promotion_log.jsonl.",
+      "Grounded file_path claim: package.json.",
+      "Grounded file_path claim: scripts/staxPreflight.ts.",
+      "Grounded command claim: npm run smoke:stax.",
+      "Grounded command claim: npm run rax -- eval.",
       "Grounded command claim: npm run typecheck.",
       "Grounded command claim: npm test.",
-      "Grounded command claim: npm run rax -- eval.",
-      "Grounded command claim: npm run smoke:stax.",
+      "Grounded completion claim: - `rg -n \"proof|confidence|completion|claim|Evidence Required|Fake-Complete|process|outcome\" <path>`.",
       "Grounded completion claim: What is verified:.",
       "Grounded verification claim: What is verified:.",
-      "Local STAX command evidence passed: npm run smoke:stax exited 0.",
-      "Local STAX command evidence passed: npm run rax -- eval exited 0.",
       "Local STAX command evidence passed: npm test exited 0.",
       "Local STAX command evidence passed: npm run typecheck exited 0.",
-      "Verified local STAX command provenance is present for this repo state.",
-      "Rendered visual proof was supplied."
+      "Local STAX command evidence passed: npm run rax -- eval exited 0.",
+      "Local STAX command evidence passed: npm run smoke:stax exited 0.",
+      "Repo evidence enumerated source files.",
+      "Release preflight proof was supplied."
     ],
     "oneNextAction": "No proof-strength correction is needed for this claim."
   },
-  "protocolStatus": "ok",
-  "protocolFailures": [],
+  "protocolStatus": "warning",
+  "protocolFailures": [
+    {
+      "id": "current_turn_capture_missing_ack",
+      "severity": "warning",
+      "message": "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
+    }
+  ],
   "protocol": {
     "schemaVersion": "stax-protocol-compliance-v1",
-    "generatedAt": "2026-05-14T20:15:04.246Z",
+    "generatedAt": "2026-05-14T20:23:45.947Z",
     "mode": "normal",
-    "status": "ok",
-    "acknowledgedTurnContract": true,
+    "status": "warning",
+    "acknowledgedTurnContract": false,
     "codexReportPresent": true,
     "requiredSectionsPresent": [
       "STAX acknowledgement",
@@ -92,9 +103,15 @@
       "One next action"
     ],
     "missingRequiredSections": [],
-    "findings": [],
-    "acknowledgement": "STAX_ACK turn_2026-05-14T20-14-05-331Z_593b 88f68d9a 8e270746",
-    "contractTurnId": "turn_2026-05-14T20-14-05-331Z_593b"
+    "findings": [
+      {
+        "id": "current_turn_capture_missing_ack",
+        "severity": "warning",
+        "message": "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
+      }
+    ],
+    "acknowledgement": "STAX_ACK turn_2026-05-14T20-22-39-241Z_5861 337f33d4 8e270746",
+    "contractTurnId": "turn_2026-05-14T20-22-39-241Z_5861"
   },
   "cardShapeIssues": []
 }

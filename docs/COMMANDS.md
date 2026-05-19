@@ -7,6 +7,7 @@ The public product surface is:
 ```bash
 npm run stax:attach -- --repo <path>
 npm run stax:collect -- --repo <path> -- <command>
+npm run stax:collect-visual -- --repo <path> (--path <screenshot> | --url <url>) --description <text>
 npm run stax:gate -- --repo <path>
 npm run stax:status -- --repo <path>
 npm run stax:next -- --repo <path>
@@ -19,6 +20,7 @@ The built/installed CLI shape is:
 ```bash
 stax attach --repo <path>
 stax collect --repo <path> -- <command>
+stax collect-visual --repo <path> --path <screenshot> --description <text>
 stax gate --repo <path>
 stax status --repo <path>
 stax next --repo <path>
@@ -73,6 +75,29 @@ hashes, evidence JSON hash, repo/cwd/branch/commit context, and current
 auditable-worktree fingerprint before treating a command as strong local proof.
 Set `STAX_EVIDENCE_ROOT` to override the evidence root for tests or isolated
 workspaces.
+
+`stax:collect-visual` stores screenshot/checklist proof in the attached sidecar:
+
+```bash
+npm run stax:collect-visual -- --repo ../my-project \
+  --path screenshot.png \
+  --description "Dashboard card after resize fix" \
+  --checklist "text fits" \
+  --checklist "mobile layout checked"
+```
+
+It can also capture a URL through repo-local Playwright when the target repo has
+Playwright available:
+
+```bash
+npm run stax:collect-visual -- --repo ../my-project \
+  --url http://127.0.0.1:5173/preview \
+  --viewport 1280,800 \
+  --description "Rendered preview after layout fix"
+```
+
+The gate verifies `.stax/visual-proofs/manifest.json`, the screenshot hash, and
+the current auditable worktree before using a screenshot as visual proof.
 
 `stax attach` also updates the repo `.gitignore` so the safe durable sidecar
 artifacts can be tracked while raw runtime files remain ignored:

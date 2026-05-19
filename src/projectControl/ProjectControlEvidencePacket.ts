@@ -51,7 +51,8 @@ export const ProjectControlVisualEvidenceSchema = z.object({
   path: z.string().min(1).optional(),
   description: z.string().min(1),
   capturedAt: z.string().datetime().optional(),
-  source: z.enum(["rendered_screenshot", "manual_visual_checklist", "playwright_trace"]).default("rendered_screenshot")
+  source: z.enum(["rendered_screenshot", "manual_visual_checklist", "playwright_trace"]).default("rendered_screenshot"),
+  checklistItems: z.array(z.string().min(1)).optional()
 });
 
 export const ProjectControlHumanApprovalSchema = z.object({

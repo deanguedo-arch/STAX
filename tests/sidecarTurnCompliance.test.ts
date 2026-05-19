@@ -6,7 +6,7 @@ import { checkTurnCompliance } from "../src/sidecar/TurnCompliance.js";
 import { readTurnContract, writeTurnContract } from "../src/sidecar/TurnContract.js";
 import { writeSidecarHeartbeat } from "../src/sidecar/CodexTurnCapture.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
-import { createTempGitRepo } from "./sidecarTestHelpers.js";
+import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 async function writeReport(repoPath: string, text: string): Promise<void> {
   await fs.writeFile(path.join(repoPath, ".stax", "codex-report.md"), text, "utf8");
@@ -41,6 +41,30 @@ async function writeCurrentTurn(repoPath: string, text: string): Promise<void> {
           path: path.join(repoPath, "codex-sessions", "rollout-session.jsonl"),
           hash: "a".repeat(64),
           modifiedAt: "2026-05-05T18:23:00.000Z"
+        },
+        messageCount: 1,
+        messages: [{ role: "assistant", text }]
+      },
+      null,
+      2
+    )}\n`,
+    "utf8"
+  );
+}
+
+async function writeFreshCurrentTurn(repoPath: string, text: string): Promise<void> {
+  const now = new Date().toISOString();
+  await fs.writeFile(
+    path.join(repoPath, ".stax", "current-turn.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: "stax-codex-turn-v1",
+        capturedAt: now,
+        sessionId: "session-ack",
+        source: {
+          path: path.join(repoPath, "codex-sessions", "rollout-session.jsonl"),
+          hash: "b".repeat(64),
+          modifiedAt: now
         },
         messageCount: 1,
         messages: [{ role: "assistant", text }]
@@ -249,6 +273,25 @@ describe("STAX turn compliance", () => {
     expect(result.pass).toBe(false);
     expect(result.severity).toBe("weak");
     expect(result.issues.map((issue) => issue.message).join("\n")).toContain("capture lag");
+  });
+
+  it("gate treats current-turn capture lag as non-blocking when the report has the current ACK", async () => {
+    const repoPath = await createTempGitRepo("stax-turn-current-capture-lag-gate-");
+    await attachStaxToRepo(repoPath);
+    await updateSidecarConfig(repoPath, { runtimeFreshnessMode: "manual" });
+    await commitFile(repoPath, "docs/current.md", "old\n");
+    await fs.writeFile(path.join(repoPath, "docs", "current.md"), "new\n", "utf8");
+    const contract = await readTurnContract(repoPath);
+    await writeReport(repoPath, compliantReport(contract?.requiredAcknowledgement ?? ""));
+    await writeFreshCurrentTurn(repoPath, "Captured before the final report update.");
+    await writeSidecarHeartbeat({ repoPath });
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.protocolStatus).toBe("warning");
+    expect(status.verified.join("\n")).toContain("Protocol warning recorded as non-blocking");
+    expect(status.weak.join("\n")).not.toContain("Current Codex turn capture does not contain");
   });
 
   it("Attach protocol includes STAX acknowledgement requirement", () => {

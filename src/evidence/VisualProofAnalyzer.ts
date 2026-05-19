@@ -24,6 +24,9 @@ export function analyzeVisualProof(input: VisualProofAnalyzerInput): VisualProof
   const mentionsWrongPage = /\bwrong page|wrong state|unrelated screen|marketing home\b/.test(text);
   const mentionsMobile = /\bmobile|responsive|desktop width|tablet\b/.test(text);
   const mentionsAccessibility = /\baccessibility|a11y|axe|screen reader\b/.test(text);
+  const claimsAccessibility =
+    /\baccessibility|a11y|axe|screen reader\b/.test(taskText) ||
+    /\baccessibility|a11y|axe|screen reader\b/.test(text);
 
   if (!hasScreenshot && !hasChecklist && !hasTrace) {
     findings.push(finding("missing_visual_artifact", "critical", "No screenshot, checklist, or visual trace artifact was supplied."));
@@ -49,7 +52,7 @@ export function analyzeVisualProof(input: VisualProofAnalyzerInput): VisualProof
     findings.push(finding("mobile_responsive_unchecked", "warning", "The visual proof does not mention mobile or responsive coverage."));
   }
 
-  if ((/\baccessibility\b|\bvisible\b|\blayout\b|\bui\b/.test(text) || /\baccessibility\b/.test(taskText)) && !mentionsAccessibility) {
+  if (claimsAccessibility && !mentionsAccessibility) {
     findings.push(finding("accessibility_unchecked", "warning", "The visual proof does not mention any accessibility check."));
   }
 

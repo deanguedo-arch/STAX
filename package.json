@@ -15,6 +15,7 @@
     "stax": "tsx src/cli.ts",
     "stax:attach": "tsx scripts/staxAttach.ts",
     "stax:collect": "tsx scripts/staxCollect.ts",
+    "stax:collect-visual": "tsx scripts/staxCollectVisual.ts",
     "stax:gate": "tsx scripts/staxGate.ts",
     "stax:preflight": "tsx scripts/staxPreflight.ts",
     "stax:status": "tsx scripts/staxStatus.ts",
