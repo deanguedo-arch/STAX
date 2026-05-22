@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { promisify } from "node:util";
 import { ChatSession } from "./chat/ChatSession.js";
 import { createCorrection, promoteCorrection } from "./core/Corrections.js";
 import { loadConfig, mergeConfig } from "./core/ConfigLoader.js";
@@ -97,6 +95,10 @@ import {
   summarizeDoctrineTrend
 } from "./staxcore/core/release/DoctrineTrend.js";
 import { renderReleaseMarkdownReport } from "./staxcore/core/release/ReleaseMarkdownReport.js";
+import {
+  runStaxCoreCheck,
+  type StaxCoreCommandCheck
+} from "./staxcore/core/release/ReleaseCommandRunner.js";
 
 type ParsedArgs = {
   command: string;
@@ -141,8 +143,6 @@ const knownCommands = new Set([
   "doctor",
   "help"
 ]);
-
-const execFileAsync = promisify(execFile);
 
 function parseArgs(argv: string[]): ParsedArgs {
   const first = argv[0];
@@ -1259,94 +1259,6 @@ async function autoAdvanceCommand(args: ParsedArgs): Promise<void> {
     return;
   }
   throw new Error("Usage: rax auto-advance sandbox|patch-window|command-window|bootstrap|run-packet brightspace-rollup ...");
-}
-
-type StaxCoreCommandCheck = {
-  name:
-    | "typecheck"
-    | "tests"
-    | "evalFixtureAudit"
-    | "eval"
-    | "regressionEval"
-    | "redteamEval"
-    | "doctrineAudit"
-    | "boundaryAudit"
-    | "securityAudit";
-  command: string;
-  passed: boolean;
-  exitCode: number;
-  durationMs: number;
-  stdoutPreview: string;
-  stderrPreview: string;
-};
-
-function previewOutput(text: string, max = 2400): string {
-  if (text.length <= max) return text;
-  return `${text.slice(0, max)}\n...[truncated]`;
-}
-
-async function runStaxCoreCheck(
-  name: StaxCoreCommandCheck["name"],
-  command: string[],
-  cwd: string
-): Promise<StaxCoreCommandCheck> {
-  const started = Date.now();
-  let passed = false;
-  let exitCode = 0;
-  let stdout = "";
-  let stderr = "";
-
-  try {
-    const result = await execFileAsync(command[0]!, command.slice(1), {
-      cwd,
-      env: sanitizedNestedCommandEnv(process.env),
-      maxBuffer: 16 * 1024 * 1024
-    });
-    stdout = result.stdout;
-    stderr = result.stderr;
-    passed = true;
-  } catch (error) {
-    const cause = error as {
-      code?: number | string;
-      stdout?: string;
-      stderr?: string;
-      message?: string;
-    };
-    stdout = cause.stdout ?? "";
-    stderr = cause.stderr ?? cause.message ?? "";
-    exitCode = typeof cause.code === "number" ? cause.code : 1;
-    passed = false;
-  }
-
-  return {
-    name,
-    command: command.join(" "),
-    passed,
-    exitCode,
-    durationMs: Date.now() - started,
-    stdoutPreview: previewOutput(stdout),
-    stderrPreview: previewOutput(stderr)
-  };
-}
-
-function sanitizedNestedCommandEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
-  const next: NodeJS.ProcessEnv = { ...env };
-  for (const key of Object.keys(next)) {
-    if (
-      key === "INIT_CWD" ||
-      key === "npm_command" ||
-      key === "npm_execpath" ||
-      key === "npm_node_execpath" ||
-      key === "npm_package_json" ||
-      key === "npm_lifecycle_event" ||
-      key === "npm_lifecycle_script" ||
-      key.startsWith("npm_config_") ||
-      key.startsWith("npm_package_")
-    ) {
-      delete next[key];
-    }
-  }
-  return next;
 }
 
 async function countFixtureJsonFiles(folder: string): Promise<number> {
