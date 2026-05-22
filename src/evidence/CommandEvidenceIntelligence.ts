@@ -182,7 +182,7 @@ function parseOutputSignals(command: string, output: string): ParsedOutputSignal
   const skipped = outputIndicatesSkippedOrPending(normalized);
   const partial = /\b(truncated|partial log|snip|\.\.\.|incomplete|timed out)\b/.test(normalized);
 
-  const failed = outputIndicatesFailure(normalized);
+  const failed = outputIndicatesFailure(normalized, commandFamily);
   const passed = !failed && detectPassedSignal(commandFamily, normalized);
   const warningCount = countRegex(normalized, /\bwarning\b/g);
   const testCount = detectTestCount(normalized);
@@ -222,7 +222,11 @@ function detectPassedSignal(commandFamily: CommandEvidenceFamily, output: string
   }
 }
 
-function outputIndicatesFailure(output: string): boolean {
+function outputIndicatesFailure(output: string, commandFamily: CommandEvidenceFamily): boolean {
+  if (["eval", "regression", "redteam"].includes(commandFamily) && hasPassingEvalSummary(output)) {
+    return false;
+  }
+
   const withoutZeroFailures = output
     .replace(/"failed"\s*:\s*0/g, "")
     .replace(/"criticalfailures"\s*:\s*0/g, "")
@@ -235,6 +239,26 @@ function outputIndicatesFailure(output: string): boolean {
     .replace(/\b0\s+errors?\b/g, "")
     .replace(/\berrors?\b[^\n\r]{0,24}\bnone\b/g, "");
   return /\b(failed|failure|error|errors|panic|traceback|not ok|exited with code 1|exit code 1)\b/.test(withoutZeroFailures);
+}
+
+function hasPassingEvalSummary(output: string): boolean {
+  const hasPassedSummary = /"passed"\s*:\s*[1-9]\d*/.test(output) || /\bpassed\s*[:=]\s*[1-9]\d*/.test(output);
+  const hasZeroFailures =
+    /"failed"\s*:\s*0/.test(output) ||
+    /\bfailed\s*[:=]\s*0\b/.test(output) ||
+    /\b0\s+failed\b/.test(output);
+  const hasZeroCriticalFailures =
+    /"criticalfailures"\s*:\s*0/.test(output) ||
+    /\bcriticalfailures\s*[:=]\s*0\b/.test(output) ||
+    /\bcritical\s+failures?\s*[:=]\s*0\b/.test(output);
+  const hasNonZeroFailures =
+    /"failed"\s*:\s*[1-9]\d*/.test(output) ||
+    /\bfailed\s*[:=]\s*[1-9]\d*\b/.test(output) ||
+    /\b[1-9]\d*\s+failed\b/.test(output) ||
+    /"criticalfailures"\s*:\s*[1-9]\d*/.test(output) ||
+    /\bcriticalfailures\s*[:=]\s*[1-9]\d*\b/.test(output) ||
+    /\bcritical\s+failures?\s*[:=]\s*[1-9]\d*\b/.test(output);
+  return hasPassedSummary && hasZeroFailures && hasZeroCriticalFailures && !hasNonZeroFailures;
 }
 
 function outputIndicatesCancellation(output: string): boolean {

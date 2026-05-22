@@ -13,7 +13,7 @@ import {
 import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
 import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
-import { collectVisualEvidence } from "../src/sidecar/VisualEvidenceCollector.js";
+import { collectVisualEvidence, resolveSpawnCommand } from "../src/sidecar/VisualEvidenceCollector.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 function useTestExternalEvidenceRoot(repoPath: string): void {
@@ -448,6 +448,109 @@ describe("STAX sidecar attach and gate", () => {
     const latestProofReport = await fs.readFile(path.join(repoPath, ".stax", "reports", "latest-proof-report.md"), "utf8");
     expect(latestProofReport).toContain("## Visual Evidence");
     expect(latestProofReport).toContain("verified_current_visual_proof");
+  });
+
+  it("accepts visual proof refreshes when there is no source diff", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-refresh-");
+    useTestExternalEvidenceRoot(repoPath);
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(repoPath, "projects/course-showcase/workspace/index.html", "<main>Course Showcase</main>\n");
+    await commitFile(
+      repoPath,
+      "package.json",
+      `${JSON.stringify(
+        {
+          scripts: {
+            "test:showcase": "node -e \"console.log('../../dist/studio/index.html'); console.log('../../dist/studio/assets/index.css')\""
+          }
+        },
+        null,
+        2
+      )}\n`
+    );
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "test:showcase"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, ".stax", "manual-shot.png"), "fake screenshot bytes\n", "utf8");
+    const visual = await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "manual-shot.png"),
+      description: "Course Showcase rendered screenshot current-head visual proof after ledger refresh.",
+      checklistItems: [
+        "LDC filter shows Learning Strategies 15, 25, and 35",
+        "Wellness filter includes Mental Health & Wellness",
+        "Published page renders without a blank screen"
+      ]
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: Refresh current-head local evidence for Course Showcase.",
+        "Files changed: .stax/codex-report.md and .stax/visual-proofs/manifest.json",
+        "Tests added: none",
+        "Commands run: npm run test:showcase and visual proof collection exited 0",
+        `Command output summary with exit codes: ${evidence.evidenceId} exited 0 and visual proof collection exited 0`,
+        `What is verified: rendered screenshot proof exists at ${visual.proofPath} with a visual checklist.`,
+        "What is weak/provisional: no source diff is part of this proof refresh",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.verified.join("\n")).toContain("No working-tree diff is currently present.");
+    expect(status.verified.join("\n")).toContain("Visual evidence verified:");
+    expect(status.verified.join("\n")).toContain("Claim-to-proof: visual claim is fully supported.");
+    expect(status.unverified.join("\n")).not.toContain("rendered_visual_proof");
+  });
+
+  it("uses npm CLI entrypoints when spawning package binaries on Windows", () => {
+    const npmExecPath = "C:\\tools\\node\\node_modules\\npm\\bin\\npm-cli.js";
+    const npxExecPath = "C:\\tools\\node\\node_modules\\npm\\bin\\npx-cli.js";
+
+    expect(resolveSpawnCommand("npx", ["--no-install"], {
+      platform: "win32",
+      execPath: "C:\\tools\\node\\node.exe",
+      env: { npm_execpath: npmExecPath }
+    })).toEqual({
+      executable: "C:\\tools\\node\\node.exe",
+      args: [npxExecPath, "--no-install"]
+    });
+    expect(resolveSpawnCommand("npm", ["run", "test"], {
+      platform: "win32",
+      execPath: "C:\\tools\\node\\node.exe",
+      env: { npm_execpath: npmExecPath }
+    })).toEqual({
+      executable: "C:\\tools\\node\\node.exe",
+      args: [npmExecPath, "run", "test"]
+    });
+    expect(resolveSpawnCommand("node", ["--version"], { platform: "win32" })).toEqual({
+      executable: "node",
+      args: ["--version"]
+    });
+    expect(resolveSpawnCommand("npx", ["--no-install"], { platform: "linux" })).toEqual({
+      executable: "npx",
+      args: ["--no-install"]
+    });
   });
 
   it("rejects visual claims until screenshot proof is collected through the sidecar", async () => {

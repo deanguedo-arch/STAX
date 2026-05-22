@@ -244,6 +244,46 @@ describe("command evidence intelligence", () => {
     expect(result.status).toBe("passed");
   });
 
+  it("does not treat passing regression eval case text about failures as failed proof", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run rax -- eval --regression",
+      cwd: "/Users/deanguedo/Documents/GitHub/STAX",
+      repo: "STAX",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: JSON.stringify(
+        {
+          total: 49,
+          passed: 49,
+          failed: 0,
+          passRate: 1,
+          criticalFailures: 0,
+          results: [
+            {
+              name: "strategy_mode_requires_kill_criteria",
+              status: "pass",
+              actual: "Red-Team Failure Modes: could overfit without proof.",
+              failReasons: [],
+              critical: true
+            }
+          ]
+        },
+        null,
+        2
+      ),
+      expectedRepo: "STAX",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.commandFamily).toBe("regression");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+  });
+
   it("still flags positive skipped/todo/cancelled command-summary counts", () => {
     const result = classifyCommandEvidence({
       command: "npm run test:e2e:harness",

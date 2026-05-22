@@ -40,7 +40,7 @@ STAX is strong for Codex/repo project-control:
 - Phase B executable: STAX 7, ChatGPT 0, ties 13
 - zero STAX critical misses in promotion window
 - pattern promotion locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe
-- local STAX impact evidence import: 1 bundle, 0 critical misses, full handoff/proof-artifact request present
+- current operating-window impact imports: 2 bundles, 0 critical misses, full handoff/proof-artifact request present for STAX and Canvas Helper
 
 ## Implemented Since Current Baseline
 
@@ -52,6 +52,9 @@ STAX is strong for Codex/repo project-control:
 - ProofSurfaceMatcher v1
 - PatternPromotionImpactTracker with locked replay versus imported live-evidence separation
 - impact evidence export/import bundle flow for cross-machine repo proof
+- Canvas Helper impact evidence pull plus promoted course-deploy proof regression
+- course-deploy proof mapping for export regeneration and live target verification backed by strong local command evidence
+- visual proof refresh handling for no-source-diff sidecar checks with build-log artifact paths
 - public sidecar attach flow documentation
 - GitHub-facing hardening audit artifact
 
@@ -60,7 +63,9 @@ STAX is strong for Codex/repo project-control:
 - doc/report consistency
 - proof-surface matching precision beyond adversarial v1 fixtures
 - real repo observer trial volume
-- multi-repo current operating-window imports from the work-terminal repos are still pending
+- more multi-repo current operating-window imports from the work-terminal repos are still pending
+- attached-repo command-evidence ledgers can still need cleanup after stale historical records, even though current-proof promotion now has regression coverage
+- stale attached-repo sidecar status can lag behind the current repo head after later commits
 - unusual-repo proof-surface discovery edge cases
 - complexity debt and archived report surface area
 - large runtime, CLI, and session modules that may need focused compression
@@ -73,3 +78,4 @@ STAX is strong for Codex/repo project-control:
 - docs/RAX_PROOF_SURFACE_MATCHER_ADVERSARIAL_REPORT.md
 - docs/RAX_REAL_SIDECAR_UPGRADE_TRIAL_REPORT.md
 - docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
+- reports/sidecar_learning/canvas-helper-learning-pull-2026-05-22.md

@@ -19,6 +19,7 @@ import { refreshSidecar } from "../src/sidecar/SidecarRefresh.js";
 import { sha256 } from "../src/sidecar/SidecarRepo.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
+import { collectVisualEvidence } from "../src/sidecar/VisualEvidenceCollector.js";
 import { collectWorktreeFingerprint, stableHash } from "../src/sidecar/WorktreeFingerprint.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
@@ -411,6 +412,107 @@ describe("STAX sidecar watch and collect", () => {
     expect(status.unverified.join("\n")).not.toContain("wrong_worktree");
     expect(status.risk.join("\n")).not.toContain("wrong_worktree");
     expect(status.verified.join("\n")).toContain("Historical command evidence ignored for current proof");
+  });
+
+  it("keeps stale Canvas Helper deploy failures historical once current course-deploy proof exists", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-canvas-helper-course-deploy-");
+    await fs.writeFile(
+      path.join(repoPath, "package.json"),
+      `${JSON.stringify({
+        scripts: {
+          "export:google-hosted": "node -e \"console.log('export regenerated')\"",
+          "deploy:google-hosted": "node -e \"console.log('deploy completed')\"",
+          "live:verify": "node -e \"console.log('live target fetch ok')\""
+        }
+      }, null, 2)}\n`,
+      "utf8"
+    );
+    await fs.mkdir(path.join(repoPath, "scripts"), { recursive: true });
+    await fs.writeFile(
+      path.join(repoPath, "scripts", "publish-forensics.js"),
+      "console.error('publish-forensics.bat failed'); process.exit(1);\n",
+      "utf8"
+    );
+    await collectCommandEvidence({
+      repoPath,
+      command: ["node", "scripts/publish-forensics.js"],
+      writeLearningEvent: false
+    });
+    await fs.mkdir(path.join(repoPath, "projects", "forensics25", "workspace"), { recursive: true });
+    await fs.writeFile(
+      path.join(repoPath, "projects", "forensics25", "workspace", "main.js"),
+      "export const courseDeployState = 'fixed';\n",
+      "utf8"
+    );
+    await fs.mkdir(path.join(repoPath, "dist", "google-hosted"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "dist", "google-hosted", "index.html"), "<main>Fixed Forensics course</main>\n", "utf8");
+    const exported = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "export:google-hosted"],
+      writeLearningEvent: false
+    });
+    const deployed = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "deploy:google-hosted"],
+      allowRisky: true,
+      writeLearningEvent: false
+    });
+    const live = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "live:verify"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(path.join(repoPath, ".stax", "course-live-shot.png"), "fake live course screenshot bytes\n", "utf8");
+    const visual = await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "course-live-shot.png"),
+      description: "Canvas Helper Forensics Google-hosted course screenshot after the deployed fix.",
+      checklistItems: ["course page", "fixed content visible", "live target checked"]
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify Canvas Helper course deploy proof.",
+        "Files changed:",
+        "- projects/forensics25/workspace/main.js",
+        "- dist/google-hosted/index.html",
+        "Tests added: regression coverage for stale Canvas Helper deploy evidence.",
+        "Commands run:",
+        "- npm run export:google-hosted",
+        "- npm run deploy:google-hosted",
+        "- npm run live:verify",
+        "Command output summary with exit codes:",
+        [
+          `${exported.evidenceId} exit code 0;`,
+          `${deployed.evidenceId} exit code 0;`,
+          `${live.evidenceId} exit code 0.`
+        ].join(" "),
+        "What is verified:",
+        [
+          "the Canvas Helper Google-hosted course is deployed live and ready with source workspace diff,",
+          "export regenerated, human-approved STAX-collected deploy command, live target fetch, rendered screenshot proof,",
+          `and visual artifact ${visual.proofPath}.`
+        ].join(" "),
+        "What is weak/provisional: old failed publish-forensics evidence is retained only as history.",
+        "What is unverified: none.",
+        "Risks: rollback plan is to restore the previous hosted artifact if live verification fails.",
+        "One next action: accept the current proof and keep stale deploy failures historical.",
+        ""
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.proofStrength?.claimType).toBe("course_deploy_ready");
+    expect(status.proofStrength?.capApplied.map((cap) => cap.id)).not.toContain("course_deploy_without_visual_proof");
+    expect(status.proofStrength?.capApplied.map((cap) => cap.id)).not.toContain("course_deploy_without_target_proof");
+    expect(status.verified.join("\n")).toContain("Historical command evidence ignored for current proof");
+    expect(status.verified.join("\n")).toContain("Visual evidence verified:");
+    expect(status.unverified.join("\n")).not.toContain("publish-forensics");
+    expect(status.risk.join("\n")).not.toContain("publish-forensics");
+    expect(status.risk.join("\n")).not.toContain("wrong_worktree");
   });
 
   it("rejects command evidence after an untracked relevant source file appears", async () => {

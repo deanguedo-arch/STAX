@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "sidecar-promoted-candidate-v1",
+  "promotedAt": "2026-05-22T17:36:28.852Z",
+  "decision": {
+    "candidateId": "cand_canvas-helper_sidecar_status_e8d6dd1f0652",
+    "classification": "schema_contract_rule",
+    "recommendedAction": "hold_local",
+    "promotable": false,
+    "strengthScore": 4,
+    "strengthLabel": "moderate",
+    "blockers": [
+      "no test backing"
+    ],
+    "boosters": [
+      "real-run backed",
+      "cross-repo reusable"
+    ],
+    "recommendedQueueType": "trace_only",
+    "promotionTarget": "none",
+    "reason": "The candidate describes a structured contract weakness rather than a single result. It remains local evidence for now because no test backing.",
+    "requiredEvidence": [
+      "source trace",
+      "original report or command evidence"
+    ],
+    "expectedFutureBehaviorChange": "No durable behavior change until a reusable pattern is proven.",
+    "autoPromote": false,
+    "requiresHumanApproval": true
+  },
+  "candidate": {
+    "candidateId": "cand_canvas-helper_sidecar_status_e8d6dd1f0652",
+    "sourceEventId": "sidecar_status_e8d6dd1f0652",
+    "sourceRepo": {
+      "name": "canvas-helper",
+      "pathHash": "d11c93fdfd603e48161f4480ac82b4e03cc84880432ef69b8b9916c5f3294a20",
+      "branch": "main",
+      "commitSha": "de9b43700d4ab8e7b7593fb82782c18ff4f2b9f3"
+    },
+    "candidateType": "regression_eval",
+    "scope": "archetype",
+    "summary": "Sidecar status from canvas-helper: Course deploy claims need a dedicated proof contract: workspace source change, export regeneration, STAX-collected deploy command, live target verification, and rendered visual proof. Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough. Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task. Command output is strong proof only when collected through verified STAX command evidence for the target repo/worktree. Sidecar protocol timing should distinguish a missing acknowledgement from a capture-lag warning when the report contains the current ACK. Claim parsing should not treat URLs, prose slash phrases, or proof taxonomy labels as repo file-path claims.",
+    "proposedArtifact": {
+      "destinationHint": "evals/candidates/",
+      "payload": {
+        "sourceKind": "sidecar_status",
+        "sourcePath": ".stax/status.json",
+        "generatedAt": "2026-05-21T21:37:59.732Z",
+        "repo": "canvas-helper",
+        "verdict": "Reject",
+        "proofStrength": {
+          "claimType": "course_deploy_ready",
+          "label": "Reject",
+          "finalScore": 0,
+          "primaryLimiter": "Failed command evidence: cmd.exe /c publish-forensics.bat exited 1.",
+          "capApplied": [
+            {
+              "id": "unverified_local_command_provenance",
+              "maxLabel": "Provisional",
+              "reason": "A local STAX command label is only strong proof after provenance verification."
+            }
+          ]
+        },
+        "protocolStatus": "failure",
+        "observedLessons": [
+          "Course deploy claims need a dedicated proof contract: workspace source change, export regeneration, STAX-collected deploy command, live target verification, and rendered visual proof.",
+          "Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough.",
+          "Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task.",
+          "Command output is strong proof only when collected through verified STAX command evidence for the target repo/worktree.",
+          "Sidecar protocol timing should distinguish a missing acknowledgement from a capture-lag warning when the report contains the current ACK.",
+          "Claim parsing should not treat URLs, prose slash phrases, or proof taxonomy labels as repo file-path claims."
+        ],
+        "suggestedRegressionEval": "A course deploy claim must require source workspace proof, export regeneration, STAX-collected deploy evidence, live target verification, and rendered visual proof."
+      }
+    },
+    "requiresHumanApproval": true,
+    "status": "pending",
+    "privacy": {
+      "redactionStatus": "clean",
+      "redactionNotes": []
+    },
+    "createdAt": "2026-05-22T17:03:19.523Z"
+  }
+}

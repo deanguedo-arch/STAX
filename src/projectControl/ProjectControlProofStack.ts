@@ -291,7 +291,7 @@ function renderStructuredCommandOutput(entry: NonNullable<ProjectControlProofSta
 }
 
 function resolveChangedFiles(input: ProjectControlProofStackInput, combined: string): DiffChangedFileInput[] {
-  if (input.changedFiles && input.changedFiles.length > 0) {
+  if (input.changedFiles !== undefined && input.changedFiles.length > 0) {
     return input.changedFiles.map((file) => ({
       path: file.newPath ?? file.path,
       changeType: file.changeType,
@@ -320,6 +320,8 @@ function resolveChangedFiles(input: ProjectControlProofStackInput, combined: str
       }));
     }
   }
+
+  if (input.changedFiles !== undefined) return [];
 
   return detectChangedFiles(combined);
 }
@@ -409,6 +411,8 @@ function deriveProofItems(
   const dataQuality = evaluateDataProof(dataProofArtifacts, claim.claimType, combined);
   const releaseQuality = evaluateReleaseProof(releaseProofArtifacts, claim.claimType, combined);
   const hasBehaviorCommand = hasStrongBehaviorCommandEvidence(commandEvidenceEntries, commandInsight);
+  const hasExportRegenerationProof = /\b(?:build|export regenerated|regenerated export)\b/i.test(combined);
+  const hasLiveTargetProof = /\b(?:target sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json|target validated|target environment verified|live target fetch|target fetch|live target checked)\b/i.test(combined);
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -572,15 +576,15 @@ function deriveProofItems(
               ? "strong"
               : "weak"
             : "missing"
-          : /\bbuild\b/i.test(combined) && strongCommand
+          : hasExportRegenerationProof && strongCommand
             ? "strong"
-            : /\bbuild\b/i.test(combined)
+            : hasExportRegenerationProof
               ? "weak"
               : "missing",
         releaseQuality
           ? renderReleaseQualityDescription(releaseQuality)
-          : /\bbuild\b/i.test(combined)
-            ? "Build-related evidence mentioned."
+          : hasExportRegenerationProof
+            ? "Build/export evidence mentioned."
             : "No build proof detected."
       );
       push("command_evidence_after_diff", strongCommand ? "strong" : weakCommand ? "weak" : "missing", strongCommand ? "Strong local command evidence present." : weakCommand ? "Only weak/partial command evidence present." : "No command evidence after diff.");
@@ -592,13 +596,15 @@ function deriveProofItems(
               ? "strong"
               : "weak"
             : "missing"
-          : /\btarget sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json\b/i.test(combined)
-            ? "weak"
+          : hasLiveTargetProof && strongCommand
+            ? "strong"
+            : hasLiveTargetProof
+              ? "weak"
             : "missing",
         releaseQuality
           ? renderReleaseQualityDescription(releaseQuality)
-          : /\btarget sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json\b/i.test(combined)
-            ? "Target environment mentioned but not fully proven."
+          : hasLiveTargetProof
+            ? "Target environment proof mentioned."
             : "No target environment proof detected."
       );
       push(

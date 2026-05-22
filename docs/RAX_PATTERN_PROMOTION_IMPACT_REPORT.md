@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-19T16:47:32.069Z
+Generated: 2026-05-22T17:03:56.960Z
 
 ## Claim Separation
 
@@ -30,14 +30,15 @@ Regressed: 0
 
 ## Current Operating Window Imports
 
-Status: 1 imported bundle(s), 0 critical miss(es)
-Full handoff contracts: 1/1
-Proof artifacts requested: 1/1
-Cleanup prompts needed: 1/1
+Status: 2 imported bundle(s), 0 critical miss(es)
+Full handoff contracts: 2/2
+Proof artifacts requested: 2/2
+Cleanup prompts needed: 2/2
 
 ### Imported Bundles
 
 - STAX: improved; commands=182; artifacts=5; failures: none
+- canvas-helper: improved; commands=100; artifacts=9; failures: none
 
 ## Boundary
 

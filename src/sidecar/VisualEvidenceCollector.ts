@@ -239,7 +239,8 @@ async function captureScreenshotWithPlaywright(input: {
 
 function runProcess(command: string, args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
+    const resolvedCommand = resolveSpawnCommand(command, args);
+    const child = spawn(resolvedCommand.executable, resolvedCommand.args, {
       cwd,
       shell: false,
       stdio: ["ignore", "pipe", "pipe"]
@@ -251,9 +252,35 @@ function runProcess(command: string, args: string[], cwd: string): Promise<void>
     child.on("error", reject);
     child.on("close", (code) => {
       if (code === 0) resolve();
-      else reject(new Error(stderr.trim() || `${command} ${args.join(" ")} exited ${code ?? "unknown"}`));
+      else reject(new Error(stderr.trim() || `${resolvedCommand.executable} ${resolvedCommand.args.join(" ")} exited ${code ?? "unknown"}`));
     });
   });
+}
+
+export function resolveSpawnCommand(
+  command: string,
+  args: string[],
+  options: {
+    platform?: NodeJS.Platform;
+    execPath?: string;
+    env?: NodeJS.ProcessEnv;
+  } = {}
+): { executable: string; args: string[] } {
+  const platform = options.platform ?? process.platform;
+  if (platform !== "win32") return { executable: command, args };
+  if (!/^(npm|npx)$/i.test(command)) return { executable: command, args };
+
+  const env = options.env ?? process.env;
+  const execPath = options.execPath ?? process.execPath;
+  const npmExecPath = env.npm_execpath?.trim();
+  const cliPath = command.toLowerCase() === "npm"
+    ? npmExecPath
+    : npmExecPath
+      ? path.join(path.dirname(npmExecPath), "npx-cli.js")
+      : path.join(path.dirname(execPath), "node_modules", "npm", "bin", "npx-cli.js");
+
+  if (cliPath) return { executable: execPath, args: [cliPath, ...args] };
+  return { executable: `${command}.cmd`, args };
 }
 
 async function hashFile(filePath: string): Promise<string> {
