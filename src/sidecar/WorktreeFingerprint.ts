@@ -145,6 +145,7 @@ function isAuditableUntrackedPath(filePath: string): boolean {
   const normalized = normalizeRelativePath(filePath);
   if (isWorktreeFingerprintExcludedPath(normalized)) return false;
   if (isDependencyTreePath(normalized)) return false;
+  if (isGeneratedOutputPath(normalized)) return false;
   if (normalized === ".gitignore" || normalized === "AGENTS.md") return true;
   return UNTRACKED_RELEVANT_ROLES.has(classifyFileRole(normalized));
 }
@@ -159,6 +160,18 @@ function isDependencyTreePath(filePath: string): boolean {
     normalized.startsWith(".venv/") ||
     normalized.startsWith("venv/") ||
     normalized.startsWith("vendor/bundle/");
+}
+
+function isGeneratedOutputPath(filePath: string): boolean {
+  const normalized = normalizeRelativePath(filePath);
+  return normalized.startsWith("dist/") ||
+    normalized.startsWith("build/") ||
+    normalized.startsWith("coverage/") ||
+    normalized.startsWith("out/") ||
+    normalized.startsWith("tmp/") ||
+    normalized.startsWith("temp/") ||
+    normalized.startsWith(".next/") ||
+    /^projects\/[^/]+\/exports\//.test(normalized);
 }
 
 function uniquePathFilter(): (filePath: string) => boolean {

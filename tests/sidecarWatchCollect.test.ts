@@ -770,11 +770,23 @@ describe("STAX sidecar watch and collect", () => {
 
   it("tracks ignored relevant source files without fingerprinting dependency trees", async () => {
     const repoPath = await createTempGitRepo("stax-fingerprint-ignored-deps-");
-    await fs.writeFile(path.join(repoPath, ".gitignore"), "node_modules/\nsrc/hidden.ts\n", "utf8");
+    await fs.writeFile(
+      path.join(repoPath, ".gitignore"),
+      [
+        "node_modules/",
+        "src/hidden.ts",
+        "projects/demo/exports/",
+        ""
+      ].join("\n"),
+      "utf8"
+    );
     await fs.mkdir(path.join(repoPath, "node_modules", "pkg"), { recursive: true });
+    await fs.mkdir(path.join(repoPath, "projects", "demo", "exports", "google-hosted"), { recursive: true });
     await fs.mkdir(path.join(repoPath, "src"), { recursive: true });
     await fs.writeFile(path.join(repoPath, "node_modules", "pkg", "index.ts"), "export const dependency = true;\n", "utf8");
     await fs.writeFile(path.join(repoPath, "node_modules", "pkg", "package.json"), "{\"name\":\"pkg\"}\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "projects", "demo", "exports", "google-hosted", "main.js"), "export const generated = true;\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "projects", "demo", "exports", "google-hosted", "styles.css"), "body { color: green; }\n", "utf8");
     await fs.writeFile(path.join(repoPath, "src", "hidden.ts"), "export const hidden = true;\n", "utf8");
 
     const fingerprint = await collectWorktreeFingerprint(repoPath);
@@ -782,6 +794,7 @@ describe("STAX sidecar watch and collect", () => {
 
     expect(paths).toContain("src/hidden.ts");
     expect(paths.some((item) => item.startsWith("node_modules/"))).toBe(false);
+    expect(paths.some((item) => item.startsWith("projects/demo/exports/"))).toBe(false);
   });
 
   it("audits only changed inputs and reports verdict changes", async () => {
