@@ -601,6 +601,7 @@ describe("STAX sidecar watch and collect", () => {
 
   it("ignores older wrong-branch command evidence after a current verified rerun in the same proof lane", async () => {
     const repoPath = await prepareCommandProofRepo("stax-sidecar-wrong-branch-rerun-");
+    const originalBranch = execFileSync("git", ["branch", "--show-current"], { cwd: repoPath }).toString().trim();
     await commitFile(
       repoPath,
       "package.json",
@@ -615,7 +616,7 @@ describe("STAX sidecar watch and collect", () => {
       writeLearningEvent: false
     });
 
-    execFileSync("git", ["checkout", "main"], { cwd: repoPath });
+    execFileSync("git", ["checkout", originalBranch], { cwd: repoPath });
     const current = await collectCommandEvidence({
       repoPath,
       command: ["npm", "run", "export", "--", "convert", "--output", "current"],
