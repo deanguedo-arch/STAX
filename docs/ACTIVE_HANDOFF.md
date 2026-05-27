@@ -18,16 +18,16 @@ Branch:
 main
 ```
 
-Latest pushed commit:
+Latest pushed rollout commit before this handoff refresh:
 
 ```txt
-b1d734d8a004a60f46c9bc01159ec15984209f82
+58407fefaa961453429e49bd602dd2142af2e184
 ```
 
 Commit message:
 
 ```txt
-Record Canvas impact evidence import
+Refresh ADMISSION impact evidence
 ```
 
 GitHub Actions proof:
@@ -69,9 +69,10 @@ The STAX repo is current and pushed.
 Recent pushed commits include:
 
 ```txt
-667378b Ignore generated runtime artifacts in fingerprints
 4d806df Serialize visual proof manifest writes
 b1d734d Record Canvas impact evidence import
+fc10f3d Refresh rollout handoff status
+58407fe Refresh ADMISSION impact evidence
 ```
 
 The latest work:
@@ -83,6 +84,8 @@ The latest work:
 - Refreshed `canvas-helper` current-head proof on this workstation.
 - Exported the fresh Canvas operating-window impact bundle.
 - Rebuilt the pattern-promotion impact report with STAX, ADMISSION-APP, and Canvas imports.
+- Updated the ADMISSION-APP sidecar visual-proof protocol wording and pushed it to ADMISSION-APP `main`.
+- Refreshed the ADMISSION-APP impact bundle against clean head `22acdc54747b16a9008e9ecc532806707323add9`.
 
 ## Current Canvas Helper State
 
@@ -152,6 +155,14 @@ ADMISSION-APP: unchanged_safe, full handoff contract missing
 canvas-helper: improved
 ```
 
+ADMISSION-APP latest sidecar protocol commit:
+
+```txt
+22acdc54747b16a9008e9ecc532806707323add9
+```
+
+ADMISSION-APP remains `Provisional` in sidecar impact because no live Codex report/heartbeat was present; this is expected observer evidence, not an acceptance failure.
+
 Keep these claims separate:
 
 ```txt
@@ -161,7 +172,7 @@ Current operating window = proves STAX helps live repos today.
 
 ## Local Proof Already Collected
 
-STAX local proof after `b1d734d`:
+STAX local proof after `fc10f3d`:
 
 ```txt
 npm run typecheck: pass
@@ -173,7 +184,7 @@ npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX: Accept / Aud
 GitHub Actions:
 
 ```txt
-staxcore-strict on b1d734d: success
+staxcore-strict on fc10f3d: success
 ```
 
 ## Current Local Dirt
@@ -307,14 +318,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline:
-- commit: b1d734d8a004a60f46c9bc01159ec15984209f82
-- short: b1d734d
-- commit message: Record Canvas impact evidence import
+- commit: 58407fe7e4e87a9e93b17e2683983d4e7b1f9a5a
+- short: 58407fe
+- commit message: Refresh ADMISSION impact evidence
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26532696033
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26533491119
 
 Goal:
-Continue the attached-repo operating-window phase. Canvas helper is current on this workstation and has already been exported/imported for the AS30 pass. Prefer the next current repo, such as brightspacequizexporter, or add local adversarial fixture coverage if no current attached repo is ready.
+Continue the attached-repo operating-window phase. Canvas helper and ADMISSION-APP have already been exported/imported for this pass. Brightspacequizexporter is currently on a resume branch while `origin/main` points elsewhere, so do not treat it as current-main operating-window proof until the branch/head is intentionally resolved.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
