@@ -114,8 +114,6 @@ export async function collectVisualEvidence(
   const stat = await fs.stat(proofPath).catch(() => undefined);
   if (!stat?.isFile()) throw new Error(`Visual proof file was not created: ${proofPath}`);
   const fileHash = await hashFile(proofPath);
-  const manifestPath = visualProofManifestPath(repoPath);
-  const manifest = await readVisualProofManifest(repoPath);
   const relativeProofPath = path.relative(repoPath, proofPath).replace(/\\/g, "/");
   const entry: VisualProofManifestEntry = {
     proofId,
@@ -135,11 +133,8 @@ export async function collectVisualEvidence(
     },
     collectorVersion: VISUAL_PROOF_COLLECTOR_VERSION
   };
-  const nextManifest: VisualProofManifest = {
-    schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION,
-    proofs: [...manifest.proofs.filter((item) => item.proofId !== proofId), entry]
-  };
-  await fs.writeFile(manifestPath, `${JSON.stringify(nextManifest, null, 2)}\n`, "utf8");
+  await appendVisualProofManifestEntry(repoPath, entry);
+  const manifestPath = visualProofManifestPath(repoPath);
   return {
     repoPath,
     proofId,
@@ -147,6 +142,22 @@ export async function collectVisualEvidence(
     manifestPath: path.relative(repoPath, manifestPath).replace(/\\/g, "/"),
     fileHash
   };
+}
+
+async function appendVisualProofManifestEntry(repoPath: string, entry: VisualProofManifestEntry): Promise<void> {
+  const visualDir = path.join(sidecarDir(repoPath), "visual-proofs");
+  await ensureDirectory(visualDir);
+  await withVisualManifestLock(visualDir, async () => {
+    const manifestPath = visualProofManifestPath(repoPath);
+    const manifest = await readVisualProofManifest(repoPath);
+    const nextManifest: VisualProofManifest = {
+      schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION,
+      proofs: [...manifest.proofs.filter((item) => item.proofId !== entry.proofId), entry]
+    };
+    const tempPath = path.join(visualDir, `.manifest.${process.pid}.${Date.now()}.tmp`);
+    await fs.writeFile(tempPath, `${JSON.stringify(nextManifest, null, 2)}\n`, "utf8");
+    await fs.rename(tempPath, manifestPath);
+  });
 }
 
 export async function readVisualEvidenceForGate(
@@ -202,27 +213,96 @@ export async function readVisualProofManifest(repoPathInput: string): Promise<Vi
   const raw = await readTextIfExists(visualProofManifestPath(repoPath));
   if (!raw.trim()) return { schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION, proofs: [] };
   try {
-    const parsed = JSON.parse(raw) as Partial<VisualProofManifest>;
-    if (parsed.schemaVersion !== VISUAL_PROOF_MANIFEST_SCHEMA_VERSION || !Array.isArray(parsed.proofs)) {
-      return { schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION, proofs: [] };
-    }
-    return {
-      schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION,
-      proofs: parsed.proofs
-        .filter((item): item is VisualProofManifestEntry => Boolean(item?.proofId && item.description))
-        .map((item) => ({
-          ...item,
-          source: item.source ?? "rendered_screenshot",
-          checklistItems: Array.isArray(item.checklistItems) ? item.checklistItems : []
-        }))
-    };
+    return normalizeVisualProofManifest(JSON.parse(raw) as Partial<VisualProofManifest>);
   } catch {
+    const recovered = recoverManifestWithTrailingData(raw);
+    return recovered ? normalizeVisualProofManifest(recovered) : { schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION, proofs: [] };
+  }
+}
+
+function normalizeVisualProofManifest(parsed: Partial<VisualProofManifest>): VisualProofManifest {
+  if (parsed.schemaVersion !== VISUAL_PROOF_MANIFEST_SCHEMA_VERSION || !Array.isArray(parsed.proofs)) {
     return { schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION, proofs: [] };
   }
+  return {
+    schemaVersion: VISUAL_PROOF_MANIFEST_SCHEMA_VERSION,
+    proofs: parsed.proofs
+      .filter((item): item is VisualProofManifestEntry => Boolean(item?.proofId && item.description))
+      .map((item) => ({
+        ...item,
+        source: item.source ?? "rendered_screenshot",
+        checklistItems: Array.isArray(item.checklistItems) ? item.checklistItems : []
+      }))
+  };
+}
+
+function recoverManifestWithTrailingData(raw: string): Partial<VisualProofManifest> | undefined {
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+    if (char === "\"") {
+      inString = true;
+      continue;
+    }
+    if (char === "{") depth += 1;
+    if (char === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        try {
+          return JSON.parse(raw.slice(0, index + 1)) as Partial<VisualProofManifest>;
+        } catch {
+          return undefined;
+        }
+      }
+    }
+  }
+  return undefined;
 }
 
 export function visualProofManifestPath(repoPath: string): string {
   return path.join(sidecarDir(repoPath), "visual-proofs", "manifest.json");
+}
+
+async function withVisualManifestLock<T>(visualDir: string, callback: () => Promise<T>): Promise<T> {
+  const lockPath = path.join(visualDir, "manifest.lock");
+  const startedAt = Date.now();
+  while (true) {
+    let handle: fs.FileHandle | undefined;
+    try {
+      handle = await fs.open(lockPath, "wx");
+      await handle.writeFile(JSON.stringify({ pid: process.pid, acquiredAt: nowIso() }));
+      try {
+        return await callback();
+      } finally {
+        await handle.close().catch(() => undefined);
+        await fs.unlink(lockPath).catch(() => undefined);
+      }
+    } catch (error) {
+      await handle?.close().catch(() => undefined);
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== "EEXIST") throw error;
+      if (Date.now() - startedAt > 5000) {
+        await fs.unlink(lockPath).catch(() => undefined);
+      }
+      await sleep(25);
+    }
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function captureScreenshotWithPlaywright(input: {

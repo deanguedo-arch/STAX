@@ -13,7 +13,7 @@ import {
 import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
 import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
-import { collectVisualEvidence, resolveSpawnCommand } from "../src/sidecar/VisualEvidenceCollector.js";
+import { collectVisualEvidence, readVisualProofManifest, resolveSpawnCommand } from "../src/sidecar/VisualEvidenceCollector.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 function useTestExternalEvidenceRoot(repoPath: string): void {
@@ -521,6 +521,39 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.verified.join("\n")).toContain("Visual evidence verified:");
     expect(status.verified.join("\n")).toContain("Claim-to-proof: visual claim is fully supported.");
     expect(status.unverified.join("\n")).not.toContain("rendered_visual_proof");
+  });
+
+  it("keeps the visual proof manifest valid across concurrent collection", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-concurrent-");
+    await attachStaxToRepo(repoPath);
+    await commitFile(repoPath, "projects/course/workspace/styles.css", ".card { color: red; }\n");
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: green; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "tablet-shot.png"), "tablet screenshot bytes\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "phone-shot.png"), "phone screenshot bytes\n", "utf8");
+
+    await Promise.all([
+      collectVisualEvidence({
+        repoPath,
+        screenshotPath: path.join(repoPath, ".stax", "tablet-shot.png"),
+        description: "Course page tablet screenshot after visual update.",
+        checklistItems: ["tablet viewport", "visible title"]
+      }),
+      collectVisualEvidence({
+        repoPath,
+        screenshotPath: path.join(repoPath, ".stax", "phone-shot.png"),
+        description: "Course page phone screenshot after visual update.",
+        checklistItems: ["phone viewport", "visible title"]
+      })
+    ]);
+
+    const rawManifest = await fs.readFile(path.join(repoPath, ".stax", "visual-proofs", "manifest.json"), "utf8");
+    expect(() => JSON.parse(rawManifest)).not.toThrow();
+    const manifest = await readVisualProofManifest(repoPath);
+    expect(manifest.proofs).toHaveLength(2);
+    expect(manifest.proofs.map((proof) => proof.description).sort()).toEqual([
+      "Course page phone screenshot after visual update.",
+      "Course page tablet screenshot after visual update."
+    ]);
   });
 
   it("uses npm CLI entrypoints when spawning package binaries on Windows", () => {
