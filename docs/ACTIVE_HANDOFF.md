@@ -195,6 +195,28 @@ npm run stax:next-prompt -- --repo <repo>
 npm run stax:export-impact-evidence -- --repo <repo> --out <repo-impact.json>
 ```
 
+Or use the guarded batch helper from the STAX repo. Dry-run first:
+
+```bash
+npm run stax:attached-impact-export -- \
+  --dry-run \
+  --repo /Users/deanguedo/Documents/GitHub/canvas-helper \
+  --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP \
+  --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter \
+  --out-dir reports/pattern_promotion/attached_repo_exports
+```
+
+Then, only on the workstation with current repo checkouts:
+
+```bash
+npm run stax:attached-impact-export -- \
+  --confirm-current-repos \
+  --repo /Users/deanguedo/Documents/GitHub/canvas-helper \
+  --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP \
+  --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter \
+  --out-dir reports/pattern_promotion/attached_repo_exports
+```
+
 Bring exported bundles back to STAX and import them:
 
 ```bash

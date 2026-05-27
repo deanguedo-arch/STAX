@@ -74,6 +74,7 @@
     "stax:discover-surfaces": "tsx scripts/staxDiscoverSurfaces.ts",
     "stax:approve-surfaces": "tsx scripts/staxApproveSurfaces.ts",
     "stax:export-impact-evidence": "tsx scripts/staxExportImpactEvidence.ts",
+    "stax:attached-impact-export": "tsx scripts/runAttachedRepoImpactExport.ts",
     "stax:turn-contract": "tsx scripts/staxTurnContract.ts",
     "stax:next-prompt": "tsx scripts/staxNextPrompt.ts",
     "stax:sidecar:refresh": "tsx scripts/staxSidecarRefresh.ts",
