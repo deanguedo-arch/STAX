@@ -40,7 +40,7 @@ STAX is strong for Codex/repo project-control:
 - Phase B executable: STAX 7, ChatGPT 0, ties 13
 - zero STAX critical misses in promotion window
 - pattern promotion locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe
-- current operating-window impact imports: 2 bundles, 0 critical misses, full handoff/proof-artifact request present for STAX and Canvas Helper
+- current operating-window impact imports: 3 bundles, 0 critical misses, full handoff contracts present for 2/3 bundles, proof artifacts requested for 3/3 bundles
 
 ## Implemented Since Current Baseline
 
@@ -63,7 +63,7 @@ STAX is strong for Codex/repo project-control:
 - doc/report consistency
 - proof-surface matching precision beyond adversarial v1 fixtures
 - real repo observer trial volume
-- more multi-repo current operating-window imports from the work-terminal repos are still pending
+- more current operating-window task volume is still pending before the 10-task operating-window target is met
 - attached-repo command-evidence ledgers can still need cleanup after stale historical records, even though current-proof promotion now has regression coverage
 - stale attached-repo sidecar status can lag behind the current repo head after later commits
 - unusual-repo proof-surface discovery edge cases

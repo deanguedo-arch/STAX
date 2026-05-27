@@ -4,7 +4,7 @@ Date: 2026-05-27
 
 ## Current Workstream
 
-This handoff is for continuing the STAX rollout from the current pushed `main` state.
+Continue the STAX rollout from the current pushed `main` state.
 
 Repo:
 
@@ -18,28 +18,26 @@ Branch:
 main
 ```
 
-Published baseline:
-
-```txt
-759e9d33f3d4eb41cf75ce295708e252f0df14ec
-```
-
 Latest pushed commit:
 
 ```txt
-759e9d3 Accept approved workflow proof in STAX gate
+b1d734d8a004a60f46c9bc01159ec15984209f82
+```
+
+Commit message:
+
+```txt
+Record Canvas impact evidence import
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26517746531
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26532696033
 ```
 
-Local `main` and `origin/main` were aligned when this handoff was written.
-
-Do not route this handoff into local `canvas-helper` work on this machine. The local `canvas-helper` checkout is not current enough for sidecar rollout. Run attached-repo rollout only on the workstation that has the current attached repos.
+Local `main` and `origin/main` were aligned when this handoff was refreshed.
 
 ## Product Boundary
 
@@ -66,96 +64,121 @@ Do not broaden this work into a generic AI runtime, new agent system, deploy sys
 
 ## What Just Landed
 
-The STAX repo is current and pushed. Attached repos were intentionally not touched on this computer.
+The STAX repo is current and pushed.
 
-The recent STAX work landed these main changes:
-
-- Generic hardening primitives from the Dean hardened artifact were integrated without Dean app/domain logic.
-- `validate:hardened` now includes the strengthened audit chain and full test profile.
-- Repo hygiene audit was added.
-- Hardened command-risk and structured-command tests were added.
-- Security audit commands are recognized as executable proof in command intelligence and project-control proof mapping.
-- Windows npm/npx path resolution was repaired in visual evidence collection.
-- Final hardened artifact documentation was written under `docs/releases/DEAN_STAX_HARDENED_FINAL_2026_05_27/`.
-- GitHub Actions workflows that run `npm ci` now use Node 22, matching the repo's `node >=22 <25` engine policy.
-- STAX project-control proof stack now recognizes approved `.github/workflows/*` runtime edits as workflow/config diff proof during sidecar review.
-- Vitest timeout budget was raised to 60 seconds for slower full-suite runs.
-
-Important pushed commits:
+Recent pushed commits include:
 
 ```txt
-3eba359 Harden STAX release artifact controls
-9828ef7 Stabilize hardened validation test workers
-7b8b1ca Document final hardened artifact validation
-8ef227c Align GitHub Actions Node runtime
-759e9d3 Accept approved workflow proof in STAX gate
+667378b Ignore generated runtime artifacts in fingerprints
+4d806df Serialize visual proof manifest writes
+b1d734d Record Canvas impact evidence import
 ```
 
-## Final Hardened Artifact
+The latest work:
 
-Final validated artifact:
+- Excluded generated runtime/export artifacts from sidecar worktree fingerprints while keeping real source/test/config changes auditable.
+- Added regression coverage for generated export and Python bytecode fingerprint behavior.
+- Serialized visual-proof manifest writes so concurrent visual proof collection cannot corrupt `.stax/visual-proofs/manifest.json`.
+- Added regression coverage for concurrent visual proof collection.
+- Refreshed `canvas-helper` current-head proof on this workstation.
+- Exported the fresh Canvas operating-window impact bundle.
+- Rebuilt the pattern-promotion impact report with STAX, ADMISSION-APP, and Canvas imports.
+
+## Current Canvas Helper State
+
+The local `canvas-helper` checkout is now current on this workstation.
+
+Canvas latest pushed commit:
 
 ```txt
-/Users/deanguedo/Downloads/dean-stax-hardened-final-2026-05-27.zip
+d59dc393cf6f102a150716ca4ce20f53e968e119
 ```
 
-SHA-256:
+Canvas GitHub Pages proof:
 
 ```txt
-d1ba777b2536a5cdfc114fc236213e3373b006277e403e49d609f04daaccb8a2
+pages build and deployment: completed / success
+run: https://github.com/deanguedo-arch/canvas-helper/actions/runs/26532152321
 ```
 
-Source commit recorded in artifact build info:
+Canvas STAX sidecar gate:
 
 ```txt
-9828ef7d6642810385659a017beca6ae9bec3529
+verdict: Accept
+proof strength: Audit-grade
+commit: d59dc393cf6f102a150716ca4ce20f53e968e119
 ```
 
-Validation recorded in:
+Fresh Canvas evidence collected on `d59dc393`:
 
 ```txt
-docs/releases/DEAN_STAX_HARDENED_FINAL_2026_05_27/BUILD_INFO.json
-docs/releases/DEAN_STAX_HARDENED_FINAL_2026_05_27/VALIDATION_RESULTS.md
+cmd_2026-05-27T18_59_48_957Z_0c3d6942392c: AS30 shell regression test, exit 0
+cmd_2026-05-27T18_59_59_902Z_a31f5f3af22a: AS30 project verify, exit 0
+cmd_2026-05-27T19_00_13_504Z_3103b2923da9: AS30 project e2e, exit 0
+cmd_2026-05-27T19_00_24_331Z_d9f625a92414: smoke e2e, exit 0
+cmd_2026-05-27T19_00_33_667Z_982c1455e5e7: typecheck, exit 0
+cmd_2026-05-27T19_01_08_745Z_b79b85db39e0: build:studio, exit 0
+cmd_2026-05-27T19_01_18_497Z_466c2f308b48: git diff --check, exit 0
+visual_2026-05-27T19_01_39_622Z_5eb93f079ea5: AS30 tablet screenshot proof
+visual_2026-05-27T19_01_45_259Z_4f42eaa307b2: AS30 phone screenshot proof
 ```
 
-The final source baseline moved past that artifact commit because the CI runtime and self-gate fixes were pushed afterward. Use current `main` (`759e9d3`) for development and sidecar rollout tooling.
+Canvas generated `.stax` status/proof files are dirty locally and intentionally not committed.
 
-## Proof Already Collected
+## Pattern Promotion Impact
 
-Current local proof after the final pushed commit:
+Current report:
 
 ```txt
-npm run validate:hardened: pass
-- typecheck: pass
-- build: pass
-- doctrine audit: pass
-- boundary audit: pass
-- security audit: pass
-- repo hygiene audit: pass
-- test:ci-safe: pass, 210 files / 1089 tests
+docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
+reports/pattern_promotion/pattern-promotion-impact-2026-05-27T19-06-32-594Z.json
+```
 
-npm run validate:staxcore:strict:ci: pass
-- strict release gate passed on retry
-- final score: 100/A
-- npm test: pass, 210 files / 1089 tests
-- eval: 16/16
-- regression eval: 49/49
-- redteam eval: 15/15
+Current result:
+
+```txt
+locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe, 0 regressed
+current operating window: 3 imported bundles, 0 critical misses
+full handoff contracts: 2/3
+proof artifacts requested: 3/3
+cleanup prompts needed: 2/3
+```
+
+Imported bundles:
+
+```txt
+STAX: improved
+ADMISSION-APP: unchanged_safe, full handoff contract missing
+canvas-helper: improved
+```
+
+Keep these claims separate:
+
+```txt
+Locked replay = proves STAX behavior changed on frozen cases.
+Current operating window = proves STAX helps live repos today.
+```
+
+## Local Proof Already Collected
+
+STAX local proof after `b1d734d`:
+
+```txt
+npm run typecheck: pass
+npm test -- tests/proofSurfaceMatcher.test.ts tests/proofSurfaceMatcherAdversarial.test.ts: pass, 23 tests
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck: pass
+npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX: Accept / Audit-grade
+```
 
 GitHub Actions:
-- staxcore-strict on 759e9d3: success
 
-STAX sidecar gate:
-- verdict: Accept
-- proof strength: Strong (0.73)
-- protocol: warning only for current-turn capture lag
+```txt
+staxcore-strict on b1d734d: success
 ```
-
-Current sidecar proof is intentionally local proof state. Do not commit generated `.stax/status.json`, `.stax/proof_strength.json`, or `.stax/reports/*` unless Dean explicitly asks.
 
 ## Current Local Dirt
 
-Expected local generated proof files may be dirty:
+Expected generated proof files may be dirty:
 
 ```txt
 .stax/status.json
@@ -171,22 +194,39 @@ There is also an unrelated untracked duplicate handoff:
 docs/ACTIVE_HANDOFF 2.md
 ```
 
-It was not touched in the STAX hardening/CI pass. Do not delete it unless Dean explicitly asks.
+It has not been touched. Do not delete it unless Dean explicitly asks.
 
-## Work-Terminal Next Steps
+## Next Milestone
 
-The next milestone is attached-repo current operating-window proof. Do this only on the workstation that has current repo checkouts.
+The next milestone remains attached-repo/current operating-window proof volume.
 
-Target repos:
+Acceptance target:
 
 ```txt
-canvas-helper
-ADMISSION-APP
-brightspacequizexporter
-STAX
+10 real tasks
+3 repos minimum
+0 critical misses
+7/10 full handoff contract present
+7/10 correct proof artifact requested
+cleanup prompts tracked
 ```
 
-For each current repo, run:
+Current operating-window status:
+
+```txt
+3 imported bundles
+0 critical misses
+2/3 full handoff contracts
+3/3 proof artifact requests
+```
+
+Next best actions:
+
+1. Run another current repo through the sidecar observer/export/import loop, preferably `brightspacequizexporter` if current on this workstation.
+2. If no current attached repo is ready, add more local adversarial fixture coverage for repeated matcher/claim-extraction misses.
+3. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
+
+For each current attached repo, run:
 
 ```bash
 npm run stax:sidecar-upgrade -- --repo <repo> --discover-surfaces
@@ -206,7 +246,7 @@ npm run stax:attached-impact-export -- \
   --out-dir reports/pattern_promotion/attached_repo_exports
 ```
 
-Then, only on the workstation with current repo checkouts:
+Then, only for current repo checkouts:
 
 ```bash
 npm run stax:attached-impact-export -- \
@@ -232,26 +272,6 @@ npm run pattern:impact \
   --import brightspacequizexporter-impact.json
 ```
 
-## Current Acceptance Target
-
-Minimum target for the next operating-window milestone:
-
-```txt
-10 real tasks
-3 repos minimum
-0 critical misses
-7/10 full handoff contract present
-7/10 correct proof artifact requested
-cleanup prompts tracked
-```
-
-Keep these claims separate:
-
-```txt
-Locked replay = proves STAX behavior changed on frozen cases.
-Current operating window = proves STAX helps live repos today.
-```
-
 ## What Not To Do Next
 
 Do not:
@@ -262,7 +282,8 @@ build adaptive sandbox loop yet
 run deploy / publish / sync
 hard-gate ordinary local editing
 claim STAX proves code correctness
-touch stale attached-repo checkouts on this machine
+commit generated .stax status/proof artifacts
+delete docs/ACTIVE_HANDOFF 2.md unless explicitly asked
 ```
 
 ## Fresh Chat Startup Prompt
@@ -286,27 +307,18 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline:
-- commit: 759e9d33f3d4eb41cf75ce295708e252f0df14ec
-- short: 759e9d3
-- commit message: Accept approved workflow proof in STAX gate
+- commit: b1d734d8a004a60f46c9bc01159ec15984209f82
+- short: b1d734d
+- commit message: Record Canvas impact evidence import
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26517746531
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26532696033
 
 Goal:
-Continue the attached-repo operating-window phase only from a workstation with current attached repos. Do not use a stale local `canvas-helper` checkout for sidecar rollout.
-
-On current attached repos, run:
-- npm run stax:sidecar-upgrade -- --repo <repo> --discover-surfaces
-- npm run stax:gate -- --repo <repo>
-- npm run stax:next-prompt -- --repo <repo>
-- npm run stax:export-impact-evidence -- --repo <repo> --out <repo-impact.json>
-
-Back in STAX, import exported bundles with:
-- npm run pattern:impact -- --import <repo-impact.json>
+Continue the attached-repo operating-window phase. Canvas helper is current on this workstation and has already been exported/imported for the AS30 pass. Prefer the next current repo, such as brightspacequizexporter, or add local adversarial fixture coverage if no current attached repo is ready.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
-- npm test
+- targeted tests for changed behavior
 
 If integrity-path or release-gate behavior changes, also run:
 - npm run validate:hardened
@@ -321,12 +333,12 @@ Keep the final answer short and evidence-backed.
 
 ## Stop Condition
 
-The STAX hardening, artifact documentation, CI runtime repair, self-gate repair, and updated active handoff are complete when:
+This handoff refresh is complete when:
 
 ```txt
 docs/ACTIVE_HANDOFF.md is committed and pushed
+docs/CURRENT_STATUS.md reflects the 3-bundle operating-window status
 origin/main equals local main
 GitHub staxcore-strict remains success on the pushed commit
 generated .stax proof files remain unstaged
-attached repos remain untouched on this machine
 ```
