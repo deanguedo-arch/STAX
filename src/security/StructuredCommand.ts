@@ -26,6 +26,8 @@ const SAFE_NPM_SCRIPTS = new Set([
   "audit:doctrine",
   "audit:boundaries",
   "audit:security",
+  "audit:repo-hygiene",
+  "audit:all-strengthened",
   "rax",
   "test:unit",
   "test:ci-safe",
@@ -101,6 +103,9 @@ function validateNpmArgs(args: string[]): void {
   const script = args[1];
   if (!script || !SAFE_NPM_SCRIPTS.has(script)) {
     throw new Error(`Unsupported npm script: ${script ?? "(missing)"}`);
+  }
+  if (script !== "rax" && args.length > 2) {
+    throw new Error(`Unsupported extra npm arguments for script: ${script}`);
   }
 }
 

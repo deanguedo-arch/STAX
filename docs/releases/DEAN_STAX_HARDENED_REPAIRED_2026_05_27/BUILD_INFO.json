@@ -1,0 +1,34 @@
+{
+  "artifact": "dean-stax-hardened-repaired-2026-05-27.zip",
+  "sha256": "a010d67519b620c84a67b5c3ce0c0468f9ebfd991d090ef4f61bd9e291dd2ad2",
+  "localPath": "/Users/deanguedo/Downloads/dean-stax-hardened-repaired-2026-05-27.zip",
+  "extractedPath": "/Users/deanguedo/Downloads/dean-stax-hardened-repaired-2026-05-27-extracted/STAX-main-hardened-repaired",
+  "sourceRepo": "/Users/deanguedo/Documents/GitHub/STAX",
+  "sourceBaseCommit": "a07c921af52dcebedeae6bcdf99b1823360e8d9d",
+  "sourceState": "working-tree-with-generic-hardening-and-windows-npx-repair",
+  "sourceCommitStatus": "provisional-working-tree",
+  "includesGenericHardening": true,
+  "excludesDeanAppVertical": true,
+  "allowedClaim": "STAX is a scoped 9.5 local proof gate for Dean's Codex/repo project-control workflow.",
+  "blockedClaims": [
+    "broad ChatGPT superiority",
+    "production-ready autonomous agent",
+    "arbitrary-domain reasoning superiority",
+    "real repo auto-apply",
+    "git push/deploy/publish authority",
+    "code correctness proof"
+  ],
+  "validationStatus": {
+    "checksumVerified": true,
+    "freshExtractionVerified": true,
+    "npmCi": "passed",
+    "validateHardened": "passed",
+    "smokeStax": "passed",
+    "eval": "passed",
+    "regressionEval": "passed",
+    "redteamEval": "passed",
+    "operatingWindowToday": "passed",
+    "patternImpact": "passed",
+    "attachedRepoSidecarTrial": "not_run"
+  }
+}

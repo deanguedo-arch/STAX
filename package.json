@@ -29,6 +29,8 @@
     "audit:doctrine": "tsx scripts/auditDoctrine.ts",
     "audit:boundaries": "tsx scripts/auditBoundaries.ts",
     "audit:security": "tsx scripts/auditSecurity.ts",
+    "audit:repo-hygiene": "tsx scripts/auditRepoHygiene.ts",
+    "audit:all-strengthened": "npm run audit:doctrine && npm run audit:boundaries && npm run audit:security && npm run audit:repo-hygiene",
     "audit:eval-fixtures": "tsx scripts/auditEvalFixtures.ts",
     "campaign:phase10": "tsx scripts/runPhase10Campaign.ts",
     "campaign:phase11:prepare": "tsx scripts/preparePhase11BrowserCapture.ts",
@@ -118,7 +120,7 @@
     "validate:staxcore:strict:ci": "tsx scripts/validateStaxcoreStrictCi.ts --attempts 3 --delay-ms 5000 --max-delay-ms 30000 --backoff-factor 2",
     "test:unit": "vitest run tests/**/*.test.ts --exclude tests/fixtures/**",
     "test:ci-safe": "vitest run",
-    "validate:hardened": "npm run typecheck && npm run build && npm run audit:doctrine && npm run audit:boundaries && npm run audit:security && npm run test:ci-safe",
+    "validate:hardened": "npm run typecheck && npm run build && npm run audit:all-strengthened && npm run test:ci-safe",
     "start": "node dist/src/cli.js"
   },
   "dependencies": {
@@ -131,5 +133,11 @@
     "tsx": "4.21.0",
     "typescript": "6.0.3",
     "vitest": "4.1.5"
-  }
+  },
+  "description": "Local STAX proof gate for AI-coded work: sidecar evidence, command provenance, and project-control validation.",
+  "engines": {
+    "node": ">=22 <25",
+    "npm": ">=10"
+  },
+  "packageManager": "npm@10.9.2"
 }

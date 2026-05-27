@@ -8,6 +8,8 @@ import {
 describe("command evidence intelligence", () => {
   it("classifies command families used by messy repo proof loops", () => {
     expect(commandFamilyForIntelligence("npm run typecheck")).toBe("typecheck");
+    expect(commandFamilyForIntelligence("npm run audit:security")).toBe("lint");
+    expect(commandFamilyForIntelligence("npm run audit:all-strengthened")).toBe("lint");
     expect(commandFamilyForIntelligence("pnpm vitest run")).toBe("test");
     expect(commandFamilyForIntelligence("./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts")).toBe("test");
     expect(commandFamilyForIntelligence("yarn jest --runInBand")).toBe("test");

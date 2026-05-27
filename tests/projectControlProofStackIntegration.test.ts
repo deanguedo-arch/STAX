@@ -256,6 +256,51 @@ describe("project_control proof stack integration", () => {
     expect(result.risk.join("\n")).toContain("Unsupported hard claim: behavior requires behavior_test");
   });
 
+  it("treats audit:security as security proof for security-sensitive diffs", () => {
+    const result = buildProjectControlProofStack({
+      task: "Audit whether the security hardening change is proven.",
+      repoEvidence: [
+        "Target repo path: /repo",
+        "Changed files: src/security/StructuredCommand.ts",
+        "tests/security/StructuredCommand.test.ts"
+      ].join("\n"),
+      commandEvidence: [
+        "cwd=/repo",
+        "$ npm run audit:security",
+        "Exit code: 0",
+        "$ npm test -- tests/security/StructuredCommand.test.ts",
+        "Exit code: 0"
+      ].join("\n"),
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: prove security hardening.",
+        "Files changed:",
+        "- src/security/StructuredCommand.ts",
+        "- tests/security/StructuredCommand.test.ts",
+        "Tests added:",
+        "- tests/security/StructuredCommand.test.ts",
+        "Commands run:",
+        "- `npm run audit:security` exited 0.",
+        "- `npm test -- tests/security/StructuredCommand.test.ts` exited 0.",
+        "Command output summary with exit codes:",
+        "- Security audit and focused tests exited 0.",
+        "What is verified:",
+        "- Security hardening is proven by audit:security and focused tests.",
+        "What is weak/provisional:",
+        "- Wider release not claimed.",
+        "What is unverified:",
+        "- Attached-repo rollout.",
+        "Risks:",
+        "- None beyond local proof boundary.",
+        "One next action:",
+        "- Stop."
+      ].join("\n")
+    });
+
+    expect(result.weak.join("\n")).not.toContain("security_sensitive_change_without_security_proof");
+    expect(result.verified.join("\n")).toContain("Diff audit: accept.");
+  });
+
   it("keeps a 20-case proof-stack integration gate with zero false accepts and low false blocks", async () => {
     const runtime = await createDefaultRuntime();
     const cases = [

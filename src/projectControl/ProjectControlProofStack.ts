@@ -123,7 +123,7 @@ export function buildProjectControlProofStack(
             : /\b(screenshot|rendered preview|visual checklist|playwright screenshot)\b/i.test(combined),
         dependencyProofProvided: /\bnpm ls\b|\bpnpm list\b|\byarn why\b|\bpip show\b|\bcargo tree\b|\bcomposer show\b|\bbundle info\b/i.test(combined),
         rollbackProofProvided: /\brollback\b|\brevert\b|\bdowngrade\b/i.test(combined),
-        securityProofProvided: /\bsecurity test\b|\bsecret scan\b|\bvulnerability scan\b|\bprompt injection\b/i.test(combined),
+        securityProofProvided: /\baudit:security\b|\bsecurity audit\b|\bsecurity test\b|\bsecret scan\b|\bvulnerability scan\b|\bprompt injection\b/i.test(combined),
         humanApprovalForForbidden:
           input.humanApproval !== undefined
             ? input.humanApproval.length > 0
@@ -413,6 +413,9 @@ function deriveProofItems(
   const hasBehaviorCommand = hasStrongBehaviorCommandEvidence(commandEvidenceEntries, commandInsight);
   const hasExportRegenerationProof = /\b(?:build|export regenerated|regenerated export)\b/i.test(combined);
   const hasLiveTargetProof = /\b(?:target sheet|TestFlight|App Store|production|staging|credential|config\/sheets_sync\.json|target validated|target environment verified|live target fetch|target fetch|live target checked)\b/i.test(combined);
+  const hasSecurityAuditProof =
+    hasStrongCommandEvidenceMatching(commandEvidenceEntries, /\baudit:security\b/i) ||
+    (strongCommand && /\baudit:security\b|\bsecurity audit passed\b/i.test(combined));
 
   const push = (proofType: ClaimProofItem["proofType"], strength: ClaimProofItem["strength"], description: string) => {
     proof.push({ proofType, strength, description });
@@ -630,8 +633,32 @@ function deriveProofItems(
       push("source_run_reference", /\brun-\d{4}|runs\/\d{4}\b/i.test(combined) ? "strong" : "missing", /\brun-\d{4}|runs\/\d{4}\b/i.test(combined) ? "Source run reference detected." : "No source run reference detected.");
       break;
     case "security":
-      push("security_test", /\bsecurity test|prompt injection|secret scan|vulnerability\b/i.test(combined) ? "weak" : "missing", /\bsecurity test|prompt injection|secret scan|vulnerability\b/i.test(combined) ? "Security language present but not strongly proven." : "No security test detected.");
-      push("secret_scan", /\bsecret scan|token scan|private key|secret handling\b/i.test(combined) ? "weak" : "missing", /\bsecret scan|token scan|private key|secret handling\b/i.test(combined) ? "Secret-scan language present but not strongly proven." : "No secret-scan proof detected.");
+      push(
+        "security_test",
+        hasSecurityAuditProof
+          ? "strong"
+          : /\bsecurity test|prompt injection|secret scan|vulnerability\b/i.test(combined)
+            ? "weak"
+            : "missing",
+        hasSecurityAuditProof
+          ? "Verified audit:security evidence detected."
+          : /\bsecurity test|prompt injection|secret scan|vulnerability\b/i.test(combined)
+            ? "Security language present but not strongly proven."
+            : "No security test detected."
+      );
+      push(
+        "secret_scan",
+        hasSecurityAuditProof
+          ? "strong"
+          : /\bsecret scan|token scan|private key|secret handling\b/i.test(combined)
+            ? "weak"
+            : "missing",
+        hasSecurityAuditProof
+          ? "Verified audit:security secret-pattern scan detected."
+          : /\bsecret scan|token scan|private key|secret handling\b/i.test(combined)
+            ? "Secret-scan language present but not strongly proven."
+            : "No secret-scan proof detected."
+      );
       break;
     case "config_policy":
       push("config_diff", files.some((file) => /config|package\.json|tsconfig|eslint|playwright\.config/i.test(file)) ? "strong" : "missing", files.some((file) => /config|package\.json|tsconfig|eslint|playwright\.config/i.test(file)) ? "Config or policy diff detected." : "No config or policy diff detected.");
@@ -684,6 +711,17 @@ function deriveScopePaths(changedFiles: DiffChangedFileInput[]): string[] {
     const parts = file.path.split("/");
     return parts.length > 1 ? `${parts[0]}/${parts[1]}` : file.path;
   }));
+}
+
+function hasStrongCommandEvidenceMatching(
+  entries: ProjectControlCommandEvidenceEntry[] | undefined,
+  commandPattern: RegExp
+): boolean {
+  return (entries ?? []).some((entry) =>
+    entry.source === "local_stax_command_output" &&
+    entry.exitCode === 0 &&
+    commandPattern.test(entry.command)
+  );
 }
 
 function hasStrongBehaviorCommandEvidence(

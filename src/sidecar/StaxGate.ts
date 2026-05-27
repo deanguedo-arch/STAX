@@ -1038,7 +1038,7 @@ function sidecarEvidenceFlags(codexReport: string, visualEvidenceEntries: Verifi
       /\b(preflight|dry run|staging validated|build passed|export regenerated|regenerated export|live target fetch|target fetch|deploy command|stax-collected deploy|smoke:pipeline)\b/i.test(codexReport),
     releaseGate: /\b(release gate|deploy gate|course deploy proof|course deploy contract)\b/i.test(codexReport),
     rollbackPlan: /\brollback\b/i.test(codexReport),
-    securityProof: /\b(security test|security scan|secret scan|vulnerability scan|npm audit|prompt injection test|xss test|csrf test)\b/i.test(codexReport)
+    securityProof: /\b(audit:security|security audit passed|security test|security scan|secret scan|vulnerability scan|npm audit|prompt injection test|xss test|csrf test)\b/i.test(codexReport)
   };
 }
 

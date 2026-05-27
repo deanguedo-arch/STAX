@@ -76,6 +76,7 @@ export function commandFamilyForIntelligence(command: string): CommandEvidenceFa
     return "e2e";
   }
   if (/\b(typecheck|tsc --noemit|tsc -noemit|cargo check|go vet|mypy|pyright)\b/.test(normalized)) return "typecheck";
+  if (/\b(?:npm run )?audit:(?:security|repo-hygiene|all-strengthened|doctrine|boundaries)\b/.test(normalized)) return "lint";
   if (/\b(lint|eslint|clippy|rubocop|ruff check)\b/.test(normalized)) return "lint";
   if (/\b(build|webpack|vite build|next build|cargo build|go build|gradle assemble|mvn package|mvnw package)\b/.test(normalized)) return "build";
   if (/\b(?:(?:npm|pnpm|yarn) run (?:test(?::[a-z0-9:_-]+)?|validate(?::[a-z0-9:_-]+)?|verify(?::[a-z0-9:_-]+)?)|npm test|pnpm test|yarn test|(?:\.\/)?(?:node_modules\/\.bin\/)?tsx --test|vitest|jest|pytest|cargo test|go test|gradle test|gradlew test|mvn test|mvnw test|phpunit|composer test|bundle exec rspec|rspec)\b/.test(normalized)) {

@@ -8,7 +8,11 @@ export type SidecarCommandRiskCategory =
   | "infrastructure_mutation"
   | "shell_execution"
   | "remote_code_execution"
-  | "secret_or_clipboard_exposure";
+  | "secret_or_clipboard_exposure"
+  | "privilege_escalation"
+  | "system_destruction"
+  | "credential_store"
+  | "network_exfiltration";
 
 export type SidecarCommandRiskLevel =
   | "safe"
@@ -85,6 +89,21 @@ export function classifySidecarCommandRisk(command: string[]): SidecarCommandRis
   if (/\b(curl|wget)\b.*\|\s*(sh|bash|zsh|fish)\b/i.test(joined)) {
     add("remote_code_execution", "remote code piped into a shell is not safe command evidence");
   }
+  if (executable === "sudo" || /\bsudo\b/i.test(joined)) {
+    add("privilege_escalation", "sudo/privileged commands are outside safe proof collection");
+  }
+  if (/\bchmod\s+-?R?\s*(777|ugo\+rwx)\b/i.test(joined) || /\bchown\s+-R\b/i.test(joined)) {
+    add("privilege_escalation", "recursive permission or ownership mutation can weaken local security");
+  }
+  if (/\b(dd|mkfs|fdisk)\b/i.test(joined) || /\bdiskutil\s+erase/i.test(joined) || /\bformat\s+[A-Z]:/i.test(joined)) {
+    add("system_destruction", "disk formatting or raw block commands can destroy system data");
+  }
+  if (/\b(gh|git)\s+auth\s+token\b/i.test(joined) || /\bgit\s+credential\b/i.test(joined) || /\b(op|pass)\s+(read|show)\b/i.test(joined)) {
+    add("credential_store", "credential-store reads can expose private tokens");
+  }
+  if (/\b(scp|rsync)\b.*:/i.test(joined) || /\bcurl\b.*(?:\s|^)(-d|--data|--data-binary|-F|--form|--upload-file)(?:\s|=|$)/i.test(joined)) {
+    add("network_exfiltration", "network upload/exfiltration commands require explicit approval");
+  }
   if (executable === "env" || executable === "printenv" || executable === "pbpaste" || executable === "pbcopy") {
     add("secret_or_clipboard_exposure", "environment or clipboard output can expose secrets");
   }
@@ -102,7 +121,7 @@ export function classifySidecarCommandRisk(command: string[]): SidecarCommandRis
 
 function riskLevelForCategories(categories: SidecarCommandRiskCategory[]): SidecarCommandRiskLevel {
   if (categories.length === 0) return "safe";
-  if (categories.some((category) => category === "remote_code_execution" || category === "secret_or_clipboard_exposure")) {
+  if (categories.some((category) => category === "remote_code_execution" || category === "secret_or_clipboard_exposure" || category === "privilege_escalation" || category === "system_destruction" || category === "credential_store" || category === "network_exfiltration")) {
     return "forbidden_by_default";
   }
   if (categories.some((category) => category === "destructive_filesystem" || category === "destructive_git" || category === "release_boundary" || category === "remote_publish" || category === "package_publish" || category === "infrastructure_mutation")) {

@@ -1,0 +1,5 @@
+# Add real GitHub usernames or teams before enabling branch protection.
+# Example:
+# /src/staxcore/** @your-org/core-reviewers
+# /src/security/** @your-org/security-reviewers
+# /scripts/audit*.ts @your-org/security-reviewers

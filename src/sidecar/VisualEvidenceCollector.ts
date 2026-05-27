@@ -273,11 +273,12 @@ export function resolveSpawnCommand(
   const env = options.env ?? process.env;
   const execPath = options.execPath ?? process.execPath;
   const npmExecPath = env.npm_execpath?.trim();
+  const platformPath = platform === "win32" ? path.win32 : path;
   const cliPath = command.toLowerCase() === "npm"
     ? npmExecPath
     : npmExecPath
-      ? path.join(path.dirname(npmExecPath), "npx-cli.js")
-      : path.join(path.dirname(execPath), "node_modules", "npm", "bin", "npx-cli.js");
+      ? platformPath.join(platformPath.dirname(npmExecPath), "npx-cli.js")
+      : platformPath.join(platformPath.dirname(execPath), "node_modules", "npm", "bin", "npx-cli.js");
 
   if (cliPath) return { executable: execPath, args: [cliPath, ...args] };
   return { executable: `${command}.cmd`, args };

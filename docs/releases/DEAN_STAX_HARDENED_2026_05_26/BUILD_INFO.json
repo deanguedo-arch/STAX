@@ -1,0 +1,31 @@
+{
+  "artifact": "dean-stax-hardened-1.zip",
+  "sha256": "ce98e31ab179116830e7ef05e819f8bef029cb8872dffcd67aa1401d7a642c7e",
+  "localPath": "/Users/deanguedo/Downloads/dean-stax-hardened-1.zip",
+  "extractedPath": "/Users/deanguedo/Downloads/dean-stax-hardened-1-extracted/STAX-main-hardened",
+  "liveRepoCommitInspected": "a07c921af52dcebedeae6bcdf99b1823360e8d9d",
+  "sourceCommitStatus": "provisional",
+  "sourceCommitNote": "The archive did not include .git metadata or BUILD_INFO.json, so this links the artifact to the live repo commit inspected during verification rather than to embedded archive metadata.",
+  "builtAt": null,
+  "builtBy": "Dean",
+  "allowedClaim": "STAX is a scoped 9.5 local proof gate for Dean's Codex/repo project-control workflow.",
+  "blockedClaims": [
+    "broad ChatGPT superiority",
+    "production-ready autonomous agent",
+    "arbitrary-domain reasoning superiority",
+    "real repo auto-apply",
+    "git push/deploy/publish authority",
+    "code correctness proof"
+  ],
+  "validationStatus": {
+    "checksumVerified": true,
+    "extractedArtifactInspected": true,
+    "npmCi": "passed",
+    "typecheck": "passed",
+    "npmTest": "failed",
+    "npmTestSummary": "210 test files passed, 1 failed; 1089 tests passed, 1 failed",
+    "fullSuiteFromExtractedArtifact": "failed",
+    "attachedRepoSidecarTrial": "not_run",
+    "impactEvidenceImportExport": "not_run"
+  }
+}
