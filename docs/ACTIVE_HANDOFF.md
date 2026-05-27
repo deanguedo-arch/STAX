@@ -18,23 +18,23 @@ Branch:
 main
 ```
 
-Latest pushed rollout baseline before this follow-up patch:
+Latest pushed rollout baseline:
 
 ```txt
-8ba681d5ee7d618c212617dad733ee6c110c8db3
+d1f69dad7e81c1f4f7775853365ff2a661311bdb
 ```
 
 Commit message:
 
 ```txt
-Record four-repo operating window impact
+Fix sidecar regression branch portability
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26534962273
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26538318537
 ```
 
 Local `main` and `origin/main` were aligned when this handoff was refreshed.
@@ -88,6 +88,7 @@ The latest work:
 - Refreshed the ADMISSION-APP impact bundle against clean head `22acdc54747b16a9008e9ecc532806707323add9`.
 - Recollected Brightspace current-main command proof after sidecar proof-surface propagation.
 - Added a STAX regression so older wrong-branch command evidence is ignored as historical only after newer verified same-lane proof exists.
+- Fixed the regression test for CI portability by returning to the temp repo's actual default branch instead of assuming `main`.
 - Exported the refreshed Brightspace impact bundle after Brightspace reached sidecar Accept.
 
 ## Current Canvas Helper State
@@ -253,11 +254,9 @@ Current operating-window status:
 
 Next best actions:
 
-1. Commit and push the STAX historical-evidence patch plus refreshed Brightspace impact artifacts.
-2. Poll GitHub Actions for the pushed STAX commit.
-3. Add six more current operating-window bundles to reach the 10-run target across at least three repos.
-4. If no current attached repo is ready, add more local adversarial fixture coverage for repeated matcher/claim-extraction misses.
-5. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
+1. Add six more current operating-window bundles to reach the 10-run target across at least three repos.
+2. If no current attached repo is ready, add more local adversarial fixture coverage for repeated matcher/claim-extraction misses.
+3. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
 
 For each current attached repo, run:
 
@@ -340,11 +339,11 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff update:
-- commit: 8ba681d5ee7d618c212617dad733ee6c110c8db3
-- short: 8ba681d
-- commit message: Record four-repo operating window impact
+- commit: d1f69dad7e81c1f4f7775853365ff2a661311bdb
+- short: d1f69da
+- commit message: Fix sidecar regression branch portability
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26534962273
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26538318537
 
 Goal:
 Continue the attached-repo operating-window phase. STAX, ADMISSION-APP, Canvas Helper, and Brightspacequizexporter are imported into the current impact report. Canvas Helper has a fresh current-head sidecar Accept. Brightspace reached sidecar Accept after current-main proof recollection and a STAX patch that ignores older same-lane wrong-branch evidence only when newer verified proof exists.
