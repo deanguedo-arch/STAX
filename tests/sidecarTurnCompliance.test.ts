@@ -275,6 +275,23 @@ describe("STAX turn compliance", () => {
     expect(result.issues.map((issue) => issue.message).join("\n")).toContain("capture lag");
   });
 
+  it("does not reject report mtimes inside normal filesystem granularity", async () => {
+    const repoPath = await createTempGitRepo("stax-turn-report-mtime-granularity-");
+    await attachStaxToRepo(repoPath);
+    const contract = await readTurnContract(repoPath);
+    await writeReport(repoPath, compliantReport(contract?.requiredAcknowledgement ?? ""));
+    await writeCurrentTurn(repoPath, "Captured before the final report update.");
+    const contractTime = Date.parse(contract?.generatedAt ?? "");
+    const roundedMtime = new Date(contractTime - 500);
+    await fs.utimes(path.join(repoPath, ".stax", "codex-report.md"), roundedMtime, roundedMtime);
+
+    const result = await checkTurnCompliance({ repoPath, mode: "normal", hasDiff: true });
+
+    expect(result.pass).toBe(false);
+    expect(result.severity).toBe("weak");
+    expect(result.issues.map((issue) => issue.message).join("\n")).not.toContain("older than the current STAX turn contract");
+  });
+
   it("gate treats current-turn capture lag as non-blocking when the report has the current ACK", async () => {
     const repoPath = await createTempGitRepo("stax-turn-current-capture-lag-gate-");
     await attachStaxToRepo(repoPath);

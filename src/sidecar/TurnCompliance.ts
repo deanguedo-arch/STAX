@@ -28,6 +28,8 @@ export type CheckTurnComplianceOptions = {
   skipReportMtime?: boolean;
 };
 
+const REPORT_MTIME_GRANULARITY_TOLERANCE_MS = 1000;
+
 function parseJsonObject(raw: string): Record<string, unknown> | undefined {
   try {
     const parsed = JSON.parse(raw) as unknown;
@@ -151,7 +153,11 @@ export async function checkTurnCompliance(options: CheckTurnComplianceOptions): 
 
   const generatedAtMs = Date.parse(contract.generatedAt);
   const modifiedAtMs = options.skipReportMtime ? undefined : await reportMtimeMs(repoPath);
-  if (Number.isFinite(generatedAtMs) && modifiedAtMs !== undefined && modifiedAtMs < generatedAtMs) {
+  if (
+    Number.isFinite(generatedAtMs) &&
+    modifiedAtMs !== undefined &&
+    modifiedAtMs + REPORT_MTIME_GRANULARITY_TOLERANCE_MS < generatedAtMs
+  ) {
     issues.push({
       severity: severityForMissingAck(mode, missingAckInput),
       message: ".stax/codex-report.md is older than the current STAX turn contract."
