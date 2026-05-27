@@ -301,6 +301,43 @@ describe("project_control proof stack integration", () => {
     expect(result.verified.join("\n")).toContain("Diff audit: accept.");
   });
 
+  it("treats approved GitHub workflow edits as config-policy diff proof", () => {
+    const result = buildProjectControlProofStack({
+      task: "Audit the approved GitHub workflow runtime change.",
+      repoEvidence: [
+        "Target repo path: /repo",
+        "Changed files: .github/workflows/staxcore-strict.yml"
+      ].join("\n"),
+      commandEvidence: "",
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: update the workflow config.",
+        "Files changed:",
+        "- .github/workflows/staxcore-strict.yml",
+        "Tests added:",
+        "- none",
+        "Commands run:",
+        "- none",
+        "Command output summary with exit codes:",
+        "- Not required for this fixture.",
+        "What is verified:",
+        "- Human policy approval: approved by user for the workflow config change.",
+        "What is weak/provisional:",
+        "- No broader release claim.",
+        "What is unverified:",
+        "- None.",
+        "Risks:",
+        "- None beyond config review boundary.",
+        "One next action:",
+        "- Stop."
+      ].join("\n")
+    });
+
+    expect(result.verified).toContain("Claim-to-proof: config_policy claim is fully supported.");
+    expect(result.unverified.join("\n")).not.toContain("config_policy");
+    expect(result.risk.join("\n")).not.toContain("config_policy");
+  });
+
   it("keeps a 20-case proof-stack integration gate with zero false accepts and low false blocks", async () => {
     const runtime = await createDefaultRuntime();
     const cases = [

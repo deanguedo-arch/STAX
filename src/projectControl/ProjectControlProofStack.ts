@@ -333,7 +333,11 @@ function deriveClaims(text: string): DerivedClaim[] {
 function detectChangedFiles(text: string): DiffChangedFileInput[] {
   const filePattern =
     /\b(?:src|tests|docs|fixtures|config|pipeline|tools|projects|mobile|evals|modes|scripts|dist)\/[A-Za-z0-9_./-]+\.[A-Za-z0-9]+\b/g;
-  const matches = Array.from(text.matchAll(filePattern)).map((match) => match[0]);
+  const dotFilePattern = /(?:^|[\s`"'(])(\.github\/[A-Za-z0-9_./-]+\.[A-Za-z0-9]+)/g;
+  const matches = [
+    ...Array.from(text.matchAll(filePattern)).map((match) => match[0]),
+    ...Array.from(text.matchAll(dotFilePattern)).map((match) => match[1])
+  ];
   return dedupe(matches).map((filePath) => ({
     path: filePath,
     changeType: "modified" as const
@@ -661,7 +665,7 @@ function deriveProofItems(
       );
       break;
     case "config_policy":
-      push("config_diff", files.some((file) => /config|package\.json|tsconfig|eslint|playwright\.config/i.test(file)) ? "strong" : "missing", files.some((file) => /config|package\.json|tsconfig|eslint|playwright\.config/i.test(file)) ? "Config or policy diff detected." : "No config or policy diff detected.");
+      push("config_diff", files.some(isConfigPolicyProofPath) ? "strong" : "missing", files.some(isConfigPolicyProofPath) ? "Config or policy diff detected." : "No config or policy diff detected.");
       push("human_policy_approval", /\bapproved by|human approval|policy approval\b/i.test(combined) ? "strong" : "missing", /\bapproved by|human approval|policy approval\b/i.test(combined) ? "Human policy approval detected." : "No human policy approval detected.");
       break;
     case "dependency":
@@ -688,6 +692,10 @@ function deriveProofItems(
   }
 
   return proof;
+}
+
+function isConfigPolicyProofPath(filePath: string): boolean {
+  return /config|package\.json|tsconfig|eslint|playwright\.config|\.github\/workflows/i.test(filePath);
 }
 
 function claimToDiffClaimType(claimType: ClaimProofClaimType): DiffAuditClaimInput["claimType"] | undefined {

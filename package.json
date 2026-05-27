@@ -119,7 +119,7 @@
     "validate:staxcore:strict": "npm run rax -- staxcore release-gate --strict --print json",
     "validate:staxcore:strict:ci": "tsx scripts/validateStaxcoreStrictCi.ts --attempts 3 --delay-ms 5000 --max-delay-ms 30000 --backoff-factor 2",
     "test:unit": "vitest run tests/**/*.test.ts --exclude tests/fixtures/**",
-    "test:ci-safe": "vitest run --maxWorkers=4",
+    "test:ci-safe": "vitest run",
     "validate:hardened": "npm run typecheck && npm run build && npm run audit:all-strengthened && npm run test:ci-safe",
     "start": "node dist/src/cli.js"
   },
