@@ -593,6 +593,8 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.verdict).toBe("Reject");
     expect(status.unverified.join("\n")).toContain("Visual/style claim lacks STAX-collected rendered visual proof.");
     expect(status.oneNextAction).toContain("stax:collect-visual");
+    expect(status.oneNextAction).toContain("STAX checkout/tooling repo");
+    expect(status.oneNextAction).toContain("responsive/viewport checked");
   });
 
   it("does not accept stale screenshot proof after the auditable worktree changes", async () => {

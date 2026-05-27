@@ -149,4 +149,44 @@ describe("diff audit layer", () => {
     expect(result.verdict).toBe("provisional");
     expect(result.findings.map((finding) => finding.id)).toContain("security_sensitive_change_without_security_proof");
   });
+
+  it("does not require rendered visual proof for protocol text that only mentions visual proof", () => {
+    const result = auditDiffEvidence({
+      repo: "STAX",
+      branch: "main",
+      baseSha: "base-local",
+      headSha: "head-local",
+      objective: "Clarify sidecar visual proof instructions.",
+      changedFiles: [{
+        path: "src/sidecar/StaxGate.ts",
+        changeType: "modified",
+        patch: "@@ -1 +1 @@\n-Run the visual proof command.\n+Run visual proof collection from the STAX tooling checkout."
+      }],
+      claims: [{ claimType: "visual", text: "Visual proof instructions are clarified.", hardClaim: true }],
+      evidence: { behaviorTestEvidence: true, commandEvidenceAfterDiff: true }
+    });
+
+    expect(result.findings.map((finding) => finding.id)).not.toContain("visual_source_without_visual_proof");
+    expect(result.verdict).toBe("accept");
+  });
+
+  it("still requires rendered proof for visual claims that touch UI implementation files", () => {
+    const result = auditDiffEvidence({
+      repo: "canvas-helper",
+      branch: "main",
+      baseSha: "base-local",
+      headSha: "head-local",
+      objective: "Fix a rendered card layout.",
+      changedFiles: [{
+        path: "src/components/CourseCard.tsx",
+        changeType: "modified",
+        patch: "@@ -1 +1 @@\n-<div className=\"card old\" />\n+<div className=\"card compact\" />"
+      }],
+      claims: [{ claimType: "visual", text: "The course card layout is visually fixed.", hardClaim: true }],
+      evidence: { behaviorTestEvidence: true, commandEvidenceAfterDiff: true }
+    });
+
+    expect(result.verdict).toBe("provisional");
+    expect(result.findings.map((finding) => finding.id)).toContain("visual_source_without_visual_proof");
+  });
 });

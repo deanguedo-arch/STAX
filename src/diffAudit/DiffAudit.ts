@@ -37,6 +37,7 @@ const SOURCE_EXTENSIONS = new Set([
 ]);
 
 const VISUAL_STYLE_EXTENSIONS = new Set([".css", ".less", ".sass", ".scss"]);
+const VISUAL_IMPLEMENTATION_EXTENSIONS = new Set([".htm", ".html", ".jsx", ".tsx", ".vue", ".svelte"]);
 const LOCKFILE_NAMES = new Set([
   "cargo.lock",
   "composer.lock",
@@ -130,6 +131,7 @@ function collectFindings(parsed: ParsedDiffAuditInput, files: ClassifiedDiffFile
   const hasTest = roles.has("test");
   const hasFixture = roles.has("fixture");
   const hasVisualStyle = roles.has("visual_style");
+  const visualProofRelevantFiles = files.filter((file) => looksLikeVisualProofRelevantChange(file));
   const publicApiFiles = files.filter((file) => file.fileRole === "source" && looksLikePublicApiChange(file));
   const dependencyFiles = files.filter((file) => looksLikeDependencyChange(file));
   const migrationFiles = files.filter((file) => file.fileRole === "migration");
@@ -262,12 +264,12 @@ function collectFindings(parsed: ParsedDiffAuditInput, files: ClassifiedDiffFile
     ));
   }
 
-  if ((hasHardVisualClaim || hasVisualStyle) && !parsed.evidence.visualProofProvided) {
+  if ((hasVisualStyle || (hasHardVisualClaim && visualProofRelevantFiles.length > 0)) && !parsed.evidence.visualProofProvided) {
     findings.push(finding(
       "visual_source_without_visual_proof",
       "major",
       "Visual/style changes need rendered screenshot or visual checklist proof.",
-      files.filter((file) => file.fileRole === "visual_style" || file.fileRole === "source").map((file) => file.path),
+      visualProofRelevantFiles.map((file) => file.path),
       false
     ));
   }
@@ -425,4 +427,14 @@ function looksLikeSecuritySensitiveChange(file: ClassifiedDiffFile): boolean {
   if (/(^|\/)(auth|security|secrets?|permissions?|middleware|oauth|csrf|acl|rbac)(\/|$)/i.test(file.path)) return true;
   if (!file.patch) return false;
   return /\b(secret|token|apikey|api_key|password|oauth|csrf|permission|authorize|authn|authz|prompt injection)\b/i.test(file.patch);
+}
+
+function looksLikeVisualProofRelevantChange(file: ClassifiedDiffFile): boolean {
+  if (file.fileRole === "visual_style") return true;
+  const extension = path.posix.extname(file.path);
+  if (VISUAL_IMPLEMENTATION_EXTENSIONS.has(extension)) return true;
+  if (/(^|\/)(components?|pages?|views?|layouts?|templates?|workspace|ui|styles?)(\/|$)/i.test(file.path)) {
+    return true;
+  }
+  return false;
 }
