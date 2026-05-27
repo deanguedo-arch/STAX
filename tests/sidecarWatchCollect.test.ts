@@ -775,18 +775,24 @@ describe("STAX sidecar watch and collect", () => {
       [
         "node_modules/",
         "src/hidden.ts",
+        "scripts/__pycache__/",
         "projects/demo/exports/",
+        "projects/demo/meta/visual-checks/",
         ""
       ].join("\n"),
       "utf8"
     );
     await fs.mkdir(path.join(repoPath, "node_modules", "pkg"), { recursive: true });
     await fs.mkdir(path.join(repoPath, "projects", "demo", "exports", "google-hosted"), { recursive: true });
+    await fs.mkdir(path.join(repoPath, "projects", "demo", "meta", "visual-checks"), { recursive: true });
+    await fs.mkdir(path.join(repoPath, "scripts", "__pycache__"), { recursive: true });
     await fs.mkdir(path.join(repoPath, "src"), { recursive: true });
     await fs.writeFile(path.join(repoPath, "node_modules", "pkg", "index.ts"), "export const dependency = true;\n", "utf8");
     await fs.writeFile(path.join(repoPath, "node_modules", "pkg", "package.json"), "{\"name\":\"pkg\"}\n", "utf8");
     await fs.writeFile(path.join(repoPath, "projects", "demo", "exports", "google-hosted", "main.js"), "export const generated = true;\n", "utf8");
     await fs.writeFile(path.join(repoPath, "projects", "demo", "exports", "google-hosted", "styles.css"), "body { color: green; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "projects", "demo", "meta", "visual-checks", "scratch.css"), "body { color: blue; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "scripts", "__pycache__", "builder.cpython-312.pyc"), "bytecode\n", "utf8");
     await fs.writeFile(path.join(repoPath, "src", "hidden.ts"), "export const hidden = true;\n", "utf8");
 
     const fingerprint = await collectWorktreeFingerprint(repoPath);
@@ -795,6 +801,8 @@ describe("STAX sidecar watch and collect", () => {
     expect(paths).toContain("src/hidden.ts");
     expect(paths.some((item) => item.startsWith("node_modules/"))).toBe(false);
     expect(paths.some((item) => item.startsWith("projects/demo/exports/"))).toBe(false);
+    expect(paths.some((item) => item.startsWith("projects/demo/meta/visual-checks/"))).toBe(false);
+    expect(paths.some((item) => item.startsWith("scripts/__pycache__/"))).toBe(false);
   });
 
   it("audits only changed inputs and reports verdict changes", async () => {

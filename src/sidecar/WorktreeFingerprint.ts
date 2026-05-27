@@ -171,6 +171,9 @@ function isGeneratedOutputPath(filePath: string): boolean {
     normalized.startsWith("tmp/") ||
     normalized.startsWith("temp/") ||
     normalized.startsWith(".next/") ||
+    normalized.includes("/__pycache__/") ||
+    normalized.endsWith(".pyc") ||
+    /^projects\/[^/]+\/meta\/visual-checks\//.test(normalized) ||
     /^projects\/[^/]+\/exports\//.test(normalized);
 }
 
