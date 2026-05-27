@@ -56,6 +56,36 @@ describe("repo proof-surface discovery", () => {
     );
   });
 
+  it("does not treat script/test source files as direct proof commands or blocked live actions", async () => {
+    const repoPath = await createRepoWithPackage({ "test:e2e": "playwright test", "test:apps-script": "vitest run apps" });
+    await fs.mkdir(path.join(repoPath, "scripts", "tests"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "scripts", "tests", "calm-google-hosted-sidebar-hosts.test.ts"), "export {};\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "scripts", "smoke-local-pipeline.ts"), "export {};\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "publish-course-showcase.bat"), "echo publish\n", "utf8");
+
+    const { pack } = await discoverProofSurfaces(repoPath);
+    const allCommands = pack.proofSurfaces.flatMap((surface) => surface.commands);
+    const blockedActions = pack.blockedActions.map((action) => action.action);
+
+    expect(allCommands).not.toContain("scripts/tests/calm-google-hosted-sidebar-hosts.test.ts");
+    expect(allCommands).not.toContain("scripts/smoke-local-pipeline.ts");
+    expect(blockedActions).not.toContain("scripts/tests/calm-google-hosted-sidebar-hosts.test.ts");
+    expect(blockedActions).not.toContain("npm run test:apps-script");
+    expect(blockedActions).toContain("publish-course-showcase.bat");
+  });
+
+  it("does not classify publish scripts with building in the name as build proof commands", async () => {
+    const repoPath = await createRepoWithPackage({ build: "tsc" });
+    await fs.writeFile(path.join(repoPath, "publish-ai-course-building-resources.bat"), "echo publish\n", "utf8");
+
+    const { pack } = await discoverProofSurfaces(repoPath);
+    const build = pack.proofSurfaces.find((surface) => surface.claimType === "build_ready");
+
+    expect(build?.commands).toContain("npm run build");
+    expect(build?.commands).not.toContain("publish-ai-course-building-resources.bat");
+    expect(pack.blockedActions.map((action) => action.action)).toContain("publish-ai-course-building-resources.bat");
+  });
+
   it("detects visual/layout proof requirements for HTML/CSS workspaces", async () => {
     const repoPath = await createRepoWithPackage({ "test:e2e": "playwright test" });
     await fs.mkdir(path.join(repoPath, "workspace"), { recursive: true });
