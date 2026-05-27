@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "stax-build-info-v1",
+  "artifact": "dean-stax-hardened-final-2026-05-27.zip",
+  "sha256": "d1ba777b2536a5cdfc114fc236213e3373b006277e403e49d609f04daaccb8a2",
+  "gitCommit": "9828ef7d6642810385659a017beca6ae9bec3529",
+  "builtAt": "2026-05-27T13:01:24Z",
+  "builtBy": "Codex local artifact build",
+  "source": "git archive HEAD plus root BUILD_INFO.json",
+  "allowedClaim": "STAX is a scoped 9.5 local proof gate for Dean's Codex/repo project-control workflow.",
+  "blockedClaims": [
+    "broad ChatGPT superiority",
+    "production-ready autonomous agent",
+    "arbitrary-domain superiority",
+    "real repo auto-apply",
+    "git push / deploy / publish authority",
+    "code correctness proof"
+  ],
+  "includesGenericHardening": true,
+  "excludesDeanAppVertical": true
+}

@@ -160,3 +160,42 @@ Validation from fresh extraction:
 - `npm run pattern:impact`: passed locked replay with 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe, 0 regressed. Current operating window had 0 imported bundles in this local artifact run.
 
 Release decision: this repaired artifact is the validated candidate for attached-repo sidecar rollout testing. It is still mapped to a working-tree source state, not a clean pushed release commit. For a final public release, commit the source, rebuild the artifact from that commit, and generate a final SHA.
+
+## Final Commit-Mapped Artifact
+
+Artifact:
+
+```txt
+/Users/deanguedo/Downloads/dean-stax-hardened-final-2026-05-27.zip
+```
+
+SHA-256:
+
+```txt
+d1ba777b2536a5cdfc114fc236213e3373b006277e403e49d609f04daaccb8a2
+```
+
+Source commit:
+
+```txt
+9828ef7d6642810385659a017beca6ae9bec3529
+```
+
+Fresh extraction:
+
+```txt
+/Users/deanguedo/Downloads/dean-stax-hardened-final-2026-05-27-extracted/STAX-main-hardened-final
+```
+
+Validation from the fresh extraction:
+
+- `npm ci`: passed.
+- `npm run validate:hardened`: passed.
+- `npm run smoke:stax`: passed.
+- `npm run rax -- eval`: passed, 16/16 and 0 critical failures.
+- `npm run rax -- eval --regression`: passed, 49/49 and 0 critical failures.
+- `npm run rax -- eval --redteam`: passed, 15/15 and 0 critical failures.
+- `npm run campaign:operating-window:today`: passed, 5/5 and 0 critical misses.
+- `npm run pattern:impact`: passed locked replay with 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe, 0 regressed. Current operating-window imported bundles: 0.
+
+Release decision: this final artifact is commit-mapped and validated for attached-repo sidecar rollout testing. It still does not authorize broad ChatGPT superiority claims, autonomous production use, real-repo auto-apply, git push/deploy/publish authority, or code correctness proof.
