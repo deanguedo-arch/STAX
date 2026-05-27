@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-27T19:48:38.284Z
+Generated: 2026-05-27T20:08:59.570Z
 
 ## Claim Separation
 
@@ -40,7 +40,7 @@ Cleanup prompts needed: 4/4
 - STAX: improved; commands=212; artifacts=5; failures: none
 - ADMISSION-APP: unchanged_safe; commands=0; artifacts=6; failures: full handoff contract missing
 - canvas-helper: improved; commands=76; artifacts=9; failures: none
-- brightspacequizexporter: improved; commands=8; artifacts=7; failures: none
+- brightspacequizexporter: improved; commands=11; artifacts=7; failures: none
 
 ## Boundary
 

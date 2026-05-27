@@ -57,6 +57,7 @@ STAX is strong for Codex/repo project-control:
 - visual proof refresh handling for no-source-diff sidecar checks with build-log artifact paths
 - public sidecar attach flow documentation
 - GitHub-facing hardening audit artifact
+- historical wrong-branch command evidence is ignored only after newer verified same-lane proof exists, with regression coverage
 
 ## Current Technical Risks
 
@@ -64,7 +65,7 @@ STAX is strong for Codex/repo project-control:
 - proof-surface matching precision beyond adversarial v1 fixtures
 - real repo observer trial volume
 - more current operating-window task volume is still pending before the 10-task operating-window target is met
-- attached-repo command-evidence ledgers can still need cleanup after stale historical records, even though current-proof promotion now has regression coverage
+- attached-repo command-evidence ledgers can still accumulate stale historical records, but same-lane current proof now prevents older wrong-branch records from poisoning the verdict
 - stale attached-repo sidecar status can lag behind the current repo head after later commits
 - unusual-repo proof-surface discovery edge cases
 - complexity debt and archived report surface area

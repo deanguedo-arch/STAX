@@ -1336,7 +1336,7 @@ async function deriveSidecarFindings(input: {
   const verifiedCurrentEntries = latestEntries.filter(isVerifiedCurrentCommandEvidence);
   const hasCurrentVerifiedEvidence = verifiedCurrentEntries.length > 0;
   const entriesForStrictFindings = hasCurrentVerifiedEvidence
-    ? latestEntries.filter((entry) => isVerifiedCurrentCommandEvidence(entry) || !isStaleHistoricalEvidence(entry))
+    ? latestEntries.filter((entry) => isVerifiedCurrentCommandEvidence(entry) || !isSupersededHistoricalEvidence(entry, verifiedCurrentEntries))
     : latestEntries;
   for (const entry of entriesForStrictFindings) {
     if (entry.provenanceStatus === "verified_local_stax_command") {
@@ -1379,7 +1379,7 @@ async function deriveSidecarFindings(input: {
     }
   }
   if (hasCurrentVerifiedEvidence) {
-    for (const entry of latestEntries.filter(isStaleHistoricalEvidence).slice(0, 3)) {
+    for (const entry of latestEntries.filter((item) => isSupersededHistoricalEvidence(item, verifiedCurrentEntries)).slice(0, 3)) {
       verified.push(`Historical command evidence ignored for current proof because ${entry.command} is ${entry.provenanceStatus}.`);
     }
   }
@@ -1608,6 +1608,36 @@ function isStaleHistoricalEvidence(
 ): boolean {
   const status = (entry as SidecarCommandEvidenceEntry).provenanceStatus;
   return status === "wrong_worktree" || status === "wrong_commit";
+}
+
+function isSupersededHistoricalEvidence(
+  entry: ProjectControlCommandEvidenceEntry,
+  verifiedCurrentEntries: ProjectControlCommandEvidenceEntry[]
+): boolean {
+  if (isVerifiedCurrentCommandEvidence(entry)) return false;
+  if (isStaleHistoricalEvidence(entry)) return verifiedCurrentEntries.length > 0;
+  const status = (entry as SidecarCommandEvidenceEntry).provenanceStatus;
+  if (status !== "wrong_repo" && status !== "wrong_branch" && status !== "wrong_cwd") return false;
+  const entryLane = commandEvidenceProofLane(entry.command);
+  const entryTime = commandEvidenceTime(entry);
+  return verifiedCurrentEntries.some((current) => {
+    if (commandEvidenceProofLane(current.command) !== entryLane) return false;
+    const currentTime = commandEvidenceTime(current);
+    return currentTime === 0 || entryTime === 0 || currentTime >= entryTime;
+  });
+}
+
+function commandEvidenceProofLane(command: string): string {
+  const npmRun = command.match(/\bnpm\s+run(?:-script)?\s+([^\s]+)(?:\s+--\s+([^\s]+))?/i);
+  if (npmRun) {
+    const script = npmRun[1]?.toLowerCase() ?? "unknown";
+    const action = npmRun[2] && !npmRun[2].startsWith("-") ? `:${npmRun[2].toLowerCase()}` : "";
+    return `npm:${script}${action}`;
+  }
+  const npmBuiltIn = command.match(/\bnpm\s+(test|build|ci)\b/i);
+  if (npmBuiltIn) return `npm:${npmBuiltIn[1].toLowerCase()}`;
+  const family = commandFamilyFor(command);
+  return family === "unknown" ? `exact:${command}` : `family:${family}`;
 }
 
 function commandEvidenceTime(entry: ProjectControlCommandEvidenceEntry): number {

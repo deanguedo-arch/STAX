@@ -18,23 +18,23 @@ Branch:
 main
 ```
 
-Latest pushed rollout baseline before this operating-window refresh:
+Latest pushed rollout baseline before this follow-up patch:
 
 ```txt
-e5bdc87f697d86e09e637d0073823c5db4b7d06a
+8ba681d5ee7d618c212617dad733ee6c110c8db3
 ```
 
 Commit message:
 
 ```txt
-Update handoff after ADMISSION import
+Record four-repo operating window impact
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26533563028
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26534962273
 ```
 
 Local `main` and `origin/main` were aligned when this handoff was refreshed.
@@ -86,6 +86,9 @@ The latest work:
 - Rebuilt the pattern-promotion impact report with STAX, ADMISSION-APP, and Canvas imports.
 - Updated the ADMISSION-APP sidecar visual-proof protocol wording and pushed it to ADMISSION-APP `main`.
 - Refreshed the ADMISSION-APP impact bundle against clean head `22acdc54747b16a9008e9ecc532806707323add9`.
+- Recollected Brightspace current-main command proof after sidecar proof-surface propagation.
+- Added a STAX regression so older wrong-branch command evidence is ignored as historical only after newer verified same-lane proof exists.
+- Exported the refreshed Brightspace impact bundle after Brightspace reached sidecar Accept.
 
 ## Current Canvas Helper State
 
@@ -134,7 +137,7 @@ Current report:
 
 ```txt
 docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
-reports/pattern_promotion/pattern-promotion-impact-2026-05-27T19-48-38-284Z.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-27T20-08-59-570Z.json
 ```
 
 Current result:
@@ -167,10 +170,18 @@ ADMISSION-APP remains `Provisional` in sidecar impact because no live Codex repo
 Brightspacequizexporter is now included as observer evidence on `main` at:
 
 ```txt
-727bc1baff793b1e4fb8b0d1783e14a9e58fa828
+b7896b7de44c11c2f8ae34956bc20ed76f435e8f
 ```
 
-The Brightspace bundle is useful learning evidence, but it is not a clean sidecar Accept. It records that STAX caught stale/wrong-branch command proof after the branch was fast-forwarded into `main`. Treat this as a correct observer finding until Brightspace proof is recollected on the current clean `main` head.
+Brightspace sidecar status after the follow-up patch:
+
+```txt
+verdict: Accept
+proof strength: Strong
+commit: b7896b7de44c11c2f8ae34956bc20ed76f435e8f
+```
+
+The refreshed Brightspace bundle is now clean current-main evidence. STAX still records the older wrong-branch export command as historical, but it no longer poisons the verdict once newer verified same-lane proof exists.
 
 Keep these claims separate:
 
@@ -242,10 +253,11 @@ Current operating-window status:
 
 Next best actions:
 
-1. Recollect Brightspace command proof on the current clean `main` head if Brightspace should move from observer finding to clean sidecar Accept.
-2. Add six more current operating-window bundles to reach the 10-run target across at least three repos.
-3. If no current attached repo is ready, add more local adversarial fixture coverage for repeated matcher/claim-extraction misses.
-4. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
+1. Commit and push the STAX historical-evidence patch plus refreshed Brightspace impact artifacts.
+2. Poll GitHub Actions for the pushed STAX commit.
+3. Add six more current operating-window bundles to reach the 10-run target across at least three repos.
+4. If no current attached repo is ready, add more local adversarial fixture coverage for repeated matcher/claim-extraction misses.
+5. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
 
 For each current attached repo, run:
 
@@ -328,14 +340,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff update:
-- commit: e5bdc87f697d86e09e637d0073823c5db4b7d06a
-- short: e5bdc87
-- commit message: Update handoff after ADMISSION import
+- commit: 8ba681d5ee7d618c212617dad733ee6c110c8db3
+- short: 8ba681d
+- commit message: Record four-repo operating window impact
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26533563028
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26534962273
 
 Goal:
-Continue the attached-repo operating-window phase. STAX, ADMISSION-APP, Canvas Helper, and Brightspacequizexporter are imported into the current impact report. Canvas Helper has a fresh current-head sidecar Accept. Brightspace is included as observer evidence only because its bundle caught wrong-branch/stale proof and still needs current-main proof recollection before it can be treated as a clean sidecar Accept.
+Continue the attached-repo operating-window phase. STAX, ADMISSION-APP, Canvas Helper, and Brightspacequizexporter are imported into the current impact report. Canvas Helper has a fresh current-head sidecar Accept. Brightspace reached sidecar Accept after current-main proof recollection and a STAX patch that ignores older same-lane wrong-branch evidence only when newer verified proof exists.
 
 Before claiming completion in STAX, run:
 - npm run typecheck

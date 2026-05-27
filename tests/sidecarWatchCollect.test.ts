@@ -599,6 +599,56 @@ describe("STAX sidecar watch and collect", () => {
     expect(status.unverified.join("\n")).toContain("Command evidence context failed");
   });
 
+  it("ignores older wrong-branch command evidence after a current verified rerun in the same proof lane", async () => {
+    const repoPath = await prepareCommandProofRepo("stax-sidecar-wrong-branch-rerun-");
+    await commitFile(
+      repoPath,
+      "package.json",
+      `${JSON.stringify({ scripts: { test: "node -e \"console.log('tests passed')\"", export: "node export.js" } }, null, 2)}\n`
+    );
+    await commitFile(repoPath, "export.js", "console.log('converted', process.argv.slice(2).join(' '));\n");
+
+    execFileSync("git", ["checkout", "-b", "codex/old-proof"], { cwd: repoPath });
+    await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "export", "--", "convert", "--output", "old"],
+      writeLearningEvent: false
+    });
+
+    execFileSync("git", ["checkout", "main"], { cwd: repoPath });
+    const current = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "run", "export", "--", "convert", "--output", "current"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: verify export conversion.",
+        "Files changed: none.",
+        "Tests added: none.",
+        "Commands run: npm run export -- convert --output current",
+        `Command output summary with exit codes: ${current.evidenceId} exit code 0`,
+        "What is verified: export conversion completed with current STAX command evidence.",
+        "What is weak/provisional: none.",
+        "What is unverified: none.",
+        "Risks: none.",
+        "One next action: accept.",
+        ""
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+    const unverified = status.unverified.join("\n");
+    const risk = status.risk.join("\n");
+
+    expect(unverified).not.toContain("wrong_branch");
+    expect(unverified).not.toContain("Command evidence context failed");
+    expect(risk).not.toContain("Wrong branch command proof blocked");
+    expect(status.verified.join("\n")).toContain("Historical command evidence ignored");
+  });
+
   it("rejects command evidence after a non-sidecar commit advances HEAD", async () => {
     const repoPath = await prepareCommandProofRepo("stax-sidecar-wrong-commit-");
     const evidence = await collectCommandEvidence({
