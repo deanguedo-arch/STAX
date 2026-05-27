@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-27T16:06:32.756Z
+Generated: 2026-05-27T19:06:32.594Z
 
 ## Claim Separation
 
@@ -33,13 +33,13 @@ Regressed: 0
 Status: 3 imported bundle(s), 0 critical miss(es)
 Full handoff contracts: 2/3
 Proof artifacts requested: 3/3
-Cleanup prompts needed: 3/3
+Cleanup prompts needed: 2/3
 
 ### Imported Bundles
 
 - STAX: improved; commands=212; artifacts=5; failures: none
-- canvas-helper: improved; commands=43; artifacts=9; failures: none
 - ADMISSION-APP: unchanged_safe; commands=0; artifacts=6; failures: full handoff contract missing
+- canvas-helper: improved; commands=71; artifacts=9; failures: none
 
 ## Boundary
 
