@@ -805,6 +805,21 @@ describe("STAX sidecar watch and collect", () => {
     expect(paths.some((item) => item.startsWith("scripts/__pycache__/"))).toBe(false);
   });
 
+  it("ignores tracked runtime artifacts while preserving tracked source changes", async () => {
+    const repoPath = await createTempGitRepo("stax-fingerprint-tracked-generated-");
+    await commitFile(repoPath, "scripts/__pycache__/builder.cpython-312.pyc", "old bytecode\n");
+    await commitFile(repoPath, "src/app.ts", "export const value = 1;\n");
+
+    await fs.writeFile(path.join(repoPath, "scripts", "__pycache__", "builder.cpython-312.pyc"), "new bytecode\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "src", "app.ts"), "export const value = 2;\n", "utf8");
+
+    const fingerprint = await collectWorktreeFingerprint(repoPath);
+    const paths = fingerprint.trackedChangedFiles.map((item) => item.path);
+
+    expect(paths).toContain("src/app.ts");
+    expect(paths).not.toContain("scripts/__pycache__/builder.cpython-312.pyc");
+  });
+
   it("audits only changed inputs and reports verdict changes", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-watch-");
     await attachStaxToRepo(repoPath);

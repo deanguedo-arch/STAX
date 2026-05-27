@@ -40,7 +40,11 @@ export async function collectWorktreeFingerprint(repoPath: string): Promise<Work
   const snapshot = await collectGitSnapshot(repoPath);
   const statusPorcelain = await runGit(repoPath, ["status", "--porcelain=v1", "--untracked-files=all"]);
   const parsed = parsePorcelain(statusPorcelain);
-  const trackedRelevant = parsed.filter((item) => item.status !== "??" && !isWorktreeFingerprintExcludedPath(item.path));
+  const trackedRelevant = parsed.filter((item) =>
+    item.status !== "??" &&
+    !isWorktreeFingerprintExcludedPath(item.path) &&
+    !isGeneratedRuntimeArtifactPath(item.path)
+  );
   const untrackedRelevant = parsed.filter((item) => {
     if (item.status !== "??") return false;
     return isAuditableUntrackedPath(item.path);
@@ -164,17 +168,22 @@ function isDependencyTreePath(filePath: string): boolean {
 
 function isGeneratedOutputPath(filePath: string): boolean {
   const normalized = normalizeRelativePath(filePath);
-  return normalized.startsWith("dist/") ||
+  return isGeneratedRuntimeArtifactPath(normalized) ||
+    normalized.startsWith("dist/") ||
     normalized.startsWith("build/") ||
     normalized.startsWith("coverage/") ||
     normalized.startsWith("out/") ||
     normalized.startsWith("tmp/") ||
     normalized.startsWith("temp/") ||
     normalized.startsWith(".next/") ||
-    normalized.includes("/__pycache__/") ||
-    normalized.endsWith(".pyc") ||
-    /^projects\/[^/]+\/meta\/visual-checks\//.test(normalized) ||
     /^projects\/[^/]+\/exports\//.test(normalized);
+}
+
+function isGeneratedRuntimeArtifactPath(filePath: string): boolean {
+  const normalized = normalizeRelativePath(filePath);
+  return normalized.includes("/__pycache__/") ||
+    normalized.endsWith(".pyc") ||
+    /^projects\/[^/]+\/meta\/visual-checks\//.test(normalized);
 }
 
 function uniquePathFilter(): (filePath: string) => boolean {
