@@ -40,7 +40,7 @@ STAX is strong for Codex/repo project-control:
 - Phase B executable: STAX 7, ChatGPT 0, ties 13
 - zero STAX critical misses in promotion window
 - pattern promotion locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe
-- current operating-window impact imports: 3 bundles, 0 critical misses, full handoff contracts present for 2/3 bundles, proof artifacts requested for 3/3 bundles
+- current operating-window impact imports: 4 bundles, 0 critical misses, full handoff contracts present for 3/4 bundles, proof artifacts requested for 4/4 bundles
 
 ## Implemented Since Current Baseline
 
