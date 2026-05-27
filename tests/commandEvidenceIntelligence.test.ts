@@ -25,6 +25,8 @@ describe("command evidence intelligence", () => {
     expect(commandFamilyForIntelligence("npm run test:metadata-policy")).toBe("test");
     expect(commandFamilyForIntelligence("npm run validate:manifests")).toBe("test");
     expect(commandFamilyForIntelligence("npm run verify -- --project social-studies-10-1-docx-export")).toBe("test");
+    expect(commandFamilyForIntelligence("/opt/python/bin/python3 scripts/tests/brightspace_docx_style_profile_test.py")).toBe("test");
+    expect(commandFamilyForIntelligence("python3 -m py_compile scripts/brightspace_zip_to_docx_upload_package.py")).toBe("typecheck");
     expect(commandFamilyForIntelligence("npm run test:e2e")).toBe("e2e");
     expect(commandFamilyForIntelligence("npm run build")).toBe("build");
     expect(commandFamilyForIntelligence("npm run smoke:stax")).toBe("test");
@@ -242,6 +244,48 @@ describe("command evidence intelligence", () => {
     });
 
     expect(result.commandFamily).toBe("test");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+  });
+
+  it("treats direct Python test scripts as executable local test proof", () => {
+    const result = classifyCommandEvidence({
+      command: "/opt/python/bin/python3 scripts/tests/brightspace_docx_style_profile_test.py",
+      cwd: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      repo: "canvas-helper",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: "Ran 3 tests in 0.000s\n\nOK",
+      expectedRepo: "canvas-helper",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "tests_passed"
+    });
+
+    expect(result.commandFamily).toBe("test");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+  });
+
+  it("treats Python py_compile as executable typecheck proof", () => {
+    const result = classifyCommandEvidence({
+      command: "/opt/python/bin/python3 -m py_compile scripts/brightspace_zip_to_docx_upload_package.py",
+      cwd: "/Users/deanguedo/Documents/GitHub/canvas-helper",
+      repo: "canvas-helper",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: "",
+      expectedRepo: "canvas-helper",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "typecheck_passed"
+    });
+
+    expect(result.commandFamily).toBe("typecheck");
     expect(result.proofStrength).toBe("strong_local_proof");
     expect(result.status).toBe("passed");
   });

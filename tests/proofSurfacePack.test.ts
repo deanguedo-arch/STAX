@@ -250,6 +250,45 @@ describe("repo proof-surface discovery", () => {
     expect(hint).toContain("capture rendered visual proof");
     expect(hint).not.toContain("Suggested command: npm run deploy:google-hosted");
   });
+
+  it("does not blindly suggest the first test script when no specific command matched the report", async () => {
+    const repoPath = await createTempGitRepo("stax-proof-surface-test-hint-");
+    await fs.mkdir(path.join(repoPath, ".stax"), { recursive: true });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "proof-surfaces.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-proof-surface-pack-v1",
+          repoName: "canvas-helper",
+          status: "approved",
+          proofSurfaces: [
+            {
+              claimType: "tests_passed",
+              requiredEvidence: ["local_command_output", "target_repo_cwd"],
+              commands: ["npm run test:apps-script", "npm run smoke:pipeline"],
+              blockedEvidence: [],
+              source: "test fixture",
+              nextAction: "Run npm run test:apps-script through stax:collect in the target repo."
+            }
+          ]
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+
+    const hint = await proofSurfacePromptHint({
+      repoPath,
+      reportText: "Python DOCX style-profile tests passed through STAX command evidence.",
+      unverified: ["Command evidence classifier: non_execution_evidence for python3 -m py_compile."],
+      risk: []
+    });
+
+    expect(hint).toContain("Approved proof surface for tests_passed");
+    expect(hint).toContain("Run the relevant test, verification, or compile command through stax:collect");
+    expect(hint).not.toContain("npm run test:apps-script");
+  });
 });
 
 async function createRepoWithPackage(scripts: Record<string, string>): Promise<string> {

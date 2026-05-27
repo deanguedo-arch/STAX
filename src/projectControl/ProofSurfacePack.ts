@@ -91,8 +91,26 @@ export async function proofSurfacePromptHint(input: {
   if (!surface) return undefined;
   const prefix = approved ? "Approved proof surface" : "Candidate proof surface";
   const qualifier = approved ? "" : " This is candidate-only, so treat it as a provisional hint until approved.";
-  const commands = shouldAppendSuggestedCommand(surface) ? ` Suggested command: ${surface.commands[0]}.` : "";
-  return `${prefix} for ${surface.claimType}: ${surface.nextAction ?? `Provide ${surface.requiredEvidence.join(", ")}.`}${commands}${qualifier}`;
+  const suggestedCommand = suggestedCommandForSurface(surface, text);
+  const action = proofSurfaceAction(surface, suggestedCommand);
+  const commands = suggestedCommand ? ` Suggested command: ${suggestedCommand}.` : "";
+  return `${prefix} for ${surface.claimType}: ${action}${commands}${qualifier}`;
+}
+
+function proofSurfaceAction(surface: ProofSurfacePack["proofSurfaces"][number], suggestedCommand?: string): string {
+  if (surface.claimType === "tests_passed" && !suggestedCommand) {
+    return "Run the relevant test, verification, or compile command through stax:collect in the target repo.";
+  }
+  return surface.nextAction ?? `Provide ${surface.requiredEvidence.join(", ")}.`;
+}
+
+function suggestedCommandForSurface(
+  surface: ProofSurfacePack["proofSurfaces"][number],
+  text: string
+): string | undefined {
+  if (!shouldAppendSuggestedCommand(surface)) return undefined;
+  const normalizedText = text.toLowerCase();
+  return surface.commands.find((command) => normalizedText.includes(command.toLowerCase()));
 }
 
 function shouldAppendSuggestedCommand(surface: ProofSurfacePack["proofSurfaces"][number]): boolean {

@@ -79,6 +79,13 @@ export function commandFamilyForIntelligence(command: string): CommandEvidenceFa
   if (/\b(?:npm run )?audit:(?:security|repo-hygiene|all-strengthened|doctrine|boundaries)\b/.test(normalized)) return "lint";
   if (/\b(lint|eslint|clippy|rubocop|ruff check)\b/.test(normalized)) return "lint";
   if (/\b(build|webpack|vite build|next build|cargo build|go build|gradle assemble|mvn package|mvnw package)\b/.test(normalized)) return "build";
+  if (/\bpython3?\b[^\n]*(?:^|\s)-m\s+py_compile\b/.test(normalized)) return "typecheck";
+  if (
+    /\bpython3?\b[^\n]*\b-m\s+(?:unittest|pytest)\b/.test(normalized) ||
+    /\bpython3?\b[^\n]*(?:^|\s)(?:scripts\/tests\/[^\s]+(?:_test|test)\.py|tests\/[^\s]+(?:_test|test)\.py)\b/.test(normalized)
+  ) {
+    return "test";
+  }
   if (/\b(?:(?:npm|pnpm|yarn) run (?:test(?::[a-z0-9:_-]+)?|validate(?::[a-z0-9:_-]+)?|verify(?::[a-z0-9:_-]+)?)|npm test|pnpm test|yarn test|(?:\.\/)?(?:node_modules\/\.bin\/)?tsx --test|vitest|jest|pytest|cargo test|go test|gradle test|gradlew test|mvn test|mvnw test|phpunit|composer test|bundle exec rspec|rspec)\b/.test(normalized)) {
     return "test";
   }
@@ -325,6 +332,7 @@ function detectToolchain(command: string): string | undefined {
   if (/\bmvnw?\b/.test(normalized)) return "maven";
   if (/\bcomposer\b|\bphpunit\b/.test(normalized)) return "php";
   if (/\bbundle\b|\brspec\b/.test(normalized)) return "ruby";
+  if (/\bpython3?\b/.test(normalized) || /\bpytest\b/.test(normalized)) return "python";
   if (/\bgh run\b|\bgithub actions\b/.test(normalized)) return "github_actions";
   return undefined;
 }
