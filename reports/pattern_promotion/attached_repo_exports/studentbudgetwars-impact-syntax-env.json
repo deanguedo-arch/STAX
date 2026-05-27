@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "stax-impact-evidence-bundle-v1",
+  "generatedAt": "2026-05-27T22:51:16.766Z",
+  "repo": {
+    "path": "/Users/deanguedo/Documents/GitHub/studentbudgetwars",
+    "name": "studentbudgetwars",
+    "branch": "main",
+    "head": "34ad7072d984705a5dc505fe8e63f351e075afed",
+    "dirtyStatus": " M .gitignore\n?? .stax/\n?? AGENTS.md"
+  },
+  "stax": {
+    "commit": "557c76c95b238cd9c4c20c5fc5ed3d0afa817335",
+    "sidecarProtocolVersion": "stax-project-control-protocol-v1"
+  },
+  "task": "Run a STAX observer proof pass for studentbudgetwars on current main using safe local Python syntax evidence only.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-27T22:50:54.447Z\",\n  \"repo\": \"studentbudgetwars\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/studentbudgetwars\",\n  \"branch\": \"main\",\n  \"commitSha\": \"34ad7072d984705a5dc505fe8e63f351e075afed\",\n  \"task\": \"Run a STAX observer proof pass for studentbudgetwars on current main using safe local Python syntax evidence only.\",\n  \"verdict\": \"Reject\",\n  \"exitCode\": 1,\n  \"why\": \"Command evidence classifier: non_execution_evidence for python3 -m compileall -q src tests tools.\",\n  \"verified\": [\n    \"No working-tree diff is currently present.\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Command evidence provenance verified: cmd_2026-05-27T22_49_44_479Z_ec9227fc3b0e.\",\n    \"Command evidence freshness verified: cmd_2026-05-27T22_49_44_479Z_ec9227fc3b0e matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-27T22_49_27_888Z_15dc6320621a.\",\n    \"Command evidence freshness verified: cmd_2026-05-27T22_49_27_888Z_15dc6320621a matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-27T22_49_10_670Z_eea3d950a9e8.\",\n    \"Command evidence freshness verified: cmd_2026-05-27T22_49_10_670Z_eea3d950a9e8 matches the current auditable worktree.\",\n    \"Fresh STAX sidecar heartbeat is present (712ms old).\",\n    \"Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 1956 message(s).\",\n    \"Protocol warning recorded as non-blocking: Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"weak\": [],\n  \"unverified\": [\n    \"Command evidence classifier: non_execution_evidence for python3 -m compileall -q src tests tools.\",\n    \"Command evidence failed: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\",\n    \"Command evidence failed: python3 tools/validate_data.py exited 1.\",\n    \"Proof strength: Reject (0) - Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\",\n    \"Proof-strength reject: Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\",\n    \"Proof-strength reject: Failed command evidence: python3 tools/validate_data.py exited 1.\"\n  ],\n  \"risk\": [\n    \"Command evidence risk: input is not executable command evidence.\",\n    \"Proof-strength blocker: Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\",\n    \"Proof-strength blocker: Failed command evidence: python3 tools/validate_data.py exited 1.\"\n  ],\n  \"oneNextAction\": \"Candidate proof surface for tests_passed: Run tools/validate_data.py through stax:collect in the target repo. Suggested command: tools/validate_data.py. This is candidate-only, so treat it as a provisional hint until approved.\",\n  \"codexPrompt\": \"STAX Sidecar rejected or held this task because proof is incomplete.\\n\\nDo exactly one cleanup pass:\\nCandidate proof surface for tests_passed: Run tools/validate_data.py through stax:collect in the target repo. Suggested command: tools/validate_data.py. This is candidate-only, so treat it as a provisional hint until approved.\\n\\nAddress these proof gaps:\\n- Command evidence classifier: non_execution_evidence for python3 -m compileall -q src tests tools.\\n- Command evidence failed: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\\n- Command evidence failed: python3 tools/validate_data.py exited 1.\\n- Proof strength: Reject (0) - Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\\n- Proof-strength reject: Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\\n\\nDo not broaden scope. Do not claim tests passed without local command evidence. Update .stax/codex-report.md, then stop.\\nRisk to avoid: Command evidence risk: input is not executable command evidence.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"verification_run\",\n    \"claimText\": \"Run a STAX observer proof pass for studentbudgetwars on current main using safe local Python syntax evidence only.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-27T22-48-38-876Z_f796 89f9b52d 20b3ed24\\n\\nObjective:\\nRun a STAX observer proof pass for studentbudgetwars on current main using safe local Python syntax evidence only.\\n\\nFiles changed:\\n- `.gitignore`\\n- `AGENTS.md`\\n- `.stax/task.md`\\n- `.stax/codex-report.md`\\n- `.stax/proof-surfaces.candidate.json`\\n- `.stax/proof-surfaces.review.md`\\n- Generated `.stax` status/proof artifacts may be refreshed by STAX.\\n- Repo source, tests, data, launch scripts, and game content were not changed.\\n\\nTests added:\\n- None.\\n\\nCommands run:\\n- `npm run stax:attach -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars --discover-surfaces`\\n  - exitCode: 0\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest`\\n  - exitCode: 1\\n  - result: local `.venv/bin/python` symlink is not executable on this workstation\\n- `python3 -m pytest --version`\\n  - exitCode: 1\\n  - result: system Python 3.9.6 has no pytest module installed\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- python3 tools/validate_data.py`\\n  - exitCode: 1\\n  - evidence: `cmd_2026-05-27T22_49_10_670Z_eea3d950a9e8`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py`\\n  - exitCode: 1\\n  - evidence: `cmd_2026-05-27T22_49_27_888Z_15dc6320621a`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- python3 -m compileall -q src tests tools`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-27T22_49_44_479Z_ec9227fc3b0e`\\n\\nCommand output summary with exit codes:\\n- STAX sidecar attach with proof-surface discovery exited 0.\\n- The repo-local virtualenv Python could not be spawned on this workstation.\\n- System Python does not have pytest installed.\\n- Data validation could not run without installed runtime dependency `pydantic`.\\n- Safe local syntax compilation of `src`, `tests`, and `tools` exited 0 through STAX command evidence.\\n\\nWhat is verified:\\n- studentbudgetwars local `main` and `origin/main` are aligned at `34ad7072d984705a5dc505fe8e63f351e075afed`.\\n- STAX sidecar is attached and generated candidate proof surfaces locally.\\n- Safe local Python syntax compilation passed for source, tests, and tools.\\n- Dependency/test environment is not ready on this workstation without setup.\\n\\nWhat is weak/provisional:\\n- This observer pass proves only syntax compilation and sidecar attachment.\\n- Candidate proof surfaces are not approved.\\n- The attached sidecar modified `.gitignore` and created `AGENTS.md`; those changes need review before committing in the repo.\\n\\nWhat is unverified:\\n- pytest suite pass is not claimed.\\n- data validation pass is not claimed.\\n- gameplay behavior, UI behavior, balance correctness, and packaging readiness are not claimed.\\n\\nRisks:\\n- Do not treat compileall as behavior proof.\\n- Do not treat missing local dependencies as a source regression.\\n- Do not promote studentbudgetwars repo-specific commands or facts into global STAX learning.\\n\\nOne next action:\\nRun the studentbudgetwars sidecar gate and export the observer bundle as syntax-only, cleanup-needed live repo evidence.\",\n    \"rawScore\": 1,\n    \"finalScore\": 0,\n    \"label\": \"Reject\",\n    \"capApplied\": [],\n    \"rejectReasons\": [\n      \"Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\",\n      \"Failed command evidence: python3 tools/validate_data.py exited 1.\"\n    ],\n    \"primaryLimiter\": \"Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\",\n    \"missingProof\": [],\n    \"weakProof\": [\n      \"Weak command claim: npm run stax:attach -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: tools/validate_data.py.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Local STAX command evidence passed: python3 -m compileall -q src tests tools exited 0.\",\n      \"Verified local STAX command provenance is present for this repo state.\",\n      \"Repo evidence enumerated source files.\"\n    ],\n    \"oneNextAction\": \"Fix the failing command, rerun it through STAX command evidence, then re-gate the claim.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-27T22:50:54.445Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-27T22-48-38-876Z_f796 89f9b52d 20b3ed24\",\n    \"contractTurnId\": \"turn_2026-05-27T22-48-38-876Z_f796\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-27T22-48-38-876Z_f796 89f9b52d 20b3ed24\n\nObjective:\nRun a STAX observer proof pass for studentbudgetwars on current main using safe local Python syntax evidence only.\n\nFiles changed:\n- `.gitignore`\n- `AGENTS.md`\n- `.stax/task.md`\n- `.stax/codex-report.md`\n- `.stax/proof-surfaces.candidate.json`\n- `.stax/proof-surfaces.review.md`\n- Generated `.stax` status/proof artifacts may be refreshed by STAX.\n- Repo source, tests, data, launch scripts, and game content were not changed.\n\nTests added:\n- None.\n\nCommands run:\n- `npm run stax:attach -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars --discover-surfaces`\n  - exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest`\n  - exitCode: 1\n  - result: local `.venv/bin/python` symlink is not executable on this workstation\n- `python3 -m pytest --version`\n  - exitCode: 1\n  - result: system Python 3.9.6 has no pytest module installed\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- python3 tools/validate_data.py`\n  - exitCode: 1\n  - evidence: `cmd_2026-05-27T22_49_10_670Z_eea3d950a9e8`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py`\n  - exitCode: 1\n  - evidence: `cmd_2026-05-27T22_49_27_888Z_15dc6320621a`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- python3 -m compileall -q src tests tools`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-27T22_49_44_479Z_ec9227fc3b0e`\n\nCommand output summary with exit codes:\n- STAX sidecar attach with proof-surface discovery exited 0.\n- The repo-local virtualenv Python could not be spawned on this workstation.\n- System Python does not have pytest installed.\n- Data validation could not run without installed runtime dependency `pydantic`.\n- Safe local syntax compilation of `src`, `tests`, and `tools` exited 0 through STAX command evidence.\n\nWhat is verified:\n- studentbudgetwars local `main` and `origin/main` are aligned at `34ad7072d984705a5dc505fe8e63f351e075afed`.\n- STAX sidecar is attached and generated candidate proof surfaces locally.\n- Safe local Python syntax compilation passed for source, tests, and tools.\n- Dependency/test environment is not ready on this workstation without setup.\n\nWhat is weak/provisional:\n- This observer pass proves only syntax compilation and sidecar attachment.\n- Candidate proof surfaces are not approved.\n- The attached sidecar modified `.gitignore` and created `AGENTS.md`; those changes need review before committing in the repo.\n\nWhat is unverified:\n- pytest suite pass is not claimed.\n- data validation pass is not claimed.\n- gameplay behavior, UI behavior, balance correctness, and packaging readiness are not claimed.\n\nRisks:\n- Do not treat compileall as behavior proof.\n- Do not treat missing local dependencies as a source regression.\n- Do not promote studentbudgetwars repo-specific commands or facts into global STAX learning.\n\nOne next action:\nRun the studentbudgetwars sidecar gate and export the observer bundle as syntax-only, cleanup-needed live repo evidence.\n\n<!-- STAX:proof-strength:start -->\n## STAX Proof Strength\n\nGenerated by `stax gate`; this is STAX audit output, not a Codex completion claim.\n\n- Claim Type: verification_run\n- Label: Reject\n- Raw Score: 1\n- Final Score: 0\n- Caps Applied: none\n- Primary Limiter: Failed command evidence: /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py exited 1.\n- Next Proof Action: Fix the failing command, rerun it through STAX command evidence, then re-gate the claim.\n- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\n- Proof report: .stax/reports/latest-proof-report.md\n- Artifact: .stax/proof_strength.json\n- Confidence Report: .stax/reports/latest-confidence-report.md\n<!-- STAX:proof-strength:end -->\n",
+  "commandEvidence": [
+    {
+      "evidenceId": "cmd_2026-05-27T22_49_10_670Z_eea3d950a9e8",
+      "command": "python3 tools/validate_data.py",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "f716ad958b3aa190472f6d1e3f695b3fb885b8db3b166398db9a0cf307fccc00",
+      "recordedAt": "2026-05-27T22:49:10.688Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T22_49_27_888Z_15dc6320621a",
+      "command": "/usr/bin/env PYTHONPATH=src python3 tools/validate_data.py",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "069583db8c52971a409c47e8d7eb74fdc3376c2e0388617e16abc1c8d6dde381",
+      "recordedAt": "2026-05-27T22:49:27.920Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T22_49_44_479Z_ec9227fc3b0e",
+      "command": "python3 -m compileall -q src tests tools",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "2d5d9ecef09e40a78e417a0664958e91575ef383483035262ecd069fb66effca",
+      "recordedAt": "2026-05-27T22:49:44.628Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "status",
+      "path": ".stax/status.json",
+      "hash": "0227f99fef4d003d9c51bcb177d4dbb67e8c4e5fd07636e907e021abaaa4dde9",
+      "summary": "status.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof_strength.json",
+      "hash": "aeca226b73691dc1077744ddd48429a7d8d3a37df1fd3239b7038474d26ed30c",
+      "summary": "proof_strength.json present"
+    },
+    {
+      "kind": "next_prompt",
+      "path": ".stax/next-codex-prompt.md",
+      "hash": "6e1bda4eea25965aa6da420493543522bae806bb5b222eda2098c8eb487fcaf2",
+      "summary": "next-codex-prompt.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/reports/latest-proof-report.md",
+      "hash": "17a1eead6ed36304361e1a5b487172e36f4366ded9a14b9bba2cc02e556d9dae",
+      "summary": "reports/latest-proof-report.md present"
+    },
+    {
+      "kind": "sidecar_artifact",
+      "path": ".stax/reports/latest-confidence-report.md",
+      "hash": "8a0e96b846c0d96f97bb32f438a2499b934333283effdc6012054a96137e5bcf",
+      "summary": "reports/latest-confidence-report.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.candidate.json",
+      "hash": "39355d7c949727719887242d29a04a34d407c6646e0a68d03c593e752fe326b7",
+      "summary": "proof-surfaces.candidate.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.review.md",
+      "hash": "1bd9529072742f16c0f5cda9f6b78313186c93d6591df22f58ac65686d43d865",
+      "summary": "proof-surfaces.review.md present"
+    }
+  ],
+  "criticalMiss": false,
+  "cleanupPromptNeeded": true,
+  "fullHandoffContractPresent": true,
+  "proofArtifactRequested": true
+}

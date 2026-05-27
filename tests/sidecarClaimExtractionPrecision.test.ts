@@ -19,6 +19,22 @@ describe("sidecar claim extraction precision", () => {
     expect(decomposeClaimsFromReport(["Risk: deploy could be unsafe", "Unverified: sync readiness"].join("\n"))).toEqual([]);
   });
 
+  it("does not convert weak/provisional caution language into hard claims", () => {
+    expect(
+      decomposeClaimsFromReport([
+        "Objective:",
+        "Run a local observer proof pass.",
+        "",
+        "What is weak/provisional:",
+        "- This observer pass proves only the local page-build path, not live sync, publish, deploy, sheet writes, source data correctness, or visual readiness.",
+        "- The build command changed generated tracked output, so the repo needs a human decision.",
+        "",
+        "What is verified:",
+        "- Local build command evidence exists."
+      ].join("\n"))
+    ).toEqual([]);
+  });
+
   it("keeps explicit negative claims negative", () => {
     expect(decomposeClaimsFromReport("This does not enable live blocking.")).toEqual([]);
   });

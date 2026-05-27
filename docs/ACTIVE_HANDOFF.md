@@ -21,23 +21,23 @@ main
 Latest pushed rollout baseline:
 
 ```txt
-d1f69dad7e81c1f4f7775853365ff2a661311bdb
+557c76c95b238cd9c4c20c5fc5ed3d0afa817335
 ```
 
 Commit message:
 
 ```txt
-Fix sidecar regression branch portability
+Refresh active handoff after CI repair
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26538318537
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26538928648
 ```
 
-Local `main` and `origin/main` were aligned when this handoff was refreshed.
+Local `main` and `origin/main` were aligned before the current uncommitted rollout patch.
 
 ## Product Boundary
 
@@ -77,6 +77,14 @@ fc10f3d Refresh rollout handoff status
 
 The latest work:
 
+- Fixed claim extraction so `What is weak/provisional` caution language no longer becomes hard release/data/visual claims.
+- Fixed project-control command relevance so protocol-compliance wording and cross-repo command-log metadata do not route current test proof into the wrong proof lane.
+- Added regression coverage for both false-reject classes.
+- Fixed sidecar worktree fingerprinting so nested dependency trees such as `mobile/ios-wrapper/node_modules/**` are excluded, not only top-level `node_modules/**`.
+- Added regression coverage for nested dependency-tree exclusion using the ADMISSION-shaped path.
+- Refreshed the ADMISSION-APP local page-build observer bundle. It now gates `Accept / Audit-grade` for the narrowed local build-proof claim, but `docs/index.html` remains changed in ADMISSION and needs a separate keep/revert decision.
+- Attached STAX to `studentbudgetwars` and exported a syntax-only observer bundle. That repo lacks a working pytest/pydantic environment on this workstation, so the bundle is cleanup-needed evidence, not a tests-passed claim.
+- Rebuilt the pattern-promotion impact report to the 10-bundle operating-window target.
 - Excluded generated runtime/export artifacts from sidecar worktree fingerprints while keeping real source/test/config changes auditable.
 - Added regression coverage for generated export and Python bytecode fingerprint behavior.
 - Serialized visual-proof manifest writes so concurrent visual proof collection cannot corrupt `.stax/visual-proofs/manifest.json`.
@@ -138,26 +146,32 @@ Current report:
 
 ```txt
 docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
-reports/pattern_promotion/pattern-promotion-impact-2026-05-27T20-08-59-570Z.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-27T22-51-28-732Z.json
 ```
 
 Current result:
 
 ```txt
 locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe, 0 regressed
-current operating window: 4 imported bundles, 0 critical misses
-full handoff contracts: 3/4
-proof artifacts requested: 4/4
-cleanup prompts needed: 4/4
+current operating window: 10 imported bundles, 0 critical misses
+full handoff contracts: 9/10
+proof artifacts requested: 10/10
+cleanup prompts needed: 9/10
 ```
 
 Imported bundles:
 
 ```txt
-STAX: improved
-ADMISSION-APP: unchanged_safe, full handoff contract missing
-canvas-helper: improved
-brightspacequizexporter: improved
+STAX: improved, prior proof-surface discovery task
+STAX: improved, current fingerprint/claim-routing task
+ADMISSION-APP: unchanged_safe, earlier observer bundle with full handoff contract missing
+ADMISSION-APP: improved, current local page-build observer bundle
+canvas-helper: improved, 2026-05-22 live repo bundle
+canvas-helper: improved, expanded-sidebar fit bundle
+canvas-helper: improved, AS30 tablet/mobile unit-card bundle
+canvas-helper: improved, current-worktree observer refresh bundle
+brightspacequizexporter: improved, Forensics 25 export bundle
+studentbudgetwars: improved, syntax-only cleanup-needed observer bundle
 ```
 
 ADMISSION-APP latest sidecar protocol commit:
@@ -166,7 +180,14 @@ ADMISSION-APP latest sidecar protocol commit:
 22acdc54747b16a9008e9ecc532806707323add9
 ```
 
-ADMISSION-APP remains `Provisional` in sidecar impact because no live Codex report/heartbeat was present; this is expected observer evidence, not an acceptance failure.
+ADMISSION-APP current local page-build observer gate:
+
+```txt
+verdict: Accept
+proof strength: Audit-grade
+commit: 22acdc54747b16a9008e9ecc532806707323add9
+note: `docs/index.html` changed when `npm run build:pages` ran; decide keep/revert in ADMISSION before committing there.
+```
 
 Brightspacequizexporter is now included as observer evidence on `main` at:
 
@@ -193,19 +214,19 @@ Current operating window = proves STAX helps live repos today.
 
 ## Local Proof Already Collected
 
-STAX local proof after `fc10f3d`:
+STAX local proof for the current uncommitted rollout patch:
 
 ```txt
 npm run typecheck: pass
-npm test -- tests/proofSurfaceMatcher.test.ts tests/proofSurfaceMatcherAdversarial.test.ts: pass, 23 tests
-npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck: pass
+npm test -- tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts: pass, 64 tests
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts: pass
 npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX: Accept / Audit-grade
 ```
 
 GitHub Actions:
 
 ```txt
-staxcore-strict on fc10f3d: success
+staxcore-strict on 557c76c: success
 ```
 
 ## Current Local Dirt
@@ -228,9 +249,33 @@ docs/ACTIVE_HANDOFF 2.md
 
 It has not been touched. Do not delete it unless Dean explicitly asks.
 
+New durable files from the current uncommitted rollout patch:
+
+```txt
+reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-current-build.json
+reports/pattern_promotion/attached_repo_exports/STAX-impact-current-fingerprint.json
+reports/pattern_promotion/attached_repo_exports/studentbudgetwars-impact-syntax-env.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-27T22-51-28-732Z.json
+```
+
+Older intermediate impact JSON files from this same run were superseded and left out; commit only the final `pattern-promotion-impact-2026-05-27T22-51-28-732Z.json`.
+
+Attached repo dirt created by observer work:
+
+```txt
+/Users/deanguedo/Documents/GitHub/ADMISSION-APP
+- docs/index.html changed by `npm run build:pages`
+- generated `.stax` status/proof files dirty
+
+/Users/deanguedo/Documents/GitHub/studentbudgetwars
+- .gitignore changed by STAX attach
+- AGENTS.md created by STAX attach
+- .stax/ sidecar created
+```
+
 ## Next Milestone
 
-The next milestone remains attached-repo/current operating-window proof volume.
+The next milestone is packaging and pushing the current STAX rollout patch, then deciding how to handle attached-repo local dirt.
 
 Acceptance target:
 
@@ -246,17 +291,19 @@ cleanup prompts tracked
 Current operating-window status:
 
 ```txt
-4 imported bundles
+10 imported bundles
 0 critical misses
-3/4 full handoff contracts
-4/4 proof artifact requests
+9/10 full handoff contracts
+10/10 proof artifact requests
 ```
 
 Next best actions:
 
-1. Add six more current operating-window bundles to reach the 10-run target across at least three repos.
-2. If no current attached repo is ready, add more local adversarial fixture coverage for repeated matcher/claim-extraction misses.
-3. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
+1. Stage and commit the STAX source/test/report/export changes, leaving generated `.stax` runtime files and unrelated `docs/ACTIVE_HANDOFF 2.md` unstaged unless explicitly requested.
+2. Push STAX `main` and verify GitHub Actions.
+3. In ADMISSION-APP, decide whether to keep or revert the generated `docs/index.html` diff.
+4. In studentbudgetwars, decide whether to keep and commit the new STAX sidecar attach files.
+5. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
 
 For each current attached repo, run:
 

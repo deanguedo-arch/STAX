@@ -137,6 +137,113 @@ describe("project_control proof stack integration", () => {
     expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
   });
 
+  it("does not let protocol-compliance wording make local build evidence irrelevant", () => {
+    const result = buildProjectControlProofStack({
+      task: "Verify the local page build proof only.",
+      repoEvidence: "Target repo path: /repo\nChanged files: docs/index.html",
+      commandEvidence: "",
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: verify the local page build proof only.",
+        "Files changed:",
+        "- docs/index.html",
+        "Tests added:",
+        "- none",
+        "Commands run:",
+        "- `npm run build:pages` exited 0.",
+        "Command output summary with exit codes:",
+        "- Page build exited 0.",
+        "What is verified:",
+        "- Local STAX command evidence exists for the page build command.",
+        "What is weak/provisional:",
+        "- This proves only the local page-build command.",
+        "What is unverified:",
+        "- No live target readiness is claimed.",
+        "Risks:",
+        "- Generated output needs review.",
+        "One next action:",
+        "- Export the observer evidence."
+      ].join("\n"),
+      targetRepoPath: "/repo",
+      expectedRepo: "/repo",
+      expectedCwd: "/repo",
+      expectedBranch: "main",
+      expectedCommitSha: "abc",
+      commandEvidenceEntries: [
+        {
+          command: "npm run build:pages",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "",
+          stderr: "",
+          source: "local_stax_command_output"
+        }
+      ]
+    });
+
+    expect(result.verified).toContain("Command evidence classifier: strong_local_proof for npm run build:pages.");
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("build evidence does not prove behavior");
+  });
+
+  it("does not let command-log metadata from another repo force the current proof lane", () => {
+    const result = buildProjectControlProofStack({
+      task: "Patch claim extraction precision and run targeted regression tests.",
+      repoEvidence: "Target repo path: /repo\nChanged files: src/claims/ClaimProofMapping.ts\ntests/sidecarClaimExtractionPrecision.test.ts",
+      commandEvidence: "",
+      codexReport: [
+        "STAX acknowledgement: STAX_ACK turn_x hash hash",
+        "Objective: patch claim extraction precision and run targeted regression tests.",
+        "Files changed:",
+        "- src/claims/ClaimProofMapping.ts",
+        "- tests/sidecarClaimExtractionPrecision.test.ts",
+        "Tests added:",
+        "- regression for weak/provisional caution language",
+        "Commands run:",
+        "- `npm run stax:collect -- --repo /other -- npm run build:pages` exited 0.",
+        "- `npm test -- tests/sidecarClaimExtractionPrecision.test.ts` exited 0.",
+        "Command output summary with exit codes:",
+        "- Other repo page build exited 0.",
+        "- Targeted regression tests passed.",
+        "What is verified:",
+        "- Current-worktree local STAX command evidence exists for the targeted regression tests.",
+        "What is weak/provisional:",
+        "- Other repo bundle remains separate.",
+        "What is unverified:",
+        "- Full validation has not been rerun.",
+        "Risks:",
+        "- Do not mix repo proof lanes.",
+        "One next action:",
+        "- Stop."
+      ].join("\n"),
+      targetRepoPath: "/repo",
+      expectedRepo: "/repo",
+      expectedCwd: "/repo",
+      expectedBranch: "main",
+      expectedCommitSha: "abc",
+      commandEvidenceEntries: [
+        {
+          command: "npm test -- tests/sidecarClaimExtractionPrecision.test.ts",
+          cwd: "/repo",
+          repo: "/repo",
+          branch: "main",
+          commitSha: "abc",
+          exitCode: 0,
+          stdout: "test files 1 passed",
+          stderr: "",
+          source: "local_stax_command_output"
+        }
+      ]
+    });
+
+    expect(result.verified).toContain("Command evidence classifier: strong_local_proof for npm test -- tests/sidecarClaimExtractionPrecision.test.ts.");
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("test evidence does not prove build_passed");
+    expect([...result.unverified, ...result.risk].join("\n")).not.toContain("not_relevant_to_claim");
+  });
+
   it("lets verified e2e command evidence satisfy a behavior proof lane without a test diff", () => {
     const result = buildProjectControlProofStack({
       task: "Audit whether course sidebar behavior is proven.",

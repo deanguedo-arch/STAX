@@ -179,6 +179,8 @@ function stripReportMetadataSections(text: string): string {
     "tests added",
     "commands run",
     "command output summary with exit codes",
+    "what is weak/provisional",
+    "what is weak / provisional",
     "what is unverified",
     "risks",
     "one next action"

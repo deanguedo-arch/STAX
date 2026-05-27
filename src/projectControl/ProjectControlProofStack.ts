@@ -362,11 +362,18 @@ function detectCommandSource(commandEvidence: string, codexReport: string): Comm
 }
 
 function detectCommandClaimType(text: string): CommandEvidenceClaimType {
-  const claims = decomposeClaimsFromReport(text).map((claim) => claim.claimType);
+  const claimContext = stripCommandClaimMetadata(text);
+  const claims = decomposeClaimsFromReport(claimContext).map((claim) => claim.claimType);
   if (claims.includes("release_deploy")) return "release_ready";
-  if (/\b(?:build passed|build succeeded|build completed|compiled successfully)\b/i.test(text)) return "build_passed";
-  if (/\btypecheck\b/i.test(text)) return "typecheck_passed";
-  if (/\blint\b/i.test(text)) return "lint_passed";
+  if (
+    /\b(?:build passed|build succeeded|build completed|compiled successfully)\b/i.test(claimContext) ||
+    /\b(?:build proof|build command|local build|page build)\b/i.test(claimContext) ||
+    /\bnpm run [a-z0-9:_-]*build[a-z0-9:_-]*\b/i.test(claimContext)
+  ) {
+    return "build_passed";
+  }
+  if (/\btypecheck\b/i.test(claimContext)) return "typecheck_passed";
+  if (/\blint\b/i.test(claimContext)) return "lint_passed";
   if (claims.includes("test") || claims.includes("eval")) return "tests_passed";
   if (
     claims.some((claim) =>
@@ -379,7 +386,6 @@ function detectCommandClaimType(text: string): CommandEvidenceClaimType {
         "config_policy",
         "dependency",
         "migration",
-        "protocol_compliance",
         "performance",
         "accessibility",
         "memory_promotion"
@@ -389,6 +395,43 @@ function detectCommandClaimType(text: string): CommandEvidenceClaimType {
     return "behavior";
   }
   return "unspecified";
+}
+
+function stripCommandClaimMetadata(text: string): string {
+  const skippedSections = new Set([
+    "files changed",
+    "tests added",
+    "commands run",
+    "command output summary with exit codes",
+    "what is weak/provisional",
+    "what is weak / provisional",
+    "what is unverified",
+    "risks",
+    "one next action"
+  ]);
+  const withoutGenerated = text.replace(/<!-- STAX:proof-strength:start -->[\s\S]*?<!-- STAX:proof-strength:end -->/g, " ");
+  const output: string[] = [];
+  let skipping = false;
+
+  for (const line of withoutGenerated.split(/\r?\n/)) {
+    const heading = parseCommandClaimHeading(line);
+    if (heading) {
+      skipping = skippedSections.has(heading);
+      if (!skipping) output.push(line);
+      continue;
+    }
+    if (!skipping) output.push(line);
+  }
+
+  return output.join("\n");
+}
+
+function parseCommandClaimHeading(line: string): string | undefined {
+  const normalized = line.trim().replace(/^#+\s*/, "").replace(/\s*:\s*$/, "").toLowerCase();
+  if (!normalized || normalized.length > 80) return undefined;
+  if (!/^[a-z][a-z0-9 /-]*$/.test(normalized)) return undefined;
+  if (!line.trim().endsWith(":")) return undefined;
+  return normalized;
 }
 
 function deriveProofItems(

@@ -156,14 +156,21 @@ function isAuditableUntrackedPath(filePath: string): boolean {
 
 function isDependencyTreePath(filePath: string): boolean {
   const normalized = normalizeRelativePath(filePath);
-  return normalized.startsWith("node_modules/") ||
-    normalized.startsWith("bower_components/") ||
-    normalized.startsWith(".pnpm-store/") ||
+  return hasPathSegment(normalized, "node_modules") ||
+    hasPathSegment(normalized, "bower_components") ||
+    hasPathSegment(normalized, ".pnpm-store") ||
     normalized.startsWith(".yarn/cache/") ||
+    normalized.includes("/.yarn/cache/") ||
     normalized.startsWith(".yarn/unplugged/") ||
-    normalized.startsWith(".venv/") ||
-    normalized.startsWith("venv/") ||
-    normalized.startsWith("vendor/bundle/");
+    normalized.includes("/.yarn/unplugged/") ||
+    hasPathSegment(normalized, ".venv") ||
+    hasPathSegment(normalized, "venv") ||
+    normalized.startsWith("vendor/bundle/") ||
+    normalized.includes("/vendor/bundle/");
+}
+
+function hasPathSegment(filePath: string, segment: string): boolean {
+  return filePath.split("/").includes(segment);
 }
 
 function isGeneratedOutputPath(filePath: string): boolean {

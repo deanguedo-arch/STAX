@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-27T20:08:59.570Z
+Generated: 2026-05-27T22:51:28.732Z
 
 ## Claim Separation
 
@@ -30,17 +30,23 @@ Regressed: 0
 
 ## Current Operating Window Imports
 
-Status: 4 imported bundle(s), 0 critical miss(es)
-Full handoff contracts: 3/4
-Proof artifacts requested: 4/4
-Cleanup prompts needed: 4/4
+Status: 10 imported bundle(s), 0 critical miss(es)
+Full handoff contracts: 9/10
+Proof artifacts requested: 10/10
+Cleanup prompts needed: 9/10
 
 ### Imported Bundles
 
 - STAX: improved; commands=212; artifacts=5; failures: none
+- STAX: improved; commands=253; artifacts=5; failures: none
 - ADMISSION-APP: unchanged_safe; commands=0; artifacts=6; failures: full handoff contract missing
+- ADMISSION-APP: improved; commands=3; artifacts=7; failures: none
+- canvas-helper: improved; commands=100; artifacts=9; failures: none
+- canvas-helper: improved; commands=43; artifacts=9; failures: none
+- canvas-helper: improved; commands=71; artifacts=9; failures: none
 - canvas-helper: improved; commands=76; artifacts=9; failures: none
 - brightspacequizexporter: improved; commands=11; artifacts=7; failures: none
+- studentbudgetwars: improved; commands=3; artifacts=7; failures: none
 
 ## Boundary
 
