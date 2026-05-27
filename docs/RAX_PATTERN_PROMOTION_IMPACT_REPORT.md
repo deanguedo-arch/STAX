@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-22T17:03:56.960Z
+Generated: 2026-05-27T15:20:47.191Z
 
 ## Claim Separation
 
@@ -38,7 +38,7 @@ Cleanup prompts needed: 2/2
 ### Imported Bundles
 
 - STAX: improved; commands=182; artifacts=5; failures: none
-- canvas-helper: improved; commands=100; artifacts=9; failures: none
+- canvas-helper: improved; commands=43; artifacts=9; failures: none
 
 ## Boundary
 

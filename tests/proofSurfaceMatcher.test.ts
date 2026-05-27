@@ -65,6 +65,27 @@ describe("ProofSurfaceMatcher", () => {
     expect(match?.surface.claimType).toBe("course_deploy_ready");
   });
 
+  it("does not let stale command spam outvote the course deploy proof gap", async () => {
+    const pack = await readPack("proof-surfaces/canvas-helper.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: [
+        "Command evidence provenance is not verified for npm run test:e2e:smoke: wrong_commit.",
+        "Command evidence freshness failed for npm run test:e2e:smoke: wrong_commit.",
+        "Command evidence provenance is not verified for npm run test:e2e:project -- --project forensicstudiesoption2: wrong_commit.",
+        "Command evidence provenance is not verified for npm run build:studio: wrong_commit.",
+        "Command evidence provenance is not verified for npm run typecheck: wrong_commit.",
+        "Command evidence provenance is not verified for npm run verify -- --project forensicstudiesoption2: wrong_commit.",
+        "Claim-to-proof: release_deploy claim is unsupported because build_proof, command_evidence_after_diff, target_environment_proof.",
+        "Unsupported hard claim: release_deploy requires build_proof, command_evidence_after_diff, target_environment_proof, rollback_plan."
+      ].join("\n")
+    });
+
+    expect(match?.surface.claimType).toBe("course_deploy_ready");
+    expect(match?.surface.nextAction).toContain("source workspace");
+  });
+
   it("maps ADMISSION sync and docs-updated claims to publish_sync_deploy_ready", async () => {
     const pack = await readPack("proof-surfaces/admission-app.json");
 

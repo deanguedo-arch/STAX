@@ -155,6 +155,46 @@ describe("repo proof-surface discovery", () => {
     expect(approvedHint).toContain("Approved proof surface");
     expect(approvedHint).not.toContain("candidate-only");
   });
+
+  it("does not append unsafe live-action commands to course deploy next-prompt hints", async () => {
+    const repoPath = await createTempGitRepo("stax-proof-surface-course-deploy-");
+    await fs.mkdir(path.join(repoPath, ".stax"), { recursive: true });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "proof-surfaces.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-proof-surface-pack-v1",
+          repoName: "canvas-helper",
+          status: "approved",
+          proofSurfaces: [
+            {
+              claimType: "course_deploy_ready",
+              requiredEvidence: ["workspace_source_diff", "live_target_fetch", "rendered_screenshot"],
+              commands: ["npm run deploy:google-hosted", "npm run test:e2e:project"],
+              blockedEvidence: ["deploy_command_only"],
+              source: "test fixture",
+              nextAction:
+                "For course deploys, prove the source workspace changed, regenerate the export, collect the deploy command through STAX, verify the live target, and capture rendered visual proof."
+            }
+          ]
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+
+    const hint = await proofSurfacePromptHint({
+      repoPath,
+      reportText: "Claim-to-proof: release_deploy claim is unsupported because target_environment_proof is missing.",
+      unverified: [],
+      risk: []
+    });
+
+    expect(hint).toContain("Approved proof surface for course_deploy_ready");
+    expect(hint).toContain("capture rendered visual proof");
+    expect(hint).not.toContain("Suggested command: npm run deploy:google-hosted");
+  });
 });
 
 async function createRepoWithPackage(scripts: Record<string, string>): Promise<string> {

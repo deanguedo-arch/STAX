@@ -104,11 +104,10 @@ function scoreSurface(input: {
     }
   }
 
-  for (const command of input.surface.commands) {
-    if (matchesToken(input.text, command)) {
-      score += 90;
-      signals.push(`command matched: ${command}`);
-    }
+  const matchedCommand = input.surface.commands.find((command) => matchesToken(input.text, command));
+  if (matchedCommand) {
+    score += 90;
+    signals.push(`command matched: ${matchedCommand}`);
   }
 
   for (const claimType of input.claimTypes) {

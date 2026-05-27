@@ -91,8 +91,14 @@ export async function proofSurfacePromptHint(input: {
   if (!surface) return undefined;
   const prefix = approved ? "Approved proof surface" : "Candidate proof surface";
   const qualifier = approved ? "" : " This is candidate-only, so treat it as a provisional hint until approved.";
-  const commands = surface.commands.length > 0 ? ` Suggested command: ${surface.commands[0]}.` : "";
+  const commands = shouldAppendSuggestedCommand(surface) ? ` Suggested command: ${surface.commands[0]}.` : "";
   return `${prefix} for ${surface.claimType}: ${surface.nextAction ?? `Provide ${surface.requiredEvidence.join(", ")}.`}${commands}${qualifier}`;
+}
+
+function shouldAppendSuggestedCommand(surface: ProofSurfacePack["proofSurfaces"][number]): boolean {
+  if (surface.commands.length === 0) return false;
+  if (["course_deploy_ready", "publish_sync_deploy_ready", "release_ready"].includes(surface.claimType)) return false;
+  return true;
 }
 
 async function readProofSurfacePack(filePath: string): Promise<ProofSurfacePack> {

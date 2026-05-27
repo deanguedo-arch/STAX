@@ -1,0 +1,468 @@
+{
+  "schemaVersion": "stax-impact-evidence-bundle-v1",
+  "generatedAt": "2026-05-27T15:20:08.156Z",
+  "repo": {
+    "path": "/Users/deanguedo/Documents/GitHub/canvas-helper",
+    "name": "canvas-helper",
+    "branch": "main",
+    "head": "93aeb54b9851b3e0f5f19b259d69352a04840c0c",
+    "dirtyStatus": " M .stax/next-codex-prompt.md\n M .stax/proof-surfaces.candidate.json\n M .stax/proof-surfaces.json\n M .stax/proof-surfaces.review.md\n M .stax/proof_strength.json\n M .stax/reports/latest-confidence-report.md\n M .stax/reports/latest-proof-report.md\n M .stax/status.json\n M docs/ops/ACTIVE_HANDOFF.md\n?? projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-collapsed-20260527-1672x941.png\n?? projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-expanded-20260527-1672x941.png\n?? projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-mobile-toggle-20260527-760x941.png\n?? projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-phone-toggle-20260527-430x941.png"
+  },
+  "stax": {
+    "commit": "0a0ab75f15d1f175159cc64d659f0b8d08197f81",
+    "sidecarProtocolVersion": "stax-project-control-protocol-v1",
+    "proofSurfaceVersion": "stax-proof-surface-pack-v1"
+  },
+  "task": "Continue Aboriginal Studies 30 local review from the active handoff.\n\nGoal:\n- Verify the accepted unit-card/sidebar hamburger fix still holds in the current workspace.\n- Preserve the accepted desktop unit-card look.\n- Capture fresh local visual screenshots for expanded, collapsed, tablet/narrow, and phone/narrow states.\n- Run the focused AS30 shell test, project verification, AS30 E2E contract, typecheck, and Studio build.\n\nAcceptance boundary:\n- Do not edit raw imports.\n- Do not deploy, publish, sync, or release.\n- Keep work inside AS30 workspace/meta evidence, handoff, and STAX report/task files unless a real defect requires a surgical source fix.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-27T15:20:07.682Z\",\n  \"repo\": \"canvas-helper\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/canvas-helper\",\n  \"branch\": \"main\",\n  \"commitSha\": \"93aeb54b9851b3e0f5f19b259d69352a04840c0c\",\n  \"task\": \"Apply and repair the deployed-course sidebar save/sign-in behavior across active course sites, including the follow-up CALM and Sports Wellness regressions.\\n\\nGoal:\\n- Standardize the Google-hosted save/sign-in control so deployed courses place it in the course sidebar, sticky at the visible bottom.\\n- Include sidebar shells that use `.sidebar`, Forensics shells, and `id=\\\"sidebar\\\"`.\\n- Remove the Forensics 25 top bar that shows Next Step, module/content/quiz/assignment counts, and Student User.\\n- Fix CALM Module 2 so the save/sign-in control mounts inside the React sidebar instead of floating.\\n- Fix Sports Wellness so the save/sign-in control no longer breaks the responsive top/side bar.\\n- Fix CALM Module 3 so collapsed sidebar mode does not show stray save/sign-in UI.\\n- Re-export and deploy active course targets without overwriting the canonical Forensics 25 option2 site with the older source-only `forensics` project.\\n\\nEvidence commands:\\n- focused Forensics 25 and Google-hosted bridge tests\\n- focused CALM and Sports Wellness sidebar-host tests\\n- typecheck and Studio build\\n- Google-hosted exports/deploys for active course sites\\n- live DOM checks and screenshots for deployed course URLs\\n\\nAcceptance boundary:\\nDo not edit raw imports. Keep changes to active workspace files, shared Google-hosted bridge behavior, focused tests, generated hosted deploy files, and STAX report/task files.\",\n  \"verdict\": \"Reject\",\n  \"exitCode\": 1,\n  \"why\": \"Command evidence classifier: stale_proof for npm run test:e2e:smoke.\",\n  \"verified\": [\n    \"Working-tree diff detected with 3 changed file(s).\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Diff audit: accept.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\"\n  ],\n  \"weak\": [\n    \"Visual evidence ignored for current proof: visual_2026-05-16T23_54_19_358Z_4cc055f3d9f7 is stale_visual_proof.\",\n    \"Visual proof was captured for a different auditable worktree.\",\n    \"Visual evidence ignored for current proof: visual_2026-05-16T23_54_27_047Z_00b16ed10b29 is stale_visual_proof.\",\n    \"Visual evidence ignored for current proof: visual_2026-05-16T23_54_35_224Z_37a3a056b994 is stale_visual_proof.\",\n    \"Command evidence cmd_2026-05-17T00_21_15_805Z_d9f625a92414 commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence commit 48abc0e7425359d2e13d06a7373fed8369892fe2 differs from current head 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_21_08_191Z_33f916e4bb51 commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_56_088Z_319f0a2aec6b commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_49_554Z_b79b85db39e0 commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_40_928Z_982c1455e5e7 commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_35_582Z_4769e1a5616a commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_29_185Z_33f54601bb32 commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_14_027Z_0fffd1280afa commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_12_605Z_8ea31373f7ef commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-17T00_20_11_101Z_4feb38f9c8d5 commit 48abc0e7425359d2e13d06a7373fed8369892fe2 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-13T01_24_24_213Z_708ac0e4b4d0 commit e987411e880065bfce264347ac2311ecf5023659 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence commit e987411e880065bfce264347ac2311ecf5023659 differs from current head 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-13T01_24_10_791Z_205f97a35092 commit e987411e880065bfce264347ac2311ecf5023659 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-13T01_23_56_257Z_569986fd5e82 commit e987411e880065bfce264347ac2311ecf5023659 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-13T01_23_21_863Z_cb3811adefd8 commit e987411e880065bfce264347ac2311ecf5023659 does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T19_57_23_043Z_4494eb6c7c47 commit 039d183db40131d76411b7f0e2fdf35a63dd0f3f does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence commit 039d183db40131d76411b7f0e2fdf35a63dd0f3f differs from current head 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T19_57_06_992Z_4afc8b7bf053 commit 039d183db40131d76411b7f0e2fdf35a63dd0f3f does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T19_56_57_138Z_61cb324afc52 commit 039d183db40131d76411b7f0e2fdf35a63dd0f3f does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_13_44_078Z_4b00e8d6daed commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a differs from current head 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_13_26_416Z_be7d621a7a2a commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_13_18_304Z_aa66a38f104e commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_13_08_609Z_01887413d6c8 commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_12_58_330Z_f9486bd21a3b commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_12_49_648Z_959655b8e332 commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_12_39_921Z_62294d325859 commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Command evidence cmd_2026-05-12T02_12_29_463Z_90f4315ac750 commit 0ac1b4e9d7edc54ead140094d4d6c637448a689a does not match 93aeb54b9851b3e0f5f19b259d69352a04840c0c.\",\n    \"Proof strength: Provisional (0.69) - A local STAX command label is only strong proof after provenance verification.\",\n    \"Proof-strength cap applied: unverified_local_command_provenance - A local STAX command label is only strong proof after provenance verification.\",\n    \"Proof-strength cap applied: course_deploy_without_visual_proof - Course deployment claims require rendered visual proof of the published course.\",\n    \"STAX sidecar heartbeat is stale.\",\n    \"Codex turn capture is stale.\"\n  ],\n  \"unverified\": [\n    \"Command evidence classifier: stale_proof for npm run test:e2e:smoke.\",\n    \"Claim-to-proof: behavior claim is unsupported because behavior_test, command_evidence_after_diff.\",\n    \"Claim-to-proof: release_deploy claim is unsupported because build_proof, command_evidence_after_diff, target_environment_proof.\",\n    \"Command evidence provenance is not verified for npm run test:e2e:smoke: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:e2e:smoke: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:e2e:project -- --project forensicstudiesoption2: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:e2e:project -- --project forensicstudiesoption2: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run build:studio: wrong_commit.\",\n    \"Command evidence freshness failed for npm run build:studio: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run typecheck: wrong_commit.\",\n    \"Command evidence freshness failed for npm run typecheck: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run verify -- --project general-psychology-20-independent-studies-202633108: wrong_commit.\",\n    \"Command evidence freshness failed for npm run verify -- --project general-psychology-20-independent-studies-202633108: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run verify -- --project forensicstudiesoption2: wrong_commit.\",\n    \"Command evidence freshness failed for npm run verify -- --project forensicstudiesoption2: wrong_commit.\",\n    \"Command evidence provenance is not verified for ./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts: wrong_commit.\",\n    \"Command evidence freshness failed for ./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts: wrong_commit.\",\n    \"Command evidence provenance is not verified for node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js: wrong_commit.\",\n    \"Command evidence freshness failed for node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js: wrong_commit.\",\n    \"Command evidence provenance is not verified for node --check projects/forensicstudiesoption2/workspace/main.js: wrong_commit.\",\n    \"Command evidence freshness failed for node --check projects/forensicstudiesoption2/workspace/main.js: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:e2e:harness: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:e2e:harness: wrong_commit.\",\n    \"Command evidence provenance is not verified for ./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts: wrong_commit.\",\n    \"Command evidence freshness failed for ./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run validate:manifests: wrong_commit.\",\n    \"Command evidence freshness failed for npm run validate:manifests: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run verify -- --project social-studies-10-1-docx-export: wrong_commit.\",\n    \"Command evidence freshness failed for npm run verify -- --project social-studies-10-1-docx-export: wrong_commit.\",\n    \"Command evidence provenance is not verified for ./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts: wrong_commit.\",\n    \"Command evidence freshness failed for ./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts: wrong_commit.\",\n    \"Command evidence provenance is not verified for git ls-remote origin refs/heads/main: wrong_commit.\",\n    \"Command evidence freshness failed for git ls-remote origin refs/heads/main: wrong_commit.\",\n    \"Command evidence provenance is not verified for git rev-parse HEAD origin/main origin/HEAD: wrong_commit.\",\n    \"Command evidence freshness failed for git rev-parse HEAD origin/main origin/HEAD: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:learning: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:learning: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:report-all-progress: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:report-all-progress: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:progress-report: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:progress-report: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:metadata-policy: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:metadata-policy: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:exports: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:exports: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:assessments: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:assessments: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:forensics35-workspace: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:forensics35-workspace: wrong_commit.\",\n    \"Command evidence provenance is not verified for npm run test:course-shell: wrong_commit.\",\n    \"Command evidence freshness failed for npm run test:course-shell: wrong_commit.\",\n    \".stax/codex-report.md is missing the current STAX acknowledgement from .stax/turn-contract.json.\",\n    \"STAX acknowledgement is stale or does not match the current turn contract.\",\n    \"STAX acknowledgement turnId does not match the current contract.\",\n    \"STAX acknowledgement statusHash does not match the current contract.\",\n    \"STAX acknowledgement nextPromptHash does not match the current contract.\",\n    \"Current Codex turn capture does not contain the current STAX acknowledgement.\"\n  ],\n  \"risk\": [\n    \"Command evidence risk: wrong commit: expected 93aeb54b9851b3e0f5f19b259d69352a04840c0c, got 48abc0e7425359d2e13d06a7373fed8369892fe2.\",\n    \"Unsupported hard claim: behavior requires behavior_test, command_evidence_after_diff.\",\n    \"Unsupported hard claim: release_deploy requires build_proof, command_evidence_after_diff, target_environment_proof, rollback_plan.\",\n    \"Untrusted command evidence cannot prove Codex claims: wrong_commit.\",\n    \"Stale command evidence must be refreshed for the current head.\",\n    \"Protocol failure: Codex did not prove it followed the current STAX sidecar contract.\"\n  ],\n  \"oneNextAction\": \"Approved proof surface for course_deploy_ready: For course deploys, prove the source workspace changed, regenerate the export, collect the deploy command through STAX, verify the live target, and capture rendered visual proof.\",\n  \"codexPrompt\": \"STAX Sidecar rejected or held this task because proof is incomplete.\\n\\nDo exactly one cleanup pass:\\nApproved proof surface for course_deploy_ready: For course deploys, prove the source workspace changed, regenerate the export, collect the deploy command through STAX, verify the live target, and capture rendered visual proof.\\n\\nAddress these proof gaps:\\n- Command evidence classifier: stale_proof for npm run test:e2e:smoke.\\n- Claim-to-proof: behavior claim is unsupported because behavior_test, command_evidence_after_diff.\\n- Claim-to-proof: release_deploy claim is unsupported because build_proof, command_evidence_after_diff, target_environment_proof.\\n- Command evidence provenance is not verified for npm run test:e2e:smoke: wrong_commit.\\n- Command evidence freshness failed for npm run test:e2e:smoke: wrong_commit.\\n\\nDo not broaden scope. Do not claim tests passed without local command evidence. Update .stax/codex-report.md, then stop.\\nRisk to avoid: Command evidence risk: wrong commit: expected 93aeb54b9851b3e0f5f19b259d69352a04840c0c, got 48abc0e7425359d2e13d06a7373fed8369892fe2.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"course_deploy_ready\",\n    \"claimText\": \"Apply and repair the deployed-course sidebar save/sign-in behavior across active course sites, including the follow-up CALM and Sports Wellness regressions.\\n\\nGoal:\\n- Standardize the Google-hosted save/sign-in control so deployed courses place it in the course sidebar, sticky at the visible bottom.\\n- Include sidebar shells that use `.sidebar`, Forensics shells, and `id=\\\"sidebar\\\"`.\\n- Remove the Forensics 25 top bar that shows Next Step, module/content/quiz/assignment counts, and Student User.\\n- Fix CALM Module 2 so the save/sign-in control mounts inside the React sidebar instead of floating.\\n- Fix Sports Wellness so the save/sign-in control no longer breaks the responsive top/side bar.\\n- Fix CALM Module 3 so collapsed sidebar mode does not show stray save/sign-in UI.\\n- Re-export and deploy active course targets without overwriting the canonical Forensics 25 option2 site with the older source-only `forensics` project.\\n\\nEvidence commands:\\n- focused Forensics 25 and Google-hosted bridge tests\\n- focused CALM and Sports Wellness sidebar-host tests\\n- typecheck and Studio build\\n- Google-hosted exports/deploys for active course sites\\n- live DOM checks and screenshots for deployed course URLs\\n\\nAcceptance boundary:\\nDo not edit raw imports. Keep changes to active workspace files, shared Google-hosted bridge behavior, focused tests, generated hosted deploy files, and STAX report/task files.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-17T00-30-02-756Z_24e5 0ea58992 9b0fadc3\\n\\nObjective:\\nConvert three supplied Grade 8 Brightspace D2LExport ZIPs into unit-organized resource folders with materials preserved.\\n\\nFiles changed:\\n- `projects/english-8-resource-folder/meta/build_resource_folder.py`\\n- `projects/english-8-resource-folder/meta/project.json`\\n- `projects/english-8-resource-folder/meta/resource-folder-audit.json`\\n- `projects/english-8-resource-folder/exports/resource-folder/**`\\n- `projects/english-8-resource-folder/exports/english-8-resource-folder.zip`\\n- `projects/science-8-resource-folder/meta/build_resource_folder.py`\\n- `projects/science-8-resource-folder/meta/project.json`\\n- `projects/science-8-resource-folder/meta/resource-folder-audit.json`\\n- `projects/science-8-resource-folder/exports/resource-folder/**`\\n- `projects/science-8-resource-folder/exports/science-8-resource-folder.zip`\\n- `projects/social-studies-8-resource-folder/meta/build_resource_folder.py`\\n- `projects/social-studies-8-resource-folder/meta/project.json`\\n- `projects/social-studies-8-resource-folder/meta/resource-folder-audit.json`\\n- `projects/social-studies-8-resource-folder/exports/resource-folder/**`\\n- `projects/social-studies-8-resource-folder/exports/social-studies-8-resource-folder.zip`\\n- `.stax/codex-report.md`\\n\\nTests added:\\n- None.\\n\\nCommands run:\\n- `python3 projects/english-8-resource-folder/meta/build_resource_folder.py`\\n  - exitCode: 0\\n- `python3 projects/science-8-resource-folder/meta/build_resource_folder.py`\\n  - exitCode: 0\\n- `python3 projects/social-studies-8-resource-folder/meta/build_resource_folder.py`\\n  - exitCode: 0\\n- `python3 -c \\\"import zipfile; p='projects/english-8-resource-folder/exports/english-8-resource-folder.zip'; z=zipfile.ZipFile(p); bad=z.testzip(); print(p, 'OK' if bad is None else bad)\\\"`\\n  - exitCode: 0\\n- `python3 -c \\\"import zipfile; p='projects/science-8-resource-folder/exports/science-8-resource-folder.zip'; z=zipfile.ZipFile(p); bad=z.testzip(); print(p, 'OK' if bad is None else bad)\\\"`\\n  - exitCode: 0\\n- `python3 -c \\\"import zipfile; p='projects/social-studies-8-resource-folder/exports/social-studies-8-resource-folder.zip'; z=zipfile.ZipFile(p); bad=z.testzip(); print(p, 'OK' if bad is None else bad)\\\"`\\n  - exitCode: 0\\n\\nCommand output summary with exit codes:\\n- English Language Arts 8 build: `Built 74 manifest resources into 12 unit folders; preserved 14 unreferenced source files.`\\n- Science 8 build: `Built 19 manifest resources into 5 unit folders; preserved 104 unreferenced source files.`\\n- Social Studies 8 build: `Built 24 manifest resources into 3 unit folders; preserved 12 unreferenced source files.`\\n- All three generated ZIPs passed `zipfile.testzip()` integrity checks.\\n\\nWhat is verified:\\n- All three provided ZIPs were converted into unit-organized resource folders.\\n- Audit manifests were generated for each course under `meta/resource-folder-audit.json`.\\n- Portable export ZIPs were generated for each course and passed integrity checks.\\n\\nWhat is weak/provisional:\\n- No STAX observer preflight command was run in this pass.\\n\\nWhat is unverified:\\n- Manual user review of folder naming/content in Finder.\\n\\nRisks:\\n- Unit folder names and counts depend on `imsmanifest.xml` structure from source exports.\\n- Unreferenced files are preserved separately and may include duplicates or legacy variants from source ZIPs.\\n\\nOne next action:\\n- Open each `exports/resource-folder/README.md` and spot-check unit folders against expected Brightspace unit names.\",\n    \"rawScore\": 0.79,\n    \"finalScore\": 0.69,\n    \"label\": \"Provisional\",\n    \"capApplied\": [\n      {\n        \"id\": \"unverified_local_command_provenance\",\n        \"maxLabel\": \"Provisional\",\n        \"reason\": \"A local STAX command label is only strong proof after provenance verification.\"\n      },\n      {\n        \"id\": \"course_deploy_without_visual_proof\",\n        \"maxLabel\": \"Provisional\",\n        \"reason\": \"Course deployment claims require rendered visual proof of the published course.\"\n      }\n    ],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"A local STAX command label is only strong proof after provenance verification.\",\n    \"missingProof\": [\n      \"Unsupported file_path claim: meta/resource-folder-audit.json (File path was not present in the repo evidence pack.).\",\n      \"Unsupported file_path claim: exports/resource-folder/README.md (File path was not present in the repo evidence pack.).\",\n      \"No rendered screenshot, visual checklist, or browser proof was supplied for the course deployment.\"\n    ],\n    \"weakProof\": [\n      \"Local STAX command evidence label is unverified for npm run test:e2e:smoke (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108 (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:e2e:project -- --project forensicstudiesoption2 (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run build:studio (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run typecheck (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run verify -- --project general-psychology-20-independent-studies-202633108 (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run verify -- --project forensicstudiesoption2 (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for ./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for node --check projects/forensicstudiesoption2/workspace/main.js (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:e2e:harness (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for ./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run validate:manifests (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run verify -- --project social-studies-10-1-docx-export (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for ./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for git ls-remote origin refs/heads/main (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for git rev-parse HEAD origin/main origin/HEAD (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:learning (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:report-all-progress (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:progress-report (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:metadata-policy (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:exports (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:assessments (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:forensics35-workspace (wrong_commit).\",\n      \"Local STAX command evidence label is unverified for npm run test:course-shell (wrong_commit).\",\n      \"local_stax_command_output is provisional command evidence for npm run test:e2e:smoke.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:e2e:project -- --project forensicstudiesoption2.\",\n      \"local_stax_command_output is provisional command evidence for npm run build:studio.\",\n      \"local_stax_command_output is provisional command evidence for npm run typecheck.\",\n      \"local_stax_command_output is provisional command evidence for npm run verify -- --project general-psychology-20-independent-studies-202633108.\",\n      \"local_stax_command_output is provisional command evidence for npm run verify -- --project forensicstudiesoption2.\",\n      \"local_stax_command_output is provisional command evidence for ./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts.\",\n      \"local_stax_command_output is provisional command evidence for node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js.\",\n      \"local_stax_command_output is provisional command evidence for node --check projects/forensicstudiesoption2/workspace/main.js.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:e2e:harness.\",\n      \"local_stax_command_output is provisional command evidence for ./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts.\",\n      \"local_stax_command_output is provisional command evidence for npm run validate:manifests.\",\n      \"local_stax_command_output is provisional command evidence for npm run verify -- --project social-studies-10-1-docx-export.\",\n      \"local_stax_command_output is provisional command evidence for ./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts.\",\n      \"local_stax_command_output is provisional command evidence for git ls-remote origin refs/heads/main.\",\n      \"local_stax_command_output is provisional command evidence for git rev-parse HEAD origin/main origin/HEAD.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:learning.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:report-all-progress.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:progress-report.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:metadata-policy.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:exports.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:assessments.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:forensics35-workspace.\",\n      \"local_stax_command_output is provisional command evidence for npm run test:course-shell.\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: projects/english-8-resource-folder/meta/build_resource_folder.py.\",\n      \"Grounded file_path claim: projects/english-8-resource-folder/meta/project.json.\",\n      \"Grounded file_path claim: projects/english-8-resource-folder/meta/resource-folder-audit.json.\",\n      \"Grounded file_path claim: projects/english-8-resource-folder/exports/english-8-resource-folder.zip.\",\n      \"Grounded file_path claim: projects/science-8-resource-folder/meta/build_resource_folder.py.\",\n      \"Grounded file_path claim: projects/science-8-resource-folder/meta/project.json.\",\n      \"Grounded file_path claim: projects/science-8-resource-folder/meta/resource-folder-audit.json.\",\n      \"Grounded file_path claim: projects/science-8-resource-folder/exports/science-8-resource-folder.zip.\",\n      \"Grounded file_path claim: projects/social-studies-8-resource-folder/meta/build_resource_folder.py.\",\n      \"Grounded file_path claim: projects/social-studies-8-resource-folder/meta/project.json.\",\n      \"Grounded file_path claim: projects/social-studies-8-resource-folder/meta/resource-folder-audit.json.\",\n      \"Grounded file_path claim: projects/social-studies-8-resource-folder/exports/social-studies-8-resource-folder.zip.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Repo evidence enumerated source files.\",\n      \"Release preflight proof was supplied.\"\n    ],\n    \"oneNextAction\": \"Prove the course deploy chain: source workspace diff, regenerated export, STAX-collected deploy command, live target fetch, rendered screenshot/checklist, and rollback or target-safety evidence.\"\n  },\n  \"protocolStatus\": \"failure\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"stax_ack_missing\",\n      \"severity\": \"reject\",\n      \"message\": \".stax/codex-report.md is missing the current STAX acknowledgement from .stax/turn-contract.json.\"\n    },\n    {\n      \"id\": \"stax_ack_stale\",\n      \"severity\": \"reject\",\n      \"message\": \"STAX acknowledgement is stale or does not match the current turn contract.\"\n    },\n    {\n      \"id\": \"stax_ack_wrong_turn\",\n      \"severity\": \"reject\",\n      \"message\": \"STAX acknowledgement turnId does not match the current contract.\"\n    },\n    {\n      \"id\": \"stax_ack_wrong_status_hash\",\n      \"severity\": \"reject\",\n      \"message\": \"STAX acknowledgement statusHash does not match the current contract.\"\n    },\n    {\n      \"id\": \"stax_ack_wrong_next_prompt_hash\",\n      \"severity\": \"reject\",\n      \"message\": \"STAX acknowledgement nextPromptHash does not match the current contract.\"\n    },\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"reject\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-27T15:20:07.679Z\",\n    \"mode\": \"normal\",\n    \"status\": \"failure\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"stax_ack_missing\",\n        \"severity\": \"reject\",\n        \"message\": \".stax/codex-report.md is missing the current STAX acknowledgement from .stax/turn-contract.json.\"\n      },\n      {\n        \"id\": \"stax_ack_stale\",\n        \"severity\": \"reject\",\n        \"message\": \"STAX acknowledgement is stale or does not match the current turn contract.\"\n      },\n      {\n        \"id\": \"stax_ack_wrong_turn\",\n        \"severity\": \"reject\",\n        \"message\": \"STAX acknowledgement turnId does not match the current contract.\"\n      },\n      {\n        \"id\": \"stax_ack_wrong_status_hash\",\n        \"severity\": \"reject\",\n        \"message\": \"STAX acknowledgement statusHash does not match the current contract.\"\n      },\n      {\n        \"id\": \"stax_ack_wrong_next_prompt_hash\",\n        \"severity\": \"reject\",\n        \"message\": \"STAX acknowledgement nextPromptHash does not match the current contract.\"\n      },\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"reject\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-27T15-16-58-496Z_8cbb ceab9ca6 9b7a2e4e\",\n    \"contractTurnId\": \"turn_2026-05-27T15-16-58-496Z_8cbb\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-27T15-09-59-220Z_5575 a003bbf2 3a151819\n\nObjective:\nContinue Aboriginal Studies 30 local review from the active handoff; verify the accepted unit-card/sidebar hamburger behavior without deploying or changing raw imports.\n\nFiles changed:\n- `.stax/task.md`\n- `.stax/codex-report.md`\n- `docs/ops/ACTIVE_HANDOFF.md`\n- `projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-expanded-20260527-1672x941.png`\n- `projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-collapsed-20260527-1672x941.png`\n- `projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-mobile-toggle-20260527-760x941.png`\n- `projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-phone-toggle-20260527-430x941.png`\n\nTests added:\n- None.\n\nCommands run:\n- `node node_modules/tsx/dist/cli.mjs --test scripts/tests/aboriginal-studies-30-shell.test.ts`\n  - exitCode: 0\n- `npm run verify -- --project aboriginal-studies-30`\n  - exitCode: 0\n- Playwright local render/screenshot pass for AS30 workspace at 1672x941 expanded, 1672x941 collapsed, 760x941 collapsed, and 430x941 collapsed.\n  - exitCode: 0\n- `npm run test:e2e:project -- --project aboriginal-studies-30`\n  - exitCode: 0\n- `npm run typecheck`\n  - exitCode: 0\n- `npm run build:studio`\n  - exitCode: 0\n\nCommand output summary with exit codes:\n- AS30 shell test passed 8/8 tests.\n- AS30 verifier passed metadata policy and found no missing local assets, workspace embeds, or course-shell resources; Google Fonts and Font Awesome remain external dependency warnings.\n- Playwright local screenshots were written to `projects/aboriginal-studies-30/meta/visual-checks/`.\n- AS30 E2E project contract passed 1/1 test.\n- Typecheck completed with exitCode 0.\n- Studio build completed with exitCode 0 and emitted `dist/studio` assets.\n\nWhat is verified:\n- Current AS30 workspace still preserves the accepted desktop unit-card look.\n- Collapsed desktop sidebar uses an 88px sidebar and keeps the unit cards stable.\n- 760px collapsed layout has no horizontal overflow and keeps the badge panel horizontal.\n- 430px collapsed layout has no horizontal overflow; unit cards remain 310px wide by 78px high with a 92px left badge panel.\n- The AS sidebar `AS` text badge remains removed.\n- The AS30 shell test, project verifier, project E2E contract, typecheck, and Studio build all passed in this turn.\n\nWhat is weak/provisional:\n- Visual evidence was captured locally through Playwright against the workspace file, not through a hosted deployment.\n- STAX `stax:collect-visual` and observer preflight hooks are referenced by `.stax/prompt-contract.json` / `.stax/AGENT_PROTOCOL.md`, but this repo's `package.json` does not expose `stax:collect-visual` or `stax:preflight` scripts.\n- Existing `.stax/status.json` was already in `Reject` for an older unrelated Google-hosted sidebar deploy task; this pass realigned `.stax/task.md` and `.stax/codex-report.md` to the current AS30 objective but did not repair that older deploy proof chain.\n\nWhat is unverified:\n- Human visual approval of the new screenshots.\n- Firebase/hosted deploy behavior.\n- STAX sidecar acceptance after the report update.\n\nRisks:\n- At 430px collapsed width, long unit titles are clamped with ellipses. This is stable and contained, but may need a separate typography pass if full titles must remain visible on narrow phones.\n- Re-running `projects/aboriginal-studies-30/meta/build_sports_style_course.py` can regenerate workspace files and DOCX artifacts.\n- The wider worktree still includes unrelated pre-existing `.stax/**` sidecar/proof modifications.\n\nOne next action:\n- Review `projects/aboriginal-studies-30/meta/visual-checks/as30-local-review-phone-toggle-20260527-430x941.png` and decide whether the narrow-phone title ellipses are acceptable or should get a dedicated typography pass.\n\n<!-- STAX:proof-strength:start -->\n## STAX Proof Strength\n\nGenerated by `stax gate`; this is STAX audit output, not a Codex completion claim.\n\n- Claim Type: course_deploy_ready\n- Label: Provisional\n- Raw Score: 0.79\n- Final Score: 0.69\n- Caps Applied: unverified_local_command_provenance, course_deploy_without_visual_proof\n- Primary Limiter: A local STAX command label is only strong proof after provenance verification.\n- Next Proof Action: Prove the course deploy chain: source workspace diff, regenerated export, STAX-collected deploy command, live target fetch, rendered screenshot/checklist, and rollback or target-safety evidence.\n- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\n- Proof report: .stax/reports/latest-proof-report.md\n- Artifact: .stax/proof_strength.json\n- Confidence Report: .stax/reports/latest-confidence-report.md\n<!-- STAX:proof-strength:end -->\n",
+  "commandEvidence": [
+    {
+      "evidenceId": "cmd_2026-05-12T02_00_30_290Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "cfc792da3156fb760bc9b5e8beced888bbbb3b91ab440c4fa74018e607edd382",
+      "recordedAt": "2026-05-12T02:00:31.890Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_00_42_731Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "e91d953ca2b8df0247d51e95554533478ebdb2786ba75ece9a8ccd6bdda1305f",
+      "recordedAt": "2026-05-12T02:00:43.310Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_16_210Z_569986fd5e82",
+      "command": "npm run validate:manifests",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "cfd09d4d7c9323ca857041008d0edb49b87fb131a1c5b21a6e35727e24d02c7f",
+      "recordedAt": "2026-05-12T02:12:16.448Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_29_463Z_90f4315ac750",
+      "command": "npm run test:course-shell",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "73406d276020c1937ffbd28c7058f3dbc11cad84e266097f883fa13f48ae31bf",
+      "recordedAt": "2026-05-12T02:12:29.684Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_39_921Z_62294d325859",
+      "command": "npm run test:forensics35-workspace",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "0fe875a01918f6e98528db6971b1222f25d607d6d820f16f7dbfb5c16921a7e2",
+      "recordedAt": "2026-05-12T02:12:40.418Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_49_648Z_959655b8e332",
+      "command": "npm run test:assessments",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "0622b58b114d4c56fc1995e78022e844b487c4bcc9f6f751b97d0543ccc7f453",
+      "recordedAt": "2026-05-12T02:12:49.921Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_58_330Z_f9486bd21a3b",
+      "command": "npm run test:exports",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "44c4bb972b01bde2261218e09e01d67cc605fca168a42b358e3f58f03c8567e0",
+      "recordedAt": "2026-05-12T02:12:59.909Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_08_609Z_01887413d6c8",
+      "command": "npm run test:metadata-policy",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "d273854431ee34207ae232f1a78a743d30f04344b154c01dbfc71bfffa61734b",
+      "recordedAt": "2026-05-12T02:13:08.823Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_18_304Z_aa66a38f104e",
+      "command": "npm run test:progress-report",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "d157bbc445b04e40196e50b0482f0c997da2ea445a451fd8c0c15da9b15bf63e",
+      "recordedAt": "2026-05-12T02:13:18.514Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_26_416Z_be7d621a7a2a",
+      "command": "npm run test:report-all-progress",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "497c055afd52fe53eca31c747b4363c7edaf5d96b7a6fea11562db240f3ba9ff",
+      "recordedAt": "2026-05-12T02:13:26.677Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_35_398Z_708ac0e4b4d0",
+      "command": "npm run test:e2e:harness",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "70f99de7399cb934d6246f861448c1375909acfc71f40d7b148af84b3bda3684",
+      "recordedAt": "2026-05-12T02:13:35.619Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_44_078Z_4b00e8d6daed",
+      "command": "npm run test:learning",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "003dd8ebe36e9744db935dbc892bc2b7c3dc37b4858c490798fae68e3eb24759",
+      "recordedAt": "2026-05-12T02:13:44.591Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_56_57_138Z_61cb324afc52",
+      "command": "git rev-parse HEAD origin/main origin/HEAD",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "a6c389a33637a59d2605f23fbf38060ce7b654b931c64fbc749e861e06784fd1",
+      "recordedAt": "2026-05-12T19:56:57.146Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_57_06_992Z_4afc8b7bf053",
+      "command": "git ls-remote origin refs/heads/main",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "b60cc1c846d5e7b1c3275f4a87e3c35b3ef23c9c6c74897ad5de42f909d43331",
+      "recordedAt": "2026-05-12T19:57:08.143Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_57_23_043Z_4494eb6c7c47",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "4818bef7de21c285c9fc115b0241faba2ce91b311781b7a181471a0e5f17a7d4",
+      "recordedAt": "2026-05-12T19:57:23.186Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_57_32_865Z_4769e1a5616a",
+      "command": "npm run verify -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "854459af679aea35159bbafb276adf38a4995a5c955a37efbf1f9c01f6814561",
+      "recordedAt": "2026-05-12T19:57:33.182Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T21_20_01_335Z_4769e1a5616a",
+      "command": "npm run verify -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0397d830b0661a1ce64e1766196bc9cd7b14fa56c2307a6367610df3efc56786",
+      "canonicalEvidenceHash": "e4d8523efc65d9c4ff04b59e86e82431e06b54c100e3337943e8171680782bc4",
+      "recordedAt": "2026-05-12T21:20:01.677Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_16_55_568Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "c637df651c42199dde532ffd51477f7afdfb200c78d4d34c527408aed11109ed",
+      "recordedAt": "2026-05-13T01:16:57.266Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_17_08_978Z_569986fd5e82",
+      "command": "npm run validate:manifests",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "7e7e58a05a5f12386aab5289103269ad40d478f4092d8772efc48fa7a91c0321",
+      "recordedAt": "2026-05-13T01:17:09.235Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_17_20_452Z_708ac0e4b4d0",
+      "command": "npm run test:e2e:harness",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "9ce72deece585931631c895112c98ea4a5a6c2aa55f711967738918f04ce8c3d",
+      "recordedAt": "2026-05-13T01:17:20.717Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_18_47_968Z_cb3811adefd8",
+      "command": "npm run verify -- --project social-studies-10-1-docx-export",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "7b0a56bad6be6176467f3da3bfc8a26786702dd2c89e60a1b04c0c15a59c9e4c",
+      "recordedAt": "2026-05-13T01:18:48.309Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_19_21_245Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "f3eae6920f4e1b58a81e85c3d3905b72e5d5e41820d27a052d3604a6c39a91e3",
+      "recordedAt": "2026-05-13T01:19:25.523Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_21_49_324Z_205f97a35092",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "09d915cc1602a96ac36789fe1571d896fb9c5777d99fd15234024fb8f9212b73",
+      "canonicalEvidenceHash": "3d23ea08f7f0623322dd70e9b0b4c953da57419cfaa1ea21a53b0a8e2f72e274",
+      "recordedAt": "2026-05-13T01:21:49.525Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_22_05_301Z_cb3811adefd8",
+      "command": "npm run verify -- --project social-studies-10-1-docx-export",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "09d915cc1602a96ac36789fe1571d896fb9c5777d99fd15234024fb8f9212b73",
+      "canonicalEvidenceHash": "58e1d8b1c6401be495735febc9b0a3e133894f8e043643221c8830ff0c9c4d9f",
+      "recordedAt": "2026-05-13T01:22:05.870Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_23_21_863Z_cb3811adefd8",
+      "command": "npm run verify -- --project social-studies-10-1-docx-export",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "7db8646e954b3d44338ac030bfd0d7de21e8af9e5c1b68c6e153c8317dc43daf",
+      "recordedAt": "2026-05-13T01:23:22.590Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_23_39_331Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "fafe3fc43163855db21c4b3ee563f18933a0ca367dc3cf900ccf3bd27fd80faf",
+      "recordedAt": "2026-05-13T01:23:42.219Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_23_56_257Z_569986fd5e82",
+      "command": "npm run validate:manifests",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "92058c57400fbc21f7ee931cd593e9432557f6aacda5dd95c7894305e33fa2d1",
+      "recordedAt": "2026-05-13T01:23:56.565Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_24_10_791Z_205f97a35092",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "67ac54959a296e0c45b0472e992f143d96d77f9bc356f4dfd45b2acad13aad82",
+      "recordedAt": "2026-05-13T01:24:10.972Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_24_24_213Z_708ac0e4b4d0",
+      "command": "npm run test:e2e:harness",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "10ed6d14988e9bb01d5749e36cf5875a2608d86ef14bef0e3f26da27cce3dcfa",
+      "recordedAt": "2026-05-13T01:24:24.633Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_24_36_700Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "b069c5a31783b29dd386920048ba05526aa1d0d6811232bcfdb1a73700d81ed7",
+      "recordedAt": "2026-05-13T01:24:40.498Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_13_28_617Z_4feb38f9c8d5",
+      "command": "node --check projects/forensicstudiesoption2/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b9af2d9d306d0b8404c6c03afc90f7d8dfd921769a87300ddc8bb284fc0ddd78",
+      "canonicalEvidenceHash": "418378ddb551e8253fb924301f0a40dd1c3e53c7f4db250ab59a6033ec1de0a9",
+      "recordedAt": "2026-05-17T00:13:28.635Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_13_45_424Z_8ea31373f7ef",
+      "command": "node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b9af2d9d306d0b8404c6c03afc90f7d8dfd921769a87300ddc8bb284fc0ddd78",
+      "canonicalEvidenceHash": "d2010a2dfce14d41a67e24d5067acb9035f34d3b889972419f15e6fb74c76d65",
+      "recordedAt": "2026-05-17T00:13:45.448Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_13_52_763Z_0fffd1280afa",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b9af2d9d306d0b8404c6c03afc90f7d8dfd921769a87300ddc8bb284fc0ddd78",
+      "canonicalEvidenceHash": "fc96f43278d4e563507ce0ac60cb538d8f53f8722a8cfaf6dd0ea5c914ef3be0",
+      "recordedAt": "2026-05-17T00:13:52.996Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_11_101Z_4feb38f9c8d5",
+      "command": "node --check projects/forensicstudiesoption2/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "ce8e1541ca0caadecf84b337fffee976b3ccfd64d47eacc79b2b25534f1965ef",
+      "recordedAt": "2026-05-17T00:20:11.119Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_12_605Z_8ea31373f7ef",
+      "command": "node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "71d5724a1d9df3a436c95c9e655812e3254c3571d1d8d6461df0e098712c2d6a",
+      "recordedAt": "2026-05-17T00:20:12.623Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_14_027Z_0fffd1280afa",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "9c087c7b5d4a8e3352653dfa2aed0408f6a2dab81ef1dbf18c7a4a5e6b0f5e31",
+      "recordedAt": "2026-05-17T00:20:14.199Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_29_185Z_33f54601bb32",
+      "command": "npm run verify -- --project forensicstudiesoption2",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "399e072302a14a6c8c49fe4ea15822b53d75c3910d14b0b669515c64dfce0a7f",
+      "recordedAt": "2026-05-17T00:20:29.508Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_35_582Z_4769e1a5616a",
+      "command": "npm run verify -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "25b3df363fdf096627fef104531a0bac32dd716f057ebd33b2179811f969d8e3",
+      "recordedAt": "2026-05-17T00:20:35.864Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_40_928Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "69c422dd5b5d2f747a856f4f42115d458eb04d4f4c2a70e46bf2bf7e008fc06f",
+      "recordedAt": "2026-05-17T00:20:42.380Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_49_554Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "f1193ee8ca659aa7fd55e1c372c7fa17794ba68702ecf9fc38b4a6626f8de08b",
+      "recordedAt": "2026-05-17T00:20:50.064Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_56_088Z_319f0a2aec6b",
+      "command": "npm run test:e2e:project -- --project forensicstudiesoption2",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "65c8e7099ba429de73b6be9c5c2c177eac9c38c6067b8d90caebada71861c64e",
+      "recordedAt": "2026-05-17T00:20:59.397Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_21_08_191Z_33f916e4bb51",
+      "command": "npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "5616b1af70f0c0d8970cf17007b350e156e58c0b5d08f0ee66c4e303c7971cff",
+      "recordedAt": "2026-05-17T00:21:10.805Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_21_15_805Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "a29e0e8c766b9baf6157c2df28ab9c68c973649dbca923d966743864725f1092",
+      "recordedAt": "2026-05-17T00:21:18.682Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "status",
+      "path": ".stax/status.json",
+      "hash": "6402f779ce82e1d204fd822a0407ddb3996c6ecc0efd7d6cb0ce935dab9588c8",
+      "summary": "status.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof_strength.json",
+      "hash": "a3aa58e08f388e22f6964b729650a91d78a6039384ed82571c620b8c71f76c50",
+      "summary": "proof_strength.json present"
+    },
+    {
+      "kind": "next_prompt",
+      "path": ".stax/next-codex-prompt.md",
+      "hash": "9b7a2e4e22dd92eefcd93fed6e6b074a9dea0d8126966bec85c808497fd05809",
+      "summary": "next-codex-prompt.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/reports/latest-proof-report.md",
+      "hash": "9f0ef17fd2874004cbda82e19139b4cb47933b58e2ae6720c8fcfff60fd4288d",
+      "summary": "reports/latest-proof-report.md present"
+    },
+    {
+      "kind": "sidecar_artifact",
+      "path": ".stax/reports/latest-confidence-report.md",
+      "hash": "91d03fe2298350b0f54f466e2d799423d23c0b1487710dff3ab5cfc4dffc813c",
+      "summary": "reports/latest-confidence-report.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.json",
+      "hash": "95d76d8912fbcfef5aeb9ec78a3ab5800b41d08085bd2a9b5037e0cff10775bf",
+      "summary": "proof-surfaces.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.candidate.json",
+      "hash": "e61fd5265725d54fbb97b73b429531609eff76f31d161beecdcc47741f3ba4b4",
+      "summary": "proof-surfaces.candidate.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.review.md",
+      "hash": "10d6868f6e49d8d7ef8553736ee5d034d73d38274a1f4418c4e75f9d06924201",
+      "summary": "proof-surfaces.review.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/visual-proofs/manifest.json",
+      "hash": "4e3245ac51b4cfddb1aaa53d6f6c7b1c8fd4122993a09656ddf332c4dad4b939",
+      "summary": "visual-proofs/manifest.json present"
+    }
+  ],
+  "criticalMiss": false,
+  "cleanupPromptNeeded": true,
+  "fullHandoffContractPresent": true,
+  "proofArtifactRequested": true
+}
