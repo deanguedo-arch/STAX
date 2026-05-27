@@ -61,17 +61,26 @@ describe("repo proof-surface discovery", () => {
     await fs.mkdir(path.join(repoPath, "scripts", "tests"), { recursive: true });
     await fs.writeFile(path.join(repoPath, "scripts", "tests", "calm-google-hosted-sidebar-hosts.test.ts"), "export {};\n", "utf8");
     await fs.writeFile(path.join(repoPath, "scripts", "smoke-local-pipeline.ts"), "export {};\n", "utf8");
+    await fs.mkdir(path.join(repoPath, "tools"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "tools", "test-release-gate-smoke.js"), "export {};\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "tools", "check-dataset-quality-fixtures.py"), "print('ok')\n", "utf8");
     await fs.writeFile(path.join(repoPath, "publish-course-showcase.bat"), "echo publish\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "PUBLISH_DATA_TO_SHEETS.bat"), "echo publish\n", "utf8");
 
     const { pack } = await discoverProofSurfaces(repoPath);
     const allCommands = pack.proofSurfaces.flatMap((surface) => surface.commands);
     const blockedActions = pack.blockedActions.map((action) => action.action);
+    const data = pack.proofSurfaces.find((surface) => surface.claimType === "data_pipeline_ready");
 
     expect(allCommands).not.toContain("scripts/tests/calm-google-hosted-sidebar-hosts.test.ts");
     expect(allCommands).not.toContain("scripts/smoke-local-pipeline.ts");
     expect(blockedActions).not.toContain("scripts/tests/calm-google-hosted-sidebar-hosts.test.ts");
+    expect(blockedActions).not.toContain("tools/test-release-gate-smoke.js");
     expect(blockedActions).not.toContain("npm run test:apps-script");
     expect(blockedActions).toContain("publish-course-showcase.bat");
+    expect(blockedActions).toContain("PUBLISH_DATA_TO_SHEETS.bat");
+    expect(data?.commands).toContain("tools/check-dataset-quality-fixtures.py");
+    expect(data?.commands).not.toContain("PUBLISH_DATA_TO_SHEETS.bat");
   });
 
   it("does not classify publish scripts with building in the name as build proof commands", async () => {
@@ -101,6 +110,7 @@ describe("repo proof-surface discovery", () => {
 
   it("detects course deploy proof requirements for Google-hosted course workspaces", async () => {
     const repoPath = await createRepoWithPackage({
+      "build:course-shell": "node scripts/build-course-shell.js",
       "export:google-hosted": "node scripts/export-google-hosted.js",
       "deploy:google-hosted": "firebase deploy --only hosting",
       "test:e2e:project": "playwright test",
@@ -117,6 +127,21 @@ describe("repo proof-surface discovery", () => {
       expect.arrayContaining(["workspace_source_diff", "export_regenerated", "stax_collected_deploy_command", "live_target_fetch"])
     );
     expect(courseDeploy?.commands).toEqual(expect.arrayContaining(["npm run export:google-hosted", "npm run deploy:google-hosted"]));
+  });
+
+  it("does not assign course deploy proof contracts to non-course app sync/export repos", async () => {
+    const repoPath = await createRepoWithPackage({ "build:pages": "node tools/build-pages.js" });
+    await fs.mkdir(path.join(repoPath, "docs"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "docs", "index.html"), "<main></main>\n", "utf8");
+    await fs.mkdir(path.join(repoPath, "tools"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "tools", "export-appsscript-bundles.ps1"), "Write-Output ok\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "tools", "validate-sync-surface.ps1"), "Write-Output ok\n", "utf8");
+    await fs.writeFile(path.join(repoPath, "SYNC_ALL.cmd"), "echo sync\n", "utf8");
+
+    const { pack } = await discoverProofSurfaces(repoPath);
+
+    expect(pack.proofSurfaces.map((surface) => surface.claimType)).not.toContain("course_deploy_ready");
+    expect(pack.proofSurfaces.map((surface) => surface.claimType)).toContain("publish_sync_deploy_ready");
   });
 
   it("warns that gold or fixture updates are not repair proof", async () => {

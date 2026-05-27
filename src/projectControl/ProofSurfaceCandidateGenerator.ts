@@ -64,8 +64,9 @@ export function generateProofSurfaceCandidate(input: {
   const hasVisualSurface =
     input.riskSurfaces.some((risk) => risk.kind === "visual_layout") ||
     input.detectedStack.some((stack) => ["html-css", "vite", "playwright", "cypress", "storybook"].includes(stack));
+  const hasCoursePublishSurface = isCoursePublishSurface(input.discovery);
   if (liveCommands.length > 0) {
-    if (exportCommands.length > 0 && hasVisualSurface) {
+    if (exportCommands.length > 0 && hasVisualSurface && hasCoursePublishSurface) {
       rules.push({
         claimType: "course_deploy_ready",
         requiredEvidence: [
@@ -152,4 +153,13 @@ export function generateProofSurfaceCandidate(input: {
 
 function dedupe(items: string[]): string[] {
   return [...new Set(items)].sort();
+}
+
+function isCoursePublishSurface(discovery: RepoDiscoveryResult): boolean {
+  const repoName = discovery.repoName.toLowerCase();
+  if (repoName.includes("canvas")) return true;
+  const filePaths = discovery.files.map((file) => file.path.toLowerCase());
+  if (filePaths.some((filePath) => /^projects\/[^/]+\/workspace\//.test(filePath))) return true;
+  const scriptText = discovery.packageScripts.map((script) => `${script.name} ${script.command}`.toLowerCase()).join("\n");
+  return /\bcourse[-_:]?shell\b|brightspace|canvas/.test(scriptText);
 }

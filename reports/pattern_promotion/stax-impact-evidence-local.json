@@ -1,20 +1,20 @@
 {
   "schemaVersion": "stax-impact-evidence-bundle-v1",
-  "generatedAt": "2026-05-19T16:46:35.308Z",
+  "generatedAt": "2026-05-27T16:06:32.539Z",
   "repo": {
     "path": "/Users/deanguedo/Documents/GitHub/STAX",
     "name": "STAX",
     "branch": "main",
-    "head": "40978543f62801186c8117cded73b91f8b41b6cb",
-    "dirtyStatus": " M docs/ARCHIVE_INDEX.md\n M docs/CURRENT_STATUS.md\n M package.json\n M src/index.ts\n M src/projectControl/ProofSurfaceMatcher.ts\n M tests/proofSurfaceMatcherAdversarial.test.ts\n?? docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md\n?? fixtures/pattern_promotion/\n?? reports/pattern_promotion/\n?? scripts/runPatternPromotionImpact.ts\n?? scripts/staxExportImpactEvidence.ts\n?? src/learning/PatternPromotionImpactSchemas.ts\n?? src/learning/PatternPromotionImpactTracker.ts\n?? tests/patternPromotionImpactTracker.test.ts"
+    "head": "fe3afd94352589a3a59164d454887fc4a43849dd",
+    "dirtyStatus": " M .stax/proof_strength.json\n M .stax/reports/latest-confidence-report.md\n M .stax/reports/latest-proof-report.md\n M .stax/status.json\n M docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md\n M reports/pattern_promotion/attached_repo_exports/attached-repo-impact-export-summary.json\n M reports/pattern_promotion/attached_repo_exports/canvas-helper-impact.json\n M src/projectControl/CommandSurfaceDetector.ts\n M src/projectControl/ProofSurfaceCandidateGenerator.ts\n M tests/proofSurfacePack.test.ts\n?? \"docs/ACTIVE_HANDOFF 2.md\"\n?? reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact.json\n?? reports/pattern_promotion/pattern-promotion-impact-2026-05-27T16-02-06-281Z.json"
   },
   "stax": {
-    "commit": "40978543f62801186c8117cded73b91f8b41b6cb",
+    "commit": "fe3afd94352589a3a59164d454887fc4a43849dd",
     "sidecarProtocolVersion": "stax-project-control-protocol-v1"
   },
-  "task": "Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\n\nAcceptance boundary:\n- Answer as process guidance only.\n- Do not change STAX runtime behavior.\n- Do not promote any policy, schema, eval, memory, or training data.\n- Do not claim implementation proof beyond the commands actually run in this turn.\n",
-  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-14T20:23:45.947Z\",\n  \"repo\": \"STAX\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/STAX\",\n  \"branch\": \"main\",\n  \"commitSha\": \"85a0621974ceb8961b25aa3e8ac018b7a36d396b\",\n  \"task\": \"Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\\n\\nAcceptance boundary:\\n- Answer as process guidance only.\\n- Do not change STAX runtime behavior.\\n- Do not promote any policy, schema, eval, memory, or training data.\\n- Do not claim implementation proof beyond the commands actually run in this turn.\",\n  \"verdict\": \"Provisional\",\n  \"exitCode\": 2,\n  \"why\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\",\n  \"verified\": [\n    \"No working-tree diff is currently present.\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Diff audit: accept.\",\n    \"Command evidence classifier: strong_local_proof for npm run typecheck.\",\n    \"Claim-to-proof: behavior claim is fully supported.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_20_32_110Z_328e123c6385.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_20_32_110Z_328e123c6385 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_18_54_427Z_31b060f341fa.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_18_54_427Z_31b060f341fa matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-14T20_18_03_975Z_092594e366f2.\",\n    \"Command evidence freshness verified: cmd_2026-05-14T20_18_03_975Z_092594e366f2 matches the current auditable worktree.\",\n    \"Historical command evidence ignored for current proof because npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimExtractionHardening.test.ts tests/sidecarHarvestPromote.test.ts tests/proofStrengthGate.test.ts tests/evidenceGroundingGate.test.ts tests/sidecarTurnCompliance.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfacePack.test.ts tests/repoProofSurfaceRegistry.test.ts is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because npm run stax:harvest -- --from /Users/deanguedo/Documents/GitHub/canvas-helper is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because npm test -- tests/cliProofGate.test.ts tests/sidecarAttachGate.test.ts is wrong_commit.\",\n    \"Earlier failed command evidence exists but is superseded by a later passing npm test run.\",\n    \"Proof strength: Strong (0.86) - Available proof is strong enough for this claim type.\",\n    \"Fresh STAX sidecar heartbeat is present (44120ms old).\",\n    \"Fresh Codex turn capture is present for session 019e2820-9d25-7e93-b499-c04958e2fa0d with 16 message(s).\"\n  ],\n  \"weak\": [\n    \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"unverified\": [],\n  \"risk\": [],\n  \"oneNextAction\": \"Ask Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.\",\n  \"codexPrompt\": \"STAX Sidecar rejected or held this task because proof is incomplete.\\n\\nDo exactly one cleanup pass:\\nAsk Codex to address the first unverified proof gap and update .stax/codex-report.md with exact evidence.\\n\\nAddress these proof gaps:\\n- No specific unverified item was recorded.\\n\\nDo not broaden scope. Do not claim tests passed without local command evidence. Update .stax/codex-report.md, then stop.\\nRisk to avoid: fake-complete reporting.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"implementation_complete\",\n    \"claimText\": \"Explain the simple outcome-assessment process for deciding whether an agent actually did what it claimed, in plain fifth-grade-level steps.\\n\\nAcceptance boundary:\\n- Answer as process guidance only.\\n- Do not change STAX runtime behavior.\\n- Do not promote any policy, schema, eval, memory, or training data.\\n- Do not claim implementation proof beyond the commands actually run in this turn.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-14T20-22-39-241Z_5861 337f33d4 8e270746\\n\\nObjective:\\nExplain, in simple fifth-grade-level steps, how STAX should assess whether an agent actually did what it claimed.\\n\\nFiles changed:\\n- .stax/task.md\\n- .stax/codex-report.md\\n- .stax sidecar status/proof artifacts generated by observer preflight\\n- .stax command-evidence pointer files generated by `stax:collect`\\n\\nTests added:\\n- None. This turn is a conceptual/process explanation only.\\n\\nCommands run:\\n- `sed -n '1,220p' .stax/turn-contract.json`\\n  - exitCode: 0\\n- `sed -n '1,220p' .stax/status.json`\\n  - exitCode: 0\\n- `sed -n '1,220p' .stax/next-codex-prompt.md`\\n  - exitCode: 0\\n- `sed -n '1,160p' .stax/task.md`\\n  - exitCode: 0\\n- `rg -n \\\"proof|confidence|completion|claim|Evidence Required|Fake-Complete|process|outcome\\\" /Users/deanguedo/.codex/memories/MEMORY.md`\\n  - exitCode: 0\\n- `rg -n \\\"stax:preflight|preflight|sidecar:refresh|stax:collect\\\" package.json`\\n  - exitCode: 0\\n- `sed -n '1,240p' scripts/staxPreflight.ts`\\n  - exitCode: 0\\n- `git status --short`\\n  - exitCode: 0\\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/STAX --mode observer --boundary handoff`\\n  - exitCode: 0\\n  - recorded verdict: Reject in observer mode\\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\\n  - exitCode: 0\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_18_03_975Z_092594e366f2\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_18_54_427Z_31b060f341fa\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_19_42_591Z_982c1455e5e7\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\\n  - exitCode: 0\\n  - evidenceId: cmd_2026-05-14T20_20_32_110Z_328e123c6385\\n- `npm run stax:preflight -- --repo /Users/deanguedo/Documents/GitHub/STAX --mode observer --boundary handoff`\\n  - exitCode: 0\\n  - recorded verdict: Provisional in observer mode\\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\\n  - exitCode: 0\\n\\nCommand output summary with exit codes:\\n- Current turn contract read successfully and required acknowledgement is recorded above.\\n- Initial STAX status read successfully; the first observed verdict was `Accept` for the prior repo state.\\n- The first observer preflight recorded `Reject` because command evidence for smoke/eval/typecheck/test was stale and tied to an older commit.\\n- `.stax/task.md` was narrowed to the current conceptual explanation task.\\n- `stax:sidecar:refresh` refreshed the heartbeat/current-turn artifacts.\\n- Fresh command evidence was collected for current commit `85a0621974ceb8961b25aa3e8ac018b7a36d396b`.\\n- `npm run smoke:stax`, `npm run rax -- eval`, `npm run typecheck`, and `npm test` all exited 0 through `stax:collect`.\\n- The second observer preflight recorded `Provisional`; command proof was strong and no unverified proof gaps remained, but heartbeat/current-turn freshness was stale before the final refresh.\\n\\nWhat is verified:\\n- The user asked for a plain-language process explanation, not an implementation change.\\n- No STAX runtime behavior was intentionally changed.\\n- The required repo commands have fresh local STAX evidence on the current commit and exited 0.\\n- The stale-proof gap identified by observer preflight was addressed with new command evidence.\\n\\nWhat is weak/provisional:\\n- This answer is process guidance. It does not itself prove an arbitrary future agent outcome.\\n- The initial observer preflight rejected before the fresh command evidence was collected.\\n- The second observer preflight was provisional due to sidecar heartbeat/current-turn freshness before the final refresh.\\n\\nWhat is unverified:\\n- No new STAX evaluator, schema, CLI behavior, or runtime behavior was added or modified.\\n- The final answer has not been promoted into policy, memory, evals, schemas, or training data.\\n\\nRisks:\\n- A simple explanation can make proof sound easier than it is; the final answer should preserve the distinction between \\\"the agent said it\\\" and \\\"local evidence proves it.\\\"\\n- STAX sidecar artifacts were generated locally as proof/reporting state and are not product changes.\\n\\nOne next action:\\n- Use the simple process as the checklist for future outcome claims: claim, evidence, replay, compare, risk check, verdict, record.\",\n    \"rawScore\": 0.86,\n    \"finalScore\": 0.86,\n    \"label\": \"Strong\",\n    \"capApplied\": [],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"Available proof is strong enough for this claim type.\",\n    \"missingProof\": [],\n    \"weakProof\": [\n      \"Weak command claim: npm run stax:preflight -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:sidecar:refresh -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: package.json.\",\n      \"Grounded file_path claim: scripts/staxPreflight.ts.\",\n      \"Grounded command claim: npm run smoke:stax.\",\n      \"Grounded command claim: npm run rax -- eval.\",\n      \"Grounded command claim: npm run typecheck.\",\n      \"Grounded command claim: npm test.\",\n      \"Grounded completion claim: - `rg -n \\\"proof|confidence|completion|claim|Evidence Required|Fake-Complete|process|outcome\\\" <path>`.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Local STAX command evidence passed: npm test exited 0.\",\n      \"Local STAX command evidence passed: npm run typecheck exited 0.\",\n      \"Local STAX command evidence passed: npm run rax -- eval exited 0.\",\n      \"Local STAX command evidence passed: npm run smoke:stax exited 0.\",\n      \"Repo evidence enumerated source files.\",\n      \"Release preflight proof was supplied.\"\n    ],\n    \"oneNextAction\": \"No proof-strength correction is needed for this claim.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-14T20:23:45.947Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-14T20-22-39-241Z_5861 337f33d4 8e270746\",\n    \"contractTurnId\": \"turn_2026-05-14T20-22-39-241Z_5861\"\n  },\n  \"cardShapeIssues\": []\n}\n",
-  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-14T20-23-45-951Z_e623 5bff2e3f 8e270746\n\nObjective:\nFix the Canvas Helper sidecar visual-proof workflow so agents can collect screenshot proof directly, then use it on Canvas Helper to repair the actual course-shell regressions STAX exposed and reach an accepted sidecar verdict.\n\nFiles changed:\n- `package.json`\n- `scripts/staxCollectVisual.ts`\n- `src/sidecar/VisualEvidenceCollector.ts`\n- `src/sidecar/StaxGate.ts`\n- `src/sidecar/AttachStax.ts`\n- `src/sidecar/UpgradeSidecar.ts`\n- `src/evidence/VisualProofAnalyzer.ts`\n- `src/projectControl/ProjectControlEvidencePacket.ts`\n- `src/projectControl/ProjectControlProofStack.ts`\n- `tests/visualProofAnalyzer.test.ts`\n- `tests/sidecarAttachGate.test.ts`\n- `tests/projectControlProofStackIntegration.test.ts`\n- `tests/sidecarTurnCompliance.test.ts`\n- `docs/COMMANDS.md`\n- `docs/CODEX_WORKFLOW.md`\n- `docs/PUBLIC_SIDECAR_ATTACH_FLOW.md`\n- Canvas Helper sidecar/course files were also updated under `/Users/deanguedo/Documents/GitHub/canvas-helper`.\n\nTests added:\n- Visual proof analyzer regression for generic layout screenshots without accessibility claims.\n- Sidecar attach/gate coverage for current screenshot proof, stale screenshot rejection, and stale visual history being superseded by current proof.\n- Project-control proof-stack coverage proving verified e2e command evidence can satisfy `behavior_test`, while typecheck-only evidence cannot.\n- Sidecar turn-compliance gate coverage proving current-turn capture lag is non-blocking when the report has the current ACK.\n\nCommands run:\n- `npm test -- tests/visualProofAnalyzer.test.ts tests/sidecarAttachGate.test.ts tests/projectControlProofStackIntegration.test.ts tests/projectControlEvidencePacket.test.ts`\n  - exitCode: 0\n- `npm test -- tests/projectControlProofStackIntegration.test.ts tests/projectControlEvidencePacket.test.ts tests/claimProofMapping.test.ts`\n  - exitCode: 0\n- `npm test -- tests/sidecarAttachGate.test.ts tests/projectControlProofStackIntegration.test.ts`\n  - exitCode: 0\n- `npm test -- tests/sidecarTurnCompliance.test.ts tests/sidecarAttachGate.test.ts tests/projectControlProofStackIntegration.test.ts`\n  - exitCode: 0\n- `npm run typecheck`\n  - exitCode: 0\n- `npm test`\n  - exitCode: 0\n  - result: 207 files, 1062 tests passed\n- `npm run smoke:stax`\n  - exitCode: 0\n- `npm run rax -- eval`\n  - exitCode: 0\n  - result: 16/16 passed, 0 critical failures\n- Canvas Helper STAX collect/gate commands were run from this repo against `/Users/deanguedo/Documents/GitHub/canvas-helper`; final `stax:gate` exited 0 with `Status: Accept`.\n\nCommand output summary with exit codes:\n- The STAX sidecar visual collector captures or imports screenshots, writes `.stax/visual-proofs/manifest.json`, hashes artifacts, records worktree fingerprints, and exposes `stax:collect-visual`.\n- Canvas Helper fresh STAX command collection first exposed 6 real focused test failures; those were repaired in the Canvas Helper workspace.\n- Canvas Helper focused course tests, project verifiers, typecheck, build, project E2E, smoke E2E, and fresh visual screenshots all passed or verified through sidecar evidence.\n- Canvas Helper final `stax:gate` returned `Accept`; proof strength was `Audit-grade (0.99)`, with current command evidence and current visual evidence verified.\n- STAX full validation passed after the proof-stack and sidecar-gate patches.\n\nWhat is verified:\n- The sidecar now gives agents a concrete command to collect visual proof instead of relying on manual screenshots or report text.\n- STAX no longer treats stale historical screenshots as a downgrade when newer current screenshots exist.\n- STAX can accept verified e2e/focused test command evidence as behavior proof without requiring a changed test file in the diff.\n- Current-turn capture lag is recorded as a non-blocking warning when the Codex report has the current ACK.\n- Canvas Helper reached sidecar `Accept` with fresh proof for the actual current worktree.\n\nWhat is weak/provisional:\n- Canvas Helper protocol status still records a warning for capture lag, but the final sidecar verdict is Accept because the report ACK is present.\n- Proof strength reports still include a harmless URL/file-path grounding limiter for localhost preview paths; it did not cap or block the final verdict.\n\nWhat is unverified:\n- No live Firebase deploy/export was run for Canvas Helper.\n- No commit or push was performed in this turn.\n\nRisks:\n- Canvas Helper still has sidecar-generated dirty files and should be committed with intentional staging, not swept wholesale.\n- Future visual proof should be collected after source edits; otherwise worktree fingerprinting will correctly mark screenshots stale.\n\nOne next action:\n- Review the dirty file sets in STAX and Canvas Helper, then commit the STAX visual-proof/proof-stack changes and the narrow Canvas Helper course-shell repair separately.\n",
+  "task": "Tighten repo proof-surface discovery after the Canvas trial so sidecars do not treat arbitrary script/test file paths as direct proof commands, do not classify `test:*` scripts as live sync/deploy actions, and do not mistake publish scripts containing the word \"building\" for build proof.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-27T15:42:48.333Z\",\n  \"repo\": \"STAX\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/STAX\",\n  \"branch\": \"main\",\n  \"commitSha\": \"2a5cecc0818a28d802a81d4d766aa108bb1e9f7b\",\n  \"task\": \"Tighten repo proof-surface discovery after the Canvas trial so sidecars do not treat arbitrary script/test file paths as direct proof commands, do not classify `test:*` scripts as live sync/deploy actions, and do not mistake publish scripts containing the word \\\"building\\\" for build proof.\",\n  \"verdict\": \"Accept\",\n  \"exitCode\": 0,\n  \"why\": \"Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"verified\": [\n    \"Working-tree diff detected with 3 changed file(s).\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Command evidence classifier: strong_local_proof for npm run typecheck.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Command evidence provenance verified: cmd_2026-05-27T15_41_19_359Z_328e123c6385.\",\n    \"Command evidence freshness verified: cmd_2026-05-27T15_41_19_359Z_328e123c6385 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-27T15_40_19_023Z_982c1455e5e7.\",\n    \"Command evidence freshness verified: cmd_2026-05-27T15_40_19_023Z_982c1455e5e7 matches the current auditable worktree.\",\n    \"Historical command evidence ignored for current proof because npm run validate:hardened is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because npm run audit:security is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because npm test -- tests/commandEvidenceIntelligence.test.ts tests/projectControlProofStackIntegration.test.ts is wrong_commit.\",\n    \"Earlier failed command evidence exists but is superseded by a later passing npm test run.\",\n    \"Proof strength: Audit-grade (0.95) - Unsupported file_path claim: test.ts (File path was not present in the repo evidence pack.).\",\n    \"Fresh STAX sidecar heartbeat is present (35054ms old).\",\n    \"Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 1660 message(s).\",\n    \"Protocol warning recorded as non-blocking: Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"weak\": [],\n  \"unverified\": [],\n  \"risk\": [],\n  \"oneNextAction\": \"Record the STAX sidecar Accept, keep scope unchanged, and stop. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"codexPrompt\": \"Report the STAX sidecar Accept as proof-gate status only. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness. Keep the scope unchanged, and stop.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"verification_run\",\n    \"claimText\": \"Tighten repo proof-surface discovery after the Canvas trial so sidecars do not treat arbitrary script/test file paths as direct proof commands, do not classify `test:*` scripts as live sync/deploy actions, and do not mistake publish scripts containing the word \\\"building\\\" for build proof.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-27T15-28-52-783Z_96c5 0a2352d6 9b0fadc3\\n\\nObjective:\\nTighten repo proof-surface discovery after the Canvas trial so sidecars do not treat arbitrary script/test file paths as direct proof commands, do not classify `test:*` scripts as live sync/deploy actions, and do not mistake publish scripts containing the word \\\"building\\\" for build proof.\\n\\nFiles changed:\\n- `src/projectControl/CommandSurfaceDetector.ts`\\n- `tests/proofSurfacePack.test.ts`\\n\\nTests added:\\n- Added regression coverage that script/test source files are not emitted as direct proof commands or blocked live actions.\\n- Added regression coverage that `test:apps-script` is not treated as a blocked publish/sync action.\\n- Added regression coverage that `publish-ai-course-building-resources.bat` is not classified as build proof just because its name contains \\\"building\\\".\\n\\nCommands run:\\n- Read `.stax/turn-contract.json`, `.stax/status.json`, and `.stax/next-codex-prompt.md`.\\n  - exitCode: 0\\n- `npm test -- tests/proofSurfacePack.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfaceMatcherAdversarial.test.ts`\\n  - exitCode: 0\\n  - result: 3 files / 35 tests passed.\\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --discover-surfaces`\\n  - exitCode: 0\\n  - result: regenerated Canvas proof-surface candidate and review packet with the tightened detector.\\n- `npm run stax:approve-surfaces -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper`\\n  - exitCode: 0\\n  - result: approved the fresh Canvas proof-surface candidate locally.\\n- `npm run typecheck`\\n  - exitCode: 0\\n- `npm test`\\n  - exitCode: 0\\n  - result: 211 files / 1096 tests passed.\\n\\nCommand output summary with exit codes:\\n- Targeted proof-surface tests passed.\\n- Full STAX typecheck passed.\\n- Full STAX test suite passed.\\n- Canvas proof-surface regeneration no longer includes script/test source files as proof commands or `test:*` scripts as blocked live actions.\\n\\nWhat is verified:\\n- Discovery still preserves package-script build/test/visual/deploy proof surfaces.\\n- Discovery still blocks root publish/deploy scripts as live actions.\\n- Discovery no longer pollutes sidecar command lists with arbitrary `scripts/tests/*.test.ts` source files.\\n- Discovery no longer treats `test:apps-script` as a sync/deploy action.\\n- Discovery no longer treats a publish script with \\\"building\\\" in the name as build proof.\\n\\nWhat is weak/provisional:\\n- Canvas sidecar proof-surface files are updated locally but not yet committed in the Canvas repo.\\n- Canvas has unrelated course/source work dirty; the sidecar slice must be staged separately.\\n\\nWhat is unverified:\\n- ADMISSION-APP and brightspacequizexporter proof-surface regeneration were not run in this pass.\\n- GitHub Actions has not yet run for the next STAX commit because it has not been pushed yet.\\n\\nRisks:\\n- Do not stage generated STAX `.stax` status/proof files.\\n- Do not stage unrelated Canvas course/source edits while committing the sidecar proof-surface update.\\n\\nOne next action:\\nCollect current STAX command evidence, run STAX sidecar gate, commit/push the STAX detector fix, then commit/push only the Canvas proof-surface files.\",\n    \"rawScore\": 0.95,\n    \"finalScore\": 0.95,\n    \"label\": \"Audit-grade\",\n    \"capApplied\": [],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"Unsupported file_path claim: test.ts (File path was not present in the repo evidence pack.).\",\n    \"missingProof\": [\n      \"Unsupported file_path claim: test.ts (File path was not present in the repo evidence pack.).\"\n    ],\n    \"weakProof\": [\n      \"Weak command claim: npm test -- tests/proofsurfacepack.test.ts tests/proofsurfacematcher.test.ts tests/proofsurfacematcheradversarial.test.ts (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:sidecar-upgrade -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:approve-surfaces -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: src/projectControl/CommandSurfaceDetector.ts.\",\n      \"Grounded file_path claim: tests/proofSurfacePack.test.ts.\",\n      \"Grounded file_path claim: tests/proofSurfaceMatcher.test.ts.\",\n      \"Grounded file_path claim: tests/proofSurfaceMatcherAdversarial.test.ts.\",\n      \"Grounded command claim: npm run typecheck.\",\n      \"Grounded command claim: npm test.\",\n      \"Grounded test_pass claim: - result: 3 files / 35 tests passed..\",\n      \"Grounded test_pass claim: - result: 211 files / 1096 tests passed..\",\n      \"Grounded test_pass claim: - Targeted proof-surface tests passed..\",\n      \"Grounded test_pass claim: - Full STAX typecheck passed..\",\n      \"Grounded test_pass claim: - Full STAX test suite passed..\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Local STAX command evidence passed: npm test exited 0.\",\n      \"Local STAX command evidence passed: npm run typecheck exited 0.\",\n      \"Verified local STAX command provenance is present for this repo state.\",\n      \"Repo evidence enumerated source files.\",\n      \"Repo evidence enumerated test files.\"\n    ],\n    \"oneNextAction\": \"Add the missing proof item, then rerun the proof-strength gate.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-27T15:42:48.332Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-27T15-28-52-783Z_96c5 0a2352d6 9b0fadc3\",\n    \"contractTurnId\": \"turn_2026-05-27T15-28-52-783Z_96c5\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-27T15-42-48-341Z_25d3 274a645c 9b0fadc3\n\nObjective:\nContinue the attached-repo rollout by tightening proof-surface discovery, refreshing Canvas and ADMISSION-APP sidecars, importing live impact evidence, and preserving source/sidecar boundaries.\n\nFiles changed:\n- `src/projectControl/CommandSurfaceDetector.ts`\n- `src/projectControl/ProofSurfaceCandidateGenerator.ts`\n- `tests/proofSurfacePack.test.ts`\n- `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md`\n- `reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact.json`\n- `reports/pattern_promotion/attached_repo_exports/attached-repo-impact-export-summary.json`\n- `reports/pattern_promotion/pattern-promotion-impact-2026-05-27T15-56-15-216Z.json`\n\nTests added:\n- Script/test source files are not direct proof commands or blocked live actions.\n- `test:apps-script` is not classified as a sync/deploy live action.\n- Publish scripts containing `building` are not treated as build proof.\n- Non-course app sync/export repos do not receive the Canvas-specific `course_deploy_ready` contract.\n\nCommands run:\n- `npm test -- tests/proofSurfacePack.test.ts tests/proofSurfaceMatcher.test.ts tests/proofSurfaceMatcherAdversarial.test.ts`\n  - exitCode: 0\n  - result: 3 files / 36 tests passed.\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --discover-surfaces`\n  - exitCode: 0\n- `npm run stax:approve-surfaces -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper`\n  - exitCode: 0\n- `git commit -m \"Tighten proof surface command discovery\"`\n  - exitCode: 0\n  - commit: `fe3afd9`\n- `git push origin main`\n  - exitCode: 0\n  - result: pushed STAX `main`.\n- Checked GitHub Actions for STAX.\n  - exitCode: 0\n  - result: `staxcore-strict` passed for `fe3afd9`.\n- `git pull --ff-only` in `/Users/deanguedo/Documents/GitHub/ADMISSION-APP`\n  - exitCode: 0\n  - result: fast-forwarded ADMISSION-APP to `21d9ba2`.\n- `npm run stax:attached-impact-export -- --confirm-current-repos --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --out-dir reports/pattern_promotion/attached_repo_exports`\n  - exitCode: 0\n  - result: attached/upgraded ADMISSION sidecar, ran gate/next/export; gate was Provisional because no Codex report exists yet.\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --discover-surfaces`\n  - exitCode: 0\n  - result: regenerated ADMISSION proof-surface candidate after tightening course/non-course detection.\n- `git commit -m \"Attach STAX sidecar\"` in ADMISSION-APP\n  - exitCode: 0\n  - commit: `448b103`\n- `git push origin main` in ADMISSION-APP\n  - first attempt via HTTPS failed with missing username.\n  - SSH retry exitCode: 0\n  - result: pushed ADMISSION-APP `main`.\n- Checked GitHub Actions for ADMISSION-APP.\n  - exitCode: 0\n  - result: `Dataset Validation` passed for `448b103`.\n- `npm run stax:export-impact-evidence -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --out reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact.json`\n  - exitCode: 0\n  - result: exported pushed ADMISSION bundle at `448b103`.\n- `npm run pattern:impact -- --import reports/pattern_promotion/stax-impact-evidence-local.json --import reports/pattern_promotion/attached_repo_exports/canvas-helper-impact.json --import reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact.json`\n  - exitCode: 0\n  - result: 3 current operating-window imports, 0 critical misses.\n- `npm run typecheck`\n  - exitCode: 0\n- `npm test`\n  - exitCode: 0\n  - result: 211 files / 1097 tests passed.\n\nCommand output summary with exit codes:\n- STAX source validation passed locally.\n- STAX strict GitHub workflow passed for pushed commit `fe3afd9`.\n- Canvas sidecar proof surfaces were regenerated, approved, committed, pushed, and Canvas Pages passed for `4e9ec303`.\n- ADMISSION-APP was fast-forwarded, sidecar-attached, committed, pushed, and Dataset Validation passed for `448b103`.\n- Pattern promotion impact now includes STAX, Canvas, and ADMISSION-APP imported bundles with 0 critical misses.\n\nWhat is verified:\n- Proof-surface discovery is less noisy and more portable.\n- Canvas keeps its course-publishing proof contract.\n- ADMISSION-APP does not get the Canvas-specific `course_deploy_ready` proof contract.\n- ADMISSION-APP sidecar attach is pushed and CI-green.\n- STAX current validation and strict CI are green.\n\nWhat is weak/provisional:\n- ADMISSION-APP sidecar gate is Provisional because no `.stax/codex-report.md` has been written for a real ADMISSION task yet.\n- ADMISSION proof surfaces are candidate-only; they were not auto-approved.\n- Brightspace is on a non-main resume branch locally, so it was not used as a mainline live-rollout target.\n\nWhat is unverified:\n- Brightspace current-main sidecar rollout is not verified in this pass.\n- A 10-task operating-window target is not complete; current imported live bundles are 3 repos/bundles.\n\nRisks:\n- Do not confuse sidecar attach success with task acceptance; ADMISSION has no task proof yet.\n- Do not stage generated STAX `.stax` status/proof files.\n- Do not stage unrelated Canvas course/source edits.\n\nOne next action:\nCommit and push the latest STAX discovery/report/import changes, then either prepare Brightspace main for a safe rollout or continue gathering live operating-window bundles from clean repos.\n",
   "commandEvidence": [
     {
       "evidenceId": "cmd_2026-05-12T03_53_38_885Z_b9189adddec0",
@@ -1653,37 +1653,307 @@
       "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
       "canonicalEvidenceHash": "5943cdea04f8f29675f7f15b6d8d4b0f29c6b2ae6f9825376636fedc9ad67d0f",
       "recordedAt": "2026-05-14T20:20:47.414Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-19T16_50_14_321Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fb8e50ecf6fe96460f45110726242a5ebb6b6e74573cf63a6fc47e351295a6a8",
+      "canonicalEvidenceHash": "9208a17747f8d6891a56c2281e628a3a5d1e8575fd3119769730d09119eef570",
+      "recordedAt": "2026-05-19T16:50:16.255Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-19T16_51_11_989Z_73d7fc7143b8",
+      "command": "npm test -- tests/patternPromotionImpactTracker.test.ts tests/proofSurfaceMatcherAdversarial.test.ts tests/currentStatusDoc.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "fb8e50ecf6fe96460f45110726242a5ebb6b6e74573cf63a6fc47e351295a6a8",
+      "canonicalEvidenceHash": "5eadb2d0542042e296aad4fbf2326f1162c41e877ccc744e14adce88b2f1d6fa",
+      "recordedAt": "2026-05-19T16:51:12.508Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-19T16_54_15_987Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "752bfe88bbaceb36cbb9411402e43158df9fa788e7d48d8e49ef535ccbb9e73b",
+      "canonicalEvidenceHash": "a2cf5889a0e52f54459153f1e4b930925d8df7010dc54af431d2752708dc620c",
+      "recordedAt": "2026-05-19T16:54:17.913Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-19T16_55_11_588Z_71b1201d2e5b",
+      "command": "npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts tests/claimExtractionHardening.test.ts tests/patternPromotionImpactTracker.test.ts tests/proofSurfaceMatcherAdversarial.test.ts tests/currentStatusDoc.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "752bfe88bbaceb36cbb9411402e43158df9fa788e7d48d8e49ef535ccbb9e73b",
+      "canonicalEvidenceHash": "89ecaa97b0e78472ecac9b5c2ed69005cf2264984ac697a04e40dfc6273042a0",
+      "recordedAt": "2026-05-19T16:55:12.279Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-19T16_58_45_261Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e493905510bd931c351256dc78f159bd7d837e5f7e9a7f7d077f4292685e9ea5",
+      "canonicalEvidenceHash": "a49d0769bf59a1d8737a70bd4d43136a0d93da65086efaf9703f9fba996da61f",
+      "recordedAt": "2026-05-19T16:58:47.173Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-19T16_59_40_960Z_71b1201d2e5b",
+      "command": "npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts tests/claimExtractionHardening.test.ts tests/patternPromotionImpactTracker.test.ts tests/proofSurfaceMatcherAdversarial.test.ts tests/currentStatusDoc.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "e493905510bd931c351256dc78f159bd7d837e5f7e9a7f7d077f4292685e9ea5",
+      "canonicalEvidenceHash": "53d2d20ced95304837c049bb3737f1254c34318429bb2701ba9f53b04012ac18",
+      "recordedAt": "2026-05-19T16:59:41.621Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_29_00_567Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bddaa597f6adda6199a04e115ed3044f281c942a2207d8918366f49c4c955f7e",
+      "canonicalEvidenceHash": "166abd9e605921656de149109e171a6c95f924f95d5204ab4424f0a46fd2f554",
+      "recordedAt": "2026-05-27T12:29:23.710Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_31_16_771Z_50ee90b8272c",
+      "command": "npm test -- tests/repoHygieneAudit.test.ts tests/commandRiskPolicy.test.ts tests/security/StructuredCommand.test.ts tests/sidecarAttachGate.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bddaa597f6adda6199a04e115ed3044f281c942a2207d8918366f49c4c955f7e",
+      "canonicalEvidenceHash": "370d493ec4559580f8259e3f1ad0e605ecd7ad6517dc662f8d59a575c9753f9f",
+      "recordedAt": "2026-05-27T12:31:21.192Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_31_16_771Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bddaa597f6adda6199a04e115ed3044f281c942a2207d8918366f49c4c955f7e",
+      "canonicalEvidenceHash": "bb973e1163bd684b31e87227f3267e858dde691f32fa6aa170f7a0e9d13aa256",
+      "recordedAt": "2026-05-27T12:31:19.116Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_35_28_730Z_2444293e91d5",
+      "command": "npm run audit:repo-hygiene",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bddaa597f6adda6199a04e115ed3044f281c942a2207d8918366f49c4c955f7e",
+      "canonicalEvidenceHash": "cb360a7c45f5486432ced9275c3a72a18f8db88d4df0e9c562af3bc9bf95d579",
+      "recordedAt": "2026-05-27T12:35:28.936Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_35_28_730Z_5623caf32fa8",
+      "command": "npm run audit:security",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "bddaa597f6adda6199a04e115ed3044f281c942a2207d8918366f49c4c955f7e",
+      "canonicalEvidenceHash": "345cb67c94711f423b37787bb45b84d4f8156a975de71cd6ca2167234de72b75",
+      "recordedAt": "2026-05-27T12:35:29.082Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_40_43_969Z_d813a2dd3125",
+      "command": "npm test -- tests/projectControlProofStackIntegration.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b98cbb5bd8fd4199de48bffb453337b262d3b57727894ed4e0b05af7a125f613",
+      "canonicalEvidenceHash": "db8ac041cde0ef0d308d2fce84ca67ec318398f25de0b70a32b17168cdf81e9b",
+      "recordedAt": "2026-05-27T12:40:44.711Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_41_38_693Z_5623caf32fa8",
+      "command": "npm run audit:security",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b98cbb5bd8fd4199de48bffb453337b262d3b57727894ed4e0b05af7a125f613",
+      "canonicalEvidenceHash": "6fa1c4d73316a49371405f67b7614537e47dfc71abb02134c65d74a0aa50e597",
+      "recordedAt": "2026-05-27T12:41:38.976Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_42_50_031Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b98cbb5bd8fd4199de48bffb453337b262d3b57727894ed4e0b05af7a125f613",
+      "canonicalEvidenceHash": "3adb3ff63a7a1a5f32519ee2621ac8f862a13c79ceaf15ca051e0a0bcafa3560",
+      "recordedAt": "2026-05-27T12:43:13.767Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_49_10_924Z_5a0bb5aeabb1",
+      "command": "npm test -- tests/commandEvidenceIntelligence.test.ts tests/projectControlProofStackIntegration.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "79c30f142673e722f5d57cb449bc33ec0a7a9b39596543286a98a1b60fab9cd3",
+      "canonicalEvidenceHash": "532df842d3f55d786d88316b179d70cbe96df9b4b9e93b6dca6619d94d57ec3d",
+      "recordedAt": "2026-05-27T12:49:11.653Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_50_04_898Z_5623caf32fa8",
+      "command": "npm run audit:security",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "79c30f142673e722f5d57cb449bc33ec0a7a9b39596543286a98a1b60fab9cd3",
+      "canonicalEvidenceHash": "b2e9a1526daa00f8521782d88bd0d6f8fb06935bb40f3e7547012473bd82e6ea",
+      "recordedAt": "2026-05-27T12:50:05.200Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_50_57_499Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "79c30f142673e722f5d57cb449bc33ec0a7a9b39596543286a98a1b60fab9cd3",
+      "canonicalEvidenceHash": "202e4e01df0e2fd662e8aed0c433bad589ab06574bcc14b6d156095c212f898b",
+      "recordedAt": "2026-05-27T12:51:20.880Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T12_53_29_108Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "79c30f142673e722f5d57cb449bc33ec0a7a9b39596543286a98a1b60fab9cd3",
+      "canonicalEvidenceHash": "eb8e0154536de186245d8bf39bcc2faaa3116c73a32a086276d8ffc362cf9425",
+      "recordedAt": "2026-05-27T12:53:31.019Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T13_04_39_321Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "2a3608d49a46b19f8ffafc78c93371b2571fd8cee53714ecea027392ac8a1c7e",
+      "recordedAt": "2026-05-27T13:05:03.859Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T13_14_40_376Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "b843eaa51bdead3254099596a2a691248c7456970f31aa50c2d75b0d0e6ee4bf",
+      "recordedAt": "2026-05-27T13:15:06.941Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T14_35_49_811Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "8792440f81d97e7de09306a2da1fb15d7ff9c438f8d6b38a13e647b1a58a6120",
+      "recordedAt": "2026-05-27T14:35:52.105Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T14_36_47_945Z_eea6194c401c",
+      "command": "npm run validate:hardened",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "6683521fc32a23140ab1a7db240757df8f410a09a525b223bfab619c83b084f4",
+      "recordedAt": "2026-05-27T14:37:14.751Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T14_49_03_899Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "ea08f021e4de8d591cf7ee239a54c2ef650b8db7d60728b8adf1158206df0448",
+      "recordedAt": "2026-05-27T14:49:22.323Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T14_51_46_685Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "82470773f996ff5b718a3121c1aad8a349b281e7f786a9ff45603759faecbf29",
+      "canonicalEvidenceHash": "ac4acd24ef08c2711ad8c0f9ad37281a76d05bd64c0633f3e9655052f06fe643",
+      "recordedAt": "2026-05-27T14:51:48.890Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T15_22_52_415Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7ec47f4f76f01c0684239381b88e6a97503189c2b946024599bdc5b24af21e69",
+      "canonicalEvidenceHash": "1cd56c41a7c4291e8714ad963e0706d19db06e62f3190771c2e1087ed75cf9ed",
+      "recordedAt": "2026-05-27T15:22:54.705Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T15_23_58_394Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7ec47f4f76f01c0684239381b88e6a97503189c2b946024599bdc5b24af21e69",
+      "canonicalEvidenceHash": "00cbcf391f13a48043816ae99001f65ad2c2ca2e57e6407998e816f0ba28d805",
+      "recordedAt": "2026-05-27T15:24:32.463Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T15_40_19_023Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "1ac2d2fd75fbeb150956f05bbbaf53c3a3a49eb14df6088560e8c5ecc56889f3",
+      "canonicalEvidenceHash": "a220428a9f81dd8edcf2c3a9d9a3c08a3818b11858180a7d275f2b9cfa317e84",
+      "recordedAt": "2026-05-27T15:40:21.079Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T15_41_19_359Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "1ac2d2fd75fbeb150956f05bbbaf53c3a3a49eb14df6088560e8c5ecc56889f3",
+      "canonicalEvidenceHash": "471604bc0fc5aa3b38bb2690bc847639625acf6faff87e04893d33667855e4b1",
+      "recordedAt": "2026-05-27T15:41:38.105Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T15_58_40_519Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "c5e0f3b6bc37f03e96908a4ab4d0551acfd2058bfb0f2447bcb0e2828858145f",
+      "canonicalEvidenceHash": "cc5e5b8a5f3d80664abd2a92b9edc1723fe0918663b77d2e3e9ef8bb698f49ec",
+      "recordedAt": "2026-05-27T15:58:42.497Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T15_59_31_905Z_328e123c6385",
+      "command": "npm test",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "c5e0f3b6bc37f03e96908a4ab4d0551acfd2058bfb0f2447bcb0e2828858145f",
+      "canonicalEvidenceHash": "94819eada1b918739e8bea134069c71463fd911787c8ad37cdc061bc962c3dae",
+      "recordedAt": "2026-05-27T15:59:50.185Z"
     }
   ],
   "artifacts": [
     {
       "kind": "status",
       "path": ".stax/status.json",
-      "hash": "5bff2e3f55c7ea2d4e57ace40c9498389ff4584babce5cac9df87b13c8395a46",
+      "hash": "274a645cd1d436a4c70eae6b08d94071699323478b49abc500be5f7bb963d09a",
       "summary": "status.json present"
     },
     {
       "kind": "proof",
       "path": ".stax/proof_strength.json",
-      "hash": "5cfb09cdf14f29e037f8ebdfa1e72426d5d808b1de6ace1feae853fb72859212",
+      "hash": "f7dc4f12f2fc655102975a6cdbfb19c163a2660258889e57a1e203aebcc0d42a",
       "summary": "proof_strength.json present"
     },
     {
       "kind": "next_prompt",
       "path": ".stax/next-codex-prompt.md",
-      "hash": "8e2707465f396522bf1abe96654784a633c7c2412b20d67e2fd0130378f27e44",
+      "hash": "9b0fadc3c518763dfb5409fa111d986ed4c8c934b02e8066f2b1bb5b145be6a7",
       "summary": "next-codex-prompt.md present"
     },
     {
       "kind": "proof",
       "path": ".stax/reports/latest-proof-report.md",
-      "hash": "0375f08f1013ac993ba48473ae7a08d2031c4243d9784d8af2d684568c31382b",
+      "hash": "0bb69c71f3b26209a4ee3235496c4e77c1505c05982964314e6e265675fef550",
       "summary": "reports/latest-proof-report.md present"
     },
     {
       "kind": "sidecar_artifact",
       "path": ".stax/reports/latest-confidence-report.md",
-      "hash": "8c2df35a156f6633200cec1d6cb5cb7c31944b511acb58e85c6ede8c55da9dcc",
+      "hash": "53f1d2d303b71522038e6c300656b32883c3e723345c72490a33be8d103fba50",
       "summary": "reports/latest-confidence-report.md present"
     }
   ],

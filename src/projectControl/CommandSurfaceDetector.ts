@@ -37,6 +37,7 @@ function surfacesForScript(script: RepoPackageScript): CommandSurface[] {
   const surfaces: CommandSurface[] = [];
   const add = (kind: CommandSurfaceKind) => surfaces.push({ kind, command, scriptName: script.name, source: "package.json scripts" });
   const verificationLike = /^(?:test|validate|verify|check|smoke|lint|typecheck)(?::|$)/i.test(script.name);
+  const liveLike = !verificationLike && /publish|\bsync\b|deploy|release|ship/.test(text);
   if (isBuildLike(text)) add("build");
   if (/\btest\b|vitest|jest|node --test/.test(text)) add("test");
   if (/typecheck|tsc --noemit|tsc --no-emit/.test(text)) add("typecheck");
@@ -50,7 +51,7 @@ function surfacesForScript(script: RepoPackageScript): CommandSurface[] {
   if (!verificationLike && /\bsync\b|sheets|clasp|apps-script|google/.test(text)) add("sync");
   if (!verificationLike && /deploy|hosting|firebase/.test(text)) add("deploy");
   if (!verificationLike && /release|ship/.test(text)) add("release");
-  if (/ingest|data|pipeline|schema|fixture|csv|json/.test(text)) add("data");
+  if (!liveLike && /ingest|data|pipeline|schema|fixture|csv|json/.test(text)) add("data");
   if (/seed-gold|update-gold|\bgold\b|snapshot|expected/.test(text)) add("gold");
   return dedupeSurfaces(surfaces);
 }
@@ -64,6 +65,7 @@ function surfacesForDiscoveredFile(file: RepoDiscoveryResult["files"][number]): 
   const source = `${file.kind} file`;
   const surfaces: CommandSurface[] = [];
   const add = (kind: CommandSurfaceKind) => surfaces.push({ kind, command, scriptName, source });
+  const verificationLike = /(?:^|\/)(?:test|check|validate|verify|smoke|lint|typecheck)[-_.]/i.test(file.path);
 
   if (isBuildLike(text)) add("build");
   if (/\btest\b|spec|vitest|jest/.test(text)) add("test");
@@ -74,12 +76,13 @@ function surfacesForDiscoveredFile(file: RepoDiscoveryResult["files"][number]): 
   if (/validate|verify|check|audit/.test(text)) add("validate");
   if (/export|google[-_]?hosted|course[-_]?shell/.test(text)) add("export");
   const preflightLike = /validate|preflight|dry[-:]?run|target|canonical|structure|surface|check/.test(text);
+  const liveLike = !verificationLike && !preflightLike && /publish|sync|deploy|release|ship/.test(text);
   if (preflightLike) add("preflight");
-  if (!preflightLike && /publish/.test(text)) add("publish");
-  if (!preflightLike && /sync|sheets|clasp|apps[-_]?script|google/.test(text)) add("sync");
-  if (!preflightLike && /deploy|hosting|firebase/.test(text)) add("deploy");
-  if (!preflightLike && /release|ship/.test(text)) add("release");
-  if (/ingest|data|pipeline|schema|fixture|csv|json|dataset/.test(text)) add("data");
+  if (liveLike && /publish/.test(text)) add("publish");
+  if (liveLike && /sync|sheets|clasp|apps[-_]?script|google/.test(text)) add("sync");
+  if (liveLike && /deploy|hosting|firebase/.test(text)) add("deploy");
+  if (liveLike && /release|ship/.test(text)) add("release");
+  if (!liveLike && /ingest|data|pipeline|schema|fixture|csv|json|dataset/.test(text)) add("data");
   if (/seed[-_]?gold|update[-_]?gold|\bgold\b|snapshot|expected/.test(text)) add("gold");
   return dedupeSurfaces(surfaces);
 }
