@@ -18,26 +18,26 @@ Branch:
 main
 ```
 
-Latest local rollout commit:
+Latest verified rollout commit:
 
 ```txt
-3556b3e
+7595e25
 ```
 
 Commit message:
 
 ```txt
-Avoid mutating visual proof recommendations
+Record Canvas smoke cleanup impact
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26547092261
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26548311949
 ```
 
-This commit is pushed to `origin/main`. Generated `.stax` proof/status files and the unrelated duplicate `docs/ACTIVE_HANDOFF 2.md` are dirty locally and should stay unstaged.
+This verified rollout commit is pushed to `origin/main`. Generated `.stax` proof/status files and the unrelated duplicate `docs/ACTIVE_HANDOFF 2.md` are dirty locally and should stay unstaged.
 
 ## Product Boundary
 
@@ -380,7 +380,7 @@ Commit and push the STAX handoff/report/evidence update, then verify GitHub Acti
 
 Next best actions:
 
-1. Use `3556b3e` plus the follow-up handoff/report/evidence commit as the current green STAX baseline once CI passes.
+1. Use `7595e25` as the current verified STAX rollout baseline; this final handoff-only refresh is just restart hygiene.
 2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
 3. For Brightspacequizexporter, keep using the current-main Accept bundle unless new work changes its worktree.
 4. In ADMISSION-APP, decide whether to keep or revert the generated `docs/index.html` diff before committing there.
@@ -468,14 +468,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff update:
-- commit: 3556b3e
-- short: 3556b3e
-- commit message: Avoid mutating visual proof recommendations
+- commit: 7595e25b6b8141ea692961072e6c9422e3bd1333
+- short: 7595e25
+- commit message: Record Canvas smoke cleanup impact
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26547092261
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26548311949
 
 Goal:
-Continue the attached-repo operating-window phase from green STAX baseline `3556b3e`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the post-push Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T00-54-59-876Z.json`. The CI-only turn-compliance mtime false reject and the mutating visual proof recommendation are fixed and green in GitHub Actions.
+Continue the attached-repo operating-window phase from green STAX baseline `7595e25`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the post-push Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T00-54-59-876Z.json`. The CI-only turn-compliance mtime false reject and the mutating visual proof recommendation are fixed and green in GitHub Actions.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
