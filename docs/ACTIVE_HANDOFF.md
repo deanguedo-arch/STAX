@@ -21,20 +21,20 @@ main
 Latest verified rollout commit:
 
 ```txt
-7a27a6f
+8b57c08
 ```
 
 Commit message:
 
 ```txt
-Make visual proof hints actionable
+Normalize Python command proof lanes
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26548876800
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26550889534
 ```
 
 This verified rollout commit is pushed to `origin/main`. Generated `.stax` proof/status files and the unrelated duplicate `docs/ACTIVE_HANDOFF 2.md` are dirty locally and should stay unstaged.
@@ -153,7 +153,23 @@ The latest work:
   - STAX sidecar gate: `Accept / Audit-grade`
 - Committed and pushed STAX `7a27a6f Make visual proof hints actionable`.
 - Verified GitHub Actions `staxcore-strict` completed successfully on `7a27a6f`.
-- Treat `7a27a6f` as the current code baseline; later handoff-only commits are restart metadata unless they change source, tests, proof surfaces, or rollout evidence.
+- Attached STAX to `studentbudgetwars`, repaired its ignored local `.venv`, and collected useful observer proof:
+  - narrowed non-window pytest proof: 377 passed, 1 deselected
+  - data validation proof: passed
+  - full suite still not claimed because local Tcl/Tk/windowing failures remain
+- The studentbudgetwars observer run exposed a STAX proof-lane issue: a later passing Python script rerun through a different interpreter wrapper was not clearly superseding older failed same-script evidence.
+- Fixed STAX command proof-lane normalization so equivalent Python script invocations share the same proof lane:
+  - `python3 tools/validate_data.py`
+  - `/usr/bin/env PYTHONPATH=src python3 tools/validate_data.py`
+  - `/repo/.venv/bin/python tools/validate_data.py`
+- Kept narrowed `pytest` evidence distinct from full-suite `pytest` evidence, so scoped proof cannot certify the whole suite.
+- Verified the Python proof-lane patch with:
+  - `npm run typecheck`: exit 0
+  - `npm test -- tests/sidecarWatchCollect.test.ts tests/proofSurfacePack.test.ts`: exit 0, 43 tests
+  - `npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX`: `Accept`
+- Committed and pushed STAX `8b57c08 Normalize Python command proof lanes`.
+- Verified GitHub Actions `staxcore-strict` completed successfully on `8b57c08`.
+- Treat `8b57c08` as the current code baseline; later handoff-only commits are restart metadata unless they change source, tests, proof surfaces, or rollout evidence.
 
 ## Current Canvas Helper State
 
@@ -305,6 +321,8 @@ staxcore-strict on d1c51d7: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26544755416
 staxcore-strict on 7a27a6f: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26548876800
+staxcore-strict on 8b57c08: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26550889534
 ```
 
 ## Current Local Dirt
@@ -342,8 +360,8 @@ Attached repo dirt created by observer work:
 
 ```txt
 /Users/deanguedo/Documents/GitHub/ADMISSION-APP
-- docs/index.html changed by `npm run build:pages`
 - generated `.stax` status/proof files dirty
+- previously generated `docs/index.html` diff was restored clean on this workstation
 
 /Users/deanguedo/Documents/GitHub/canvas-helper
 - pushed commit `16749182 Keep smoke pipeline proof runs isolated`
@@ -357,6 +375,9 @@ Attached repo dirt created by observer work:
 - .gitignore changed by STAX attach
 - AGENTS.md created by STAX attach
 - .stax/ sidecar created
+- ignored local `.venv` was repaired with project dev dependencies
+- useful observer proof exists for narrowed non-window pytest and data validation
+- full suite is not claimed because local Tcl/Tk/windowing failures remain
 ```
 
 ## Next Milestone
@@ -387,12 +408,12 @@ Current operating-window status:
 Immediate next action after committing/pushing this STAX patch:
 
 ```txt
-Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `7a27a6f`.
+Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `8b57c08`.
 ```
 
 Next best actions:
 
-1. Use `7a27a6f` as the current verified STAX rollout baseline; this handoff refresh is restart hygiene.
+1. Use `8b57c08` as the current verified STAX rollout baseline; this handoff refresh is restart hygiene.
 2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
 3. For Brightspacequizexporter, keep using the current-main Accept bundle unless new work changes its worktree.
 4. In ADMISSION-APP, decide whether to keep or revert the generated `docs/index.html` diff before committing there.
@@ -480,14 +501,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff update:
-- commit: 7a27a6f3f70e4f05927f3f5568b7777588b060c7
-- short: 7a27a6f
-- commit message: Make visual proof hints actionable
+- commit: 8b57c0830caeeea396411a6ea255f62a569a889c
+- short: 8b57c08
+- commit message: Normalize Python command proof lanes
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26548876800
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26550889534
 
 Goal:
-Continue the attached-repo operating-window phase from green STAX baseline `7a27a6f`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the post-push Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T00-54-59-876Z.json`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, and vague visual proof-surface prompt issue are fixed and green in GitHub Actions.
+Continue the attached-repo operating-window phase from green STAX baseline `8b57c08`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the post-push Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T00-54-59-876Z.json`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, and Python command proof-lane normalization issue are fixed and green in GitHub Actions.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
