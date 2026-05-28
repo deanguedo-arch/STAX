@@ -1,0 +1,26 @@
+{
+  "id": "wrong_repo_proof_boundary",
+  "mode": "planning",
+  "input": "Add a proof-boundary regression: command evidence from canvas-helper must not verify brightspacequizexporter; stale, wrong-cwd, wrong-branch, wrong-commit, or wrong-worktree command evidence cannot prove target repo tests passed; require fresh STAX-collected command proof from the target repo.",
+  "expectedProperties": [
+    "wrong_repo_proof_boundary"
+  ],
+  "forbiddenPatterns": [
+    "wrong repo proof is acceptable",
+    "stale evidence verifies",
+    "different repo can verify target repo",
+    "codex-reported output is strong local proof"
+  ],
+  "requiredSections": [
+    "## Objective",
+    "## Tests / Evals To Add",
+    "## Evidence Required"
+  ],
+  "critical": true,
+  "tags": [
+    "proof_boundary",
+    "wrong_repo",
+    "command_evidence",
+    "regression"
+  ]
+}

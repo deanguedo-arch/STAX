@@ -131,6 +131,14 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
         failReasons.push(`expected property failed: proof_boundary_distinctions missing ${missingPairs.map((pair) => pair.label).join(", ")}`);
       }
     }
+    if (property === "wrong_repo_proof_boundary") {
+      const hasWrongContext = /\bwrong[- ]repo\b|\bwrong[- ]cwd\b|\bwrong[- ]branch\b|\bwrong[- ]commit\b|\bwrong[- ]worktree\b|\bstale\b/i.test(input.output);
+      const hasTargetRepo = /\btarget repo\b|\btarget-repo\b|\btarget repository\b/i.test(input.output);
+      const hasRejection = /\bcannot\b|\bmust not\b|\bnot verify\b|\breject\b|\bunverified\b|\bblocked\b/i.test(input.output);
+      if (!hasWrongContext || !hasTargetRepo || !hasRejection) {
+        failReasons.push("expected property failed: wrong_repo_proof_boundary");
+      }
+    }
   }
 
   if (input.minSignalUnits !== undefined) {

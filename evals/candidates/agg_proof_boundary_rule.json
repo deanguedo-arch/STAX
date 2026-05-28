@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "stax-reviewed-aggregate-promotion-v1",
+  "aggregateId": "agg_proof_boundary_rule",
+  "classification": "proof_boundary_rule",
+  "queueType": "eval_candidate",
+  "promotionTarget": "eval",
+  "status": "approved_for_promotion",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-28T14:36:00.000Z",
+  "approvalReason": "Canvas Helper and Brightspace sidecar observations repeatedly showed that wrong-repo, stale, wrong-cwd, wrong-branch, wrong-commit, or wrong-worktree command evidence must not verify target repo claims. Existing command-evidence fixtures plus a new regression eval cover the reusable proof boundary.",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json",
+  "sourceCandidateCount": 15,
+  "sourceRepos": [
+    "brightspacequizexporter",
+    "canvas-helper"
+  ],
+  "promotedPattern": {
+    "name": "target_repo_command_proof_boundary",
+    "summary": "Command evidence can verify a claim only when it is collected for the target repo, target cwd, current branch, current commit, and current auditable worktree. Wrong-repo, wrong-cwd, wrong-branch, wrong-commit, stale, wrong-worktree, human-pasted, or Codex-reported command output cannot become strong local proof.",
+    "requiredFields": [
+      "target repo identity",
+      "target repo cwd",
+      "current branch and commit",
+      "current auditable worktree fingerprint",
+      "verified STAX command evidence provenance",
+      "claim type being verified"
+    ],
+    "rejectOrDowngradeConditions": [
+      "wrong repo",
+      "wrong cwd",
+      "wrong branch",
+      "wrong commit",
+      "wrong worktree",
+      "stale evidence",
+      "unverified sidecar JSON",
+      "human-pasted command output",
+      "Codex-reported command output without local STAX provenance"
+    ],
+    "forbiddenPromotionContent": [
+      "Canvas-specific course names",
+      "Brightspace-specific quiz names",
+      "local paths beyond generic target-repo/cwd concepts",
+      "one-off branch names",
+      "raw Codex report wording"
+    ]
+  },
+  "regressionEvidence": [
+    {
+      "type": "locked_replay",
+      "path": "fixtures/pattern_promotion/locked_replay_10_cases.json",
+      "caseId": "locked_wrong_repo_command_boundary",
+      "expectedResult": "wrong-repo command evidence routes to proof_boundary_rule and eval promotion"
+    },
+    {
+      "type": "regression_eval",
+      "path": "evals/regression/wrong_repo_proof_boundary.json",
+      "expectedResult": "runtime planning output preserves the target-repo command-proof boundary"
+    },
+    {
+      "type": "fixture",
+      "path": "fixtures/command_evidence/command_evidence_core_cases.json",
+      "expectedResult": "wrong-repo command evidence cases are not strong local proof"
+    },
+    {
+      "type": "test",
+      "path": "tests/commandEvidenceIntelligence.test.ts",
+      "expectedResult": "wrong-repo command output is classified as wrong_repo_proof"
+    },
+    {
+      "type": "test",
+      "path": "tests/proofStrengthGate.test.ts",
+      "expectedResult": "only verified current local STAX command evidence can become strong proof"
+    },
+    {
+      "type": "smoke",
+      "path": "docs/RAX_OPERATING_WINDOW_TODAY_REPORT.md",
+      "expectedResult": "Brightspace wrong-repo command-evidence smoke produced zero critical miss"
+    }
+  ],
+  "expectedFutureBehaviorChange": "Future proof-gate reviews reject or downgrade command evidence that does not match the target repo/cwd/branch/commit/worktree and ask for fresh STAX-collected target-repo evidence.",
+  "approvalRequiredForFurtherPromotion": true,
+  "autoPromote": false
+}

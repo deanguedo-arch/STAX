@@ -41,4 +41,22 @@ describe("evaluateProperties", () => {
     expect(result.failReasons.join(" ")).toContain("minimum signal units");
     expect(result.criticalFailure).toBe(true);
   });
+
+  it("checks wrong-repo proof-boundary language", () => {
+    const result = evaluateProperties({
+      output: [
+        "## Objective",
+        "Reject wrong-repo command evidence.",
+        "## Evidence Required",
+        "- Command evidence from the wrong repo cannot verify the target repo.",
+        "- Stale or wrong-worktree proof stays unverified."
+      ].join("\n"),
+      requiredSections: ["## Objective", "## Evidence Required"],
+      forbiddenPatterns: [],
+      expectedProperties: ["wrong_repo_proof_boundary"],
+      critical: true
+    });
+
+    expect(result.pass).toBe(true);
+  });
 });

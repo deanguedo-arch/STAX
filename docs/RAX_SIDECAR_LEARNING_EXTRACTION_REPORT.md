@@ -168,3 +168,38 @@ Regression/evidence backing:
 - `tests/sidecarImportAggregation.test.ts`
 
 Dashboard behavior was also tightened: once an aggregate has a reviewed promotion artifact, the dashboard skips it for the next top recommendation and moves to the next unreviewed aggregate. The next aggregate to inspect is `agg_proof_boundary_rule`.
+
+## 2026-05-28 Proof Boundary Promotion Review
+
+After `agg_mode_behavior_rule` received a reviewed promotion artifact, the dashboard advanced to `agg_proof_boundary_rule`. STAX reviewed and promoted that aggregate narrowly as an eval candidate.
+
+- Aggregate: `agg_proof_boundary_rule`
+- Decision: promote narrowly as an eval candidate
+- Artifact: `evals/candidates/agg_proof_boundary_rule.json`
+- Regression eval: `evals/regression/wrong_repo_proof_boundary.json`
+- Decision report: `reports/sidecar_learning/sidecar-aggregate-promotion-decisions-2026-05-28T14-36-00Z.md`
+
+Promoted reusable proof boundary:
+
+- command evidence can verify a claim only when it matches the target repo, cwd, branch, commit, and current auditable worktree
+- wrong-repo, wrong-cwd, wrong-branch, wrong-commit, wrong-worktree, stale, human-pasted, or Codex-reported command evidence cannot become strong local proof
+- the correction path is fresh STAX-collected command evidence from the target repo
+
+Not promoted:
+
+- Canvas-specific course names
+- Brightspace-specific quiz names
+- one-off branch names
+- local paths beyond generic target-repo/cwd concepts
+- raw Codex report wording
+
+Regression/evidence backing:
+
+- `evals/regression/wrong_repo_proof_boundary.json`
+- `fixtures/pattern_promotion/locked_replay_10_cases.json#locked_wrong_repo_command_boundary`
+- `fixtures/command_evidence/command_evidence_core_cases.json`
+- `tests/commandEvidenceIntelligence.test.ts`
+- `tests/proofStrengthGate.test.ts`
+- `docs/RAX_OPERATING_WINDOW_TODAY_REPORT.md`
+
+The next dashboard recommendation after this reviewed artifact should become `agg_policy_safety_rule`.
