@@ -40,7 +40,7 @@ STAX is strong for Codex/repo project-control:
 - Phase B executable: STAX 7, ChatGPT 0, ties 13
 - zero STAX critical misses in promotion window
 - pattern promotion locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe
-- current operating-window impact imports: 4 bundles, 0 critical misses, full handoff contracts present for 3/4 bundles, proof artifacts requested for 4/4 bundles
+- current operating-window impact imports: 14 bundles, 0 critical misses, full handoff contracts present for 14/14 bundles, proof artifacts requested for 14/14 bundles
 
 ## Implemented Since Current Baseline
 
@@ -58,13 +58,16 @@ STAX is strong for Codex/repo project-control:
 - public sidecar attach flow documentation
 - GitHub-facing hardening audit artifact
 - historical wrong-branch command evidence is ignored only after newer verified same-lane proof exists, with regression coverage
+- visual proof aggregate promotion artifact and dashboard skip coverage
+- proof-boundary aggregate eval candidate and wrong-repo proof-boundary regression
+- policy-safety aggregate policy-patch candidate and publish/sync/deploy/release preflight regression
+- claim extraction guard so release rollback/downgrade framing does not route into the wrong proof lane
 
 ## Current Technical Risks
 
-- doc/report consistency
 - proof-surface matching precision beyond adversarial v1 fixtures
 - real repo observer trial volume
-- more current operating-window task volume is still pending before the 10-task operating-window target is met
+- more current operating-window task volume is useful before any hard-gate rollout, but the 10-task operating-window target has been exceeded
 - attached-repo command-evidence ledgers can still accumulate stale historical records, but same-lane current proof now prevents older wrong-branch records from poisoning the verdict
 - stale attached-repo sidecar status can lag behind the current repo head after later commits
 - unusual-repo proof-surface discovery edge cases

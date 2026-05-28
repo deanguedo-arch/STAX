@@ -2,6 +2,66 @@
 
 Date: 2026-05-28
 
+## Latest Restart Note
+
+Latest verified STAX commit:
+
+```txt
+0343cf4
+```
+
+Commit message:
+
+```txt
+Promote policy safety aggregate
+```
+
+GitHub Actions proof:
+
+```txt
+staxcore-strict: completed / success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26582660188
+```
+
+This supersedes the older `92855f5` baseline named below. The current local checkout is `main` and is aligned with `origin/main` after the policy-safety promotion.
+
+Latest completed sidecar-learning promotion sequence:
+
+```txt
+738f23f Promote visual proof aggregate
+a2591fe Promote proof boundary aggregate
+0343cf4 Promote policy safety aggregate
+```
+
+The STAX sidecar learning dashboard now reports:
+
+```txt
+Promotable aggregate groups: 5
+Reviewed aggregate groups: 5
+Top aggregate recommendation: none
+Recommended next action: review raw pending candidates or close/defer non-promotable items
+```
+
+Current operating-window proof remains:
+
+```txt
+14 imported bundles
+0 critical misses
+14/14 full handoff contracts present
+14/14 proof artifacts requested
+```
+
+Next narrow STAX-only actions, if continuing without touching attached repos:
+
+```txt
+1. Update stale status/handoff/docs surfaces.
+2. Review raw pending sidecar candidates and explicitly defer repo-specific or trace-only observations.
+3. Add additional adversarial proof-surface/claim-extraction cases only when they correspond to observed false positives or false negatives.
+4. Prepare attached-repo export/import handoff for the workstation that owns the live repos.
+```
+
+Do not run Canvas Helper sidecar upgrade/gate while the user is actively editing Canvas Helper in another terminal unless explicitly asked.
+
 ## Current Workstream
 
 Continue the STAX rollout from the current pushed `main` state.
