@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "stax-impact-evidence-bundle-v1",
+  "generatedAt": "2026-05-28T04:09:25.426Z",
+  "repo": {
+    "path": "/Users/deanguedo/Documents/GitHub/studentbudgetwars",
+    "name": "studentbudgetwars",
+    "branch": "main",
+    "head": "1a40f96f06cab0dca43ccf7b6ca85f31ba2d9758",
+    "dirtyStatus": ""
+  },
+  "stax": {
+    "commit": "c273432eecb18983871b98527d44730c7697b5fa",
+    "sidecarProtocolVersion": "stax-project-control-protocol-v1"
+  },
+  "task": "Decide whether to keep the STAX sidecar attach in studentbudgetwars and record only scoped observer proof for the current local workstation.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-28T04:08:43.238Z\",\n  \"repo\": \"studentbudgetwars\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/studentbudgetwars\",\n  \"branch\": \"main\",\n  \"commitSha\": \"cbb4b5d2a75d2d18d5d3cb6077a03f43ac385cdc\",\n  \"task\": \"Decide whether to keep the STAX sidecar attach in studentbudgetwars and record only scoped observer proof for the current local workstation.\",\n  \"verdict\": \"Accept\",\n  \"exitCode\": 0,\n  \"why\": \"Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"verified\": [\n    \"No working-tree diff is currently present.\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Command evidence classifier: strong_local_proof for /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T04_07_34_167Z_b55449e133db.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T04_07_34_167Z_b55449e133db matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T04_07_28_205Z_80131546b1e0.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T04_07_28_205Z_80131546b1e0 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T04_07_21_625Z_8cc4d3b70006.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T04_07_21_625Z_8cc4d3b70006 matches the current auditable worktree.\",\n    \"Historical command evidence ignored for current proof because /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q -k not status_bar_trims_primary_score_category_bars_from_top_band is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q is wrong_commit.\",\n    \"Historical command evidence ignored for current proof because python3 -m compileall -q src tests tools is wrong_commit.\",\n    \"Earlier failed command evidence exists but is superseded by a later passing /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band run.\",\n    \"Earlier failed command evidence exists but is superseded by a later passing /usr/bin/env PYTHONPATH=src python3 tools/validate_data.py run.\",\n    \"Proof strength: Audit-grade (1) - Available proof is strong enough for this claim type.\",\n    \"Fresh STAX sidecar heartbeat is present (16653ms old).\",\n    \"Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 2237 message(s).\",\n    \"Protocol warning recorded as non-blocking: Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"weak\": [],\n  \"unverified\": [],\n  \"risk\": [],\n  \"oneNextAction\": \"Record the STAX sidecar Accept, keep scope unchanged, and stop. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"codexPrompt\": \"Report the STAX sidecar Accept as proof-gate status only. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness. Keep the scope unchanged, and stop.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"verification_run\",\n    \"claimText\": \"Decide whether to keep the STAX sidecar attach in studentbudgetwars and record only scoped observer proof for the current local workstation.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-28T04-08-15-507Z_2457 79ad20f3 8e270746\\n\\nObjective:\\nKeep the STAX sidecar attach files in studentbudgetwars and record scoped observer proof for the current local workstation.\\n\\nFiles changed:\\n- `.gitignore`\\n- `AGENTS.md`\\n- `.stax/next-codex-prompt.md`\\n- `.stax/prompt-contract.json`\\n- `.stax/proof-surfaces.candidate.json`\\n- `.stax/proof-surfaces.review.md`\\n- `.stax/proof_strength.json`\\n- `.stax/reports/latest-confidence-report.md`\\n- `.stax/reports/latest-proof-report.md`\\n- `.stax/status.json`\\n- No repo source, tests, data, or game content files were changed.\\n\\nTests added:\\n- None.\\n\\nCommands run:\\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars --discover-surfaces`\\n  - exitCode: 0\\n  - result: sidecar protocol and proof-surface candidate refreshed.\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m compileall -q src tests tools`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T04_07_21_625Z_8cc4d3b70006`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python tools/validate_data.py`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T04_07_28_205Z_80131546b1e0`\\n  - output: Data validation passed for the After Grad V2 life-sim build.\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k 'not status_bar_trims_primary_score_category_bars_from_top_band'`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T04_07_34_167Z_b55449e133db`\\n  - output: 377 passed, 1 deselected.\\n- A misquoted rerun of the same narrowed pytest command produced `cmd_2026-05-28T04_03_00_415Z_b55449e133db`, exitCode 4. It is not accepted as proof and was immediately replaced by the correctly quoted passing rerun above.\\n\\nCommand output summary with exit codes:\\n- Sidecar upgrade exited 0.\\n- Python compileall exited 0.\\n- Data validation exited 0.\\n- The scoped non-window pytest command exited 0 with 377 passed and 1 deselected.\\n- The full GUI/windowing suite is not claimed as passing.\\n\\nWhat is verified:\\n- The STAX sidecar attach/update files are present for review and commit.\\n- Python source/test/tool files compile under the local `.venv` interpreter.\\n- Data validation passed through STAX-collected evidence.\\n- Scoped non-window pytest proof passed through STAX-collected evidence.\\n\\nWhat is weak/provisional:\\n- Candidate proof surfaces are not approved.\\n- Desktop windowing proof remains environment-limited on this workstation.\\n- Earlier failed full-suite/windowing evidence remains historical cleanup context and is not claimed as passing.\\n\\nWhat is unverified:\\n- I do not claim full-suite pass.\\n- I do not claim desktop windowing pass.\\n- I do not claim gameplay balance correctness, packaging readiness, or release readiness.\\n\\nRisks:\\n- Do not treat the narrowed test command as full-suite proof.\\n- Do not treat candidate proof surfaces as approved local policy until they are explicitly approved.\\n\\nOne next action:\\nRun the studentbudgetwars sidecar gate. If it remains cleanup-needed because full GUI/windowing proof is unavailable locally, commit only the sidecar attach files as observer setup and record the remaining proof gap honestly.\",\n    \"rawScore\": 1,\n    \"finalScore\": 1,\n    \"label\": \"Audit-grade\",\n    \"capApplied\": [],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"Available proof is strong enough for this claim type.\",\n    \"missingProof\": [],\n    \"weakProof\": [\n      \"Weak command claim: npm run stax:sidecar-upgrade -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: tools/validate_data.py.\",\n      \"Grounded file_path claim: tests/test_desktop_windowing.py.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Local STAX command evidence passed: /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band exited 0.\",\n      \"Local STAX command evidence passed: /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python tools/validate_data.py exited 0.\",\n      \"Local STAX command evidence passed: /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m compileall -q src tests tools exited 0.\",\n      \"Verified local STAX command provenance is present for this repo state.\",\n      \"Repo evidence enumerated source files.\",\n      \"Repo evidence enumerated test files.\"\n    ],\n    \"oneNextAction\": \"No proof-strength correction is needed for this claim.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-28T04:08:43.237Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-28T04-08-15-507Z_2457 79ad20f3 8e270746\",\n    \"contractTurnId\": \"turn_2026-05-28T04-08-15-507Z_2457\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-28T04-08-15-507Z_2457 79ad20f3 8e270746\n\nObjective:\nKeep the STAX sidecar attach files in studentbudgetwars and record scoped observer proof for the current local workstation.\n\nFiles changed:\n- `.gitignore`\n- `AGENTS.md`\n- `.stax/next-codex-prompt.md`\n- `.stax/prompt-contract.json`\n- `.stax/proof-surfaces.candidate.json`\n- `.stax/proof-surfaces.review.md`\n- `.stax/proof_strength.json`\n- `.stax/reports/latest-confidence-report.md`\n- `.stax/reports/latest-proof-report.md`\n- `.stax/status.json`\n- No repo source, tests, data, or game content files were changed.\n\nTests added:\n- None.\n\nCommands run:\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars --discover-surfaces`\n  - exitCode: 0\n  - result: sidecar protocol and proof-surface candidate refreshed.\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m compileall -q src tests tools`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T04_07_21_625Z_8cc4d3b70006`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python tools/validate_data.py`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T04_07_28_205Z_80131546b1e0`\n  - output: Data validation passed for the After Grad V2 life-sim build.\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/studentbudgetwars -- /Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k 'not status_bar_trims_primary_score_category_bars_from_top_band'`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T04_07_34_167Z_b55449e133db`\n  - output: 377 passed, 1 deselected.\n- A misquoted rerun of the same narrowed pytest command produced `cmd_2026-05-28T04_03_00_415Z_b55449e133db`, exitCode 4. It is not accepted as proof and was immediately replaced by the correctly quoted passing rerun above.\n\nCommand output summary with exit codes:\n- Sidecar upgrade exited 0.\n- Python compileall exited 0.\n- Data validation exited 0.\n- The scoped non-window pytest command exited 0 with 377 passed and 1 deselected.\n- The full GUI/windowing suite is not claimed as passing.\n\nWhat is verified:\n- The STAX sidecar attach/update files are present for review and commit.\n- Python source/test/tool files compile under the local `.venv` interpreter.\n- Data validation passed through STAX-collected evidence.\n- Scoped non-window pytest proof passed through STAX-collected evidence.\n\nWhat is weak/provisional:\n- Candidate proof surfaces are not approved.\n- Desktop windowing proof remains environment-limited on this workstation.\n- Earlier failed full-suite/windowing evidence remains historical cleanup context and is not claimed as passing.\n\nWhat is unverified:\n- I do not claim full-suite pass.\n- I do not claim desktop windowing pass.\n- I do not claim gameplay balance correctness, packaging readiness, or release readiness.\n\nRisks:\n- Do not treat the narrowed test command as full-suite proof.\n- Do not treat candidate proof surfaces as approved local policy until they are explicitly approved.\n\nOne next action:\nRun the studentbudgetwars sidecar gate. If it remains cleanup-needed because full GUI/windowing proof is unavailable locally, commit only the sidecar attach files as observer setup and record the remaining proof gap honestly.\n\n<!-- STAX:proof-strength:start -->\n## STAX Proof Strength\n\nGenerated by `stax gate`; this is STAX audit output, not a Codex completion claim.\n\n- Claim Type: verification_run\n- Label: Audit-grade\n- Raw Score: 1\n- Final Score: 1\n- Caps Applied: none\n- Primary Limiter: Available proof is strong enough for this claim type.\n- Next Proof Action: No proof-strength correction is needed for this claim.\n- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\n- Proof report: .stax/reports/latest-proof-report.md\n- Artifact: .stax/proof_strength.json\n- Confidence Report: .stax/reports/latest-confidence-report.md\n<!-- STAX:proof-strength:end -->\n",
+  "commandEvidence": [
+    {
+      "evidenceId": "cmd_2026-05-27T22_49_10_670Z_eea3d950a9e8",
+      "command": "python3 tools/validate_data.py",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "f716ad958b3aa190472f6d1e3f695b3fb885b8db3b166398db9a0cf307fccc00",
+      "recordedAt": "2026-05-27T22:49:10.688Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T22_49_27_888Z_15dc6320621a",
+      "command": "/usr/bin/env PYTHONPATH=src python3 tools/validate_data.py",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "069583db8c52971a409c47e8d7eb74fdc3376c2e0388617e16abc1c8d6dde381",
+      "recordedAt": "2026-05-27T22:49:27.920Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T22_49_44_479Z_ec9227fc3b0e",
+      "command": "python3 -m compileall -q src tests tools",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "2d5d9ecef09e40a78e417a0664958e91575ef383483035262ecd069fb66effca",
+      "recordedAt": "2026-05-27T22:49:44.628Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T01_53_23_596Z_39d6b5ed630e",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "5aad1c7ff83f15617a4da8086162f135b198578492c0362aaafea31acb63bb09",
+      "recordedAt": "2026-05-28T01:53:34.113Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T01_54_07_906Z_ba3ee91e844c",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q -k not status_bar_trims_primary_score_category_bars_from_top_band",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "9d5114fa84a0bf9125d0943b9f028893651b3a507cc5e6329fa19107773b814f",
+      "recordedAt": "2026-05-28T01:54:11.005Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T02_11_04_173Z_b55449e133db",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "7861497b0acfc69db90f41d94ae7db922b4b258233fae7d2dc3d5396ee4f1b61",
+      "recordedAt": "2026-05-28T02:11:07.676Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T02_11_41_035Z_80131546b1e0",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python tools/validate_data.py",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "eed25783c55eaedb9aab7b9705878c767cc44cc5d7d22666b02ed6fe291c5b52",
+      "recordedAt": "2026-05-28T02:11:41.189Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_02_33_594Z_8cc4d3b70006",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m compileall -q src tests tools",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "f965b84eb5567750edbf56c25ac102428cffc5ecc913a8275a7ed5914a6b4bd4",
+      "recordedAt": "2026-05-28T04:02:33.759Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_02_48_074Z_80131546b1e0",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python tools/validate_data.py",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "6fdd600524d5e5f7a12208489ebf0c34066e7d0b9627cfd2d9bbf3b788385331",
+      "recordedAt": "2026-05-28T04:02:48.542Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_03_00_415Z_b55449e133db",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band",
+      "exitCode": 4,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "f2d106c3fc4f3844eedd147fd4c44961ded98d1b5833974bd1577bf88d245849",
+      "recordedAt": "2026-05-28T04:03:00.741Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_03_21_866Z_b55449e133db",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "cedf1dde96f4b4217c7e110ba4948a223231e66f28609471288943ab22d123a5",
+      "canonicalEvidenceHash": "2aac9a0c497abc398a08b6ed9faa8d685ad322644ced38cce8287dacb0c47394",
+      "recordedAt": "2026-05-28T04:03:24.801Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_07_21_625Z_8cc4d3b70006",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m compileall -q src tests tools",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33d2c0530f09e94b0d180a4bf94da3a52d7def0e637ac28436a9097293eb4d96",
+      "canonicalEvidenceHash": "1c1907180c307b0858022d3bfe6b5385bcc18a90e61d1aac795a55ad83b4551d",
+      "recordedAt": "2026-05-28T04:07:21.678Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_07_28_205Z_80131546b1e0",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python tools/validate_data.py",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33d2c0530f09e94b0d180a4bf94da3a52d7def0e637ac28436a9097293eb4d96",
+      "canonicalEvidenceHash": "41a90a9e19a140d3dfa90baf3bfcfd7090e446ce7aec42d44917f0e15bdfaa16",
+      "recordedAt": "2026-05-28T04:07:28.374Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T04_07_34_167Z_b55449e133db",
+      "command": "/Users/deanguedo/Documents/GitHub/studentbudgetwars/.venv/bin/python -m pytest -q --ignore=tests/test_desktop_windowing.py -k not status_bar_trims_primary_score_category_bars_from_top_band",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "33d2c0530f09e94b0d180a4bf94da3a52d7def0e637ac28436a9097293eb4d96",
+      "canonicalEvidenceHash": "5a37a60b427b131f1c2a158dee18c49630d027e81428b129af93f8bd43e82e92",
+      "recordedAt": "2026-05-28T04:07:37.097Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "status",
+      "path": ".stax/status.json",
+      "hash": "667e3ce99121f21ec5b3f206f85b0a2be1a6579eaca4d1aab9d5acab60929e5d",
+      "summary": "status.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof_strength.json",
+      "hash": "e468c8709aa8b7cdbffd13b3ed18333eb2ca9807e855796e33542af86c8a6bd1",
+      "summary": "proof_strength.json present"
+    },
+    {
+      "kind": "next_prompt",
+      "path": ".stax/next-codex-prompt.md",
+      "hash": "9b0fadc3c518763dfb5409fa111d986ed4c8c934b02e8066f2b1bb5b145be6a7",
+      "summary": "next-codex-prompt.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/reports/latest-proof-report.md",
+      "hash": "1511fbc9826c27836a2cead49207f4f505b9d3a1c9d9914d17ea92160ccbaebc",
+      "summary": "reports/latest-proof-report.md present"
+    },
+    {
+      "kind": "sidecar_artifact",
+      "path": ".stax/reports/latest-confidence-report.md",
+      "hash": "b7c0e60780979c68a0694a31975400d0c955aa79c0281ab821159878efaa92c2",
+      "summary": "reports/latest-confidence-report.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.candidate.json",
+      "hash": "dfe7b07dcf0716be21bfdf4593b8609938cfda9f40cd49b2c59826fb5c8fc489",
+      "summary": "proof-surfaces.candidate.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.review.md",
+      "hash": "1bd9529072742f16c0f5cda9f6b78313186c93d6591df22f58ac65686d43d865",
+      "summary": "proof-surfaces.review.md present"
+    }
+  ],
+  "criticalMiss": false,
+  "cleanupPromptNeeded": true,
+  "fullHandoffContractPresent": true,
+  "proofArtifactRequested": true
+}

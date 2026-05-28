@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-28T03:44:56.356Z
+Generated: 2026-05-28T04:09:40.745Z
 
 ## Claim Separation
 
@@ -46,7 +46,7 @@ Cleanup prompts needed: 9/10
 - canvas-helper: improved; commands=87; artifacts=9; failures: none
 - canvas-helper: improved; commands=91; artifacts=9; failures: none
 - brightspacequizexporter: improved; commands=14; artifacts=7; failures: none
-- studentbudgetwars: improved; commands=3; artifacts=7; failures: none
+- studentbudgetwars: improved; commands=14; artifacts=7; failures: none
 
 ## Boundary
 
