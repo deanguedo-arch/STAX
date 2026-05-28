@@ -102,6 +102,8 @@ describe("EvidenceGroundingGate", () => {
     const result = new EvidenceGroundingGate().evaluate({
       output: [
         "Live fetch https://forensics25.web.app/main.js passed.",
+        "Hosted image https://storage.googleapis.com/course-assets/unit/hero.png loaded.",
+        "Reference link https://upload.wikimedia.org/wikipedia/commons/a/aa/example.svg is external.",
         "Weak notes mention workspace/export, proof/protocol, and behavior/source/release.",
         "The real changed file is src/index.ts."
       ].join("\n"),
@@ -111,6 +113,8 @@ describe("EvidenceGroundingGate", () => {
     expect(result.claims.filter((claim) => claim.kind === "file_path").map((claim) => claim.text)).toEqual(["src/index.ts"]);
     expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("workspace/export");
     expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("forensics25.web.app/main.js");
+    expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("storage.googleapis.com/course-assets/unit/hero.png");
+    expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("upload.wikimedia.org/wikipedia/commons/a/aa/example.svg");
   });
 });
 
