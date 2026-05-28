@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "stax-impact-evidence-bundle-v1",
+  "generatedAt": "2026-05-28T12:14:23.323Z",
+  "repo": {
+    "path": "/Users/deanguedo/Documents/GitHub/brightspacequizexporter",
+    "name": "brightspacequizexporter",
+    "branch": "main",
+    "head": "dc3635ff79b346035f5e179a0c8a6a06fbe74359",
+    "dirtyStatus": " M .stax/proof-surfaces.candidate.json\n M .stax/proof_strength.json\n M .stax/reports/latest-confidence-report.md\n M .stax/reports/latest-proof-report.md\n M .stax/status.json"
+  },
+  "stax": {
+    "commit": "6418a4d82d2da120bfe822bed87f4cffad7f7c47",
+    "sidecarProtocolVersion": "stax-project-control-protocol-v1"
+  },
+  "task": "Run the Brightspace exporter against the Forensics 25 in-repo source PDF and capture STAX command proof.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-28T12:14:16.462Z\",\n  \"repo\": \"brightspacequizexporter\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/brightspacequizexporter\",\n  \"branch\": \"main\",\n  \"commitSha\": \"dc3635ff79b346035f5e179a0c8a6a06fbe74359\",\n  \"task\": \"Run the Brightspace exporter against the Forensics 25 in-repo source PDF and capture STAX command proof.\",\n  \"verdict\": \"Accept\",\n  \"exitCode\": 0,\n  \"why\": \"Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"verified\": [\n    \"No working-tree diff is currently present.\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Command evidence classifier: strong_local_proof for npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T12_13_13_756Z_68d10f27e54c.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T12_13_13_756Z_68d10f27e54c matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T12_12_13_099Z_d71165c624a9.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T12_12_13_099Z_d71165c624a9 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2 matches the current auditable worktree.\",\n    \"Historical command evidence ignored for current proof because npm run brightspaceexport -- convert fixtures/benchmarks/sources/FINAL EXAM FORENSICS 25.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms is wrong_branch.\",\n    \"Earlier failed command evidence exists but is superseded by a later passing npm run ingest:ci run.\",\n    \"Proof strength: Audit-grade (1) - Available proof is strong enough for this claim type.\",\n    \"Fresh STAX sidecar heartbeat is present (11521ms old).\",\n    \"Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 2325 message(s).\",\n    \"Protocol warning recorded as non-blocking: Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"weak\": [],\n  \"unverified\": [],\n  \"risk\": [],\n  \"oneNextAction\": \"Record the STAX sidecar Accept, keep scope unchanged, and stop. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"codexPrompt\": \"Report the STAX sidecar Accept as proof-gate status only. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness. Keep the scope unchanged, and stop.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"verification_run\",\n    \"claimText\": \"Run the Brightspace exporter against the Forensics 25 in-repo source PDF and capture STAX command proof.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-28T12-13-57-501Z_8572 055c73a8 8e270746\\n\\nObjective:\\nRefresh Brightspace current-main sidecar report/status, repair the ingest promotion failure exposed by the sidecar proof run, and recollect local Forensics 25 export proof without running publish, sync, deploy, or Google Forms send commands.\\n\\nFiles changed:\\n- Generated `.stax` sidecar status/proof files were refreshed.\\n- `.stax/proof-surfaces.candidate.json` remains modified by sidecar proof-surface discovery.\\n- New STAX command-evidence pointers were written under `.stax/command-evidence/`.\\n- `scripts/ingest-promotion-check.mjs` now runs manual gold fixture evaluations under separate Vitest invocations.\\n- `src/test/unit/scripts/ingestPromotionCheckScript.test.ts` adds regression coverage for the isolated manual benchmark runner.\\n\\nTests added:\\n- `src/test/unit/scripts/ingestPromotionCheckScript.test.ts`\\n\\nCommands run:\\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter`\\n  - exitCode: 0\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter -- npm run build`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter -- npm run ingest:ci`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T12_12_13_099Z_d71165c624a9`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter -- npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T12_13_13_756Z_68d10f27e54c`\\n\\nCommand output summary with exit codes:\\n- STAX sidecar refresh exited 0 and refreshed the heartbeat/current-turn capture.\\n- Fresh STAX-collected `npm run build` exited 0 on `main` at `dc3635ff79b346035f5e179a0c8a6a06fbe74359`.\\n- A targeted regression test for the promotion-check script exited 0.\\n- Fresh STAX-collected `npm run ingest:ci` exited 0 on `main` at `dc3635ff79b346035f5e179a0c8a6a06fbe74359` after manual gold fixture evaluations were isolated by fixture.\\n- Fresh STAX-collected Forensics 25 MS Forms export exited 0 on `main` at `dc3635ff79b346035f5e179a0c8a6a06fbe74359`.\\n\\nWhat is verified:\\n- Brightspace local `main` and `origin/main` are aligned at `dc3635ff79b346035f5e179a0c8a6a06fbe74359`.\\n- Current-worktree command evidence exists for build, ingest:ci, and the Forensics 25 export command after sidecar proof-surface discovery.\\n- The AP35 OCR-heavy fixture failure was reproduced and the promotion-check runner now isolates manual gold fixture evaluations rather than running all frozen manifests in one shared Vitest invocation.\\n- No live Google Forms send, Brightspace upload, deploy, publish, or sync command was run.\\n\\nWhat is weak/provisional:\\n- The sidecar proof-surface candidate is still candidate-only until approved.\\n- One pre-existing untracked relevant file remains in the auditable worktree fingerprint; it was stable during this proof run and is not part of this task.\\n- Generated package contents still need human review before classroom use.\\n\\nWhat is unverified:\\n- No Brightspace LMS import acceptance was checked.\\n- No Google Forms send command was run.\\n- No item-by-item human review of the generated DOCX package was performed.\\n\\nRisks:\\n- Do not treat the local export package as final classroom import proof.\\n- Do not treat `ingest:seed-gold` or fixture updates as repair proof.\\n- Do not run Google Forms send, deploy, publish, or sync commands without explicit approval and preflight proof.\\n\\nOne next action:\\nRun the Brightspace sidecar gate and export/import the refreshed bundle into STAX if the gate reaches the expected current-proof state. Do not run Google Forms send, deploy, publish, or sync without explicit approval.\",\n    \"rawScore\": 1,\n    \"finalScore\": 1,\n    \"label\": \"Audit-grade\",\n    \"capApplied\": [],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"Available proof is strong enough for this claim type.\",\n    \"missingProof\": [],\n    \"weakProof\": [\n      \"Weak command claim: npm run stax:sidecar:refresh -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: scripts/ingest-promotion-check.mjs.\",\n      \"Grounded file_path claim: src/test/unit/scripts/ingestPromotionCheckScript.test.ts.\",\n      \"Grounded file_path claim: tmp/stax-brightspace-export-run/source/forensics25-final.pdf.\",\n      \"Grounded command claim: npm run build.\",\n      \"Grounded command claim: npm run ingest:ci.\",\n      \"Grounded command claim: npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Local STAX command evidence passed: npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean exited 0.\",\n      \"Local STAX command evidence passed: npm run ingest:ci exited 0.\",\n      \"Local STAX command evidence passed: npm run build exited 0.\",\n      \"Verified local STAX command provenance is present for this repo state.\",\n      \"Repo evidence enumerated source files.\",\n      \"Release preflight proof was supplied.\"\n    ],\n    \"oneNextAction\": \"No proof-strength correction is needed for this claim.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-28T12:14:16.460Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-28T12-13-57-501Z_8572 055c73a8 8e270746\",\n    \"contractTurnId\": \"turn_2026-05-28T12-13-57-501Z_8572\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-28T12-13-57-501Z_8572 055c73a8 8e270746\n\nObjective:\nRefresh Brightspace current-main sidecar report/status, repair the ingest promotion failure exposed by the sidecar proof run, and recollect local Forensics 25 export proof without running publish, sync, deploy, or Google Forms send commands.\n\nFiles changed:\n- Generated `.stax` sidecar status/proof files were refreshed.\n- `.stax/proof-surfaces.candidate.json` remains modified by sidecar proof-surface discovery.\n- New STAX command-evidence pointers were written under `.stax/command-evidence/`.\n- `scripts/ingest-promotion-check.mjs` now runs manual gold fixture evaluations under separate Vitest invocations.\n- `src/test/unit/scripts/ingestPromotionCheckScript.test.ts` adds regression coverage for the isolated manual benchmark runner.\n\nTests added:\n- `src/test/unit/scripts/ingestPromotionCheckScript.test.ts`\n\nCommands run:\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter`\n  - exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter -- npm run build`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter -- npm run ingest:ci`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_12_13_099Z_d71165c624a9`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/brightspacequizexporter -- npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_13_13_756Z_68d10f27e54c`\n\nCommand output summary with exit codes:\n- STAX sidecar refresh exited 0 and refreshed the heartbeat/current-turn capture.\n- Fresh STAX-collected `npm run build` exited 0 on `main` at `dc3635ff79b346035f5e179a0c8a6a06fbe74359`.\n- A targeted regression test for the promotion-check script exited 0.\n- Fresh STAX-collected `npm run ingest:ci` exited 0 on `main` at `dc3635ff79b346035f5e179a0c8a6a06fbe74359` after manual gold fixture evaluations were isolated by fixture.\n- Fresh STAX-collected Forensics 25 MS Forms export exited 0 on `main` at `dc3635ff79b346035f5e179a0c8a6a06fbe74359`.\n\nWhat is verified:\n- Brightspace local `main` and `origin/main` are aligned at `dc3635ff79b346035f5e179a0c8a6a06fbe74359`.\n- Current-worktree command evidence exists for build, ingest:ci, and the Forensics 25 export command after sidecar proof-surface discovery.\n- The AP35 OCR-heavy fixture failure was reproduced and the promotion-check runner now isolates manual gold fixture evaluations rather than running all frozen manifests in one shared Vitest invocation.\n- No live Google Forms send, Brightspace upload, deploy, publish, or sync command was run.\n\nWhat is weak/provisional:\n- The sidecar proof-surface candidate is still candidate-only until approved.\n- One pre-existing untracked relevant file remains in the auditable worktree fingerprint; it was stable during this proof run and is not part of this task.\n- Generated package contents still need human review before classroom use.\n\nWhat is unverified:\n- No Brightspace LMS import acceptance was checked.\n- No Google Forms send command was run.\n- No item-by-item human review of the generated DOCX package was performed.\n\nRisks:\n- Do not treat the local export package as final classroom import proof.\n- Do not treat `ingest:seed-gold` or fixture updates as repair proof.\n- Do not run Google Forms send, deploy, publish, or sync commands without explicit approval and preflight proof.\n\nOne next action:\nRun the Brightspace sidecar gate and export/import the refreshed bundle into STAX if the gate reaches the expected current-proof state. Do not run Google Forms send, deploy, publish, or sync without explicit approval.\n\n<!-- STAX:proof-strength:start -->\n## STAX Proof Strength\n\nGenerated by `stax gate`; this is STAX audit output, not a Codex completion claim.\n\n- Claim Type: verification_run\n- Label: Audit-grade\n- Raw Score: 1\n- Final Score: 1\n- Caps Applied: none\n- Primary Limiter: Available proof is strong enough for this claim type.\n- Next Proof Action: No proof-strength correction is needed for this claim.\n- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\n- Proof report: .stax/reports/latest-proof-report.md\n- Artifact: .stax/proof_strength.json\n- Confidence Report: .stax/reports/latest-confidence-report.md\n<!-- STAX:proof-strength:end -->\n",
+  "commandEvidence": [
+    {
+      "evidenceId": "cmd_2026-05-11T16_48_26_074Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b8a4ad3fadb7843289ed29a87b544ee4661f26e830f2c63b55f3e0a92fcfc87b",
+      "canonicalEvidenceHash": "7e0eb26fff62e3c43f13fcc224efa42fcf3d56c6da1efacdb35b5aeaedf3924b",
+      "recordedAt": "2026-05-11T16:48:58.277Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-11T16_50_26_678Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b8a4ad3fadb7843289ed29a87b544ee4661f26e830f2c63b55f3e0a92fcfc87b",
+      "canonicalEvidenceHash": "5decda9f35f0633b3f66a27c16c1dea05009704c65175f49e4e05f2e12b70694",
+      "recordedAt": "2026-05-11T16:50:29.594Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-11T19_18_16_546Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "927f0e8dd8ffd4a988410787130b89f35d029d242bc62967853186384eb3522c",
+      "canonicalEvidenceHash": "fbe321f01d4aef79458ed56f77edadb9de43ef63522677ddee88a3277bdd7067",
+      "recordedAt": "2026-05-11T19:18:19.463Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-11T19_20_09_983Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "280aeb0b2c8be6613749e6100d78b0c197b04fd7cfb9cb0f5d0a6d3524b12ea5",
+      "canonicalEvidenceHash": "8241a8ddc7b646d15b2b9c634eddb1339a29882571178805ef4de5c15d84c25c",
+      "recordedAt": "2026-05-11T19:20:12.987Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-11T19_21_06_776Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0bbbeb0b172ef5f1cca6641bd8413d001e5855387b14654555bcba63a88ff517",
+      "canonicalEvidenceHash": "850c9ba81049a7ee919d8058236c452ff683325099fb1379b30f707483c57c65",
+      "recordedAt": "2026-05-11T19:21:09.710Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-11T19_21_14_245Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0bbbeb0b172ef5f1cca6641bd8413d001e5855387b14654555bcba63a88ff517",
+      "canonicalEvidenceHash": "be2a2869be6436633c4e486ad7f39e730fca459da44b3430b5c548d897d3eb0e",
+      "recordedAt": "2026-05-11T19:21:47.578Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-11T20_19_52_909Z_68d10f27e54c",
+      "command": "npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0bbbeb0b172ef5f1cca6641bd8413d001e5855387b14654555bcba63a88ff517",
+      "canonicalEvidenceHash": "5f4af990d172d797e1e658e9a56574fac1f0f921055aed810dade2bf23cd9054",
+      "recordedAt": "2026-05-11T20:19:53.666Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_33_16_974Z_68d10f27e54c",
+      "command": "npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "1a1acabab9e8fadd6f2f6ee0223747216ed2e69886e3c7b02c4fca53afceb244",
+      "canonicalEvidenceHash": "c66d275c0ded659600b33da7ec09019ad63538d157d81e1a50967f00d5b0ecb5",
+      "recordedAt": "2026-05-27T19:33:17.863Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_58_34_184Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0ad2371b3215d901a2c53d81376f7eea6a579afb352388cbf73eadedc44b9fe5",
+      "canonicalEvidenceHash": "8b68891ceecd0bad3293737fab3ced7e3239984a28068946c0452536b1ece279",
+      "recordedAt": "2026-05-27T19:58:37.123Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_58_47_937Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0ad2371b3215d901a2c53d81376f7eea6a579afb352388cbf73eadedc44b9fe5",
+      "canonicalEvidenceHash": "6fd75ac70a91898f17ae720d3d573298395848f48c1be1c2b3ec79f5bf01e120",
+      "recordedAt": "2026-05-27T19:59:20.516Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_59_29_545Z_68d10f27e54c",
+      "command": "npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0ad2371b3215d901a2c53d81376f7eea6a579afb352388cbf73eadedc44b9fe5",
+      "canonicalEvidenceHash": "ba489a6f3b1ca9985accdd98d1d9b8b5bc0eba4f36c2b8fbe9812df705e43d41",
+      "recordedAt": "2026-05-27T19:59:30.254Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_06_33_515Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a3a3939416dcf002900c2e106f70cbf391c1b3a4719f65fc719d7aa79fb4bc31",
+      "canonicalEvidenceHash": "fd58a58a65f36a04d8d4fbc247ed4c3b3053bc18d6885b81b0ac5b040f00bb2f",
+      "recordedAt": "2026-05-28T00:06:36.334Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_06_45_326Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a3a3939416dcf002900c2e106f70cbf391c1b3a4719f65fc719d7aa79fb4bc31",
+      "canonicalEvidenceHash": "4a8dbd43f6ee91bbe012741a9e48dca9fb8e992eb2e317a28ed72bbde9fbecbc",
+      "recordedAt": "2026-05-28T00:07:36.221Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_07_57_221Z_68d10f27e54c",
+      "command": "npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a3a3939416dcf002900c2e106f70cbf391c1b3a4719f65fc719d7aa79fb4bc31",
+      "canonicalEvidenceHash": "741b86d723e8d0c618a032ca8c495c004147f7bf7222207452972639410a18ff",
+      "recordedAt": "2026-05-28T00:07:57.893Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T10_00_45_091Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "9ec3e8b30877e7941ab072ce0ac7692e74be584b8dceab97b466d4d39e0bd130",
+      "canonicalEvidenceHash": "18f87675d97fa76242363a5ce542039d9b3c1cabe2201d44d1a2f430d146d10a",
+      "recordedAt": "2026-05-28T10:00:49.942Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T10_16_29_966Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "9ec3e8b30877e7941ab072ce0ac7692e74be584b8dceab97b466d4d39e0bd130",
+      "canonicalEvidenceHash": "01e47b6c04c72c42a09e2345f0dbc7540f888dc603d25f20d8a888836e9fe672",
+      "recordedAt": "2026-05-28T10:35:00.337Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T11_56_59_252Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7693fc7825b7d20508ebdd97375564a1443d9461905d5272d03376f300ceb653",
+      "canonicalEvidenceHash": "a2c9a1c0a11f8951a5b3594a4491b7a9fc7d8b017541dd586218486aad17f7cb",
+      "recordedAt": "2026-05-28T11:57:02.125Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T11_57_08_133Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7693fc7825b7d20508ebdd97375564a1443d9461905d5272d03376f300ceb653",
+      "canonicalEvidenceHash": "68653c2fd8fb400250e3f217e924eea717bd9dfb21cdd4a134a8dce5c43a045f",
+      "recordedAt": "2026-05-28T11:57:55.160Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T11_58_16_575Z_68d10f27e54c",
+      "command": "npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "7693fc7825b7d20508ebdd97375564a1443d9461905d5272d03376f300ceb653",
+      "canonicalEvidenceHash": "3caa3321d5bb65abaefb628564385c67958a030d592c43df38fc019650842ed4",
+      "recordedAt": "2026-05-28T11:58:17.284Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2",
+      "command": "npm run build",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "9ec3e8b30877e7941ab072ce0ac7692e74be584b8dceab97b466d4d39e0bd130",
+      "canonicalEvidenceHash": "1e8db4efc379f8b42a82e1780e8f55fc48deb1686f62af2511db0a3344f58f0f",
+      "recordedAt": "2026-05-28T12:12:04.929Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T12_12_13_099Z_d71165c624a9",
+      "command": "npm run ingest:ci",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "9ec3e8b30877e7941ab072ce0ac7692e74be584b8dceab97b466d4d39e0bd130",
+      "canonicalEvidenceHash": "c7b5d3e42339cc4a528c18305d28ffd894868c75faae2b164c6187eefe156222",
+      "recordedAt": "2026-05-28T12:13:01.286Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T12_13_13_756Z_68d10f27e54c",
+      "command": "npm run brightspaceexport -- convert tmp/stax-brightspace-export-run/source/forensics25-final.pdf --target msforms --math hybrid --diagram-mode flag --output-dir tmp/stax-brightspace-export-run/forensics25-msforms-clean",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "9ec3e8b30877e7941ab072ce0ac7692e74be584b8dceab97b466d4d39e0bd130",
+      "canonicalEvidenceHash": "9c4f20fbc2caa82b04ddf5856dfc628e5393837984415d1ca33026ff61da863e",
+      "recordedAt": "2026-05-28T12:13:14.480Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "status",
+      "path": ".stax/status.json",
+      "hash": "f2755b306dd5bd80bed11118cc80ad42483d789dba2ae518441510adf9e01c1b",
+      "summary": "status.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof_strength.json",
+      "hash": "d0c092de95869b0a76a863b00a3092b833bcba1cb8a4f8386c7d2104e899615e",
+      "summary": "proof_strength.json present"
+    },
+    {
+      "kind": "next_prompt",
+      "path": ".stax/next-codex-prompt.md",
+      "hash": "9b0fadc3c518763dfb5409fa111d986ed4c8c934b02e8066f2b1bb5b145be6a7",
+      "summary": "next-codex-prompt.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/reports/latest-proof-report.md",
+      "hash": "1ca4e083e5454ca71e6ecfb470156c4b83c09a978b24248553084e002290d47d",
+      "summary": "reports/latest-proof-report.md present"
+    },
+    {
+      "kind": "sidecar_artifact",
+      "path": ".stax/reports/latest-confidence-report.md",
+      "hash": "dd7bba5483d769a792e56a2a11e69122c6357f03f22006e2fd8bbcd6955ee67c",
+      "summary": "reports/latest-confidence-report.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.candidate.json",
+      "hash": "6fd6d0198d94e49318ec502f1f600f8cf506e0ce0120021897d65b49fa066dea",
+      "summary": "proof-surfaces.candidate.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.review.md",
+      "hash": "ae562a2ae09753d70a1c7c367b8c419de37cc5411d3a83a9f71fbac69a3d45db",
+      "summary": "proof-surfaces.review.md present"
+    }
+  ],
+  "criticalMiss": false,
+  "cleanupPromptNeeded": true,
+  "fullHandoffContractPresent": true,
+  "proofArtifactRequested": true
+}

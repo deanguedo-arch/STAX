@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-28T04:45:19.743Z
+Generated: 2026-05-28T12:15:17.138Z
 
 ## Claim Separation
 
@@ -30,23 +30,27 @@ Regressed: 0
 
 ## Current Operating Window Imports
 
-Status: 10 imported bundle(s), 0 critical miss(es)
-Full handoff contracts: 10/10
-Proof artifacts requested: 10/10
-Cleanup prompts needed: 9/10
+Status: 14 imported bundle(s), 0 critical miss(es)
+Full handoff contracts: 14/14
+Proof artifacts requested: 14/14
+Cleanup prompts needed: 13/14
 
 ### Imported Bundles
 
-- STAX: improved; commands=253; artifacts=5; failures: none
 - ADMISSION-APP: improved; commands=3; artifacts=7; failures: none
 - ADMISSION-APP: improved; commands=6; artifacts=7; failures: none
-- canvas-helper: improved; commands=76; artifacts=9; failures: none
-- canvas-helper: improved; commands=76; artifacts=9; failures: none
-- canvas-helper: improved; commands=71; artifacts=9; failures: none
-- canvas-helper: improved; commands=87; artifacts=9; failures: none
-- canvas-helper: improved; commands=91; artifacts=9; failures: none
+- ADMISSION-APP: improved; commands=3; artifacts=7; failures: none
+- STAX: improved; commands=253; artifacts=5; failures: none
+- brightspacequizexporter: improved; commands=22; artifacts=7; failures: none
 - brightspacequizexporter: improved; commands=14; artifacts=7; failures: none
+- canvas-helper: improved; commands=71; artifacts=9; failures: none
+- canvas-helper: improved; commands=76; artifacts=9; failures: none
+- canvas-helper: improved; commands=91; artifacts=9; failures: none
+- canvas-helper: improved; commands=87; artifacts=9; failures: none
+- canvas-helper: improved; commands=83; artifacts=9; failures: none
+- canvas-helper: improved; commands=76; artifacts=9; failures: none
 - studentbudgetwars: improved; commands=14; artifacts=7; failures: none
+- studentbudgetwars: improved; commands=3; artifacts=7; failures: none
 
 ## Boundary
 

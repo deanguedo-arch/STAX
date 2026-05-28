@@ -21,20 +21,20 @@ main
 Latest verified rollout commit:
 
 ```txt
-6850708
+6418a4d
 ```
 
 Commit message:
 
 ```txt
-Import ADMISSION proof and stabilize validation
+Refresh handoff after ADMISSION CI
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26563991531
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26566859092
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md`.
@@ -87,6 +87,16 @@ b1d734d Record Canvas impact evidence import
 
 The latest work:
 
+- Repaired and pushed Brightspacequizexporter `dc3635f Stabilize ingest promotion benchmarks`.
+- The Brightspace fix makes the ingest promotion gate run manual gold fixture evaluations as isolated Vitest invocations, preventing the AP35 OCR-heavy fixture from failing when all frozen manifests share one process.
+- Brightspace pre-push `ingest:ci` passed on `dc3635f`, including 232 focused ingest tests and 22 isolated manual gold fixture evaluations.
+- Recollected Brightspace current-commit STAX command proof after the push:
+  - `cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2`: `npm run build`, exit 0
+  - `cmd_2026-05-28T12_12_13_099Z_d71165c624a9`: `npm run ingest:ci`, exit 0
+  - `cmd_2026-05-28T12_13_13_756Z_68d10f27e54c`: local Forensics 25 MS Forms export, exit 0
+  - Brightspace sidecar gate: `Accept / Audit-grade` on `dc3635ff79b346035f5e179a0c8a6a06fbe74359`
+- Exported the Brightspace impact bundle: `reports/pattern_promotion/attached_repo_exports/brightspacequizexporter-impact-ingest-stabilized-2026-05-28.json`.
+- Rebuilt the pattern-promotion impact report at `2026-05-28T12:15:17.138Z`: locked replay remains 10 cases / 0 critical misses; current operating window is now 14 imported bundles / 0 critical misses / 14 of 14 full handoff contracts / 14 of 14 proof artifacts requested.
 - Imported the refreshed ADMISSION-APP non-mutating page-build observer evidence into the STAX pattern-promotion impact report.
 - Kept the ADMISSION proof boundary narrow: local page build to `/tmp/stax-admission-pages/index.html` only; no live sync, deploy, publish, dataset validation, or visual readiness claim.
 - Fixed a command-evidence classifier false positive where passing `npm run rax -- eval` output was held for human review just because generated eval-case prose mentioned "skipped" tests.
