@@ -68,6 +68,7 @@ STAX is strong for Codex/repo project-control:
 - Canvas course-deploy proof surface now treats external image, remote asset URL, and placeholder-image claims as proof requirements instead of proof by themselves
 - Canvas course-deploy next action now asks for approved/localized images or placeholder removal before trusting the deploy proof surface
 - normal-mode protocol compliance now accepts a current ACK in the Codex report when current-turn capture lags, while strict mode still rejects missing capture ACKs
+- `stax:status` now labels stored status as last-known and reports stale commit/branch or dirty-worktree possible staleness before pointing users to `stax:gate`
 
 ## Current Technical Risks
 
@@ -75,7 +76,7 @@ STAX is strong for Codex/repo project-control:
 - real repo observer trial volume
 - more current operating-window task volume is useful before any hard-gate rollout, but the 10-task operating-window target has been exceeded
 - attached-repo command-evidence ledgers can still accumulate stale historical records, but same-lane current proof now prevents older wrong-branch records from poisoning the verdict
-- stale attached-repo sidecar status can lag behind the current repo head after later commits
+- attached-repo sidecar status can still lag behind current repo state, but `stax:status` now surfaces stale commit/branch and dirty-worktree freshness warnings
 - unusual-repo proof-surface discovery edge cases
 - complexity debt and archived report surface area
 - large runtime, CLI, and session modules that may need focused compression
