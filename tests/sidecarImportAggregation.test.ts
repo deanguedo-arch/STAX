@@ -93,6 +93,49 @@ describe("sidecar import aggregation", () => {
     expect(dashboard.recommendedNextAction).toContain("agg_mode_behavior_rule");
     expect(dashboard.recommendedNextAction).not.toContain("handoff-raw-first");
   });
+
+  it("dashboard skips aggregate groups that already have reviewed promotion artifacts", async () => {
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-dashboard-reviewed-aggregate-"));
+    const pendingDir = path.join(staxRoot, "queues", "sidecar_imports", "pending");
+    const proposalDir = path.join(staxRoot, "learning", "proposals", "mode_contract_patch_candidates");
+    await fs.mkdir(pendingDir, { recursive: true });
+    await fs.mkdir(proposalDir, { recursive: true });
+    const candidates = [
+      candidate("visual-1", "evt-1", "Visual/course behavior claims should require rendered screenshot proof; CSS diffs alone are not enough."),
+      candidate("visual-2", "evt-2", "Visual proof for layout fixes requires rendered evidence, not source diffs alone."),
+      candidate("proof-1", "evt-3", "wrong repo command output must not verify target repo."),
+      candidate("proof-2", "evt-4", "Codex report lacks file list, diff, and command output.")
+    ];
+    for (const item of candidates) {
+      await fs.writeFile(path.join(pendingDir, `${item.candidateId}.json`), `${JSON.stringify(item, null, 2)}\n`, "utf8");
+    }
+    await fs.writeFile(
+      path.join(proposalDir, "agg_mode_behavior_rule.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-reviewed-aggregate-promotion-v1",
+          aggregateId: "agg_mode_behavior_rule",
+          status: "approved_for_promotion"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+
+    const dashboard = await buildSidecarLearningDashboard(staxRoot);
+
+    expect(dashboard.promotableAggregateGroups).toBe(2);
+    expect(dashboard.reviewedAggregateGroups).toBe(1);
+    expect(dashboard.topAggregateRecommendation).toMatchObject({
+      aggregateId: "agg_proof_boundary_rule",
+      classification: "proof_boundary_rule",
+      candidateCount: 2,
+      promotionTarget: "eval"
+    });
+    expect(dashboard.recommendedNextAction).toContain("agg_proof_boundary_rule");
+    expect(dashboard.recommendedNextAction).not.toContain("agg_mode_behavior_rule");
+  });
 });
 
 function candidate(candidateId: string, sourceEventId: string, summary: string): SidecarImportCandidate {

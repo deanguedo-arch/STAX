@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "stax-sidecar-aggregate-promotion-decisions-v1",
+  "generatedAt": "2026-05-28T14:24:35.000Z",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json",
+  "decisions": [
+    {
+      "aggregateId": "agg_mode_behavior_rule",
+      "decision": "promote_narrowly",
+      "queueType": "mode_contract_patch_candidate",
+      "promotionTarget": "mode_contract_patch",
+      "sourceCandidateCount": 2,
+      "artifact": "learning/proposals/mode_contract_patch_candidates/agg_mode_behavior_rule.json",
+      "reason": "Reusable visual/course-behavior proof mode rule is supported by repeated Canvas observations plus existing locked replay and proof-strength regression coverage.",
+      "promoted": [
+        "Visual/layout/course-behavior completion claims require rendered screenshot, browser, or checklist proof.",
+        "Source diffs, CSS diffs, ordinary command output, and prose do not prove visual behavior by themselves.",
+        "Meta-rule text about visual proof requirements is governance text, not a visual completion claim."
+      ],
+      "notPromoted": [
+        "Canvas Helper course names",
+        "local screenshot filenames",
+        "live URLs",
+        "one-off deploy or course task details",
+        "raw Codex report wording"
+      ],
+      "regressionEvidence": [
+        "fixtures/pattern_promotion/locked_replay_10_cases.json#locked_visual_diff_not_visual_proof",
+        "reports/pattern_promotion/pattern-promotion-impact-2026-05-28T12-15-17-138Z.json",
+        "tests/proofStrengthGate.test.ts",
+        "tests/sidecarClaimExtractionPrecision.test.ts",
+        "tests/sidecarImportAggregation.test.ts"
+      ]
+    },
+    {
+      "aggregateId": "agg_proof_boundary_rule",
+      "decision": "next_review",
+      "queueType": "eval_candidate",
+      "promotionTarget": "eval",
+      "reason": "Still needs source-candidate inspection and regression backing before promotion."
+    },
+    {
+      "aggregateId": "agg_policy_safety_rule",
+      "decision": "hold_for_review",
+      "queueType": "policy_patch_candidate",
+      "promotionTarget": "policy_patch",
+      "reason": "Publish/sync/deploy safety rules are high value but should be split into narrow policy candidates with direct regression tests."
+    },
+    {
+      "aggregateId": "agg_schema_contract_rule",
+      "decision": "hold_for_review",
+      "queueType": "schema_patch_candidate",
+      "promotionTarget": "schema_patch",
+      "reason": "A previous schema-contract aggregate was already promoted; this batch should be reconciled with that artifact before adding another."
+    },
+    {
+      "aggregateId": "agg_codex_handoff_rule",
+      "decision": "already_promoted",
+      "queueType": "codex_prompt_candidate",
+      "promotionTarget": "mode_contract_patch",
+      "reason": "The reusable bounded handoff pattern already has a reviewed aggregate promotion artifact."
+    },
+    {
+      "aggregateId": "agg_repo_specific_fact",
+      "decision": "keep_local_trace_only",
+      "queueType": "trace_only",
+      "promotionTarget": "none",
+      "reason": "Repo-specific facts are sidecar evidence, not durable global learning."
+    },
+    {
+      "aggregateId": "agg_trace_fact",
+      "decision": "discard_or_keep_trace_only",
+      "queueType": "trace_only",
+      "promotionTarget": "none",
+      "reason": "One-off observations should not become durable learning."
+    }
+  ]
+}

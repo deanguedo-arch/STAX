@@ -15,6 +15,7 @@ export type SidecarLearningDashboard = {
   repeatedPatterns: Array<{ patternId: string; count: number }>;
   aggregateGroups: number;
   promotableAggregateGroups: number;
+  reviewedAggregateGroups: number;
   topAggregateRecommendation?: {
     aggregateId: string;
     classification: SidecarImportAggregate["classification"];
@@ -57,7 +58,11 @@ export async function buildSidecarLearningDashboard(staxRoot = process.cwd()): P
     .sort((a, b) => b.count - a.count);
   const aggregates = aggregateSidecarImportCandidates(pending);
   const promotableAggregates = aggregates.filter((aggregate) => aggregate.promotable);
-  const topAggregate = chooseTopAggregateRecommendation(promotableAggregates);
+  const reviewedAggregateIds = await findReviewedAggregateIds(staxRoot, promotableAggregates);
+  const unreviewedPromotableAggregates = promotableAggregates.filter(
+    (aggregate) => !reviewedAggregateIds.has(aggregate.aggregateId)
+  );
+  const topAggregate = chooseTopAggregateRecommendation(unreviewedPromotableAggregates);
 
   return {
     pending: pending.length,
@@ -70,6 +75,7 @@ export async function buildSidecarLearningDashboard(staxRoot = process.cwd()): P
     repeatedPatterns,
     aggregateGroups: aggregates.length,
     promotableAggregateGroups: promotableAggregates.length,
+    reviewedAggregateGroups: reviewedAggregateIds.size,
     topAggregateRecommendation: topAggregate
       ? {
           aggregateId: topAggregate.aggregateId,
@@ -83,11 +89,13 @@ export async function buildSidecarLearningDashboard(staxRoot = process.cwd()): P
       : undefined,
     recommendedNextAction: topAggregate
       ? `Review aggregate ${topAggregate.aggregateId} (${topAggregate.classification}, ${topAggregate.candidateCount} candidates) for ${topAggregate.promotionTarget}; add or confirm the regression eval before promotion.`
-      : pending[0]?.candidateType === "none"
-        ? "Review pending sidecar candidates and reject or defer non-promotable items."
-        : pending[0]
-          ? `Review ${pending[0].candidateId} for ${pending[0].candidateType} promotion.`
-          : "No pending sidecar learning action."
+      : reviewedAggregateIds.size > 0 && promotableAggregates.length === reviewedAggregateIds.size
+        ? "All promotable aggregate groups have reviewed promotion artifacts; review raw pending candidates or close/defer non-promotable items."
+        : pending[0]?.candidateType === "none"
+          ? "Review pending sidecar candidates and reject or defer non-promotable items."
+          : pending[0]
+            ? `Review ${pending[0].candidateId} for ${pending[0].candidateType} promotion.`
+            : "No pending sidecar learning action."
   };
 }
 
@@ -111,6 +119,7 @@ export function renderSidecarLearningDashboard(dashboard: SidecarLearningDashboa
     "",
     `Aggregate groups: ${dashboard.aggregateGroups}`,
     `Promotable aggregate groups: ${dashboard.promotableAggregateGroups}`,
+    `Reviewed aggregate groups: ${dashboard.reviewedAggregateGroups}`,
     "Top aggregate recommendation:",
     ...(dashboard.topAggregateRecommendation
       ? [
@@ -125,6 +134,61 @@ export function renderSidecarLearningDashboard(dashboard: SidecarLearningDashboa
     "",
     `Recommended next action: ${dashboard.recommendedNextAction}`
   ].join("\n") + "\n";
+}
+
+async function findReviewedAggregateIds(
+  staxRoot: string,
+  aggregates: SidecarImportAggregate[]
+): Promise<Set<string>> {
+  const reviewed = new Set<string>();
+  await Promise.all(
+    aggregates.map(async (aggregate) => {
+      const artifactPath = aggregatePromotionArtifactPath(staxRoot, aggregate);
+      if (!artifactPath) return;
+      const raw = await readTextIfExists(artifactPath);
+      if (!raw.trim()) return;
+      try {
+        const parsed = JSON.parse(raw) as { aggregateId?: string; status?: string };
+        if (parsed.aggregateId === aggregate.aggregateId && parsed.status) {
+          reviewed.add(aggregate.aggregateId);
+        }
+      } catch {
+        // Ignore malformed review artifacts here; promotion validation owns their schema.
+      }
+    })
+  );
+  return reviewed;
+}
+
+function aggregatePromotionArtifactPath(
+  staxRoot: string,
+  aggregate: SidecarImportAggregate
+): string | undefined {
+  const relativeDir = aggregatePromotionDirectory(aggregate.promotionTarget);
+  return relativeDir ? path.join(staxRoot, relativeDir, `${aggregate.aggregateId}.json`) : undefined;
+}
+
+function aggregatePromotionDirectory(target: SidecarImportAggregate["promotionTarget"]): string | undefined {
+  switch (target) {
+    case "eval":
+      return path.join("evals", "candidates");
+    case "mode_contract_patch":
+      return path.join("learning", "proposals", "mode_contract_patch_candidates");
+    case "policy_patch":
+      return path.join("learning", "proposals", "policy_patch_candidates");
+    case "schema_patch":
+      return path.join("learning", "proposals", "schema_patch_candidates");
+    case "memory":
+      return path.join("memory", "candidates");
+    case "correction":
+      return path.join("learning", "proposals", "correction_candidates");
+    case "training":
+      return path.join("learning", "proposals", "training_candidates");
+    case "golden":
+      return path.join("learning", "proposals", "golden_candidates");
+    case "none":
+      return undefined;
+  }
 }
 
 function chooseTopAggregateRecommendation(aggregates: SidecarImportAggregate[]): SidecarImportAggregate | undefined {

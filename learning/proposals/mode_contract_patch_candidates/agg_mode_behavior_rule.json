@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "stax-reviewed-aggregate-promotion-v1",
+  "aggregateId": "agg_mode_behavior_rule",
+  "classification": "mode_behavior_rule",
+  "queueType": "mode_contract_patch_candidate",
+  "promotionTarget": "mode_contract_patch",
+  "status": "approved_for_promotion",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-28T14:24:35.000Z",
+  "approvalReason": "Canvas Helper sidecar observations repeatedly showed that visual/course behavior claims need rendered proof, and locked replay plus proof-strength regressions already cover the generic behavior. This promotes only the reusable proof-mode rule, not Canvas-specific course facts.",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json",
+  "sourceCandidateCount": 2,
+  "sourceCandidateIds": [
+    "cand_canvas-helper_evt_missing_proof_caught_6b6267651265_8952471db0cf",
+    "cand_canvas-helper_sidecar_status_b76b04e88ee9"
+  ],
+  "sourceEventIds": [
+    "evt_missing_proof_caught_6b6267651265",
+    "sidecar_status_b76b04e88ee9"
+  ],
+  "sourceRepos": [
+    "canvas-helper"
+  ],
+  "promotedPattern": {
+    "name": "visual_claim_requires_rendered_proof",
+    "summary": "Visual, layout, or course-behavior completion claims cannot be accepted from source diffs, CSS diffs, ordinary command output, or prose alone. They require rendered screenshot, browser, or checklist proof registered through the sidecar visual-evidence path unless the task is explicitly non-visual governance or reporting work.",
+    "requiredFields": [
+      "claim text or task category that implies visual, layout, or course-behavior completion",
+      "target page, state, course surface, or viewport being checked",
+      "rendered screenshot, browser proof, or registered visual artifact",
+      "visual checklist naming expected visible outcome, viewport or responsive state when relevant, and pass or fail status",
+      "current-worktree sidecar evidence provenance for any visual artifact used as proof"
+    ],
+    "forbiddenPromotionContent": [
+      "Canvas-specific course names",
+      "local screenshot filenames",
+      "live URLs",
+      "one-off deploy task facts",
+      "raw Codex report wording"
+    ],
+    "nonClaimBoundary": [
+      "Do not treat meta-rule or proof-rule text about visual proof requirements as a visual completion claim by itself.",
+      "Do not require screenshot proof for code, report, dashboard, or documentation changes that only describe visual proof policy."
+    ]
+  },
+  "regressionEvidence": [
+    {
+      "type": "locked_replay",
+      "path": "fixtures/pattern_promotion/locked_replay_10_cases.json",
+      "caseId": "locked_visual_diff_not_visual_proof",
+      "expectedResult": "visual diff alone is not visual proof"
+    },
+    {
+      "type": "impact_report",
+      "path": "reports/pattern_promotion/pattern-promotion-impact-2026-05-28T12-15-17-138Z.json",
+      "expectedResult": "locked visual replay recorded improved behavior with zero critical miss"
+    },
+    {
+      "type": "test",
+      "path": "tests/proofStrengthGate.test.ts",
+      "expectedResult": "visual behavior claims without visual proof are capped below accept"
+    },
+    {
+      "type": "test",
+      "path": "tests/sidecarClaimExtractionPrecision.test.ts",
+      "expectedResult": "visual proof-rule wording is not misread as a visual completion claim"
+    },
+    {
+      "type": "test",
+      "path": "tests/sidecarImportAggregation.test.ts",
+      "expectedResult": "aggregate sidecar learning recommends repeated visual-proof lessons for review before raw candidates"
+    }
+  ],
+  "expectedFutureBehaviorChange": "Future visual, layout, and course-behavior completion claims require rendered evidence, while proof-rule meta language remains governance text and does not itself trigger visual proof demands.",
+  "approvalRequiredForFurtherPromotion": true,
+  "autoPromote": false
+}

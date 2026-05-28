@@ -135,3 +135,36 @@ Held or discarded groups:
 - `agg_trace_fact`: discarded as one-off trace evidence.
 
 The dashboard now recommends promotable aggregate groups before individual raw candidates. This makes the sidecar learning loop answer the actual operational question: "what did this attached repo teach STAX that is reusable?" rather than "which JSON file sorted first?"
+
+## 2026-05-28 Mode Behavior Promotion Review
+
+After human approval, STAX reviewed the top aggregate from the Canvas follow-up harvest:
+
+- Aggregate: `agg_mode_behavior_rule`
+- Decision: promote narrowly as a mode-contract patch candidate
+- Artifact: `learning/proposals/mode_contract_patch_candidates/agg_mode_behavior_rule.json`
+- Decision report: `reports/sidecar_learning/sidecar-aggregate-promotion-decisions-2026-05-28T14-24-35Z.md`
+
+Promoted reusable behavior:
+
+- visual, layout, and course-behavior completion claims require rendered screenshot, browser, or checklist proof
+- source diffs, CSS diffs, ordinary command output, and prose do not prove visual behavior by themselves
+- proof-rule wording about visual evidence is governance text, not a visual completion claim
+
+Not promoted:
+
+- Canvas Helper course names
+- local screenshot filenames
+- live URLs
+- one-off deploy task facts
+- raw Codex report wording
+
+Regression/evidence backing:
+
+- `fixtures/pattern_promotion/locked_replay_10_cases.json#locked_visual_diff_not_visual_proof`
+- `reports/pattern_promotion/pattern-promotion-impact-2026-05-28T12-15-17-138Z.json`
+- `tests/proofStrengthGate.test.ts`
+- `tests/sidecarClaimExtractionPrecision.test.ts`
+- `tests/sidecarImportAggregation.test.ts`
+
+Dashboard behavior was also tightened: once an aggregate has a reviewed promotion artifact, the dashboard skips it for the next top recommendation and moves to the next unreviewed aggregate. The next aggregate to inspect is `agg_proof_boundary_rule`.
