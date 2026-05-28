@@ -36,6 +36,55 @@ const UNTRACKED_RELEVANT_ROLES = new Set([
   "visual_style"
 ]);
 
+const IGNORED_RELEVANT_PATHS = [
+  ".github",
+  ".gitignore",
+  "AGENTS.md",
+  "Makefile",
+  "Taskfile.yml",
+  "app",
+  "apps",
+  "backend",
+  "client",
+  "config",
+  "css",
+  "database",
+  "db",
+  "docs",
+  "e2e",
+  "fixtures",
+  "frontend",
+  "justfile",
+  "lib",
+  "migrations",
+  "package-lock.json",
+  "package.json",
+  "packages",
+  "playwright.config.js",
+  "playwright.config.ts",
+  "pnpm-lock.yaml",
+  "proof-surfaces",
+  "public",
+  "pyproject.toml",
+  "requirements.txt",
+  "scripts",
+  "server",
+  "spec",
+  "specs",
+  "src",
+  "styles",
+  "test",
+  "tests",
+  "tools",
+  "tsconfig.json",
+  "vite.config.js",
+  "vite.config.ts",
+  "vitest.config.js",
+  "vitest.config.ts",
+  "web",
+  "yarn.lock"
+];
+
 export async function collectWorktreeFingerprint(repoPath: string): Promise<WorktreeFingerprint> {
   const snapshot = await collectGitSnapshot(repoPath);
   const statusPorcelain = await runGit(repoPath, ["status", "--porcelain=v1", "--untracked-files=all"]);
@@ -136,7 +185,14 @@ export function isWorktreeFingerprintExcludedPath(filePath: string): boolean {
 }
 
 async function collectIgnoredRelevantFiles(repoPath: string): Promise<string[]> {
-  const ignored = await runGit(repoPath, ["ls-files", "--others", "--ignored", "--exclude-standard"]);
+  const ignored = await runGit(repoPath, [
+    "ls-files",
+    "--others",
+    "--ignored",
+    "--exclude-standard",
+    "--",
+    ...IGNORED_RELEVANT_PATHS
+  ]);
   return ignored
     .split(/\r?\n/)
     .map((line) => normalizeRelativePath(line.trim()))

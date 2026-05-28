@@ -21,23 +21,23 @@ main
 Latest verified rollout commit:
 
 ```txt
-8b57c08
+4542860
 ```
 
 Commit message:
 
 ```txt
-Normalize Python command proof lanes
+Speed up stale command evidence checks
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26550889534
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26552336710
 ```
 
-This verified rollout commit is pushed to `origin/main`. Generated `.stax` proof/status files and the unrelated duplicate `docs/ACTIVE_HANDOFF 2.md` are dirty locally and should stay unstaged.
+This verified rollout commit is pushed to `origin/main`. Generated `.stax` proof/status/report files and the unrelated duplicate `docs/ACTIVE_HANDOFF 2.md` are dirty locally and should stay unstaged.
 
 ## Product Boundary
 
@@ -69,6 +69,9 @@ The STAX repo is current and pushed.
 Recent pushed commits include:
 
 ```txt
+4542860 Speed up stale command evidence checks
+f9abe14 Refresh handoff after Python proof lane CI
+8b57c08 Normalize Python command proof lanes
 d1c51d7 Tolerate sidecar report mtime granularity
 5002d75 Harden proof routing and refresh impact window
 557c76c Refresh active handoff after CI repair
@@ -169,7 +172,27 @@ The latest work:
   - `npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX`: `Accept`
 - Committed and pushed STAX `8b57c08 Normalize Python command proof lanes`.
 - Verified GitHub Actions `staxcore-strict` completed successfully on `8b57c08`.
-- Treat `8b57c08` as the current code baseline; later handoff-only commits are restart metadata unless they change source, tests, proof surfaces, or rollout evidence.
+- Refreshed this handoff once after Python proof-lane CI in `f9abe14 Refresh handoff after Python proof lane CI`.
+- Found that a fresh Canvas Helper sidecar gate was taking too long because old command evidence forced repeated expensive sidecar-only commit-advance checks.
+- Patched STAX command evidence verification so stale wrong-worktree evidence short-circuits as stale/wrong-commit proof, sidecar-only commit checks are cached per gate run, and the committed-tree check uses `git diff-tree --no-commit-id --name-only -r`.
+- Verified the Canvas gate performance/provenance fix with:
+  - `npm run typecheck`: exit 0
+  - `npm test -- tests/sidecarWatchCollect.test.ts tests/commandEvidenceLedger.test.ts`: exit 0, 30 tests
+  - direct timed Canvas gate: exit 1 as expected, completed in 4.27 seconds, reported stale-proof `Reject` with `wrong_commit`
+  - STAX-collected Canvas verifier: exit 0, evidence `cmd_2026-05-28T03_10_15_896Z_c6532a3cbd8b`, Canvas gate elapsed 4547ms
+  - STAX sidecar gate for the patch: `Accept / Audit-grade`
+- Committed and pushed STAX `4542860 Speed up stale command evidence checks`.
+- Verified GitHub Actions `staxcore-strict` completed successfully on `4542860`.
+- While refreshing this handoff, `stax:collect` exposed a second performance issue: ignored-file worktree fingerprinting asked Git to enumerate every ignored file before filtering dependency/generated trees.
+- Patched `src/sidecar/WorktreeFingerprint.ts` so ignored relevant files are queried through bounded proof-relevant pathspecs instead of a full ignored-file scan.
+- Verified the fingerprint patch with:
+  - direct timing probe before patch: about 26851ms for the current STAX worktree
+  - direct timing probe after patch: about 101ms for the current STAX worktree
+  - `npm test -- tests/sidecarWatchCollect.test.ts -t "tracks ignored relevant source files"`: exit 0
+  - `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`: exit 0
+  - `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/sidecarWatchCollect.test.ts tests/commandEvidenceLedger.test.ts`: exit 0
+  - STAX sidecar gate after updating the current acknowledgement: `Accept`
+- Treat `4542860` as the current published CI-passing baseline until the fingerprint/handoff patch is committed, pushed, and GitHub Actions succeeds.
 
 ## Current Canvas Helper State
 
@@ -188,12 +211,21 @@ pages build and deployment: completed / success
 run: https://github.com/deanguedo-arch/canvas-helper/actions/runs/26532152321
 ```
 
-Canvas STAX sidecar gate:
+Canvas STAX sidecar gate before the STAX stale-evidence speed fix:
 
 ```txt
 verdict: Accept
 proof strength: Audit-grade
 commit: 167491821e462fdd5baf649be5b5153ce5bbcf03
+```
+
+Current fresh Canvas gate status from STAX `4542860`:
+
+```txt
+verdict: Reject
+reason: stale/wrong-commit command evidence is correctly rejected instead of hanging
+runtime: about 4.27 seconds direct, 4547ms through STAX-collected verifier
+next proof need: recollect Canvas command/visual proof against the current auditable Canvas worktree before claiming current Accept
 ```
 
 Fresh Canvas evidence collected before the Canvas commit, then exported again after `16749182` was pushed:
@@ -214,7 +246,7 @@ dirty: .stax/proof_strength.json, .stax/status.json, .stax/reports/latest-*.md
 cleaned: .runtime/memory-ledger.json and projects/resources/smoke-calm-module/** generated output
 ```
 
-The STAX-side fix prevents recurrence by avoiding `smoke:pipeline` as default visual proof, and the Canvas-side fix makes default smoke runs scratch-scoped and cleanup-safe.
+The earlier STAX-side visual proof fix prevents recurrence by avoiding `smoke:pipeline` as default visual proof, and the Canvas-side fix makes default smoke runs scratch-scoped and cleanup-safe. The later STAX stale-evidence speed fix prevents Canvas fresh gate from hanging on historical command evidence; it does not make old Canvas evidence current.
 
 ## Pattern Promotion Impact
 
@@ -312,6 +344,19 @@ npm run typecheck: pass after the visual proof-surface patch
 npm test: pass, 211 test files / 1110 tests
 npm run smoke:stax: pass
 npm run rax -- eval: pass, 16/16 evals
+npm run typecheck: pass after stale command evidence speed fix
+npm test -- tests/sidecarWatchCollect.test.ts tests/commandEvidenceLedger.test.ts: pass, 30 tests
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck: pass, evidence cmd_2026-05-28T03_10_15_896Z_982c1455e5e7
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/sidecarWatchCollect.test.ts tests/commandEvidenceLedger.test.ts: pass, evidence cmd_2026-05-28T03_10_15_896Z_e74a24d6961a
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- node -e <canvas gate expected-reject verifier>: pass, evidence cmd_2026-05-28T03_10_15_896Z_c6532a3cbd8b
+direct timed Canvas gate after speed fix: exit 1 expected, completed in about 4.27s, reported stale-proof Reject / wrong_commit
+STAX sidecar gate after speed fix: Accept / Audit-grade
+fingerprint timing probe before ignored-file pathspec patch: about 26851ms
+fingerprint timing probe after ignored-file pathspec patch: about 101ms
+npm test -- tests/sidecarWatchCollect.test.ts -t "tracks ignored relevant source files": pass, 1 test
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck: pass after ignored-file pathspec patch
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/sidecarWatchCollect.test.ts tests/commandEvidenceLedger.test.ts: pass after ignored-file pathspec patch
+npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX --no-learning-event: Accept
 ```
 
 GitHub Actions:
@@ -323,6 +368,10 @@ staxcore-strict on 7a27a6f: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26548876800
 staxcore-strict on 8b57c08: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26550889534
+staxcore-strict on f9abe14: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26551263255
+staxcore-strict on 4542860: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26552336710
 ```
 
 ## Current Local Dirt
@@ -405,20 +454,21 @@ Current operating-window status:
 9/10 cleanup prompts needed
 ```
 
-Immediate next action after committing/pushing this STAX patch:
+Immediate next action after committing/pushing this handoff refresh:
 
 ```txt
-Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `8b57c08`.
+Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `4542860`.
 ```
 
 Next best actions:
 
-1. Use `8b57c08` as the current verified STAX rollout baseline; this handoff refresh is restart hygiene.
+1. Use `4542860` as the current verified STAX rollout baseline; this handoff refresh is restart hygiene.
 2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
-3. For Brightspacequizexporter, keep using the current-main Accept bundle unless new work changes its worktree.
-4. In ADMISSION-APP, decide whether to keep or revert the generated `docs/index.html` diff before committing there.
-5. In studentbudgetwars, decide whether to keep and commit the new STAX sidecar attach files.
-6. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
+3. For Canvas Helper, recollect fresh current-head command and visual proof before claiming current sidecar Accept.
+4. For Brightspacequizexporter, refresh the stale acknowledgement/report protocol if new work depends on current sidecar status; otherwise keep using the current-main Accept bundle until the repo changes.
+5. In ADMISSION-APP, recollect current build proof if the page-build observer state changes.
+6. In studentbudgetwars, decide whether to keep and commit the new STAX sidecar attach files.
+7. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
 
 For each current attached repo, run:
 
@@ -501,14 +551,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff update:
-- commit: 8b57c0830caeeea396411a6ea255f62a569a889c
-- short: 8b57c08
-- commit message: Normalize Python command proof lanes
+- commit: 45428605eedf4cf4e230d296f2114dc0260dd93e
+- short: 4542860
+- commit message: Speed up stale command evidence checks
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26550889534
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26552336710
 
 Goal:
-Continue the attached-repo operating-window phase from green STAX baseline `8b57c08`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the post-push Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T00-54-59-876Z.json`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, and Python command proof-lane normalization issue are fixed and green in GitHub Actions.
+Continue the attached-repo operating-window phase from green STAX baseline `4542860`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the post-push Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T00-54-59-876Z.json`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, and Canvas stale-command-evidence gate stall are fixed and green in GitHub Actions. Canvas fresh gate now completes quickly and correctly rejects stale/wrong-commit command evidence; recollect Canvas proof before claiming current Canvas Accept.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
