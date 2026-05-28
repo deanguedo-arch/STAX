@@ -65,6 +65,8 @@ STAX is strong for Codex/repo project-control:
 - raw sidecar-learning candidate queue closure after aggregate review: 0 pending candidates, 96 promoted queue entries, 9 rejected/deferred queue entries
 - attached-repo impact evidence handoff for cross-workstation sidecar export/import
 - hosted URL and prose slash grounding regression coverage for sidecar report noise
+- Canvas course-deploy proof surface now treats external image, remote asset URL, and placeholder-image claims as proof requirements instead of proof by themselves
+- Canvas course-deploy next action now asks for approved/localized images or placeholder removal before trusting the deploy proof surface
 
 ## Current Technical Risks
 
@@ -76,6 +78,7 @@ STAX is strong for Codex/repo project-control:
 - unusual-repo proof-surface discovery edge cases
 - complexity debt and archived report surface area
 - large runtime, CLI, and session modules that may need focused compression
+- attached Canvas sidecars still need upgrade/export from an idle repo to receive the latest course-image proof-surface contract
 
 ## Current Audit Artifacts
 

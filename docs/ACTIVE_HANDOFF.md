@@ -7,20 +7,20 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-565b795
+42c8552
 ```
 
 Commit message:
 
 ```txt
-Harden URL path grounding regression
+Harden Canvas course image proof surface
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26587464633
 ```
 
 This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
@@ -37,6 +37,8 @@ a2591fe Promote proof boundary aggregate
 1a87f23 Refresh active handoff baseline guidance
 abe74dd Add attached repo impact handoff
 565b795 Harden URL path grounding regression
+7f60c86 Refresh status after URL grounding hardening
+42c8552 Harden Canvas course image proof surface
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -90,20 +92,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-565b795
+42c8552
 ```
 
 Commit message:
 
 ```txt
-Harden URL path grounding regression
+Harden Canvas course image proof surface
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26587464633
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -138,6 +140,8 @@ The latest verified STAX baseline named at the top of this file is current and p
 Recent pushed commits include:
 
 ```txt
+42c8552 Harden Canvas course image proof surface
+7f60c86 Refresh status after URL grounding hardening
 565b795 Harden URL path grounding regression
 abe74dd Add attached repo impact handoff
 1a87f23 Refresh active handoff baseline guidance
@@ -167,6 +171,17 @@ b1d734d Record Canvas impact evidence import
 
 The latest work:
 
+- Hardened the Canvas Helper static proof surface so course-deploy claims involving external images, remote asset URLs, or placeholders require approved image-source proof and placeholder removal/localization proof.
+- Added ProofSurfaceMatcher routing for external/remote image wording, Wikimedia URLs, Google user-content/API/storage URLs, and placeholder-image language to the Canvas `course_deploy_ready` surface.
+- Added regression coverage so Canvas external image claims and remote image link claims route to course-deploy proof requirements instead of being treated as sufficient visual acceptance proof.
+- Verified the Canvas course image proof-surface hardening with STAX-collected command evidence:
+  - `cmd_2026-05-28T16_17_25_907Z_d2fd4393b631`: focused proof-surface matcher and pack tests, exit 0
+  - `cmd_2026-05-28T16_17_33_825Z_982c1455e5e7`: `npm run typecheck`, exit 0
+  - `cmd_2026-05-28T16_17_43_075Z_328e123c6385`: `npm test`, exit 0, 211 files and 1122 tests
+  - `cmd_2026-05-28T16_18_19_110Z_092594e366f2`: `npm run smoke:stax`, exit 0
+  - `cmd_2026-05-28T16_18_27_714Z_31b060f341fa`: `npm run rax -- eval`, exit 0, 16/16 evals
+  - STAX sidecar gate: `Accept / Audit-grade`
+- Pushed `42c8552 Harden Canvas course image proof surface` and verified GitHub Actions `staxcore-strict` completed successfully.
 - Repaired and pushed Brightspacequizexporter `dc3635f Stabilize ingest promotion benchmarks`.
 - The Brightspace pushed change records manual gold fixture evaluations as isolated Vitest invocations; the AP35 OCR-heavy fixture is covered by the pushed pre-push evidence.
 - Brightspace pre-push `ingest:ci` passed on `dc3635f`, including 232 focused ingest tests and 22 isolated manual gold fixture evaluations.
@@ -548,6 +563,10 @@ staxcore-strict on abe74dd: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26585690325
 staxcore-strict on 565b795: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
+staxcore-strict on 7f60c86: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26586923779
+staxcore-strict on 42c8552: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26587464633
 ```
 
 ## Current Local Dirt
@@ -743,11 +762,11 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff refresh:
-- commit: 565b795
-- short: 565b795
-- commit message: Harden URL path grounding regression
+- commit: 42c8552
+- short: 42c8552
+- commit message: Harden Canvas course image proof surface
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26587464633
 
 Goal:
 Continue the attached-repo operating-window phase from the top Latest Restart Note baseline. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, Brightspace isolated ingest promotion benchmark issue, and raw sidecar-learning candidate queue closure are all covered in the current operating-window evidence.
