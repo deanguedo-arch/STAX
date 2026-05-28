@@ -1412,7 +1412,7 @@ function commandEvidenceLayerFailure(command: string, status: string): string {
 }
 
 async function evidenceCommitDiffIsSidecarManaged(repoPath: string, evidenceCommitSha: string): Promise<boolean> {
-  const changed = await runGit(repoPath, ["diff", "--name-only", `${evidenceCommitSha}..HEAD`]);
+  const changed = await runGit(repoPath, ["diff-tree", "--no-commit-id", "--name-only", "-r", evidenceCommitSha, "HEAD"]);
   const paths = changed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   return paths.length > 0 && paths.every(isWorktreeFingerprintExcludedPath);
 }
@@ -1423,15 +1423,29 @@ async function normalizeSidecarOnlyCommandEvidence(
   currentCommitSha?: string
 ): Promise<ProjectControlCommandEvidenceEntry[]> {
   if (!currentCommitSha) return entries;
+  const sidecarManagedCommitCache = new Map<string, Promise<boolean>>();
   const normalized: ProjectControlCommandEvidenceEntry[] = [];
   for (const entry of entries) {
-    if (entry.commitSha && entry.commitSha !== currentCommitSha && await evidenceCommitDiffIsSidecarManaged(repoPath, entry.commitSha)) {
+    if (entry.commitSha && entry.commitSha !== currentCommitSha && await cachedSidecarManagedCommitAdvance(repoPath, entry.commitSha, sidecarManagedCommitCache)) {
       normalized.push({ ...entry, commitSha: currentCommitSha });
       continue;
     }
     normalized.push(entry);
   }
   return normalized;
+}
+
+function cachedSidecarManagedCommitAdvance(
+  repoPath: string,
+  evidenceCommitSha: string,
+  cache: Map<string, Promise<boolean>>
+): Promise<boolean> {
+  const key = `${path.resolve(repoPath)}\0${evidenceCommitSha}`;
+  const existing = cache.get(key);
+  if (existing) return existing;
+  const pending = evidenceCommitDiffIsSidecarManaged(repoPath, evidenceCommitSha);
+  cache.set(key, pending);
+  return pending;
 }
 
 function demoteUnverifiedCommandEvidence(entries: SidecarCommandEvidenceEntry[]): ProjectControlCommandEvidenceEntry[] {
@@ -1449,6 +1463,7 @@ async function readCommandEvidenceEntries(
   snapshot: { repoName: string; branch?: string; commitSha?: string },
   currentFingerprint: WorktreeFingerprint
 ): Promise<SidecarCommandEvidenceEntry[]> {
+  const sidecarManagedCommitCache = new Map<string, Promise<boolean>>();
   const externalStore = externalCommandEvidenceStoreForRepo(repoPath);
   const externalLedgerRecords = await readCommandEvidenceLedgerFromDir(externalStore.commandEvidenceDir);
   const externalLedgerTip = await readCommandEvidenceLedgerTipFromDir(externalStore.commandEvidenceDir);
@@ -1459,6 +1474,7 @@ async function readCommandEvidenceEntries(
     dir: externalStore.commandEvidenceDir,
     evidenceStore: "external_user_store",
     externalRepoId: externalStore.repoId,
+    sidecarManagedCommitCache,
     ledgerVerification: verifyCommandEvidenceLedger(externalLedgerRecords, {
       ledgerTip: externalLedgerTip,
       requireLedgerTip: true,
@@ -1472,6 +1488,7 @@ async function readCommandEvidenceEntries(
     currentFingerprint,
     dir: path.join(sidecarDir(repoPath), "command-evidence"),
     evidenceStore: "repo_local_legacy",
+    sidecarManagedCommitCache,
     ledgerVerification: verifyCommandEvidenceLedger([])
   });
   return sortCommandEvidenceNewestFirst([
@@ -1487,6 +1504,7 @@ async function readCommandEvidenceEntriesFromDir(input: {
   dir: string;
   evidenceStore: "external_user_store" | "repo_local_legacy";
   externalRepoId?: string;
+  sidecarManagedCommitCache: Map<string, Promise<boolean>>;
   ledgerVerification: CommandEvidenceLedgerVerification;
 }): Promise<SidecarCommandEvidenceEntry[]> {
   const names = await fs.readdir(input.dir).catch(() => []);
@@ -1516,7 +1534,8 @@ async function readCommandEvidenceEntriesFromDir(input: {
       stderrFileName: parsed.stderrPath,
       stdout,
       stderr,
-      ledgerVerification: input.ledgerVerification
+      ledgerVerification: input.ledgerVerification,
+      sidecarManagedCommitCache: input.sidecarManagedCommitCache
     });
     entries.push({
       evidenceId,

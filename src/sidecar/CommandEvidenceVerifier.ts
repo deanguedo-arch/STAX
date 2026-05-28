@@ -68,6 +68,7 @@ export async function verifySidecarCommandEvidence(input: {
   stdout: string;
   stderr: string;
   ledgerVerification: CommandEvidenceLedgerVerification;
+  sidecarManagedCommitCache?: Map<string, Promise<boolean>>;
 }): Promise<{
   provenanceStatus: CommandEvidenceProvenanceStatus;
   provenanceIssues: string[];
@@ -144,7 +145,16 @@ export async function verifySidecarCommandEvidence(input: {
     return { provenanceStatus: "wrong_cwd", provenanceIssues: issues, ledgerRecord };
   }
   if (input.parsed.commitSha && input.currentCommitSha && input.parsed.commitSha !== input.currentCommitSha) {
-    const sidecarOnlyAdvance = await evidenceCommitDiffIsSidecarManaged(input.repoPath, input.parsed.commitSha);
+    if (worktreeAfterHash && worktreeAfterHash !== input.currentFingerprint.fingerprintHash) {
+      issues.push(`Command evidence ${input.evidenceId} commit ${input.parsed.commitSha} does not match ${input.currentCommitSha}.`);
+      issues.push(`Command evidence ${input.evidenceId} after-worktree fingerprint is stale for the current auditable worktree.`);
+      return { provenanceStatus: "wrong_commit", provenanceIssues: issues, ledgerRecord };
+    }
+    const sidecarOnlyAdvance = await cachedEvidenceCommitDiffIsSidecarManaged(
+      input.repoPath,
+      input.parsed.commitSha,
+      input.sidecarManagedCommitCache
+    );
     if (!sidecarOnlyAdvance) {
       issues.push(`Command evidence ${input.evidenceId} commit ${input.parsed.commitSha} does not match ${input.currentCommitSha}.`);
       return { provenanceStatus: "wrong_commit", provenanceIssues: issues, ledgerRecord };
@@ -169,8 +179,22 @@ export async function verifySidecarCommandEvidence(input: {
   return { provenanceStatus: "verified_local_stax_command", provenanceIssues: issues, ledgerRecord };
 }
 
+function cachedEvidenceCommitDiffIsSidecarManaged(
+  repoPath: string,
+  evidenceCommitSha: string,
+  cache?: Map<string, Promise<boolean>>
+): Promise<boolean> {
+  if (!cache) return evidenceCommitDiffIsSidecarManaged(repoPath, evidenceCommitSha);
+  const key = `${path.resolve(repoPath)}\0${evidenceCommitSha}`;
+  const existing = cache.get(key);
+  if (existing) return existing;
+  const pending = evidenceCommitDiffIsSidecarManaged(repoPath, evidenceCommitSha);
+  cache.set(key, pending);
+  return pending;
+}
+
 async function evidenceCommitDiffIsSidecarManaged(repoPath: string, evidenceCommitSha: string): Promise<boolean> {
-  const changed = await runGit(repoPath, ["diff", "--name-only", `${evidenceCommitSha}..HEAD`]);
+  const changed = await runGit(repoPath, ["diff-tree", "--no-commit-id", "--name-only", "-r", evidenceCommitSha, "HEAD"]);
   const paths = changed.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   return paths.length > 0 && paths.every(isWorktreeFingerprintExcludedPath);
 }
