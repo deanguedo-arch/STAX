@@ -216,6 +216,9 @@ describe("repo proof-surface discovery", () => {
     });
     expect(candidateHint).toContain("Candidate proof surface");
     expect(candidateHint).toContain("candidate-only");
+    expect(candidateHint).toContain("npm run stax:collect-visual");
+    expect(candidateHint).toContain("--repo");
+    expect(candidateHint).toContain("--checklist \"<responsive/viewport checked>\"");
 
     await approveProofSurfaces(repoPath);
     const approvedHint = await proofSurfacePromptHint({
@@ -226,6 +229,8 @@ describe("repo proof-surface discovery", () => {
     });
     expect(approvedHint).toContain("Approved proof surface");
     expect(approvedHint).not.toContain("candidate-only");
+    expect(approvedHint).toContain("npm run stax:collect-visual");
+    expect(approvedHint).toContain("--path <screenshot.png>");
   });
 
   it("does not append unsafe live-action commands to course deploy next-prompt hints", async () => {
@@ -265,6 +270,8 @@ describe("repo proof-surface discovery", () => {
 
     expect(hint).toContain("Approved proof surface for course_deploy_ready");
     expect(hint).toContain("capture rendered visual proof");
+    expect(hint).toContain("npm run stax:collect-visual");
+    expect(hint).toContain("--checklist \"<visible outcome>\"");
     expect(hint).not.toContain("Suggested command: npm run deploy:google-hosted");
   });
 

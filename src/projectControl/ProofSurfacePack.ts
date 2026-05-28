@@ -92,16 +92,30 @@ export async function proofSurfacePromptHint(input: {
   const prefix = approved ? "Approved proof surface" : "Candidate proof surface";
   const qualifier = approved ? "" : " This is candidate-only, so treat it as a provisional hint until approved.";
   const suggestedCommand = suggestedCommandForSurface(surface, text);
-  const action = proofSurfaceAction(surface, suggestedCommand);
+  const action = proofSurfaceAction(surface, input.repoPath, suggestedCommand);
   const commands = suggestedCommand ? ` Suggested command: ${suggestedCommand}.` : "";
   return `${prefix} for ${surface.claimType}: ${action}${commands}${qualifier}`;
 }
 
-function proofSurfaceAction(surface: ProofSurfacePack["proofSurfaces"][number], suggestedCommand?: string): string {
+function proofSurfaceAction(
+  surface: ProofSurfacePack["proofSurfaces"][number],
+  repoPath: string,
+  suggestedCommand?: string
+): string {
   if (surface.claimType === "tests_passed" && !suggestedCommand) {
     return "Run the relevant test, verification, or compile command through stax:collect in the target repo.";
   }
-  return surface.nextAction ?? `Provide ${surface.requiredEvidence.join(", ")}.`;
+  const baseAction = surface.nextAction ?? `Provide ${surface.requiredEvidence.join(", ")}.`;
+  if (!requiresVisualProof(surface)) return baseAction;
+  return `${baseAction} Capture or register the visual artifact with npm run stax:collect-visual -- --repo ${repoPath} --path <screenshot.png> --description "<page/state verified>" --checklist "<target page/state>" --checklist "<responsive/viewport checked>" --checklist "<visible outcome>" before rerunning stax:gate.`;
+}
+
+function requiresVisualProof(surface: ProofSurfacePack["proofSurfaces"][number]): boolean {
+  const evidence = [...surface.requiredEvidence, ...surface.blockedEvidence].join(" ");
+  return (
+    /visual|screenshot|rendered|checklist/i.test(surface.claimType) ||
+    /rendered_screenshot|visual_checklist|rendered_visual_proof|screenshot|visual proof/i.test(evidence)
+  );
 }
 
 function suggestedCommandForSurface(
