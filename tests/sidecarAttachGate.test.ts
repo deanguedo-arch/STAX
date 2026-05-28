@@ -13,7 +13,7 @@ import {
 import { collectCommandEvidence } from "../src/sidecar/CommandEvidenceCollector.js";
 import { getNextCodexPrompt } from "../src/sidecar/NextCodexPrompt.js";
 import { runStaxGate } from "../src/sidecar/StaxGate.js";
-import { collectVisualEvidence, readVisualProofManifest, resolveSpawnCommand } from "../src/sidecar/VisualEvidenceCollector.js";
+import { collectVisualEvidence, readVisualProofManifest, resolveSpawnCommand, visualUrlCaptureFailureMessage } from "../src/sidecar/VisualEvidenceCollector.js";
 import { commitFile, createTempGitRepo } from "./sidecarTestHelpers.js";
 
 function useTestExternalEvidenceRoot(repoPath: string): void {
@@ -584,6 +584,22 @@ describe("STAX sidecar attach and gate", () => {
       executable: "npx",
       args: ["--no-install"]
     });
+  });
+
+  it("explains how to recover when URL visual proof capture lacks repo-local Playwright", () => {
+    const message = visualUrlCaptureFailureMessage({
+      repoPath: "/tmp/target-repo",
+      url: "http://127.0.0.1:5173/preview",
+      viewport: "1280,800",
+      cause: new Error("npm ERR! canceled")
+    });
+
+    expect(message).toContain("Unable to capture visual proof from --url http://127.0.0.1:5173/preview.");
+    expect(message).toContain("repo-local Playwright");
+    expect(message).toContain("npx --no-install playwright screenshot");
+    expect(message).toContain("--repo /tmp/target-repo --path <screenshot.png>");
+    expect(message).toContain("--checklist \"<visible outcome>\"");
+    expect(message).toContain("Original error: npm ERR! canceled");
   });
 
   it("rejects visual claims until screenshot proof is collected through the sidecar", async () => {

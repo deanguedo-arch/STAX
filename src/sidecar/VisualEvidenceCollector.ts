@@ -314,7 +314,28 @@ async function captureScreenshotWithPlaywright(input: {
   const args = ["--no-install", "playwright", "screenshot"];
   if (input.viewport) args.push("--viewport-size", input.viewport);
   args.push(input.url, input.outputPath);
-  await runProcess("npx", args, input.repoPath);
+  try {
+    await runProcess("npx", args, input.repoPath);
+  } catch (error) {
+    throw new Error(visualUrlCaptureFailureMessage({ ...input, cause: error }));
+  }
+}
+
+export function visualUrlCaptureFailureMessage(input: {
+  repoPath: string;
+  url: string;
+  viewport?: string;
+  cause?: unknown;
+}): string {
+  const cause = input.cause instanceof Error ? input.cause.message : String(input.cause ?? "unknown error");
+  return [
+    `Unable to capture visual proof from --url ${input.url}.`,
+    "URL capture requires repo-local Playwright because STAX runs `npx --no-install playwright screenshot` in the target repo.",
+    `Target repo: ${input.repoPath}`,
+    input.viewport ? `Viewport: ${input.viewport}` : undefined,
+    `Fallback: take or export a screenshot manually, save it in the target repo, then run npm run stax:collect-visual -- --repo ${input.repoPath} --path <screenshot.png> --description "<page/state verified>" --checklist "<visible outcome>".`,
+    `Original error: ${cause}`
+  ].filter(Boolean).join(" ");
 }
 
 function runProcess(command: string, args: string[], cwd: string): Promise<void> {

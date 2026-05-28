@@ -96,6 +96,11 @@ npm run stax:collect-visual -- --repo ../my-project \
   --description "Rendered preview after layout fix"
 ```
 
+If URL capture fails because Playwright is not available in the target repo,
+take or export a screenshot manually and register it with the `--path` form
+above. The screenshot still becomes first-class visual proof once STAX records
+it in the visual-proof manifest.
+
 The gate verifies `.stax/visual-proofs/manifest.json`, the screenshot hash, and
 the current auditable worktree before using a screenshot as visual proof.
 

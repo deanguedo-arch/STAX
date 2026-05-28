@@ -123,6 +123,10 @@ npm run stax:collect-visual -- --repo ../my-project \
   --description "Rendered preview after layout fix"
 ```
 
+If URL capture is unavailable, save a screenshot manually in the target repo and
+use the `--path` command instead. Do not claim a visual fix is complete just
+because URL capture failed or Playwright is missing.
+
 STAX writes a visual-proof manifest under `.stax/visual-proofs/` and verifies
 that the screenshot still matches the current auditable worktree during
 `stax:gate`.
