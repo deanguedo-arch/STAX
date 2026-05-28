@@ -239,3 +239,20 @@ Regression/evidence backing:
 - `docs/RAX_OPERATING_WINDOW_TODAY_REPORT.md`
 
 After this review, all currently promotable aggregate groups from the 2026-05-28 Canvas follow-up harvest have reviewed artifacts. Remaining repo-specific and trace groups stay local or trace-only.
+
+## 2026-05-28 Raw Candidate Closure
+
+After the five promotable aggregate groups had reviewed artifacts, STAX closed the raw pending queue covered by `reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json`.
+
+- Closure report: `reports/sidecar_learning/sidecar-raw-candidate-closure-2026-05-28T15-12-00Z.md`
+- Candidates moved from pending to promoted: 72
+- Candidates moved from pending to rejected/deferred: 8
+
+Closure result:
+
+- pending candidates: 0
+- promoted candidates: 96
+- rejected/deferred candidates: 9
+- top aggregate recommendation: none
+
+This was queue hygiene only. It did not auto-promote repo-specific facts, trace facts, raw Codex report wording, or attached-repo details into durable STAX behavior.

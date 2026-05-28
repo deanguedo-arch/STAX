@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "stax-sidecar-raw-candidate-closure-v1",
+  "generatedAt": "2026-05-28T15:12:00.000Z",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json",
+  "decisionBasis": "All seven aggregate groups from the source report have explicit reviewed outcomes: five promotable groups have reviewed promotion artifacts, and two non-promotable groups are trace/local evidence only.",
+  "movedFromPending": 80,
+  "movedToPromoted": 72,
+  "movedToRejectedOrDeferred": 8,
+  "promotedAggregateGroups": [
+    "agg_codex_handoff_rule",
+    "agg_schema_contract_rule",
+    "agg_mode_behavior_rule",
+    "agg_proof_boundary_rule",
+    "agg_policy_safety_rule"
+  ],
+  "deferredAggregateGroups": [
+    "agg_repo_specific_fact",
+    "agg_trace_fact"
+  ],
+  "postClosureDashboard": {
+    "pendingCandidates": 0,
+    "promotedCandidates": 96,
+    "rejectedOrDeferredCandidates": 9,
+    "topAggregateRecommendation": null,
+    "recommendedNextAction": "No pending sidecar learning action."
+  },
+  "notPromoted": [
+    "repo-specific facts",
+    "one-off trace facts",
+    "raw Codex report wording",
+    "local attached-repo details"
+  ],
+  "autoPromote": false
+}
