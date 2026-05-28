@@ -7,23 +7,23 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-d217d68
+97f0c75
 ```
 
 Commit reference:
 
 ```txt
-d217d68 on origin/main
+97f0c75 on origin/main
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26597962514
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26598849561
 ```
 
-This supersedes the older `6eeff27` verified source baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
+This supersedes the older `d217d68` verified source baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
 
 Latest completed sidecar-learning, handoff, and observed-regression cleanup sequence:
 
@@ -54,6 +54,7 @@ c9915e5 Refresh handoff after visual fallback fix
 594a59f Source baseline
 6eeff27 Source baseline
 d217d68 Source baseline
+97f0c75 Artifact baseline
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -108,20 +109,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-d217d68
+97f0c75
 ```
 
 Commit reference:
 
 ```txt
-d217d68 on origin/main
+97f0c75 on origin/main
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26597962514
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26598849561
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -156,6 +157,7 @@ The latest verified STAX baseline named at the top of this file is current and p
 Recent pushed commits include:
 
 ```txt
+97f0c75 Artifact baseline
 d217d68 Source baseline
 6eeff27 Source baseline
 594a59f Source baseline
@@ -203,19 +205,20 @@ b1d734d Record Canvas impact evidence import
 The latest verified source commit recorded by this handoff is:
 
 ```txt
-d217d68
+97f0c75
 ```
 
 Local proof evidence recorded during that source-patch turn:
 
-  - `cmd_2026-05-28T19_39_46_060Z_38b65c941890`: `npm test -- tests/sidecarAttachGate.test.ts -t "docs-only restart|docs-only implementation"`, exit 0
-  - `cmd_2026-05-28T19_39_54_457Z_982c1455e5e7`: `npm run typecheck`, exit 0
-  - `cmd_2026-05-28T19_40_03_773Z_328e123c6385`: `npm test`, exit 0
-  - `cmd_2026-05-28T19_40_34_814Z_092594e366f2`: `npm run smoke:stax`, exit 0
-  - `cmd_2026-05-28T19_40_39_209Z_31b060f341fa`: `npm run rax -- eval`, exit 0
+  - `cmd_2026-05-28T19_56_36_132Z_982c1455e5e7`: `npm run typecheck`, exit 0
+  - `cmd_2026-05-28T19_56_48_114Z_328e123c6385`: `npm test`, exit 0
+  - `cmd_2026-05-28T19_57_35_292Z_092594e366f2`: `npm run smoke:stax`, exit 0
+  - `cmd_2026-05-28T19_57_41_841Z_31b060f341fa`: `npm run rax -- eval`, exit 0
   - STAX sidecar gate: `Accept / Audit-grade`
-- GitHub Actions `staxcore-strict`: completed / success at https://github.com/deanguedo-arch/STAX/actions/runs/26597962514
-- Restart baseline: `d217d68`; use the commit and CI link above for source-patch details.
+- GitHub Actions `staxcore-strict`: completed / success at https://github.com/deanguedo-arch/STAX/actions/runs/26598849561
+- Restart baseline: `97f0c75`; use the commit and CI link above for rollout/impact artifact details.
+- Refreshed rollout phase gate artifacts on the current baseline; phases 0 through 6 report `passed`.
+- Refreshed pattern promotion impact artifacts; locked replay remains 10 cases / 0 critical misses / 8 improved / 2 unchanged-safe / 0 regressed, and imported operating-window evidence remains 14 bundles / 0 critical misses / 14 of 14 proof artifacts requested.
 - Hardened sidecar docs-only handling so restart-note documentation changes are not rejected when no implementation or behavior claim is made.
 - Hardened claim extraction so workflow or CI status receipt lines such as GitHub Actions run receipts do not become implementation claims.
 - Kept direct `CI is green` wording proof-bearing as a test claim, so Codex cannot use that phrase to dodge proof.

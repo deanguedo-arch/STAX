@@ -73,7 +73,7 @@ STAX is strong for Codex/repo project-control:
 - rollout phase gate artifacts refreshed on 2026-05-28 and report phases 0 through 6 passing their deterministic gates
 - evidence grounding now supports basename-only file references only when they uniquely map to a known repo path, with ambiguous basenames still requiring fuller paths
 - workflow or CI status receipt lines no longer route into implementation claims, while direct `CI is green` wording remains proof-bearing
-- latest restart baseline: `d217d68`, with `staxcore-strict` success at run `26597962514`
+- latest restart baseline: `97f0c75`, with `staxcore-strict` success at run `26598849561`
 
 ## Current Technical Risks
 
