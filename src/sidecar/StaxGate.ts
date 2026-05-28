@@ -1285,7 +1285,9 @@ async function deriveSidecarFindings(input: {
   const reportClaims = decomposeClaimsFromReport(report);
   const riskyRelease = reportClaims.some((claim) => claim.claimType === "release_deploy");
   const visualClaim = reportClaims.some((claim) => claim.claimType === "visual") || /\b(visual|layout|css|screenshot|rendered|looks good)\b/i.test(report);
-  const implementationClaim = /\b(implemented|fixed|done|complete|ready|works|behavior|runtime)\b/i.test(report);
+  const implementationClaim = reportClaims.some((claim) =>
+    claim.hardClaim && (claim.claimType === "implementation" || claim.claimType === "behavior")
+  );
   const testsPassedClaim = /\b(tests? passed|npm test passed|all tests passed|test suite passed)\b/i.test(report);
   const currentVisualEvidence = input.visualEvidenceEntries.filter((entry) => entry.verificationStatus === "verified_current_visual_proof");
   const nonCurrentVisualEvidence = input.visualEvidenceEntries.filter((entry) => entry.verificationStatus !== "verified_current_visual_proof");

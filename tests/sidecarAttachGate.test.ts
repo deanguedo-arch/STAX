@@ -846,4 +846,58 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.verdict).toBe("Reject");
     expect(status.unverified.join("\n")).toContain("Docs-only diff cannot prove implementation");
   });
+
+  it("does not reject docs-only restart notes when no implementation or behavior claim is made", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-docs-only-restart-");
+    await attachStaxToRepo(repoPath);
+    await commitFile(repoPath, "docs/ACTIVE_HANDOFF.md", "baseline: old\n");
+    await fs.writeFile(path.join(repoPath, "docs", "ACTIVE_HANDOFF.md"), "baseline: 6eeff27\n", "utf8");
+    const turnContract = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "turn-contract.json"), "utf8")) as {
+      requiredAcknowledgement: string;
+    };
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        `STAX acknowledgement: ${turnContract.requiredAcknowledgement}`,
+        "",
+        "Objective:",
+        "Update restart docs to point at commit 6eeff27.",
+        "",
+        "Files changed:",
+        "- docs/ACTIVE_HANDOFF.md",
+        "",
+        "Tests added:",
+        "- none",
+        "",
+        "Commands run:",
+        "- npm test -- tests/currentStatusDoc.test.ts",
+        "  - exitCode: 0",
+        "",
+        "Command output summary with exit codes:",
+        "- current-status doc test exited 0",
+        "",
+        "What is verified:",
+        "- docs/ACTIVE_HANDOFF.md points restart readers at commit 6eeff27.",
+        "",
+        "What is weak/provisional:",
+        "- docs-only restart note",
+        "",
+        "What is unverified:",
+        "- attached repo observer runs were not inspected.",
+        "",
+        "Risks:",
+        "- none",
+        "",
+        "One next action:",
+        "stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath });
+
+    expect(status.verdict).not.toBe("Reject");
+    expect(status.unverified.join("\n")).not.toContain("Docs-only diff cannot prove implementation");
+    expect(status.risk.join("\n")).not.toContain("Docs-only implementation claim blocked");
+  });
 });
