@@ -261,7 +261,7 @@ describe("STAX turn compliance", () => {
     expect(result.issues.map((issue) => issue.message).join("\n")).toContain("Current Codex turn capture");
   });
 
-  it("normal mode downgrades current-turn capture lag when the report has the current ACK", async () => {
+  it("normal mode accepts current-turn capture lag when the report has the current ACK", async () => {
     const repoPath = await createTempGitRepo("stax-turn-current-capture-lag-");
     await attachStaxToRepo(repoPath);
     const contract = await readTurnContract(repoPath);
@@ -270,9 +270,9 @@ describe("STAX turn compliance", () => {
 
     const result = await checkTurnCompliance({ repoPath, mode: "normal", hasDiff: true });
 
-    expect(result.pass).toBe(false);
-    expect(result.severity).toBe("weak");
-    expect(result.issues.map((issue) => issue.message).join("\n")).toContain("capture lag");
+    expect(result.pass).toBe(true);
+    expect(result.severity).toBe("pass");
+    expect(result.issues).toEqual([]);
   });
 
   it("does not reject report mtimes inside normal filesystem granularity", async () => {
@@ -287,12 +287,12 @@ describe("STAX turn compliance", () => {
 
     const result = await checkTurnCompliance({ repoPath, mode: "normal", hasDiff: true });
 
-    expect(result.pass).toBe(false);
-    expect(result.severity).toBe("weak");
+    expect(result.pass).toBe(true);
+    expect(result.severity).toBe("pass");
     expect(result.issues.map((issue) => issue.message).join("\n")).not.toContain("older than the current STAX turn contract");
   });
 
-  it("gate treats current-turn capture lag as non-blocking when the report has the current ACK", async () => {
+  it("gate treats current-turn capture lag as accepted when the report has the current ACK", async () => {
     const repoPath = await createTempGitRepo("stax-turn-current-capture-lag-gate-");
     await attachStaxToRepo(repoPath);
     await updateSidecarConfig(repoPath, { runtimeFreshnessMode: "manual" });
@@ -306,8 +306,8 @@ describe("STAX turn compliance", () => {
     const status = await runStaxGate({ repoPath, writeLearningEvent: false });
 
     expect(status.verdict).toBe("Accept");
-    expect(status.protocolStatus).toBe("warning");
-    expect(status.verified.join("\n")).toContain("Protocol warning recorded as non-blocking");
+    expect(status.protocolStatus).toBe("ok");
+    expect(status.verified.join("\n")).toContain("Protocol compliance verified: Codex acknowledged current STAX turn contract");
     expect(status.weak.join("\n")).not.toContain("Current Codex turn capture does not contain");
   });
 

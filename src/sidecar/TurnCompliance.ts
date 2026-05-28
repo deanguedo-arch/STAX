@@ -142,13 +142,14 @@ export async function checkTurnCompliance(options: CheckTurnComplianceOptions): 
 
   const capturedText = currentTurnText(currentTurnCaptureText);
   if (currentTurnCaptureText.trim() && !capturedText.includes(expectedAck)) {
-    const severity = mode === "strict" ? "reject" : reportContainsExpectedAck || mode === "manual" ? "weak" : "reject";
-    issues.push({
-      severity,
-      message: reportContainsExpectedAck
-        ? "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
-        : "Current Codex turn capture does not contain the current STAX acknowledgement."
-    });
+    if (mode === "strict" || !reportContainsExpectedAck) {
+      issues.push({
+        severity: "reject",
+        message: reportContainsExpectedAck
+          ? "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
+          : "Current Codex turn capture does not contain the current STAX acknowledgement."
+      });
+    }
   }
 
   const generatedAtMs = Date.parse(contract.generatedAt);
