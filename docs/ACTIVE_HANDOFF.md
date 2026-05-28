@@ -21,20 +21,20 @@ main
 Latest verified rollout commit:
 
 ```txt
-618589a
+6850708
 ```
 
 Commit message:
 
 ```txt
-Import studentbudgetwars sidecar proof
+Import ADMISSION proof and stabilize validation
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26554382020
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26563991531
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md`.
@@ -64,11 +64,12 @@ Do not broaden this work into a generic AI runtime, new agent system, deploy sys
 
 ## What Just Landed
 
-The latest verified STAX baseline is current and pushed. This handoff also records the local ADMISSION import, command-evidence classifier hardening, and test-runner reliability fix that are being prepared for the next STAX commit.
+The latest verified STAX baseline is current and pushed. The ADMISSION import, command-evidence classifier hardening, and test-runner reliability fix landed in `6850708` and passed `staxcore-strict`.
 
 Recent pushed commits include:
 
 ```txt
+6850708 Import ADMISSION proof and stabilize validation
 618589a Import studentbudgetwars sidecar proof
 c273432 commit
 c2c80b9 Refresh handoff after Canvas proof CI
@@ -440,6 +441,8 @@ staxcore-strict on c273432: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26553832572
 staxcore-strict on 618589a: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26554382020
+staxcore-strict on 6850708: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26563991531
 ```
 
 ## Current Local Dirt
@@ -536,15 +539,15 @@ Current operating-window status:
 9/10 cleanup prompts needed
 ```
 
-Immediate next action after this ADMISSION update is committed/pushed:
+Immediate next action after this handoff refresh is committed/pushed:
 
 ```txt
-Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `618589a`.
+Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `6850708`.
 ```
 
 Next best actions:
 
-1. Use `618589a` as the current verified STAX rollout baseline until the ADMISSION impact-report commit is pushed and its CI completes.
+1. Use `6850708` as the current verified STAX rollout baseline.
 2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
 3. For Canvas Helper, current-head command proof is refreshed and the sidecar gate is `Accept / Audit-grade`; use the latest Canvas bundle unless the Canvas worktree changes.
 4. For Brightspacequizexporter, refresh the stale acknowledgement/report protocol if new work depends on current sidecar status; otherwise keep using the current-main Accept bundle until the repo changes.

@@ -1,36 +1,34 @@
 {
   "schemaVersion": "stax-sidecar-status-v1",
-  "generatedAt": "2026-05-28T07:45:10.776Z",
+  "generatedAt": "2026-05-28T09:35:37.687Z",
   "repo": "STAX",
   "repoPath": "/Users/deanguedo/Documents/GitHub/STAX",
   "branch": "main",
-  "commitSha": "618589a6cef682134f08b7a57ae873376d3654f0",
+  "commitSha": "68507089ed065b3b3796502e4f02f05bccafc9dc",
   "task": "Continue the pattern-promotion operating-window plan: fix false-reject claim routing found during the ADMISSION observer pass, refresh impact evidence, and report remaining work honestly.",
   "verdict": "Accept",
   "exitCode": 0,
   "why": "Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.",
   "verified": [
-    "Working-tree diff detected with 7 changed file(s).",
+    "Working-tree diff detected with 1 changed file(s).",
     "Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.",
     "Command evidence classifier: strong_local_proof for npm run rax -- eval.",
     "Claim-to-proof: protocol_compliance claim is fully supported.",
-    "Command evidence provenance verified: cmd_2026-05-28T06_53_05_631Z_31b060f341fa.",
-    "Command evidence freshness verified: cmd_2026-05-28T06_53_05_631Z_31b060f341fa matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-28T06_53_04_785Z_092594e366f2.",
-    "Command evidence freshness verified: cmd_2026-05-28T06_53_04_785Z_092594e366f2 matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-28T06_52_10_852Z_328e123c6385.",
-    "Command evidence freshness verified: cmd_2026-05-28T06_52_10_852Z_328e123c6385 matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-28T06_51_54_450Z_a90b422dea0c.",
-    "Command evidence freshness verified: cmd_2026-05-28T06_51_54_450Z_a90b422dea0c matches the current auditable worktree.",
-    "Command evidence provenance verified: cmd_2026-05-28T06_51_39_906Z_982c1455e5e7.",
-    "Command evidence freshness verified: cmd_2026-05-28T06_51_39_906Z_982c1455e5e7 matches the current auditable worktree.",
-    "Historical command evidence ignored for current proof because npm test -- tests/sidecarWatchCollect.test.ts -t ignores tracked runtime artifacts is wrong_worktree.",
-    "Historical command evidence ignored for current proof because npm test -- tests/patternPromotionImpactTracker.test.ts is wrong_worktree.",
-    "Historical command evidence ignored for current proof because git diff --cached --check is wrong_commit.",
+    "Command evidence provenance verified: cmd_2026-05-28T09_18_20_147Z_31b060f341fa.",
+    "Command evidence freshness verified: cmd_2026-05-28T09_18_20_147Z_31b060f341fa matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-28T09_18_19_274Z_092594e366f2.",
+    "Command evidence freshness verified: cmd_2026-05-28T09_18_19_274Z_092594e366f2 matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-28T09_17_05_138Z_328e123c6385.",
+    "Command evidence freshness verified: cmd_2026-05-28T09_17_05_138Z_328e123c6385 matches the current auditable worktree.",
+    "Command evidence provenance verified: cmd_2026-05-28T09_17_01_176Z_982c1455e5e7.",
+    "Command evidence freshness verified: cmd_2026-05-28T09_17_01_176Z_982c1455e5e7 matches the current auditable worktree.",
+    "Historical command evidence ignored for current proof because npm test -- tests/commandEvidenceIntelligence.test.ts tests/patternPromotionImpactTracker.test.ts is wrong_commit.",
+    "Historical command evidence ignored for current proof because npm test -- tests/sidecarWatchCollect.test.ts -t ignores tracked runtime artifacts is wrong_commit.",
+    "Historical command evidence ignored for current proof because npm test -- tests/patternPromotionImpactTracker.test.ts is wrong_commit.",
     "Earlier failed command evidence exists but is superseded by a later passing npm test run.",
     "Proof strength: Strong (0.73) - Unsupported file_path claim: ADMISSION-APP-impact-page-build-accept.json (File path was not present in the repo evidence pack.).",
-    "Fresh STAX sidecar heartbeat is present (18258ms old).",
-    "Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 2289 message(s).",
+    "Fresh STAX sidecar heartbeat is present (27531ms old).",
+    "Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 2297 message(s).",
     "Protocol warning recorded as non-blocking: Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
   ],
   "weak": [],
@@ -41,7 +39,7 @@
   "proofStrength": {
     "schemaVersion": "proof-strength-v1",
     "claimType": "verification_run",
-    "claimText": "Continue the pattern-promotion operating-window plan: fix false-reject claim routing found during the ADMISSION observer pass, refresh impact evidence, and report remaining work honestly.\n\nSTAX acknowledgement: STAX_ACK turn_2026-05-28T07-44-43-419Z_b027 ba541a40 8e270746\n\nObjective:\nContinue the attached-repo operating-window phase by importing the refreshed ADMISSION-APP accepted observer evidence bundle into the STAX pattern-promotion impact report, preserving the active handoff, and recording final STAX command receipts before commit/push.\n\nFiles changed:\n- `docs/ACTIVE_HANDOFF.md`\n- `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md`\n- `reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-page-build-accept.json`\n- `reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json`\n- `src/evidence/CommandEvidenceIntelligence.ts`\n- `tests/commandEvidenceIntelligence.test.ts`\n- `vitest.config.ts`\n- External attached repo update: ADMISSION-APP sidecar status/proof commits were pushed in that repo.\n\nTests added:\n- Added a command-evidence intelligence regression covering passing eval JSON whose case text mentions skipped tests as prose.\n\nCommands run:\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --discover-surfaces`\n  - exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP -- npm run build:pages -- --output /tmp/stax-admission-pages/index.html`\n  - exitCode: 0\n  - current accepted evidence: `cmd_2026-05-28T04_43_02_629Z_9a14d75cbfdf`\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP`\n  - exitCode: 0\n- `npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --no-learning-event`\n  - exitCode: 0\n  - result: ADMISSION-APP `Accept / Audit-grade`\n- ADMISSION-APP sidecar commits and pushes:\n  - exitCode: 0\n  - commits: `78236ec`, `d623f09`, `8b0aa91`\n- `npm run stax:export-impact-evidence -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --out reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-page-build-accept.json`\n  - exitCode: 0\n- `npm run pattern:impact -- --import <10 operating-window bundles including ADMISSION-APP-impact-page-build-accept.json>`\n  - exitCode: 0\n  - result artifact: `reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 1\n  - evidence: `cmd_2026-05-28T05_42_07_739Z_328e123c6385`\n  - reason: full-suite worker/test timeout before Vitest worker cap\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 1\n  - evidence: `cmd_2026-05-28T06_11_56_053Z_328e123c6385`\n  - reason: repeated Vitest fork-worker startup timeout before worker cap\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T06_51_39_906Z_982c1455e5e7`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/commandEvidenceIntelligence.test.ts tests/patternPromotionImpactTracker.test.ts`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T06_51_54_450Z_a90b422dea0c`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T06_52_10_852Z_328e123c6385`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T06_53_04_785Z_092594e366f2`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T06_53_05_631Z_31b060f341fa`\n\nCommand output summary with exit codes:\n- ADMISSION-APP sidecar upgrade, non-mutating local HTML-generation proof, sidecar refresh, gate, commits, and pushes all exited 0.\n- ADMISSION-APP gate reached `Accept / Audit-grade` for the narrowed attached-repo observer claim.\n- STAX export/import produced the ADMISSION impact bundle and regenerated the pattern-promotion impact report with 10 imported bundles.\n- STAX initially exposed two full-suite worker-timeout failures; the fix caps Vitest workers at 4.\n- After the classifier and Vitest config fixes, final STAX command receipts for static analysis, focused regression coverage, full Vitest coverage, smoke, and eval all exited 0 through STAX-collected command evidence for this final audited worktree.\n\nWhat is verified:\n- ADMISSION-APP is clean and pushed at `8b0aa9168b72fb1b541cf29402bc7cdc8632d57e`.\n- ADMISSION-APP sidecar status is `Accept / Audit-grade` for the non-mutating attached-repo observer proof.\n- The accepted ADMISSION proof generated temporary output under `/tmp/stax-admission-pages/index.html`; it does not keep the tracked `docs/index.html` mutation from the earlier direct command.\n- The ADMISSION export bundle records `criticalMiss=false`, `fullHandoffContractPresent=true`, and `proofArtifactRequested=true`.\n- The current operating-window impact report records 10 imported bundles, 0 critical misses, 10/10 full handoff contracts, and 10/10 proof artifacts requested.\n- Passing `npm run rax -- eval` evidence is no longer downgraded just because eval-case prose mentions skipped tests.\n- The final full `npm test` receipt exited 0 under the capped Vitest worker configuration.\n\nWhat is weak/provisional:\n- The ADMISSION export bundle still records `cleanupPromptNeeded=true`; this is operating-window tracking, not a failure of the narrowed page-build proof.\n- Candidate proof surfaces remain candidate-only unless approved in the attached repo.\n\nWhat is unverified:\n- GitHub Actions has not yet run for the upcoming STAX commit that imports the ADMISSION bundle and classifier/test-runner fixes.\n- No ADMISSION live sync, deploy, publish, dataset validation, or visual readiness claim is made or verified.\n\nRisks:\n- Do not treat the local HTML-generation proof as live ADMISSION deployment/sync proof.\n- Do not treat STAX sidecar Accept as general code correctness proof.\n- `docs/ACTIVE_HANDOFF 2.md` is a tracked historical duplicate on STAX main; use `docs/ACTIVE_HANDOFF.md` as the active handoff source.\n\nOne next action:\nRefresh the STAX sidecar gate for this final report, commit and push the STAX artifacts, then verify GitHub Actions on the new STAX commit.",
+    "claimText": "Continue the pattern-promotion operating-window plan: fix false-reject claim routing found during the ADMISSION observer pass, refresh impact evidence, and report remaining work honestly.\n\nSTAX acknowledgement: STAX_ACK turn_2026-05-28T09-35-11-099Z_d9b1 e4584ce5 6884e7dc\n\nObjective:\nRefresh the active handoff and STAX sidecar status after the pushed ADMISSION import commit `6850708` passed GitHub Actions `staxcore-strict`.\n\nFiles changed:\n- `docs/ACTIVE_HANDOFF.md`\n- `.stax/status.json`\n- `.stax/proof_strength.json`\n- `.stax/reports/latest-proof-report.md`\n- `.stax/reports/latest-confidence-report.md`\n- `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md`\n- `reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-page-build-accept.json`\n- `reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json`\n- `src/evidence/CommandEvidenceIntelligence.ts`\n- `tests/commandEvidenceIntelligence.test.ts`\n- `vitest.config.ts`\n- External attached repo update: ADMISSION-APP sidecar status/proof commits were pushed in that repo.\n\nTests added:\n- Added a command-evidence intelligence regression covering passing eval JSON whose case text mentions skipped tests as prose.\n\nCommands run:\n- `npm run stax:sidecar-upgrade -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --discover-surfaces`\n  - exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP -- npm run build:pages -- --output /tmp/stax-admission-pages/index.html`\n  - exitCode: 0\n  - current accepted evidence: `cmd_2026-05-28T04_43_02_629Z_9a14d75cbfdf`\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP`\n  - exitCode: 0\n- `npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --no-learning-event`\n  - exitCode: 0\n  - result: ADMISSION-APP `Accept / Audit-grade`\n- ADMISSION-APP sidecar commits and pushes:\n  - exitCode: 0\n  - commits: `78236ec`, `d623f09`, `8b0aa91`\n- `npm run stax:export-impact-evidence -- --repo /Users/deanguedo/Documents/GitHub/ADMISSION-APP --out reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-page-build-accept.json`\n  - exitCode: 0\n- `npm run pattern:impact -- --import <10 operating-window bundles including ADMISSION-APP-impact-page-build-accept.json>`\n  - exitCode: 0\n  - result artifact: `reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 1\n  - evidence: `cmd_2026-05-28T05_42_07_739Z_328e123c6385`\n  - reason: full-suite worker/test timeout before Vitest worker cap\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 1\n  - evidence: `cmd_2026-05-28T06_11_56_053Z_328e123c6385`\n  - reason: repeated Vitest fork-worker startup timeout before worker cap\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T09_17_01_176Z_982c1455e5e7`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/commandEvidenceIntelligence.test.ts tests/patternPromotionImpactTracker.test.ts`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T06_51_54_450Z_a90b422dea0c`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T09_17_05_138Z_328e123c6385`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T09_18_19_274Z_092594e366f2`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T09_18_20_147Z_31b060f341fa`\n- `npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX --no-learning-event`\n  - exitCode: 0\n  - result: STAX sidecar `Accept / Strong`\n- GitHub Actions `staxcore-strict` on commit `6850708`\n  - conclusion: success\n  - run: `https://github.com/deanguedo-arch/STAX/actions/runs/26563991531`\n\nCommand output summary with exit codes:\n- ADMISSION-APP sidecar upgrade, non-mutating local HTML-generation proof, sidecar refresh, gate, commits, and pushes all exited 0.\n- ADMISSION-APP gate reached `Accept / Audit-grade` for the narrowed attached-repo observer claim.\n- STAX export/import produced the ADMISSION impact bundle and regenerated the pattern-promotion impact report with 10 imported bundles.\n- STAX initially exposed two full-suite worker-timeout failures; the fix caps Vitest workers at 4.\n- After the classifier and Vitest config fixes, final STAX command receipts for static analysis, focused regression coverage, full Vitest coverage, smoke, and eval all exited 0 through STAX-collected command evidence for this final audited worktree.\n\nWhat is verified:\n- ADMISSION-APP is clean and pushed at `8b0aa9168b72fb1b541cf29402bc7cdc8632d57e`.\n- ADMISSION-APP sidecar status is `Accept / Audit-grade` for the non-mutating attached-repo observer proof.\n- The accepted ADMISSION proof generated temporary output under `/tmp/stax-admission-pages/index.html`; it does not keep the tracked `docs/index.html` mutation from the earlier direct command.\n- The ADMISSION export bundle records `criticalMiss=false`, `fullHandoffContractPresent=true`, and `proofArtifactRequested=true`.\n- The current operating-window impact report records 10 imported bundles, 0 critical misses, 10/10 full handoff contracts, and 10/10 proof artifacts requested.\n- Passing `npm run rax -- eval` evidence is no longer downgraded just because eval-case prose mentions skipped tests.\n- The final full `npm test` receipt exited 0 under the capped Vitest worker configuration.\n\nWhat is weak/provisional:\n- The ADMISSION export bundle still records `cleanupPromptNeeded=true`; this is operating-window tracking, not a failure of the narrowed page-build proof.\n- Candidate proof surfaces remain candidate-only unless approved in the attached repo.\n\nWhat is unverified:\n- GitHub Actions has not yet run for the upcoming STAX commit that imports the ADMISSION bundle and classifier/test-runner fixes.\n- No ADMISSION live sync, deploy, publish, dataset validation, or visual readiness claim is made or verified.\n\nRisks:\n- Do not treat the local HTML-generation proof as live ADMISSION deployment/sync proof.\n- Do not treat STAX sidecar Accept as general code correctness proof.\n- `docs/ACTIVE_HANDOFF 2.md` is a tracked historical duplicate on STAX main; use `docs/ACTIVE_HANDOFF.md` as the active handoff source.\n\nOne next action:\nRefresh the STAX sidecar gate for this final report, commit and push the STAX artifacts, then verify GitHub Actions on the new STAX commit.",
     "rawScore": 0.73,
     "finalScore": 0.73,
     "label": "Strong",
@@ -61,7 +59,8 @@
       "Weak command claim: npm run stax:sidecar:refresh -- --repo (Command is named, but no command output was cited.).",
       "Weak command claim: npm run stax:gate -- --repo (Command is named, but no command output was cited.).",
       "Weak command claim: npm run stax:export-impact-evidence -- --repo (Command is named, but no command output was cited.).",
-      "Weak command claim: npm run pattern:impact -- --import (Command is named, but no command output was cited.)."
+      "Weak command claim: npm run pattern:impact -- --import (Command is named, but no command output was cited.).",
+      "Weak command claim: npm test -- tests/commandevidenceintelligence.test.ts tests/patternpromotionimpacttracker.test.ts (Command is named, but no command output was cited.)."
     ],
     "strongProof": [
       "Grounded file_path claim: docs/ACTIVE_HANDOFF.md.",
@@ -74,7 +73,6 @@
       "Grounded file_path claim: tests/patternPromotionImpactTracker.test.ts.",
       "Grounded command claim: npm test.",
       "Grounded command claim: npm run typecheck.",
-      "Grounded command claim: npm test -- tests/commandevidenceintelligence.test.ts tests/patternpromotionimpacttracker.test.ts.",
       "Grounded command claim: npm run smoke:stax.",
       "Grounded command claim: npm run rax -- eval.",
       "Grounded completion claim: What is verified:.",
@@ -84,7 +82,6 @@
       "Local STAX command evidence passed: npm run rax -- eval exited 0.",
       "Local STAX command evidence passed: npm run smoke:stax exited 0.",
       "Local STAX command evidence passed: npm test exited 0.",
-      "Local STAX command evidence passed: npm test -- tests/commandEvidenceIntelligence.test.ts tests/patternPromotionImpactTracker.test.ts exited 0.",
       "Local STAX command evidence passed: npm run typecheck exited 0.",
       "Verified local STAX command provenance is present for this repo state.",
       "Repo evidence enumerated source files.",
@@ -102,7 +99,7 @@
   ],
   "protocol": {
     "schemaVersion": "stax-protocol-compliance-v1",
-    "generatedAt": "2026-05-28T07:45:10.775Z",
+    "generatedAt": "2026-05-28T09:35:37.686Z",
     "mode": "normal",
     "status": "warning",
     "acknowledgedTurnContract": false,
@@ -128,8 +125,8 @@
         "message": "Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag."
       }
     ],
-    "acknowledgement": "STAX_ACK turn_2026-05-28T07-44-43-419Z_b027 ba541a40 8e270746",
-    "contractTurnId": "turn_2026-05-28T07-44-43-419Z_b027"
+    "acknowledgement": "STAX_ACK turn_2026-05-28T09-35-11-099Z_d9b1 e4584ce5 6884e7dc",
+    "contractTurnId": "turn_2026-05-28T09-35-11-099Z_d9b1"
   },
   "cardShapeIssues": []
 }
