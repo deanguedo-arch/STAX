@@ -72,6 +72,7 @@ STAX is strong for Codex/repo project-control:
 - `stax:status` now labels stored status as last-known and reports stale commit/branch or dirty-worktree possible staleness before pointing users to `stax:gate`
 - rollout phase gate artifacts refreshed on 2026-05-28 and report phases 0 through 6 passing their deterministic gates
 - evidence grounding now supports basename-only file references only when they uniquely map to a known repo path, with ambiguous basenames still requiring fuller paths
+- workflow or CI status receipt lines no longer route into implementation claims, while direct `CI is green` wording remains proof-bearing
 
 ## Current Technical Risks
 

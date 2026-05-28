@@ -7,20 +7,20 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-b2eef94
+a6d38b6
 ```
 
 Commit message:
 
 ```txt
-Ground unique basename file claims
+Harden workflow status claim extraction
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26591243938
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26593643758
 ```
 
 This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
@@ -46,6 +46,8 @@ cb7882d Refresh handoff after ACK noise fix
 9945855 Refresh handoff after status staleness fix
 b6244f8 Refresh current RC proof packet
 b2eef94 Ground unique basename file claims
+e4ca0ed Refresh handoff after basename grounding fix
+a6d38b6 Harden workflow status claim extraction
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -99,20 +101,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-b2eef94
+a6d38b6
 ```
 
 Commit message:
 
 ```txt
-Ground unique basename file claims
+Harden workflow status claim extraction
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26591243938
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26593643758
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -147,6 +149,8 @@ The latest verified STAX baseline named at the top of this file is current and p
 Recent pushed commits include:
 
 ```txt
+a6d38b6 Harden workflow status claim extraction
+e4ca0ed Refresh handoff after basename grounding fix
 b2eef94 Ground unique basename file claims
 b6244f8 Refresh current RC proof packet
 9945855 Refresh handoff after status staleness fix
@@ -185,6 +189,17 @@ b1d734d Record Canvas impact evidence import
 
 The latest work:
 
+- Hardened claim extraction so workflow or CI status receipt lines such as GitHub Actions run receipts do not become implementation claims.
+- Kept direct `CI is green` wording proof-bearing as a test claim, so Codex cannot use that phrase to dodge proof.
+- Regenerated the Phase 3 claim-evasion result/report artifacts after the extractor change.
+- Verified the workflow-status claim extraction patch with STAX-collected command evidence:
+  - `cmd_2026-05-28T18_15_48_633Z_91149d35caf7`: `npm test -- tests/sidecarClaimExtractionPrecision.test.ts tests/claimExtractionHardening.test.ts`, exit 0
+  - `cmd_2026-05-28T18_15_54_665Z_982c1455e5e7`: `npm run typecheck`, exit 0
+  - `cmd_2026-05-28T18_16_03_075Z_328e123c6385`: `npm test`, exit 0
+  - `cmd_2026-05-28T18_16_30_024Z_092594e366f2`: `npm run smoke:stax`, exit 0
+  - `cmd_2026-05-28T18_16_36_197Z_31b060f341fa`: `npm run rax -- eval`, exit 0
+  - STAX sidecar gate: `Accept / Audit-grade`
+- Pushed `a6d38b6 Harden workflow status claim extraction` and verified GitHub Actions `staxcore-strict` completed successfully.
 - Hardened evidence grounding so basename-only file references are supported only when they uniquely map to a known repo path.
 - Added regression coverage in `tests/evidenceGroundingGate.test.ts` for unique basename support and ambiguous basename rejection.
 - Verified the grounding patch with STAX-collected command evidence:
@@ -635,6 +650,10 @@ staxcore-strict on b6244f8: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26590716825
 staxcore-strict on b2eef94: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26591243938
+staxcore-strict on e4ca0ed: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26593091409
+staxcore-strict on a6d38b6: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26593643758
 ```
 
 ## Current Local Dirt
@@ -830,11 +849,11 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff refresh:
-- commit: b2eef94d6fe57e2271c8a10ac0f24a9b6f463f3b
-- short: b2eef94
-- commit message: Ground unique basename file claims
+- commit: a6d38b63a9df5be71196c4aeaf05ee8b6ce67058
+- short: a6d38b6
+- commit message: Harden workflow status claim extraction
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26591243938
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26593643758
 
 Goal:
 Continue the attached-repo operating-window phase from the top Latest Restart Note baseline. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, Brightspace isolated ingest promotion benchmark issue, and raw sidecar-learning candidate queue closure are all covered in the current operating-window evidence.
