@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-28T12:15:17.138Z
+Generated: 2026-05-28T19:55:43.353Z
 
 ## Claim Separation
 
