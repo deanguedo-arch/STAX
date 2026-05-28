@@ -108,6 +108,23 @@ describe("repo proof-surface discovery", () => {
     expect(visual?.blockedEvidence).toContain("css_diff_only");
   });
 
+  it("does not recommend mutating smoke pipeline commands as visual proof", async () => {
+    const repoPath = await createRepoWithPackage({
+      "test:e2e": "playwright test",
+      "smoke:pipeline": "tsx scripts/smoke-local-pipeline.ts",
+      "test:e2e:smoke": "playwright test --grep @smoke"
+    });
+    await fs.mkdir(path.join(repoPath, "workspace"), { recursive: true });
+    await fs.writeFile(path.join(repoPath, "workspace", "styles.css"), "body { color: red; }\n", "utf8");
+
+    const { pack } = await discoverProofSurfaces(repoPath);
+    const visual = pack.proofSurfaces.find((surface) => surface.claimType === "visual_ready");
+
+    expect(visual?.commands).toContain("npm run test:e2e:smoke");
+    expect(visual?.commands).not.toContain("npm run smoke:pipeline");
+    expect(visual?.nextAction).toContain("npm run test:e2e:smoke");
+  });
+
   it("detects course deploy proof requirements for Google-hosted course workspaces", async () => {
     const repoPath = await createRepoWithPackage({
       "build:course-shell": "node scripts/build-course-shell.js",

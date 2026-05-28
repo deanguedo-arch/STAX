@@ -40,7 +40,9 @@ export function generateProofSurfaceCandidate(input: {
     });
   }
   if (input.detectedStack.some((stack) => ["html-css", "vite", "playwright", "cypress", "storybook"].includes(stack))) {
-    const visualCommands = dedupe([...commandsByKind("e2e"), ...commandsByKind("smoke")]);
+    const visualCommands = sortVisualProofCommands(
+      dedupe([...commandsByKind("e2e"), ...commandsByKind("smoke")].filter((command) => isNonMutatingVisualProofCommand(command)))
+    );
     rules.push({
       claimType: "visual_ready",
       requiredEvidence: ["rendered_screenshot", "visual_checklist"],
@@ -52,7 +54,7 @@ export function generateProofSurfaceCandidate(input: {
         ? `Capture rendered visual proof and run ${visualCommands[0]} through stax:collect.`
         : "Capture a rendered screenshot and visual checklist artifact."
     });
-    if (visualCommands.length === 0) warnings.push("No visual automation command confirmed; screenshot may require manual artifact.");
+    if (visualCommands.length === 0) warnings.push("No non-mutating visual automation command confirmed; screenshot may require manual artifact.");
   }
   const preflightCommands = dedupe([...commandsByKind("preflight"), ...commandsByKind("validate")]);
   const liveCommands = dedupe([
@@ -153,6 +155,27 @@ export function generateProofSurfaceCandidate(input: {
 
 function dedupe(items: string[]): string[] {
   return [...new Set(items)].sort();
+}
+
+function isNonMutatingVisualProofCommand(command: string): boolean {
+  const normalized = command.toLowerCase();
+  if (/\b(?:import|export|deploy|publish|sync|seed|update|generate|migrate)\b/.test(normalized)) return false;
+  if (/\bsmoke[-_:]?pipeline\b/.test(normalized)) return false;
+  if (/\bpipeline\b/.test(normalized) && !/\b(?:test|e2e|playwright|cypress)\b/.test(normalized)) return false;
+  return true;
+}
+
+function sortVisualProofCommands(commands: string[]): string[] {
+  return [...commands].sort((left, right) => visualProofCommandRank(left) - visualProofCommandRank(right) || left.localeCompare(right));
+}
+
+function visualProofCommandRank(command: string): number {
+  const normalized = command.toLowerCase();
+  if (/e2e.*smoke|smoke.*e2e|playwright.*smoke|cypress.*smoke/.test(normalized)) return 0;
+  if (/e2e.*project|project.*e2e/.test(normalized)) return 1;
+  if (/playwright|cypress|e2e/.test(normalized)) return 2;
+  if (/smoke/.test(normalized)) return 3;
+  return 4;
 }
 
 function isCoursePublishSurface(discovery: RepoDiscoveryResult): boolean {

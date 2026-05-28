@@ -1,0 +1,828 @@
+{
+  "schemaVersion": "stax-impact-evidence-bundle-v1",
+  "generatedAt": "2026-05-28T00:19:32.775Z",
+  "repo": {
+    "path": "/Users/deanguedo/Documents/GitHub/canvas-helper",
+    "name": "canvas-helper",
+    "branch": "main",
+    "head": "d59dc393cf6f102a150716ca4ce20f53e968e119",
+    "dirtyStatus": " M .runtime/memory-ledger.json\n M .stax/proof-surfaces.candidate.json\n M .stax/proof-surfaces.json\n M .stax/proof_strength.json\n M .stax/reports/latest-confidence-report.md\n M .stax/reports/latest-proof-report.md\n M .stax/status.json\n M projects/resources/smoke-calm-module/_extracted/calm-module-1-personal-choices-pdf.chunks.json\n M projects/resources/smoke-calm-module/_extracted/calm-module-note-txt.chunks.json\n?? projects/resources/smoke-calm-module/AICOURSEBUILDING/\n?? projects/resources/smoke-calm-module/ExperimentalPsychology/\n?? \"projects/resources/smoke-calm-module/Forensic 35/\"\n?? projects/resources/smoke-calm-module/GeneralPsychology20/\n?? projects/resources/smoke-calm-module/HSS1010/\n?? \"projects/resources/smoke-calm-module/World Religions/\"\n?? projects/resources/smoke-calm-module/_extracted/forensics-chatgptcanvascreationexample-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-chatgptcanvascreationexample-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i00a14084-6c73-4470-8732-7f5422e60dfe-content-book-1418-chapter-12040-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i00a14084-6c73-4470-8732-7f5422e60dfe-content-book-1418-chapter-12040-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i00aa5552-393f-4865-a8aa-b1cc8ab39953-content-book-1419-chapter-12268-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i00aa5552-393f-4865-a8aa-b1cc8ab39953-content-book-1419-chapter-12268-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i01a08fc7-ba72-40e7-83cd-07fe01d50d49-content-book-1412-chapter-11953-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i01a08fc7-ba72-40e7-83cd-07fe01d50d49-content-book-1412-chapter-11953-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0216cc8c-cf1f-4893-aa90-74eb3b43fcda-content-book-1417-chapter-12022-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0216cc8c-cf1f-4893-aa90-74eb3b43fcda-content-book-1417-chapter-12022-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i09fc2f90-b5a6-46d8-a876-6a6e38b8956f-content-book-1413-chapter-12228-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i09fc2f90-b5a6-46d8-a876-6a6e38b8956f-content-book-1413-chapter-12228-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0cf5b8a9-296e-4e86-999b-cc1b41e7bedb-content-book-1416-chapter-12001-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0cf5b8a9-296e-4e86-999b-cc1b41e7bedb-content-book-1416-chapter-12001-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0d0b4605-e0e8-481c-84d0-9813d78b146d-how-to-properly-cite-sources-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0d0b4605-e0e8-481c-84d0-9813d78b146d-how-to-properly-cite-sources-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0f9723f9-0ae9-4109-a1ef-5ff80cae7681-content-book-1419-chapter-12050-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i0f9723f9-0ae9-4109-a1ef-5ff80cae7681-content-book-1419-chapter-12050-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i13e076dd-cf2b-46f6-86bc-7534a3937931-content-book-1412-chapter-11972-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i13e076dd-cf2b-46f6-86bc-7534a3937931-content-book-1412-chapter-11972-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i140bff09-0cf0-4230-8bf1-25cf6daf71f2-content-book-1413-chapter-12227-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i140bff09-0cf0-4230-8bf1-25cf6daf71f2-content-book-1413-chapter-12227-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i148eaf13-e685-4f16-b445-643f7511fbf0-content-book-1419-chapter-12053-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i148eaf13-e685-4f16-b445-643f7511fbf0-content-book-1419-chapter-12053-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i15a39b8f-ec37-4634-8131-2bbce7798ca9-content-book-1412-chapter-11973-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i15a39b8f-ec37-4634-8131-2bbce7798ca9-content-book-1412-chapter-11973-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i15e6ef30-f8fe-4a0a-856e-16275d9a167b-content-book-1413-chapter-11980-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i15e6ef30-f8fe-4a0a-856e-16275d9a167b-content-book-1413-chapter-11980-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i16157390-e22b-49f6-b519-ab6887cba9b3-content-book-1419-chapter-12056-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i16157390-e22b-49f6-b519-ab6887cba9b3-content-book-1419-chapter-12056-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i17370884-5a56-416d-91ab-8541069a5e81-content-book-1408-chapter-12201-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i17370884-5a56-416d-91ab-8541069a5e81-content-book-1408-chapter-12201-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i18824365-5daf-43b4-868a-2443fe223d70-content-book-1417-chapter-12007-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i18824365-5daf-43b4-868a-2443fe223d70-content-book-1417-chapter-12007-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i1b9d5df3-0b57-4109-9a00-d3f42192d5e2-assignment-submission-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i1b9d5df3-0b57-4109-9a00-d3f42192d5e2-assignment-submission-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i1e97890f-81bf-446d-ab50-004a1547d227-content-book-1413-chapter-12225-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i1e97890f-81bf-446d-ab50-004a1547d227-content-book-1413-chapter-12225-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i205ddaa3-0c3e-4015-b814-bcfd45b83422-content-book-1416-chapter-11997-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i205ddaa3-0c3e-4015-b814-bcfd45b83422-content-book-1416-chapter-11997-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i21fc9773-877f-49ab-893d-c4f7c2c19448-content-book-1418-chapter-12024-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i21fc9773-877f-49ab-893d-c4f7c2c19448-content-book-1418-chapter-12024-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i29afd473-aa24-4b9f-8e36-623197d67aae-historical-crime-case-1-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i29afd473-aa24-4b9f-8e36-623197d67aae-historical-crime-case-1-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2b5fcc4e-bc3b-4fed-ab4c-e39906258b3f-content-book-1417-chapter-12023-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2b5fcc4e-bc3b-4fed-ab4c-e39906258b3f-content-book-1417-chapter-12023-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2bc0fb46-6a9c-45e6-9505-39ec39daa7cd-content-book-1418-chapter-12041-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2bc0fb46-6a9c-45e6-9505-39ec39daa7cd-content-book-1418-chapter-12041-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2ce3b936-b6db-4d86-9174-1bfa407805e8-content-book-1416-chapter-11994-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2ce3b936-b6db-4d86-9174-1bfa407805e8-content-book-1416-chapter-11994-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2d953e88-05b7-46e8-ab99-8bbdc6aa7e88-content-book-1419-chapter-12064-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2d953e88-05b7-46e8-ab99-8bbdc6aa7e88-content-book-1419-chapter-12064-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2e500d83-0ea4-4c77-b639-f6acc6f291bd-content-book-1412-chapter-11978-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2e500d83-0ea4-4c77-b639-f6acc6f291bd-content-book-1412-chapter-11978-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2fbe29e6-e968-4c68-8cd5-dde0abd398b1-content-book-1412-chapter-11952-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i2fbe29e6-e968-4c68-8cd5-dde0abd398b1-content-book-1412-chapter-11952-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i308b5599-08d0-4eae-851b-a20de4c7a092-content-book-1417-chapter-12011-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i308b5599-08d0-4eae-851b-a20de4c7a092-content-book-1417-chapter-12011-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i3797c9c5-f2ad-4efa-85f5-b8076db01e9f-content-book-1416-chapter-12002-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i3797c9c5-f2ad-4efa-85f5-b8076db01e9f-content-book-1416-chapter-12002-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i389226fa-4098-4e3b-8744-dffc641fac3a-content-book-1418-chapter-12033-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i389226fa-4098-4e3b-8744-dffc641fac3a-content-book-1418-chapter-12033-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i38c48eab-1542-4f6d-8852-1d3643a3d094-content-book-1418-chapter-12028-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i38c48eab-1542-4f6d-8852-1d3643a3d094-content-book-1418-chapter-12028-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i3c41cc47-cbc8-40f2-8763-d225cbee3378-content-book-1418-chapter-12035-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i3c41cc47-cbc8-40f2-8763-d225cbee3378-content-book-1418-chapter-12035-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i3ef76257-9096-4f62-8f92-b296e1386cc9-content-book-1418-chapter-12031-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i3ef76257-9096-4f62-8f92-b296e1386cc9-content-book-1418-chapter-12031-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i427da8fa-a34c-4cad-8a56-cac73b0234b8-content-book-1416-chapter-12090-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i427da8fa-a34c-4cad-8a56-cac73b0234b8-content-book-1416-chapter-12090-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i42d255ea-4a86-47e1-9752-2824b5a18232-content-book-1419-chapter-12062-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i42d255ea-4a86-47e1-9752-2824b5a18232-content-book-1419-chapter-12062-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i48ddaf17-e5b6-4a93-8959-251d8dc39ee2-content-book-1416-chapter-12091-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i48ddaf17-e5b6-4a93-8959-251d8dc39ee2-content-book-1416-chapter-12091-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i4f858c22-ca10-4f32-93ce-ceffae7d291a-content-book-1419-chapter-12049-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i4f858c22-ca10-4f32-93ce-ceffae7d291a-content-book-1419-chapter-12049-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i55c747ee-6cb8-43b0-b421-10feff383073-content-book-1413-chapter-12224-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i55c747ee-6cb8-43b0-b421-10feff383073-content-book-1413-chapter-12224-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i56adc209-55ac-4897-9106-b794a97c179d-content-book-1417-chapter-12020-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i56adc209-55ac-4897-9106-b794a97c179d-content-book-1417-chapter-12020-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i57b023f1-0b7e-4404-9d89-c9ef9914a6ac-content-book-1412-chapter-11955-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i57b023f1-0b7e-4404-9d89-c9ef9914a6ac-content-book-1412-chapter-11955-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i5888a0ec-c4ab-403d-a497-3448599b51ee-content-book-1416-chapter-12265-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i5888a0ec-c4ab-403d-a497-3448599b51ee-content-book-1416-chapter-12265-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i5ab5b8bc-ea65-480c-9da5-effe6a5367a6-content-book-1419-chapter-12045-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i5ab5b8bc-ea65-480c-9da5-effe6a5367a6-content-book-1419-chapter-12045-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6090376e-1b88-4285-b676-c3fa0cee7a43-content-book-1412-chapter-11958-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6090376e-1b88-4285-b676-c3fa0cee7a43-content-book-1412-chapter-11958-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i61d13a78-3d18-40e9-a7f7-3a44fbf59e80-content-book-1412-chapter-11959-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i61d13a78-3d18-40e9-a7f7-3a44fbf59e80-content-book-1412-chapter-11959-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6225ab1a-cfcc-4c23-9234-75205f061981-fictional-crime-case-2-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6225ab1a-cfcc-4c23-9234-75205f061981-fictional-crime-case-2-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6a149735-6b5b-48e0-a47a-95549fa6faa9-content-book-1418-chapter-12038-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6a149735-6b5b-48e0-a47a-95549fa6faa9-content-book-1418-chapter-12038-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6ab2040d-c5b1-490e-ba4c-3f876aa81850-content-book-1413-chapter-12230-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6ab2040d-c5b1-490e-ba4c-3f876aa81850-content-book-1413-chapter-12230-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6cbc2e88-2f07-4d56-93f2-d921a0193630-content-book-1417-chapter-12019-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6cbc2e88-2f07-4d56-93f2-d921a0193630-content-book-1417-chapter-12019-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6d24cb51-52f6-4a9b-8065-d30e619f26a6-content-book-1417-chapter-12018-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6d24cb51-52f6-4a9b-8065-d30e619f26a6-content-book-1417-chapter-12018-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6fc5f283-0bc6-4999-9efe-01ac5381f0b7-content-book-1412-chapter-11960-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i6fc5f283-0bc6-4999-9efe-01ac5381f0b7-content-book-1412-chapter-11960-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7024e9f0-219f-4bb5-9972-3b3b58365841-content-book-1412-chapter-11954-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7024e9f0-219f-4bb5-9972-3b3b58365841-content-book-1412-chapter-11954-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7086da89-4a39-41df-95b6-f5475be69bd3-content-book-1412-chapter-11965-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7086da89-4a39-41df-95b6-f5475be69bd3-content-book-1412-chapter-11965-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i71043ac1-3088-4bee-bbd4-206b7b84385f-content-book-1419-chapter-12048-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i71043ac1-3088-4bee-bbd4-206b7b84385f-content-book-1419-chapter-12048-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i72306f28-aaf6-4150-a663-00ad493b2588-content-book-1419-chapter-12060-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i72306f28-aaf6-4150-a663-00ad493b2588-content-book-1419-chapter-12060-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i73921e7a-03fe-4d7e-991e-0209b5fd9ec8-content-book-1419-chapter-12061-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i73921e7a-03fe-4d7e-991e-0209b5fd9ec8-content-book-1419-chapter-12061-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i768ac1ae-b062-42f8-8c3d-1f70191c5808-content-book-1413-chapter-11979-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i768ac1ae-b062-42f8-8c3d-1f70191c5808-content-book-1413-chapter-11979-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7be4c40f-f204-43dd-abe1-ab2d1ce0d168-content-book-1416-chapter-11999-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7be4c40f-f204-43dd-abe1-ab2d1ce0d168-content-book-1416-chapter-11999-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7c28a6cf-9418-4bcb-849b-8ae4d26e1ba3-content-book-1417-chapter-12014-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7c28a6cf-9418-4bcb-849b-8ae4d26e1ba3-content-book-1417-chapter-12014-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7d5f46b8-ccf0-4b56-a4a6-c2c0fa7a94aa-content-book-1418-chapter-12044-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i7d5f46b8-ccf0-4b56-a4a6-c2c0fa7a94aa-content-book-1418-chapter-12044-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i828a8600-f807-4ec3-bb74-0b84f53999f5-content-book-1416-chapter-12088-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i828a8600-f807-4ec3-bb74-0b84f53999f5-content-book-1416-chapter-12088-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i828b93d1-ea6b-427c-bde2-90c72532124b-content-section-2945-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i828b93d1-ea6b-427c-bde2-90c72532124b-content-section-2945-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i864f0f6f-54b2-4d9d-aae2-cc3872177ec8-content-book-1419-chapter-12055-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i864f0f6f-54b2-4d9d-aae2-cc3872177ec8-content-book-1419-chapter-12055-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i865e453c-30d0-4618-b4a7-cccf59e06d95-content-book-1412-chapter-11974-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i865e453c-30d0-4618-b4a7-cccf59e06d95-content-book-1412-chapter-11974-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i88bfb601-8b90-4e70-beb3-9bbfc67f6212-content-book-1418-chapter-12037-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i88bfb601-8b90-4e70-beb3-9bbfc67f6212-content-book-1418-chapter-12037-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i8c6713da-9c8b-41e3-8877-5889ba9d71a2-content-book-1418-chapter-12034-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i8c6713da-9c8b-41e3-8877-5889ba9d71a2-content-book-1418-chapter-12034-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i8edf298b-e9ff-4bb0-89de-dbf1e5e2f7a4-content-book-1418-chapter-12032-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i8edf298b-e9ff-4bb0-89de-dbf1e5e2f7a4-content-book-1418-chapter-12032-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i8fca4d43-9030-4991-9ce9-e078260f3c51-content-book-1419-chapter-12065-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i8fca4d43-9030-4991-9ce9-e078260f3c51-content-book-1419-chapter-12065-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i90b6e6d0-c199-4ca3-b49c-6d3bd91c111d-content-book-1412-chapter-11966-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i90b6e6d0-c199-4ca3-b49c-6d3bd91c111d-content-book-1412-chapter-11966-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9242df94-c9b7-489b-b1a6-57dc75d05f46-content-book-1416-chapter-12089-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9242df94-c9b7-489b-b1a6-57dc75d05f46-content-book-1416-chapter-12089-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i94056bde-11ed-48f9-aad5-0e89433d1c42-content-book-1417-chapter-12009-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i94056bde-11ed-48f9-aad5-0e89433d1c42-content-book-1417-chapter-12009-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9af372bf-bd8b-4b30-bfb5-f143a26fd95a-content-book-1419-chapter-12051-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9af372bf-bd8b-4b30-bfb5-f143a26fd95a-content-book-1419-chapter-12051-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9de295d9-d55b-4a60-ac4a-1e9ca89e7f72-content-book-1418-chapter-12043-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9de295d9-d55b-4a60-ac4a-1e9ca89e7f72-content-book-1418-chapter-12043-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9ec10d7b-a450-4c8b-a353-b07095a6ce0d-content-book-1412-chapter-11963-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-i9ec10d7b-a450-4c8b-a353-b07095a6ce0d-content-book-1412-chapter-11963-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ia2ca2ecb-3750-4094-9486-e6e0e2d522ea-content-book-1418-chapter-12026-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ia2ca2ecb-3750-4094-9486-e6e0e2d522ea-content-book-1418-chapter-12026-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ia75e99a0-4dca-4672-b2a6-7732eee561b9-content-book-1416-chapter-12092-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ia75e99a0-4dca-4672-b2a6-7732eee561b9-content-book-1416-chapter-12092-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ia99eccc6-303b-41ad-b23c-79a8ac38bb7a-content-book-1416-chapter-12006-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ia99eccc6-303b-41ad-b23c-79a8ac38bb7a-content-book-1416-chapter-12006-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iaa3f78e9-0e4d-4433-9909-e9f94598ef9b-content-book-1416-chapter-11993-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iaa3f78e9-0e4d-4433-9909-e9f94598ef9b-content-book-1416-chapter-11993-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iab21127f-086e-4953-8181-f8bb4215377c-content-book-1412-chapter-11962-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iab21127f-086e-4953-8181-f8bb4215377c-content-book-1412-chapter-11962-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iab328ad4-59b6-47fe-95ca-ea0efa2a4f0e-content-book-1413-chapter-12229-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iab328ad4-59b6-47fe-95ca-ea0efa2a4f0e-content-book-1413-chapter-12229-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iadb4c43b-aea4-42c7-b8a1-b9af3831ec0a-content-book-1412-chapter-11964-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iadb4c43b-aea4-42c7-b8a1-b9af3831ec0a-content-book-1412-chapter-11964-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ib526d33e-efed-4365-93ee-351aec4b56ab-content-label-3489-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ib526d33e-efed-4365-93ee-351aec4b56ab-content-label-3489-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ib7a62d52-13b2-4e83-b033-ce43a865602c-enabling-brightspace-notifications-3-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ib7a62d52-13b2-4e83-b033-ce43a865602c-enabling-brightspace-notifications-3-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ib7ddc073-af51-4d55-af05-3050a838decd-content-book-1417-chapter-12010-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ib7ddc073-af51-4d55-af05-3050a838decd-content-book-1417-chapter-12010-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic0d89ebf-700c-4baa-a78d-5f8f50f59d3c-content-book-1419-chapter-12054-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic0d89ebf-700c-4baa-a78d-5f8f50f59d3c-content-book-1419-chapter-12054-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic28f2325-81d0-4f37-ad27-b7256b039ccb-content-book-1417-chapter-12016-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic28f2325-81d0-4f37-ad27-b7256b039ccb-content-book-1417-chapter-12016-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic6856f52-3e5a-447d-8054-f101d18b7e83-content-book-1416-chapter-11998-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic6856f52-3e5a-447d-8054-f101d18b7e83-content-book-1416-chapter-11998-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic7ec92a5-2b40-41dd-bb6a-630476029c2f-content-book-1412-chapter-12263-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic7ec92a5-2b40-41dd-bb6a-630476029c2f-content-book-1412-chapter-12263-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic94b2b09-e90f-495d-9084-0cb905e08fe8-content-book-1418-chapter-12027-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ic94b2b09-e90f-495d-9084-0cb905e08fe8-content-book-1418-chapter-12027-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ica1ea031-d879-4f12-bdbb-f2c344cca0c0-content-book-1413-chapter-11981-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ica1ea031-d879-4f12-bdbb-f2c344cca0c0-content-book-1413-chapter-11981-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-id1c5d466-6de5-40d1-b769-f2ff1a8539da-content-book-1416-chapter-12005-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-id1c5d466-6de5-40d1-b769-f2ff1a8539da-content-book-1416-chapter-12005-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-id39fc4c9-5340-4b3b-a8de-25fddcdab307-content-book-1408-chapter-12262-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-id39fc4c9-5340-4b3b-a8de-25fddcdab307-content-book-1408-chapter-12262-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ida124b68-5b7d-43eb-aa93-2ca97b516eb9-content-book-1419-chapter-12058-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ida124b68-5b7d-43eb-aa93-2ca97b516eb9-content-book-1419-chapter-12058-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-idd074817-3b63-4e7f-b095-637a00ea461e-fs25-outline-summer-school-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-idd074817-3b63-4e7f-b095-637a00ea461e-fs25-outline-summer-school-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ided21828-5e62-49a3-aae1-6cf000ed83f6-content-book-1412-chapter-11957-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ided21828-5e62-49a3-aae1-6cf000ed83f6-content-book-1412-chapter-11957-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie0299797-cf54-494f-af1d-80d66242ee26-forensic-science-25-answer-keys-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie0299797-cf54-494f-af1d-80d66242ee26-forensic-science-25-answer-keys-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie2c27177-23ad-417f-b0ec-34dd4f47add4-content-book-1416-chapter-11992-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie2c27177-23ad-417f-b0ec-34dd4f47add4-content-book-1416-chapter-11992-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie3d6727a-8313-4c39-bc2e-9d14b0d5185a-content-book-1413-chapter-11982-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie3d6727a-8313-4c39-bc2e-9d14b0d5185a-content-book-1413-chapter-11982-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie400334c-7162-4600-b3f3-f341d5dc39e3-content-book-1417-chapter-12012-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie400334c-7162-4600-b3f3-f341d5dc39e3-content-book-1417-chapter-12012-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie5b53cfb-42a4-4b54-9c00-95598a5e4fbf-content-book-1418-chapter-12267-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie5b53cfb-42a4-4b54-9c00-95598a5e4fbf-content-book-1418-chapter-12267-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie628f048-15ec-445c-adf8-77ff7c591aae-content-book-1417-chapter-12015-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ie628f048-15ec-445c-adf8-77ff7c591aae-content-book-1417-chapter-12015-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iebace7d3-648a-4ec1-a080-ddfcef46a54d-content-book-1418-chapter-12039-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iebace7d3-648a-4ec1-a080-ddfcef46a54d-content-book-1418-chapter-12039-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ieca1c862-c709-473e-89df-73127a3c47e8-content-book-1417-chapter-12266-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ieca1c862-c709-473e-89df-73127a3c47e8-content-book-1417-chapter-12266-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iecafb11f-ca0d-4ad8-a0e7-43d399f4371a-content-book-1413-chapter-12226-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iecafb11f-ca0d-4ad8-a0e7-43d399f4371a-content-book-1413-chapter-12226-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iee4cbe70-dce6-45f9-844f-a33022c2b3e8-content-book-1412-chapter-11977-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iee4cbe70-dce6-45f9-844f-a33022c2b3e8-content-book-1412-chapter-11977-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ieede7310-7252-4ea7-b239-ae98402ce479-content-book-1418-chapter-12029-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-ieede7310-7252-4ea7-b239-ae98402ce479-content-book-1418-chapter-12029-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if1ac80aa-363d-4683-9fbc-9311d6a6ff50-fibre-evidence-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if1ac80aa-363d-4683-9fbc-9311d6a6ff50-fibre-evidence-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if2691d26-8a13-400b-a2a9-5f2ce94b6451-historical-crime-case-2-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if2691d26-8a13-400b-a2a9-5f2ce94b6451-historical-crime-case-2-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if41b09c7-b23d-40cb-9002-9f552abf2c20-content-book-1413-chapter-12264-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if41b09c7-b23d-40cb-9002-9f552abf2c20-content-book-1413-chapter-12264-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if532604f-6158-49b3-b6d8-a62c92b9fa61-content-book-1416-chapter-12003-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if532604f-6158-49b3-b6d8-a62c92b9fa61-content-book-1416-chapter-12003-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if7f77bcb-3fd8-4082-8c3f-1846bd6ab392-content-book-1419-chapter-12047-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-if7f77bcb-3fd8-4082-8c3f-1846bd6ab392-content-book-1419-chapter-12047-html.txt\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iff6599cd-22b5-4ddb-9dd8-588b092451ba-content-book-1419-chapter-12059-html.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/forensics-d2lccexport-129076-23-24-forensic-studies-25-per-1-a-b-sec-s3-202631302-2-ontent-iff6599cd-22b5-4ddb-9dd8-588b092451ba-content-book-1419-chapter-12059-html.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-readme-keyed-txt.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-readme-keyed-txt.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-readme-txt.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-readme-txt.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter1-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter10-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter2-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter3-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter4-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter5-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter6-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter7-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter8-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-keyed-docx.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-keyed-docx.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-keyed-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-keyed-pdf.txt\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-pdf.chunks.json\n?? projects/resources/smoke-calm-module/_extracted/world-religions-wr30-assignment-booklet-chapter9-pdf.txt\n?? projects/resources/smoke-calm-module/art/\n?? projects/resources/smoke-calm-module/calmmodule4/\n?? projects/resources/smoke-calm-module/forensics/\n?? projects/resources/smoke-calm-module/mentalwellnesscourse/"
+  },
+  "stax": {
+    "commit": "82607d5f965fa1507701838d77c78e691cd58c9c",
+    "sidecarProtocolVersion": "stax-project-control-protocol-v1",
+    "proofSurfaceVersion": "stax-proof-surface-pack-v1"
+  },
+  "task": "Refresh current-worktree STAX observer proof for the existing Aboriginal Studies 30 tablet/mobile unit-card title visibility work on Canvas Helper `main`.\n\nAcceptance boundary:\n- Do not edit source files.\n- Do not run protected external actions.\n- Use STAX-collected command evidence from the current `main` worktree.\n- Include local tablet and phone screenshot artifacts as visual proof.\n- Keep generated `.stax` runtime/status/proof files out of source commits.\n",
+  "staxOutput": "{\n  \"schemaVersion\": \"stax-sidecar-status-v1\",\n  \"generatedAt\": \"2026-05-28T00:19:12.094Z\",\n  \"repo\": \"canvas-helper\",\n  \"repoPath\": \"/Users/deanguedo/Documents/GitHub/canvas-helper\",\n  \"branch\": \"main\",\n  \"commitSha\": \"d59dc393cf6f102a150716ca4ce20f53e968e119\",\n  \"task\": \"Refresh current-worktree STAX observer proof for the existing Aboriginal Studies 30 tablet/mobile unit-card title visibility work on Canvas Helper `main`.\\n\\nAcceptance boundary:\\n- Do not edit source files.\\n- Do not run protected external actions.\\n- Use STAX-collected command evidence from the current `main` worktree.\\n- Include local tablet and phone screenshot artifacts as visual proof.\\n- Keep generated `.stax` runtime/status/proof files out of source commits.\",\n  \"verdict\": \"Accept\",\n  \"exitCode\": 0,\n  \"why\": \"Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"verified\": [\n    \"Working-tree diff detected with 321 changed file(s).\",\n    \"Codex report contract includes Files changed, Commands run, What is verified, What is unverified, and Risks.\",\n    \"Diff audit: accept.\",\n    \"Command evidence classifier: strong_local_proof for npm run test:e2e:smoke.\",\n    \"Claim-to-proof: visual claim is fully supported.\",\n    \"Claim-to-proof: protocol_compliance claim is fully supported.\",\n    \"Visual evidence verified: visual_2026-05-28T00_16_24_656Z_f6c36d0f5b5a (rendered_screenshot) matches the current auditable worktree.\",\n    \"Visual evidence verified: visual_2026-05-28T00_16_25_480Z_c0659fbe90ad (rendered_screenshot) matches the current auditable worktree.\",\n    \"Historical visual evidence ignored for current proof because visual_2026-05-16T23_54_19_358Z_4cc055f3d9f7 is stale_visual_proof.\",\n    \"Historical visual evidence ignored for current proof because visual_2026-05-16T23_54_27_047Z_00b16ed10b29 is stale_visual_proof.\",\n    \"Historical visual evidence ignored for current proof because visual_2026-05-16T23_54_35_224Z_37a3a056b994 is stale_visual_proof.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T00_16_12_303Z_d9f625a92414.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T00_16_12_303Z_d9f625a92414 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T00_16_02_897Z_982c1455e5e7.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T00_16_02_897Z_982c1455e5e7 matches the current auditable worktree.\",\n    \"Command evidence provenance verified: cmd_2026-05-28T00_15_53_634Z_b79b85db39e0.\",\n    \"Command evidence freshness verified: cmd_2026-05-28T00_15_53_634Z_b79b85db39e0 matches the current auditable worktree.\",\n    \"Historical command evidence ignored for current proof because npm run smoke:pipeline is wrong_worktree.\",\n    \"Historical command evidence ignored for current proof because npm run test:e2e:project -- --project aboriginal-studies-30 is wrong_worktree.\",\n    \"Historical command evidence ignored for current proof because npm run verify -- --project aboriginal-studies-30 is wrong_worktree.\",\n    \"Proof strength: Audit-grade (1) - Unsupported file_path claim: runtime/memory-ledger.json (File path was not present in the repo evidence pack.).\",\n    \"Fresh STAX sidecar heartbeat is present (115154ms old).\",\n    \"Fresh Codex turn capture is present for session 019e1246-dcae-7c00-8915-6615c5fb3fe7 with 2020 message(s).\",\n    \"Protocol warning recorded as non-blocking: Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n  ],\n  \"weak\": [],\n  \"unverified\": [],\n  \"risk\": [],\n  \"oneNextAction\": \"Record the STAX sidecar Accept, keep scope unchanged, and stop. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\",\n  \"codexPrompt\": \"Report the STAX sidecar Accept as proof-gate status only. Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness. Keep the scope unchanged, and stop.\",\n  \"proofStrength\": {\n    \"schemaVersion\": \"proof-strength-v1\",\n    \"claimType\": \"visual_behavior_verified\",\n    \"claimText\": \"Refresh current-worktree STAX observer proof for the existing Aboriginal Studies 30 tablet/mobile unit-card title visibility work on Canvas Helper `main`.\\n\\nAcceptance boundary:\\n- Do not edit source files.\\n- Do not run protected external actions.\\n- Use STAX-collected command evidence from the current `main` worktree.\\n- Include local tablet and phone screenshot artifacts as visual proof.\\n- Keep generated `.stax` runtime/status/proof files out of source commits.\\n\\nSTAX acknowledgement: STAX_ACK turn_2026-05-27T23-55-14-662Z_e453 43eee93c 9692d200\\n\\nObjective:\\nRefresh Canvas Helper observer proof after updating the approved proof surface so visual proof no longer asks for the mutating `npm run smoke:pipeline` command.\\n\\nFiles changed:\\n- `.stax/proof-surfaces.candidate.json`\\n- `.stax/proof-surfaces.json`\\n- `.stax/events/proof-surface-approved-2026-05-28T00-14-38-889Z.json`\\n- `.stax/events/proof-surface-approved-2026-05-28T00-15-17-300Z.json`\\n- `.stax/visual-proofs/manifest.json`\\n- `.stax/visual-proofs/visual_2026-05-28T00_16_24_656Z_f6c36d0f5b5a.png`\\n- `.stax/visual-proofs/visual_2026-05-28T00_16_25_480Z_c0659fbe90ad.png`\\n- Generated sidecar status/proof files under `.stax/`.\\n- `npm run smoke:pipeline` also generated local smoke output under `.runtime/memory-ledger.json` and `projects/resources/smoke-calm-module/`; this is recorded as cleanup-needed observer dirt, not a source implementation change.\\n\\nTests added:\\n- None in Canvas Helper. The durable regression test was added in the STAX repo to prevent future visual proof-surface discovery from recommending `npm run smoke:pipeline`.\\n\\nCommands run:\\n- `npm run stax:discover-surfaces -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper`\\n  - exitCode: 0\\n- `npm run stax:approve-surfaces -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper`\\n  - exitCode: 0\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run build:studio`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T00_15_53_634Z_b79b85db39e0`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run typecheck`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T00_16_02_897Z_982c1455e5e7`\\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run test:e2e:smoke`\\n  - exitCode: 0\\n  - evidence: `cmd_2026-05-28T00_16_12_303Z_d9f625a92414`\\n- `npm run stax:collect-visual -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --path projects/aboriginal-studies-30/meta/visual-checks/as30-responsive-title-progress-tablet-760x941.png --description \\\"AS30 tablet unit-card title visual proof after Canvas proof-surface refresh\\\" --checklist \\\"Unit-card title is visible\\\" --checklist \\\"Progress panel is hidden in top-sidebar layout\\\" --checklist \\\"Unit-card grid remains intact\\\"`\\n  - exitCode: 0\\n  - evidence: `visual_2026-05-28T00_16_24_656Z_f6c36d0f5b5a`\\n- `npm run stax:collect-visual -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --path projects/aboriginal-studies-30/meta/visual-checks/as30-responsive-title-progress-phone-430x941.png --description \\\"AS30 phone unit-card title visual proof after Canvas proof-surface refresh\\\" --checklist \\\"Unit-card title is visible\\\" --checklist \\\"Progress panel is hidden in phone/top-sidebar layout\\\" --checklist \\\"Unit-card grid remains intact\\\"`\\n  - exitCode: 0\\n  - evidence: `visual_2026-05-28T00_16_25_480Z_c0659fbe90ad`\\n\\nCommand output summary with exit codes:\\n- Proof-surface discovery and approval exited 0.\\n- The approved visual proof surface now recommends `npm run test:e2e:smoke`, not `npm run smoke:pipeline`.\\n- Studio build exited 0 through STAX command evidence.\\n- Typecheck exited 0 through STAX command evidence.\\n- Smoke e2e exited 0 through STAX command evidence.\\n- Tablet and phone screenshot artifacts were captured through the STAX visual-proof store.\\n\\nWhat is verified:\\n- Canvas Helper is on `main` at `d59dc393cf6f102a150716ca4ce20f53e968e119`.\\n- Current command evidence was collected against the current auditable worktree after the proof-surface update.\\n- Current visual proof artifacts exist for tablet and phone screenshots.\\n- The approved visual proof surface no longer routes visual proof to `npm run smoke:pipeline`.\\n\\nWhat is weak/provisional:\\n- The repo contains cleanup-needed local output generated by the earlier `npm run smoke:pipeline` proof attempt.\\n- This observer pass does not claim Canvas source implementation work; it only refreshes proof and proof-surface behavior.\\n- Visual proof uses local screenshot artifacts, not a hosted target.\\n\\nWhat is unverified:\\n- No hosted target behavior was checked.\\n- No protected deploy, publish, or sync action was performed.\\n- The smoke-generated resource output has not been committed or cleaned in this report.\\n\\nRisks:\\n- `npm run smoke:pipeline` is mutating in Canvas Helper and should not be used as the default visual proof command.\\n- Generated `.stax` runtime/status/proof artifacts should stay out of source commits unless explicitly requested.\\n- Cleanup of the smoke-generated resource tree should be done deliberately so user work is not accidentally removed.\\n\\nOne next action:\\nRun `stax gate` for Canvas Helper and export/import the resulting impact bundle. If cleanup is desired, remove only the smoke-generated output and recollect proof afterward.\",\n    \"rawScore\": 1,\n    \"finalScore\": 1,\n    \"label\": \"Audit-grade\",\n    \"capApplied\": [],\n    \"rejectReasons\": [],\n    \"primaryLimiter\": \"Unsupported file_path claim: runtime/memory-ledger.json (File path was not present in the repo evidence pack.).\",\n    \"missingProof\": [\n      \"Unsupported file_path claim: runtime/memory-ledger.json (File path was not present in the repo evidence pack.).\"\n    ],\n    \"weakProof\": [\n      \"Weak command claim: npm run smoke:pipeline (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:discover-surfaces -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:approve-surfaces -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).\",\n      \"Weak command claim: npm run stax:collect-visual -- --repo (Command is named, but no command output was cited.).\"\n    ],\n    \"strongProof\": [\n      \"Grounded file_path claim: projects/aboriginal-studies-30/meta/visual-checks/as30-responsive-title-progress-tablet-760x941.png.\",\n      \"Grounded file_path claim: projects/aboriginal-studies-30/meta/visual-checks/as30-responsive-title-progress-phone-430x941.png.\",\n      \"Grounded command claim: npm run build:studio.\",\n      \"Grounded command claim: npm run typecheck.\",\n      \"Grounded command claim: npm run test:e2e:smoke.\",\n      \"Grounded completion claim: What is verified:.\",\n      \"Grounded verification claim: What is verified:.\",\n      \"Grounded completion claim: - Cleanup of the smoke-generated resource tree should be done deliberately so user work is not accidentally removed..\",\n      \"Local STAX command evidence passed: npm run test:e2e:smoke exited 0.\",\n      \"Local STAX command evidence passed: npm run typecheck exited 0.\",\n      \"Local STAX command evidence passed: npm run build:studio exited 0.\",\n      \"Rendered visual proof was supplied.\",\n      \"Release preflight proof was supplied.\"\n    ],\n    \"oneNextAction\": \"Add the missing proof item, then rerun the proof-strength gate.\"\n  },\n  \"protocolStatus\": \"warning\",\n  \"protocolFailures\": [\n    {\n      \"id\": \"current_turn_capture_missing_ack\",\n      \"severity\": \"warning\",\n      \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n    }\n  ],\n  \"protocol\": {\n    \"schemaVersion\": \"stax-protocol-compliance-v1\",\n    \"generatedAt\": \"2026-05-28T00:19:12.092Z\",\n    \"mode\": \"normal\",\n    \"status\": \"warning\",\n    \"acknowledgedTurnContract\": false,\n    \"codexReportPresent\": true,\n    \"requiredSectionsPresent\": [\n      \"STAX acknowledgement\",\n      \"Objective\",\n      \"Files changed\",\n      \"Tests added\",\n      \"Commands run\",\n      \"Command output summary with exit codes\",\n      \"What is verified\",\n      \"What is weak/provisional\",\n      \"What is unverified\",\n      \"Risks\",\n      \"One next action\"\n    ],\n    \"missingRequiredSections\": [],\n    \"findings\": [\n      {\n        \"id\": \"current_turn_capture_missing_ack\",\n        \"severity\": \"warning\",\n        \"message\": \"Current Codex turn capture does not contain the current STAX acknowledgement; report acknowledgement is present, so this may be capture lag.\"\n      }\n    ],\n    \"acknowledgement\": \"STAX_ACK turn_2026-05-27T23-55-14-662Z_e453 43eee93c 9692d200\",\n    \"contractTurnId\": \"turn_2026-05-27T23-55-14-662Z_e453\"\n  },\n  \"cardShapeIssues\": []\n}\n",
+  "codexReport": "STAX acknowledgement: STAX_ACK turn_2026-05-27T23-55-14-662Z_e453 43eee93c 9692d200\n\nObjective:\nRefresh Canvas Helper observer proof after updating the approved proof surface so visual proof no longer asks for the mutating `npm run smoke:pipeline` command.\n\nFiles changed:\n- `.stax/proof-surfaces.candidate.json`\n- `.stax/proof-surfaces.json`\n- `.stax/events/proof-surface-approved-2026-05-28T00-14-38-889Z.json`\n- `.stax/events/proof-surface-approved-2026-05-28T00-15-17-300Z.json`\n- `.stax/visual-proofs/manifest.json`\n- `.stax/visual-proofs/visual_2026-05-28T00_16_24_656Z_f6c36d0f5b5a.png`\n- `.stax/visual-proofs/visual_2026-05-28T00_16_25_480Z_c0659fbe90ad.png`\n- Generated sidecar status/proof files under `.stax/`.\n- `npm run smoke:pipeline` also generated local smoke output under `.runtime/memory-ledger.json` and `projects/resources/smoke-calm-module/`; this is recorded as cleanup-needed observer dirt, not a source implementation change.\n\nTests added:\n- None in Canvas Helper. The durable regression test was added in the STAX repo to prevent future visual proof-surface discovery from recommending `npm run smoke:pipeline`.\n\nCommands run:\n- `npm run stax:discover-surfaces -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper`\n  - exitCode: 0\n- `npm run stax:approve-surfaces -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper`\n  - exitCode: 0\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run build:studio`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T00_15_53_634Z_b79b85db39e0`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run typecheck`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T00_16_02_897Z_982c1455e5e7`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper -- npm run test:e2e:smoke`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T00_16_12_303Z_d9f625a92414`\n- `npm run stax:collect-visual -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --path projects/aboriginal-studies-30/meta/visual-checks/as30-responsive-title-progress-tablet-760x941.png --description \"AS30 tablet unit-card title visual proof after Canvas proof-surface refresh\" --checklist \"Unit-card title is visible\" --checklist \"Progress panel is hidden in top-sidebar layout\" --checklist \"Unit-card grid remains intact\"`\n  - exitCode: 0\n  - evidence: `visual_2026-05-28T00_16_24_656Z_f6c36d0f5b5a`\n- `npm run stax:collect-visual -- --repo /Users/deanguedo/Documents/GitHub/canvas-helper --path projects/aboriginal-studies-30/meta/visual-checks/as30-responsive-title-progress-phone-430x941.png --description \"AS30 phone unit-card title visual proof after Canvas proof-surface refresh\" --checklist \"Unit-card title is visible\" --checklist \"Progress panel is hidden in phone/top-sidebar layout\" --checklist \"Unit-card grid remains intact\"`\n  - exitCode: 0\n  - evidence: `visual_2026-05-28T00_16_25_480Z_c0659fbe90ad`\n\nCommand output summary with exit codes:\n- Proof-surface discovery and approval exited 0.\n- The approved visual proof surface now recommends `npm run test:e2e:smoke`, not `npm run smoke:pipeline`.\n- Studio build exited 0 through STAX command evidence.\n- Typecheck exited 0 through STAX command evidence.\n- Smoke e2e exited 0 through STAX command evidence.\n- Tablet and phone screenshot artifacts were captured through the STAX visual-proof store.\n\nWhat is verified:\n- Canvas Helper is on `main` at `d59dc393cf6f102a150716ca4ce20f53e968e119`.\n- Current command evidence was collected against the current auditable worktree after the proof-surface update.\n- Current visual proof artifacts exist for tablet and phone screenshots.\n- The approved visual proof surface no longer routes visual proof to `npm run smoke:pipeline`.\n\nWhat is weak/provisional:\n- The repo contains cleanup-needed local output generated by the earlier `npm run smoke:pipeline` proof attempt.\n- This observer pass does not claim Canvas source implementation work; it only refreshes proof and proof-surface behavior.\n- Visual proof uses local screenshot artifacts, not a hosted target.\n\nWhat is unverified:\n- No hosted target behavior was checked.\n- No protected deploy, publish, or sync action was performed.\n- The smoke-generated resource output has not been committed or cleaned in this report.\n\nRisks:\n- `npm run smoke:pipeline` is mutating in Canvas Helper and should not be used as the default visual proof command.\n- Generated `.stax` runtime/status/proof artifacts should stay out of source commits unless explicitly requested.\n- Cleanup of the smoke-generated resource tree should be done deliberately so user work is not accidentally removed.\n\nOne next action:\nRun `stax gate` for Canvas Helper and export/import the resulting impact bundle. If cleanup is desired, remove only the smoke-generated output and recollect proof afterward.\n\n<!-- STAX:proof-strength:start -->\n## STAX Proof Strength\n\nGenerated by `stax gate`; this is STAX audit output, not a Codex completion claim.\n\n- Claim Type: visual_behavior_verified\n- Label: Audit-grade\n- Raw Score: 1\n- Final Score: 1\n- Caps Applied: none\n- Primary Limiter: Unsupported file_path claim: runtime/memory-ledger.json (File path was not present in the repo evidence pack.).\n- Next Proof Action: Add the missing proof item, then rerun the proof-strength gate.\n- Accept Boundary: Accept means required claims are supported by verified evidence for this repo state; STAX does not certify general code correctness.\n- Proof report: .stax/reports/latest-proof-report.md\n- Artifact: .stax/proof_strength.json\n- Confidence Report: .stax/reports/latest-confidence-report.md\n<!-- STAX:proof-strength:end -->\n",
+  "commandEvidence": [
+    {
+      "evidenceId": "cmd_2026-05-12T02_00_30_290Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "cfc792da3156fb760bc9b5e8beced888bbbb3b91ab440c4fa74018e607edd382",
+      "recordedAt": "2026-05-12T02:00:31.890Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_00_42_731Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "e91d953ca2b8df0247d51e95554533478ebdb2786ba75ece9a8ccd6bdda1305f",
+      "recordedAt": "2026-05-12T02:00:43.310Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_16_210Z_569986fd5e82",
+      "command": "npm run validate:manifests",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "cfd09d4d7c9323ca857041008d0edb49b87fb131a1c5b21a6e35727e24d02c7f",
+      "recordedAt": "2026-05-12T02:12:16.448Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_29_463Z_90f4315ac750",
+      "command": "npm run test:course-shell",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "73406d276020c1937ffbd28c7058f3dbc11cad84e266097f883fa13f48ae31bf",
+      "recordedAt": "2026-05-12T02:12:29.684Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_39_921Z_62294d325859",
+      "command": "npm run test:forensics35-workspace",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "0fe875a01918f6e98528db6971b1222f25d607d6d820f16f7dbfb5c16921a7e2",
+      "recordedAt": "2026-05-12T02:12:40.418Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_49_648Z_959655b8e332",
+      "command": "npm run test:assessments",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "0622b58b114d4c56fc1995e78022e844b487c4bcc9f6f751b97d0543ccc7f453",
+      "recordedAt": "2026-05-12T02:12:49.921Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_12_58_330Z_f9486bd21a3b",
+      "command": "npm run test:exports",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "44c4bb972b01bde2261218e09e01d67cc605fca168a42b358e3f58f03c8567e0",
+      "recordedAt": "2026-05-12T02:12:59.909Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_08_609Z_01887413d6c8",
+      "command": "npm run test:metadata-policy",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "d273854431ee34207ae232f1a78a743d30f04344b154c01dbfc71bfffa61734b",
+      "recordedAt": "2026-05-12T02:13:08.823Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_18_304Z_aa66a38f104e",
+      "command": "npm run test:progress-report",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "d157bbc445b04e40196e50b0482f0c997da2ea445a451fd8c0c15da9b15bf63e",
+      "recordedAt": "2026-05-12T02:13:18.514Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_26_416Z_be7d621a7a2a",
+      "command": "npm run test:report-all-progress",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "497c055afd52fe53eca31c747b4363c7edaf5d96b7a6fea11562db240f3ba9ff",
+      "recordedAt": "2026-05-12T02:13:26.677Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_35_398Z_708ac0e4b4d0",
+      "command": "npm run test:e2e:harness",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "70f99de7399cb934d6246f861448c1375909acfc71f40d7b148af84b3bda3684",
+      "recordedAt": "2026-05-12T02:13:35.619Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T02_13_44_078Z_4b00e8d6daed",
+      "command": "npm run test:learning",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "22c9da388871a39549b4fa8fa06f2d7af1eff3932214e3807256d97c35a2dd35",
+      "canonicalEvidenceHash": "003dd8ebe36e9744db935dbc892bc2b7c3dc37b4858c490798fae68e3eb24759",
+      "recordedAt": "2026-05-12T02:13:44.591Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_56_57_138Z_61cb324afc52",
+      "command": "git rev-parse HEAD origin/main origin/HEAD",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "a6c389a33637a59d2605f23fbf38060ce7b654b931c64fbc749e861e06784fd1",
+      "recordedAt": "2026-05-12T19:56:57.146Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_57_06_992Z_4afc8b7bf053",
+      "command": "git ls-remote origin refs/heads/main",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "b60cc1c846d5e7b1c3275f4a87e3c35b3ef23c9c6c74897ad5de42f909d43331",
+      "recordedAt": "2026-05-12T19:57:08.143Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_57_23_043Z_4494eb6c7c47",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/general-psychology-workspace.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "4818bef7de21c285c9fc115b0241faba2ce91b311781b7a181471a0e5f17a7d4",
+      "recordedAt": "2026-05-12T19:57:23.186Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T19_57_32_865Z_4769e1a5616a",
+      "command": "npm run verify -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "8599a775ef5f660e86326d4f5aea7383321fd928d70c3a8df889f78fb109b6e5",
+      "canonicalEvidenceHash": "854459af679aea35159bbafb276adf38a4995a5c955a37efbf1f9c01f6814561",
+      "recordedAt": "2026-05-12T19:57:33.182Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-12T21_20_01_335Z_4769e1a5616a",
+      "command": "npm run verify -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "0397d830b0661a1ce64e1766196bc9cd7b14fa56c2307a6367610df3efc56786",
+      "canonicalEvidenceHash": "e4d8523efc65d9c4ff04b59e86e82431e06b54c100e3337943e8171680782bc4",
+      "recordedAt": "2026-05-12T21:20:01.677Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_16_55_568Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "c637df651c42199dde532ffd51477f7afdfb200c78d4d34c527408aed11109ed",
+      "recordedAt": "2026-05-13T01:16:57.266Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_17_08_978Z_569986fd5e82",
+      "command": "npm run validate:manifests",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "7e7e58a05a5f12386aab5289103269ad40d478f4092d8772efc48fa7a91c0321",
+      "recordedAt": "2026-05-13T01:17:09.235Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_17_20_452Z_708ac0e4b4d0",
+      "command": "npm run test:e2e:harness",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "9ce72deece585931631c895112c98ea4a5a6c2aa55f711967738918f04ce8c3d",
+      "recordedAt": "2026-05-13T01:17:20.717Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_18_47_968Z_cb3811adefd8",
+      "command": "npm run verify -- --project social-studies-10-1-docx-export",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "7b0a56bad6be6176467f3da3bfc8a26786702dd2c89e60a1b04c0c15a59c9e4c",
+      "recordedAt": "2026-05-13T01:18:48.309Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_19_21_245Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "69fbdbcd90b2e5548400c3ca0ee454a065fbab1025d8c42e975542e9361ef983",
+      "canonicalEvidenceHash": "f3eae6920f4e1b58a81e85c3d3905b72e5d5e41820d27a052d3604a6c39a91e3",
+      "recordedAt": "2026-05-13T01:19:25.523Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_21_49_324Z_205f97a35092",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "09d915cc1602a96ac36789fe1571d896fb9c5777d99fd15234024fb8f9212b73",
+      "canonicalEvidenceHash": "3d23ea08f7f0623322dd70e9b0b4c953da57419cfaa1ea21a53b0a8e2f72e274",
+      "recordedAt": "2026-05-13T01:21:49.525Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_22_05_301Z_cb3811adefd8",
+      "command": "npm run verify -- --project social-studies-10-1-docx-export",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "09d915cc1602a96ac36789fe1571d896fb9c5777d99fd15234024fb8f9212b73",
+      "canonicalEvidenceHash": "58e1d8b1c6401be495735febc9b0a3e133894f8e043643221c8830ff0c9c4d9f",
+      "recordedAt": "2026-05-13T01:22:05.870Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_23_21_863Z_cb3811adefd8",
+      "command": "npm run verify -- --project social-studies-10-1-docx-export",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "7db8646e954b3d44338ac030bfd0d7de21e8af9e5c1b68c6e153c8317dc43daf",
+      "recordedAt": "2026-05-13T01:23:22.590Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_23_39_331Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "fafe3fc43163855db21c4b3ee563f18933a0ca367dc3cf900ccf3bd27fd80faf",
+      "recordedAt": "2026-05-13T01:23:42.219Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_23_56_257Z_569986fd5e82",
+      "command": "npm run validate:manifests",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "92058c57400fbc21f7ee931cd593e9432557f6aacda5dd95c7894305e33fa2d1",
+      "recordedAt": "2026-05-13T01:23:56.565Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_24_10_791Z_205f97a35092",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/project-manifest-policy.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "67ac54959a296e0c45b0472e992f143d96d77f9bc356f4dfd45b2acad13aad82",
+      "recordedAt": "2026-05-13T01:24:10.972Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_24_24_213Z_708ac0e4b4d0",
+      "command": "npm run test:e2e:harness",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "10ed6d14988e9bb01d5749e36cf5875a2608d86ef14bef0e3f26da27cce3dcfa",
+      "recordedAt": "2026-05-13T01:24:24.633Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-13T01_24_36_700Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "623b82f64961ac5dc93c905e5eb6bf4ae1d82d8c52598756332290ed4658242b",
+      "canonicalEvidenceHash": "b069c5a31783b29dd386920048ba05526aa1d0d6811232bcfdb1a73700d81ed7",
+      "recordedAt": "2026-05-13T01:24:40.498Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_13_28_617Z_4feb38f9c8d5",
+      "command": "node --check projects/forensicstudiesoption2/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b9af2d9d306d0b8404c6c03afc90f7d8dfd921769a87300ddc8bb284fc0ddd78",
+      "canonicalEvidenceHash": "418378ddb551e8253fb924301f0a40dd1c3e53c7f4db250ab59a6033ec1de0a9",
+      "recordedAt": "2026-05-17T00:13:28.635Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_13_45_424Z_8ea31373f7ef",
+      "command": "node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b9af2d9d306d0b8404c6c03afc90f7d8dfd921769a87300ddc8bb284fc0ddd78",
+      "canonicalEvidenceHash": "d2010a2dfce14d41a67e24d5067acb9035f34d3b889972419f15e6fb74c76d65",
+      "recordedAt": "2026-05-17T00:13:45.448Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_13_52_763Z_0fffd1280afa",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts",
+      "exitCode": 1,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "b9af2d9d306d0b8404c6c03afc90f7d8dfd921769a87300ddc8bb284fc0ddd78",
+      "canonicalEvidenceHash": "fc96f43278d4e563507ce0ac60cb538d8f53f8722a8cfaf6dd0ea5c914ef3be0",
+      "recordedAt": "2026-05-17T00:13:52.996Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_11_101Z_4feb38f9c8d5",
+      "command": "node --check projects/forensicstudiesoption2/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "ce8e1541ca0caadecf84b337fffee976b3ccfd64d47eacc79b2b25534f1965ef",
+      "recordedAt": "2026-05-17T00:20:11.119Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_12_605Z_8ea31373f7ef",
+      "command": "node --check projects/general-psychology-20-independent-studies-202633108/workspace/main.js",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "71d5724a1d9df3a436c95c9e655812e3254c3571d1d8d6461df0e098712c2d6a",
+      "recordedAt": "2026-05-17T00:20:12.623Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_14_027Z_0fffd1280afa",
+      "command": "./node_modules/.bin/tsx --test scripts/tests/forensicstudiesoption2-theme.test.ts scripts/tests/forensicstudiesoption2-shell-behavior.test.ts scripts/tests/general-psychology-workspace.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "9c087c7b5d4a8e3352653dfa2aed0408f6a2dab81ef1dbf18c7a4a5e6b0f5e31",
+      "recordedAt": "2026-05-17T00:20:14.199Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_29_185Z_33f54601bb32",
+      "command": "npm run verify -- --project forensicstudiesoption2",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "399e072302a14a6c8c49fe4ea15822b53d75c3910d14b0b669515c64dfce0a7f",
+      "recordedAt": "2026-05-17T00:20:29.508Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_35_582Z_4769e1a5616a",
+      "command": "npm run verify -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "25b3df363fdf096627fef104531a0bac32dd716f057ebd33b2179811f969d8e3",
+      "recordedAt": "2026-05-17T00:20:35.864Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_40_928Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "69c422dd5b5d2f747a856f4f42115d458eb04d4f4c2a70e46bf2bf7e008fc06f",
+      "recordedAt": "2026-05-17T00:20:42.380Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_49_554Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "f1193ee8ca659aa7fd55e1c372c7fa17794ba68702ecf9fc38b4a6626f8de08b",
+      "recordedAt": "2026-05-17T00:20:50.064Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_20_56_088Z_319f0a2aec6b",
+      "command": "npm run test:e2e:project -- --project forensicstudiesoption2",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "65c8e7099ba429de73b6be9c5c2c177eac9c38c6067b8d90caebada71861c64e",
+      "recordedAt": "2026-05-17T00:20:59.397Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_21_08_191Z_33f916e4bb51",
+      "command": "npm run test:e2e:project -- --project general-psychology-20-independent-studies-202633108",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "5616b1af70f0c0d8970cf17007b350e156e58c0b5d08f0ee66c4e303c7971cff",
+      "recordedAt": "2026-05-17T00:21:10.805Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-17T00_21_15_805Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "016ccd9d7525bac5a6006fa3f49eea41e561a9bd8bbde6fcea14de9edad344d9",
+      "canonicalEvidenceHash": "a29e0e8c766b9baf6157c2df28ab9c68c973649dbca923d966743864725f1092",
+      "recordedAt": "2026-05-17T00:21:18.682Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_15_47_735Z_a31f5f3af22a",
+      "command": "npm run verify -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "16347532e196ae5eda28a174375bfb4b160a3d336d55424dc4ee1f851f813e68",
+      "canonicalEvidenceHash": "6470c2761fdff9d873ba00d8064e7d67995f3d6f934821e85032e966644a6f37",
+      "recordedAt": "2026-05-27T16:15:48.078Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_16_04_188Z_3103b2923da9",
+      "command": "npm run test:e2e:project -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "16347532e196ae5eda28a174375bfb4b160a3d336d55424dc4ee1f851f813e68",
+      "canonicalEvidenceHash": "78e3b6277f66799987ccf10f136b25a1cd32f98547b50b838de8a0cc551c9dce",
+      "recordedAt": "2026-05-27T16:16:07.532Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_16_21_560Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "16347532e196ae5eda28a174375bfb4b160a3d336d55424dc4ee1f851f813e68",
+      "canonicalEvidenceHash": "615051b438c369c83fdccb60a26bcc3c73f2452afba261cd7282b2bd416f5356",
+      "recordedAt": "2026-05-27T16:16:23.059Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_16_35_022Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "16347532e196ae5eda28a174375bfb4b160a3d336d55424dc4ee1f851f813e68",
+      "canonicalEvidenceHash": "10779ea14050a1c7c782dc03db5f71003b20fa1d2c34033fa86771fa004bf0f1",
+      "recordedAt": "2026-05-27T16:16:35.561Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_54_51_941Z_0c3d6942392c",
+      "command": "node node_modules/tsx/dist/cli.mjs --test scripts/tests/aboriginal-studies-30-shell.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "df705257f23a561f20410dc6a7baa6c21717949b5e29b477462392428b2fd7ad",
+      "canonicalEvidenceHash": "05d280f13cfe4ab53d703299c31069435568ff8af653f1d897f35a94c28aff34",
+      "recordedAt": "2026-05-27T16:54:52.164Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_55_38_862Z_a31f5f3af22a",
+      "command": "npm run verify -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "df705257f23a561f20410dc6a7baa6c21717949b5e29b477462392428b2fd7ad",
+      "canonicalEvidenceHash": "521c87df297a751bb8dbd24503d8f5e5424da2ccc91238f9c7c94a2bb46c9f69",
+      "recordedAt": "2026-05-27T16:55:39.227Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_55_53_014Z_3103b2923da9",
+      "command": "npm run test:e2e:project -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "df705257f23a561f20410dc6a7baa6c21717949b5e29b477462392428b2fd7ad",
+      "canonicalEvidenceHash": "6948d32611d261a40bca774ec666800265dea783d476b465c2349113efdd3ffa",
+      "recordedAt": "2026-05-27T16:55:56.486Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_56_03_482Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "df705257f23a561f20410dc6a7baa6c21717949b5e29b477462392428b2fd7ad",
+      "canonicalEvidenceHash": "4f193d44b534b17ff07484f39930aa51c52197198d78796d2beb4043f128f953",
+      "recordedAt": "2026-05-27T16:56:05.057Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T16_56_25_260Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "df705257f23a561f20410dc6a7baa6c21717949b5e29b477462392428b2fd7ad",
+      "canonicalEvidenceHash": "0d8f58410c6273f7b8d3ae02973f3f6d2def1b877313f8a1ca3c2b442620e6f8",
+      "recordedAt": "2026-05-27T16:56:25.786Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T17_18_14_347Z_7ede856368af",
+      "command": "/Users/deanguedo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/tests/brightspace_docx_style_profile_test.py",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "2710aaff6080e52eb1a56593ea0d709da315f3233451b7cf84f830b589f0f485",
+      "canonicalEvidenceHash": "e4be148bf8416d9ac96e9008cdf498857a69f76d8a3357079e715ffbdd085c62",
+      "recordedAt": "2026-05-27T17:18:14.476Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T17_18_35_791Z_3d9092e2a49f",
+      "command": "/Users/deanguedo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m py_compile scripts/brightspace_zip_to_docx_upload_package.py scripts/tests/brightspace_docx_style_profile_test.py",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "2710aaff6080e52eb1a56593ea0d709da315f3233451b7cf84f830b589f0f485",
+      "canonicalEvidenceHash": "3f7fa6c45b37c56089876445eaef235fd08915e2fda90d4cfcdafea22564271f",
+      "recordedAt": "2026-05-27T17:18:35.856Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_37_44_085Z_0c3d6942392c",
+      "command": "node node_modules/tsx/dist/cli.mjs --test scripts/tests/aboriginal-studies-30-shell.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "ccaeb3c554304c7f6215b55a372b175f730402633046242ed2c7783711909815",
+      "recordedAt": "2026-05-27T18:37:44.263Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_37_49_648Z_a31f5f3af22a",
+      "command": "npm run verify -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "0a102fba05ed4a7c49563ce2e6321573d0a42e5f93ca4c7000d1937d4d1ab4a6",
+      "recordedAt": "2026-05-27T18:37:49.956Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_37_58_943Z_3103b2923da9",
+      "command": "npm run test:e2e:project -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "6287d5cf3e747fbc03522d4271efc35f0e87fd4a1e743efb9c014d8970f025da",
+      "recordedAt": "2026-05-27T18:38:02.303Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_38_07_669Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "b45baf1737e855782276f1995714fa77e2e862fabe10178cd86561f778c7678c",
+      "recordedAt": "2026-05-27T18:38:10.372Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_38_19_607Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "b23f704d34b8071796abcbe443e3dab45d1e38cdc79687195f685a8b253238e3",
+      "recordedAt": "2026-05-27T18:38:21.090Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_38_26_578Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "8b30ef80451774e1ba2b8ae0c8e0cdda743807fa3317d99ff9afd57659f9840e",
+      "recordedAt": "2026-05-27T18:38:27.064Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_38_34_062Z_466c2f308b48",
+      "command": "git diff --check",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "d8ec2de742de780a68dbbed3a9f09235cb7331075ca7570b6ba2f5e45a832d6f",
+      "canonicalEvidenceHash": "66897608ed0386ac4ff2f7e5f6e1c8da7f3151b096eeb7b9898ce3545af7a286",
+      "recordedAt": "2026-05-27T18:38:34.082Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_57_16_187Z_0c3d6942392c",
+      "command": "node node_modules/tsx/dist/cli.mjs --test scripts/tests/aboriginal-studies-30-shell.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "c5f198110404b8eaf55d29138b15b8afb177ce05f7ab6fff8fea629b7a1a4968",
+      "recordedAt": "2026-05-27T18:57:16.385Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_57_26_137Z_a31f5f3af22a",
+      "command": "npm run verify -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "3a0c4c70edb665fdfef6f61bdb5d995f689e033476320f0510aef0af72259a7a",
+      "recordedAt": "2026-05-27T18:57:26.476Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_57_38_465Z_3103b2923da9",
+      "command": "npm run test:e2e:project -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "c530268b4355b976a53bbe8652d5c7b89d2b23170fea47d4412fa8e81a695c81",
+      "recordedAt": "2026-05-27T18:57:41.831Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_59_48_957Z_0c3d6942392c",
+      "command": "node node_modules/tsx/dist/cli.mjs --test scripts/tests/aboriginal-studies-30-shell.test.ts",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "1f005b675c1cf5c4eac717073787a5f7d13886db92a3d463b868263b0ea0af94",
+      "recordedAt": "2026-05-27T18:59:49.140Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T18_59_59_902Z_a31f5f3af22a",
+      "command": "npm run verify -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "526b7b19c19910510388eef33418e3cda2fd1a4c844381e1ecc74fcddff6825c",
+      "recordedAt": "2026-05-27T19:00:00.217Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_00_13_504Z_3103b2923da9",
+      "command": "npm run test:e2e:project -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "e252206a55e1679856519bc89d1cb8091c8a1e4e5497cf06408253637268e249",
+      "recordedAt": "2026-05-27T19:00:16.735Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_00_24_331Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "4a923a42dd0db0785578eeefb145532dca18c354e5d92f98f7a4c7510b2b7209",
+      "recordedAt": "2026-05-27T19:00:27.140Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_00_33_667Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "6f07d075423cef7086eef7ff4f01d1fcc2518d048376eff5cf2ecf9dd49d3431",
+      "recordedAt": "2026-05-27T19:00:35.235Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_01_08_745Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "2c5f4508f45018ac9d439d0c4158bf2bfc3d8eed66e66ad48b1b5167f97dbcb8",
+      "recordedAt": "2026-05-27T19:01:09.252Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_01_18_497Z_466c2f308b48",
+      "command": "git diff --check",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "91f402639842b9a7cc33d46b77204f492d05aed84f002ddc4323e13c1cb51142",
+      "recordedAt": "2026-05-27T19:01:18.514Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_41_08_787Z_a31f5f3af22a",
+      "command": "npm run verify -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "c9bbee561cb0bfd32d618fe134f65524d1625835472fbc23536641c5d303bdc6",
+      "recordedAt": "2026-05-27T19:41:09.122Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_41_19_154Z_3103b2923da9",
+      "command": "npm run test:e2e:project -- --project aboriginal-studies-30",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "cd8925d056188ddb21747629a8ae57ecaecce4dc0b8a4a8ebb34927ddf017336",
+      "recordedAt": "2026-05-27T19:41:22.899Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_41_28_547Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "7cb6fa21cb1ce7160fb285ba80b9be7aeaaddb8f6ed33fb444bc2c19a661d5ce",
+      "recordedAt": "2026-05-27T19:41:31.373Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_41_37_840Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "025298779419b7e8229aeccbef45af366e249b67c79dc9257f480ac47d299c07",
+      "recordedAt": "2026-05-27T19:41:39.359Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-27T19_42_19_598Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "92e9e12a3f27982f30f18b5716a4ea6b6cb1ff43f95227fb067ce54a4cc2dd80",
+      "canonicalEvidenceHash": "d23b4df78ddc4458663331935bf82f6ff2d70995e3a74be0997ac42867dc40ab",
+      "recordedAt": "2026-05-27T19:42:20.087Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_10_50_537Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "5492574d78b54338c3d7e838460dd11dfeab1f7ed1f75498b016c1faf367a3d2",
+      "canonicalEvidenceHash": "52bb3ff63b254a7a938d248999f863996dcce7cf3c1b4d8514e6c80d4a9a110f",
+      "recordedAt": "2026-05-28T00:10:51.204Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_10_59_139Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "5492574d78b54338c3d7e838460dd11dfeab1f7ed1f75498b016c1faf367a3d2",
+      "canonicalEvidenceHash": "0f4038b441ea461332675ca202cd60f4b94aafc010ba8a7ea2b9ce473dea2d90",
+      "recordedAt": "2026-05-28T00:11:00.875Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_11_07_418Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "5492574d78b54338c3d7e838460dd11dfeab1f7ed1f75498b016c1faf367a3d2",
+      "canonicalEvidenceHash": "1fb2f4dd15ad52fb57615c25c96ccd28a3530f7cbd950172a825fb2c28dd894d",
+      "recordedAt": "2026-05-28T00:11:11.892Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_11_16_839Z_fc5201af80c5",
+      "command": "npm run smoke:pipeline",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "28043c313d163745189744b921c5549c609d3af95de5de8850876a88b04af8f5",
+      "canonicalEvidenceHash": "030572e2f14e6f6096dd87498baf096e465c91adfc7a3c2b6f9c0c80b04ad754",
+      "recordedAt": "2026-05-28T00:11:23.585Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_15_53_634Z_b79b85db39e0",
+      "command": "npm run build:studio",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a712f67130b1351959196beb17a0eec9c524f105311f98e5e3746e642c28cfbd",
+      "canonicalEvidenceHash": "d2cfc7b33d377231675f197095f0efc6a72c1d6e2d3809f7f79edb74c574374b",
+      "recordedAt": "2026-05-28T00:15:54.186Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_16_02_897Z_982c1455e5e7",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a712f67130b1351959196beb17a0eec9c524f105311f98e5e3746e642c28cfbd",
+      "canonicalEvidenceHash": "8e10dba3238e357426a781557a9c4d6732ce11ce74635f7ec23329835b41e068",
+      "recordedAt": "2026-05-28T00:16:04.365Z"
+    },
+    {
+      "evidenceId": "cmd_2026-05-28T00_16_12_303Z_d9f625a92414",
+      "command": "npm run test:e2e:smoke",
+      "exitCode": 0,
+      "source": "local_stax_command_output",
+      "worktreeAfterHash": "a712f67130b1351959196beb17a0eec9c524f105311f98e5e3746e642c28cfbd",
+      "canonicalEvidenceHash": "17c53a16465f293bc123754862cfa33cfd4edaf4d4fea17fa5357f4a7e4ff632",
+      "recordedAt": "2026-05-28T00:16:15.101Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "status",
+      "path": ".stax/status.json",
+      "hash": "c36384373d764a661ba8b1e2a0994074ec37cc00e3900a6a94afb2c7b08594ca",
+      "summary": "status.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof_strength.json",
+      "hash": "97a4ea6d418779de616682a55785ae0abe1d0804ace37f7a94cdf9eb62e378c5",
+      "summary": "proof_strength.json present"
+    },
+    {
+      "kind": "next_prompt",
+      "path": ".stax/next-codex-prompt.md",
+      "hash": "9b0fadc3c518763dfb5409fa111d986ed4c8c934b02e8066f2b1bb5b145be6a7",
+      "summary": "next-codex-prompt.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/reports/latest-proof-report.md",
+      "hash": "27266d4e52194523ee8cde585197a0e9241da286dd5c4c333f323e5b05180c3e",
+      "summary": "reports/latest-proof-report.md present"
+    },
+    {
+      "kind": "sidecar_artifact",
+      "path": ".stax/reports/latest-confidence-report.md",
+      "hash": "61fb09d221b3352e04a8ea4fd1094556fdb7bbc36efcfade0dac494e407d91f6",
+      "summary": "reports/latest-confidence-report.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.json",
+      "hash": "50549e5c4b206409686a51f2c2dd60522daaf6d26e901c9d757bbea391f951aa",
+      "summary": "proof-surfaces.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.candidate.json",
+      "hash": "7c7d92c94b95fe6b878ec0d9dc5a522af6bcd0ea89634f4b7ef287aa0a6f058f",
+      "summary": "proof-surfaces.candidate.json present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/proof-surfaces.review.md",
+      "hash": "2050b770c0f1832c9f76f8d40fe8b096d4014e688afd111650b09a41f924b44f",
+      "summary": "proof-surfaces.review.md present"
+    },
+    {
+      "kind": "proof",
+      "path": ".stax/visual-proofs/manifest.json",
+      "hash": "ff89bc858247f263515dfddd3fcb0917ea0181f882853f5ac80e9d1a43d00054",
+      "summary": "visual-proofs/manifest.json present"
+    }
+  ],
+  "criticalMiss": false,
+  "cleanupPromptNeeded": true,
+  "fullHandoffContractPresent": true,
+  "proofArtifactRequested": true
+}
