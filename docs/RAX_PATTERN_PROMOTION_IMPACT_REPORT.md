@@ -1,6 +1,6 @@
 # Pattern Promotion Impact Report
 
-Generated: 2026-05-28T00:19:32.977Z
+Generated: 2026-05-28T00:54:59.876Z
 
 ## Claim Separation
 
@@ -41,10 +41,10 @@ Cleanup prompts needed: 9/10
 - STAX: improved; commands=253; artifacts=5; failures: none
 - ADMISSION-APP: improved; commands=3; artifacts=7; failures: none
 - ADMISSION-APP: improved; commands=3; artifacts=7; failures: none
-- canvas-helper: improved; commands=100; artifacts=9; failures: none
 - canvas-helper: improved; commands=76; artifacts=9; failures: none
 - canvas-helper: improved; commands=71; artifacts=9; failures: none
-- canvas-helper: improved; commands=83; artifacts=9; failures: none
+- canvas-helper: improved; commands=76; artifacts=9; failures: none
+- canvas-helper: improved; commands=87; artifacts=9; failures: none
 - brightspacequizexporter: improved; commands=14; artifacts=7; failures: none
 - studentbudgetwars: improved; commands=3; artifacts=7; failures: none
 
