@@ -32,7 +32,9 @@
         "live_target_fetch",
         "rendered_screenshot",
         "visual_checklist",
-        "target_site_identity"
+        "target_site_identity",
+        "approved_image_sources",
+        "placeholder_removed_or_localized"
       ],
       "commands": [
         "npm run export:google-hosted",
@@ -40,10 +42,19 @@
         "npm run smoke:pipeline",
         "npm run test:e2e:project"
       ],
-      "blockedEvidence": ["deploy_command_only", "export_only_edit", "live_fetch_only", "css_diff_only", "remote_image_only"],
+      "blockedEvidence": [
+        "deploy_command_only",
+        "export_only_edit",
+        "live_fetch_only",
+        "css_diff_only",
+        "remote_image_only",
+        "external_image_only",
+        "remote_asset_url_only",
+        "placeholder_only"
+      ],
       "confidence": "high",
       "source": "canvas-helper static pack",
-      "nextAction": "For course deploys, prove the source workspace changed, regenerate the Google-hosted export, collect the deploy command through STAX, fetch the live target, and capture rendered visual proof."
+      "nextAction": "For course deploys, prove the source workspace changed, localize approved images or remove placeholders, regenerate the Google-hosted export, collect the deploy command through STAX, fetch the live target, and capture rendered visual proof."
     },
     {
       "claimType": "repo_identity",

@@ -40,6 +40,13 @@ const SURFACE_KEYWORDS: Record<string, RegExp[]> = {
     /hosting/i,
     /live\s+target/i,
     /hosted\s+site/i,
+    /external\s+image/i,
+    /remote\s+image/i,
+    /remote\s+asset/i,
+    /placeholder\s+image/i,
+    /wikimedia/i,
+    /googleusercontent/i,
+    /googleapis\.com/i,
     /authoring_unlock/i,
     /forensics?\d*/i,
     /general\s+psychology/i

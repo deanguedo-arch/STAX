@@ -94,6 +94,21 @@ describe("ProofSurfaceMatcher adversarial routing", () => {
     expect(match?.surface.requiredEvidence).toEqual(expect.arrayContaining(["rendered_screenshot", "visual_checklist"]));
   });
 
+  it("routes remote image link claims to course deploy proof requirements, not visual acceptance", async () => {
+    const pack = await readPack("proof-surfaces/canvas-helper.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "Remote image links from upload.wikimedia.org and storage.googleapis.com loaded, so the Google-hosted course deploy is ready."
+    });
+
+    expect(match?.surface.claimType).toBe("course_deploy_ready");
+    expect(match?.surface.requiredEvidence).toEqual(
+      expect.arrayContaining(["approved_image_sources", "placeholder_removed_or_localized", "live_target_fetch"])
+    );
+    expect(match?.surface.nextAction).toContain("localize approved images or remove placeholders");
+  });
+
   it("routes seed-gold output to Brightspace ingest repair proof requirements", async () => {
     const pack = await readPack("proof-surfaces/brightspacequizexporter.json");
 

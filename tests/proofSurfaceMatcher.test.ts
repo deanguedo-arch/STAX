@@ -65,6 +65,22 @@ describe("ProofSurfaceMatcher", () => {
     expect(match?.surface.claimType).toBe("course_deploy_ready");
   });
 
+  it("routes Canvas external image source claims to the course deploy contract", async () => {
+    const pack = await readPack("proof-surfaces/canvas-helper.json");
+
+    const match = matchProofSurface({
+      pack,
+      text: "The course deploy is ready because external image sources from Wikimedia and Google Storage loaded and placeholders were removed."
+    });
+
+    expect(match?.surface.claimType).toBe("course_deploy_ready");
+    expect(match?.surface.requiredEvidence).toEqual(
+      expect.arrayContaining(["approved_image_sources", "placeholder_removed_or_localized"])
+    );
+    expect(match?.surface.blockedEvidence).toEqual(expect.arrayContaining(["external_image_only", "remote_asset_url_only"]));
+    expect(match?.surface.nextAction).toContain("localize approved images or remove placeholders");
+  });
+
   it("does not let stale command spam outvote the course deploy proof gap", async () => {
     const pack = await readPack("proof-surfaces/canvas-helper.json");
 
