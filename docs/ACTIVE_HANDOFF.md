@@ -21,23 +21,23 @@ main
 Latest pushed rollout baseline:
 
 ```txt
-557c76c95b238cd9c4c20c5fc5ed3d0afa817335
+d1c51d753489a03f8d5e5cb92e5ae9b203c0740e
 ```
 
 Commit message:
 
 ```txt
-Refresh active handoff after CI repair
+Tolerate sidecar report mtime granularity
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26538928648
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26544755416
 ```
 
-Local `main` and `origin/main` were aligned before the current uncommitted rollout patch.
+Local `main` and `origin/main` are aligned at this baseline. Only generated `.stax` proof/status files and the unrelated duplicate `docs/ACTIVE_HANDOFF 2.md` are dirty locally.
 
 ## Product Boundary
 
@@ -69,14 +69,23 @@ The STAX repo is current and pushed.
 Recent pushed commits include:
 
 ```txt
+d1c51d7 Tolerate sidecar report mtime granularity
+5002d75 Harden proof routing and refresh impact window
+557c76c Refresh active handoff after CI repair
 4d806df Serialize visual proof manifest writes
 b1d734d Record Canvas impact evidence import
-fc10f3d Refresh rollout handoff status
-58407fe Refresh ADMISSION impact evidence
 ```
 
 The latest work:
 
+- Fixed a CI-only turn-compliance false reject where Linux filesystem timestamp granularity made a freshly written `.stax/codex-report.md` look older than `.stax/turn-contract.json`.
+- Added regression coverage so normal report mtime granularity stays a weak capture-lag warning instead of becoming a reject.
+- Verified the fix locally with `npm run validate:hardened` and with STAX-collected command evidence for the current auditable worktree.
+- Pushed the fix and verified GitHub Actions `staxcore-strict` completed successfully on `d1c51d7`.
+- Fixed the attached-repo impact batch runner so `stax:next-prompt` reuses the just-written gate output with `--no-gate` instead of rerunning a duplicate gate.
+- Added `stax:gate --no-learning-event` for observer/export automation so attached-repo evidence export does not add extra sidecar learning events.
+- Re-ran the attached-repo export batch for Canvas Helper, ADMISSION-APP, and Brightspacequizexporter from current `main` checkouts.
+- Rebuilt the pattern-promotion impact report from 10 imported bundles at `2026-05-27T23:55:36.065Z`.
 - Fixed claim extraction so `What is weak/provisional` caution language no longer becomes hard release/data/visual claims.
 - Fixed project-control command relevance so protocol-compliance wording and cross-repo command-log metadata do not route current test proof into the wrong proof lane.
 - Added regression coverage for both false-reject classes.
@@ -138,7 +147,7 @@ visual_2026-05-27T19_01_39_622Z_5eb93f079ea5: AS30 tablet screenshot proof
 visual_2026-05-27T19_01_45_259Z_4f42eaa307b2: AS30 phone screenshot proof
 ```
 
-Canvas generated `.stax` status/proof files are dirty locally and intentionally not committed.
+Canvas generated `.stax` status/proof files are dirty locally and intentionally not committed. The latest observer batch now correctly reports cleanup-needed because the sidecar proof-surface upgrade changed the auditable worktree, so pre-upgrade command evidence is stale and must be recollected before claiming fresh Accept again.
 
 ## Pattern Promotion Impact
 
@@ -147,6 +156,7 @@ Current report:
 ```txt
 docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
 reports/pattern_promotion/pattern-promotion-impact-2026-05-27T22-51-28-732Z.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-27T23-55-36-065Z.json
 ```
 
 Current result:
@@ -154,7 +164,7 @@ Current result:
 ```txt
 locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe, 0 regressed
 current operating window: 10 imported bundles, 0 critical misses
-full handoff contracts: 9/10
+full handoff contracts: 10/10
 proof artifacts requested: 10/10
 cleanup prompts needed: 9/10
 ```
@@ -205,6 +215,8 @@ commit: b7896b7de44c11c2f8ae34956bc20ed76f435e8f
 
 The refreshed Brightspace bundle is now clean current-main evidence. STAX still records the older wrong-branch export command as historical, but it no longer poisons the verdict once newer verified same-lane proof exists.
 
+The latest observer batch after sidecar proof-surface discovery reports Brightspace as cleanup-needed because the sidecar changed and command evidence must be recollected for the new auditable worktree before claiming current Accept again.
+
 Keep these claims separate:
 
 ```txt
@@ -214,9 +226,16 @@ Current operating window = proves STAX helps live repos today.
 
 ## Local Proof Already Collected
 
-STAX local proof for the current uncommitted rollout patch:
+STAX local proof for the current pushed rollout baseline:
 
 ```txt
+npm test -- tests/sidecarTurnCompliance.test.ts: pass, 17 tests
+npm run validate:hardened: pass, 211 test files / 1109 tests through test:ci-safe
+npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run validate:hardened: pass, evidence cmd_2026-05-27T23_22_26_943Z_eea6194c401c
+npm test -- tests/attachedRepoImpactExport.test.ts: pass, 3 tests
+npm run stax:attached-impact-export -- --dry-run --repo canvas-helper --repo ADMISSION-APP --repo brightspacequizexporter: pass
+npm run stax:attached-impact-export -- --confirm-current-repos --repo canvas-helper --repo ADMISSION-APP --repo brightspacequizexporter: pass, exported 3 bundles
+npm run pattern:impact -- --import <10 bundles>: pass, 10 imported bundles / 0 critical misses / 10 proof artifact requests
 npm run typecheck: pass
 npm test -- tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts: pass, 64 tests
 npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts: pass
@@ -226,7 +245,8 @@ npm run stax:gate -- --repo /Users/deanguedo/Documents/GitHub/STAX: Accept / Aud
 GitHub Actions:
 
 ```txt
-staxcore-strict on 557c76c: success
+staxcore-strict on d1c51d7: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26544755416
 ```
 
 ## Current Local Dirt
@@ -249,7 +269,7 @@ docs/ACTIVE_HANDOFF 2.md
 
 It has not been touched. Do not delete it unless Dean explicitly asks.
 
-New durable files from the current uncommitted rollout patch:
+Durable rollout files already committed and pushed in `5002d75`:
 
 ```txt
 reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-current-build.json
@@ -258,7 +278,7 @@ reports/pattern_promotion/attached_repo_exports/studentbudgetwars-impact-syntax-
 reports/pattern_promotion/pattern-promotion-impact-2026-05-27T22-51-28-732Z.json
 ```
 
-Older intermediate impact JSON files from this same run were superseded and left out; commit only the final `pattern-promotion-impact-2026-05-27T22-51-28-732Z.json`.
+Older intermediate impact JSON files from that run were superseded and left out; keep using the final `pattern-promotion-impact-2026-05-27T22-51-28-732Z.json` unless a fresh `npm run pattern:impact` run replaces it.
 
 Attached repo dirt created by observer work:
 
@@ -275,7 +295,7 @@ Attached repo dirt created by observer work:
 
 ## Next Milestone
 
-The next milestone is packaging and pushing the current STAX rollout patch, then deciding how to handle attached-repo local dirt.
+The next milestone is continuing attached-repo operating-window proof from the green STAX baseline, then deciding how to handle attached-repo local dirt.
 
 Acceptance target:
 
@@ -293,17 +313,20 @@ Current operating-window status:
 ```txt
 10 imported bundles
 0 critical misses
-9/10 full handoff contracts
+10/10 full handoff contracts
 10/10 proof artifact requests
+9/10 cleanup prompts needed
 ```
 
 Next best actions:
 
-1. Stage and commit the STAX source/test/report/export changes, leaving generated `.stax` runtime files and unrelated `docs/ACTIVE_HANDOFF 2.md` unstaged unless explicitly requested.
-2. Push STAX `main` and verify GitHub Actions.
-3. In ADMISSION-APP, decide whether to keep or revert the generated `docs/index.html` diff.
-4. In studentbudgetwars, decide whether to keep and commit the new STAX sidecar attach files.
-5. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
+1. Use `d1c51d7` as the current green STAX baseline.
+2. Treat the new cleanup-needed observer output as useful learning: sidecar upgrades/discovery stale prior command evidence and require fresh `stax:collect`.
+3. For Canvas Helper, recollect the approved visual/build/test proof commands only when you are ready to spend the time, then rerun `stax:gate`.
+4. For Brightspacequizexporter, recollect `npm run build` and `npm run ingest:ci` through `stax:collect` before claiming current Accept again.
+5. In ADMISSION-APP, decide whether to keep or revert the generated `docs/index.html` diff before committing there.
+6. In studentbudgetwars, decide whether to keep and commit the new STAX sidecar attach files.
+7. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
 
 For each current attached repo, run:
 
@@ -386,14 +409,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff update:
-- commit: d1f69dad7e81c1f4f7775853365ff2a661311bdb
-- short: d1f69da
-- commit message: Fix sidecar regression branch portability
+- commit: d1c51d753489a03f8d5e5cb92e5ae9b203c0740e
+- short: d1c51d7
+- commit message: Tolerate sidecar report mtime granularity
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26538318537
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26544755416
 
 Goal:
-Continue the attached-repo operating-window phase. STAX, ADMISSION-APP, Canvas Helper, and Brightspacequizexporter are imported into the current impact report. Canvas Helper has a fresh current-head sidecar Accept. Brightspace reached sidecar Accept after current-main proof recollection and a STAX patch that ignores older same-lane wrong-branch evidence only when newer verified proof exists.
+Continue the attached-repo operating-window phase from green STAX baseline `d1c51d7`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. The latest attached-repo batch completed and produced cleanup-needed bundles for Canvas Helper, ADMISSION-APP, and Brightspace after sidecar proof-surface discovery changed sidecar state. That is expected observer learning: refresh command evidence after sidecar upgrades before claiming current Accept. The CI-only turn-compliance mtime false reject is fixed and green in GitHub Actions.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
@@ -416,7 +439,7 @@ This handoff refresh is complete when:
 
 ```txt
 docs/ACTIVE_HANDOFF.md is committed and pushed
-docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md reflects the 4-bundle operating-window status
+docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md reflects the 10-bundle operating-window status
 origin/main equals local main
 GitHub staxcore-strict remains success on the pushed commit
 generated .stax proof files remain unstaged

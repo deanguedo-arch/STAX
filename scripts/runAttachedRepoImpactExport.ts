@@ -118,13 +118,13 @@ export function buildAttachedRepoImpactPlan(input: {
           {
             label: "sidecar-gate",
             command: npmExecutable(),
-            args: ["run", "stax:gate", "--", "--repo", repoPath],
+            args: ["run", "stax:gate", "--", "--repo", repoPath, "--no-learning-event"],
             allowNonZero: true
           },
           {
             label: "sidecar-next-prompt",
             command: npmExecutable(),
-            args: ["run", "stax:next-prompt", "--", "--repo", repoPath],
+            args: ["run", "stax:next-prompt", "--", "--repo", repoPath, "--no-gate"],
             allowNonZero: true
           },
           {

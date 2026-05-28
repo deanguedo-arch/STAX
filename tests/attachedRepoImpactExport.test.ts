@@ -26,6 +26,8 @@ describe("attached repo impact export runner", () => {
       "export-impact-evidence"
     ]);
     expect(plan.entries[0]!.commands[1]!.allowNonZero).toBe(true);
+    expect(plan.entries[0]!.commands[1]!.args).toContain("--no-learning-event");
+    expect(plan.entries[0]!.commands[2]!.args).toContain("--no-gate");
     expect(plan.entries[0]!.commands[3]!.args.join(" ")).toContain("canvas-helper-impact.json");
   });
 
