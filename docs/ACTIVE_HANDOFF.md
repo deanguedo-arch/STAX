@@ -62,7 +62,7 @@ Next narrow STAX-only actions, if continuing without touching attached repos:
 ```txt
 1. Keep docs/current-status surfaces aligned with the latest verified commit after each pushed STAX closure.
 2. Add additional adversarial proof-surface/claim-extraction cases only when they correspond to observed false positives or false negatives.
-3. Prepare attached-repo export/import handoff for the workstation that owns the live repos.
+3. Use `docs/handoffs/ATTACHED_REPO_IMPACT_EVIDENCE_HANDOFF.md` for the workstation that owns the live repos.
 4. Continue real observer runs only when the target repo is not being edited in another terminal.
 ```
 
