@@ -163,11 +163,13 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
 
 function normalizeClaimProse(text: string): string {
   return stripNegatedClaimLines(
-    stripProofRuleLines(
-      stripNegatedClaimBlocks(
-        stripCommandTokens(
-          stripCodeAndPathTokens(
-            normalizeWorkflowStatusLines(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))
+    stripProofToolingLines(
+      stripProofRuleLines(
+        stripNegatedClaimBlocks(
+          stripCommandTokens(
+            stripCodeAndPathTokens(
+              normalizeWorkflowStatusLines(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))
+            )
           )
         )
       )
@@ -240,6 +242,21 @@ function stripProofRuleLines(text: string): string {
       (line) =>
         !/\b(?:claims?|reports?|evidence|proof|regression eval|completion claims?)\b.{0,80}\b(?:require|requires|should require|must require|must be marked|must not|cannot|should not|not enough|alone (?:is|are) not enough|not proof|unverified|provisional)\b/i.test(line)
     )
+    .join("\n");
+}
+
+function stripProofToolingLines(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .filter((line) => {
+      if (/\b(?:looks correct|looks good|visually verified|visual(?:ly)? confirmed|layout (?:looks|is) (?:good|correct|ready)|ui looks)\b/i.test(line)) {
+        return true;
+      }
+      return !(
+        /\bvisual[- ]proof\b/i.test(line) &&
+        /\b(?:fallback|capture|collector|collect-visual|url[- ]capture|playwright|register(?:ing)?|screenshot registration|tooling|manifest|unavailable)\b/i.test(line)
+      );
+    })
     .join("\n");
 }
 

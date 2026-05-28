@@ -91,6 +91,20 @@ describe("sidecar claim extraction precision", () => {
     ).toEqual([]);
   });
 
+  it("does not treat visual-proof tooling or fallback wording as a visual completion claim", () => {
+    expect(
+      decomposeClaimsFromReport(
+        "Make STAX visual proof URL-capture failures actionable by telling Codex to fall back to registering an existing screenshot with stax:collect-visual --path when repo-local Playwright capture is unavailable."
+      )
+    ).toEqual([]);
+    expect(
+      decomposeClaimsFromReport("URL visual-proof capture now wraps repo-local Playwright failures with an actionable message.")
+    ).toEqual([]);
+    expect(
+      decomposeClaimsFromReport("For visual proof, use stax:collect-visual --path when Playwright is unavailable.")
+    ).toEqual([]);
+  });
+
   it("does not convert negative promotion-control wording into memory promotion claims", () => {
     expect(decomposeClaimsFromReport("Do not auto-promote learning candidates.")).toEqual([]);
     expect(decomposeClaimsFromReport("Candidates are pending review only; none were promoted.")).toEqual([]);
