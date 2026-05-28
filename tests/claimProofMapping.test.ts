@@ -109,6 +109,15 @@ describe("claim-to-proof mapping", () => {
     expect(claims).toEqual([]);
   });
 
+  it("does not treat release rollback or downgrade framing as migration proof by itself", () => {
+    const claims = decomposeClaimsFromReport(
+      "Publish readiness claims must be downgraded to preflight until target validation, rollback framing, and explicit approval are present."
+    );
+
+    expect(claims.map((claim) => claim.claimType)).not.toContain("migration");
+    expect(claims.map((claim) => claim.claimType)).toContain("release_deploy");
+  });
+
   it("still catches real readiness and policy claims after metadata filtering", () => {
     const claims = decomposeClaimsFromReport(
       "Deployment ready after migration rollback check. CSV row-count and dry-run prove the data is ready. Updated tsconfig and policy approval is recorded."

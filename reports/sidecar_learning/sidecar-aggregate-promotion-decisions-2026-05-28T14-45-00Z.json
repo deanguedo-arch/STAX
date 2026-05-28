@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "stax-sidecar-aggregate-promotion-decisions-v1",
+  "generatedAt": "2026-05-28T14:45:00.000Z",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json",
+  "decisions": [
+    {
+      "aggregateId": "agg_policy_safety_rule",
+      "decision": "promote_narrowly",
+      "queueType": "policy_patch_candidate",
+      "promotionTarget": "policy_patch",
+      "sourceCandidateCount": 12,
+      "artifact": "learning/proposals/policy_patch_candidates/agg_policy_safety_rule.json",
+      "regressionEval": "evals/regression/publish_sync_requires_preflight.json",
+      "reason": "Reusable publish/sync/deploy/release safety boundary is supported by repeated Canvas observations, release-gate fixtures, preflight approval tests, and a new regression eval.",
+      "promoted": [
+        "Publish, sync, deploy, release, push, and data-publish requests require non-mutating preflight and target validation before readiness claims.",
+        "Live action requires explicit human approval and rollback or revert framing.",
+        "Without that proof, STAX must block or downgrade the request to a bounded preflight-only next action."
+      ],
+      "notPromoted": [
+        "Canvas-specific course names",
+        "Firebase project names",
+        "live URLs",
+        "local deploy scripts beyond generic action classes",
+        "one-off task facts",
+        "raw Codex report wording"
+      ],
+      "regressionEvidence": [
+        "evals/regression/publish_sync_requires_preflight.json",
+        "fixtures/pattern_promotion/locked_replay_10_cases.json#locked_publish_sync_requires_preflight",
+        "fixtures/release_gate_proof/release_gate_proof_core_cases.json",
+        "tests/releaseGateAnalyzer.test.ts",
+        "tests/preflightApproval.test.ts",
+        "docs/RAX_OPERATING_WINDOW_TODAY_REPORT.md"
+      ]
+    },
+    {
+      "aggregateId": "agg_schema_contract_rule",
+      "decision": "already_promoted",
+      "queueType": "schema_patch_candidate",
+      "promotionTarget": "schema_patch",
+      "reason": "The reusable schema-contract aggregate already has a reviewed promotion artifact."
+    },
+    {
+      "aggregateId": "agg_codex_handoff_rule",
+      "decision": "already_promoted",
+      "queueType": "codex_prompt_candidate",
+      "promotionTarget": "mode_contract_patch",
+      "reason": "The reusable bounded handoff aggregate already has a reviewed promotion artifact."
+    },
+    {
+      "aggregateId": "agg_mode_behavior_rule",
+      "decision": "already_promoted",
+      "queueType": "mode_contract_patch_candidate",
+      "promotionTarget": "mode_contract_patch",
+      "reason": "The visual-proof mode behavior aggregate already has a reviewed promotion artifact."
+    },
+    {
+      "aggregateId": "agg_proof_boundary_rule",
+      "decision": "already_promoted",
+      "queueType": "eval_candidate",
+      "promotionTarget": "eval",
+      "reason": "The target-repo command-proof boundary aggregate already has a reviewed promotion artifact."
+    },
+    {
+      "aggregateId": "agg_repo_specific_fact",
+      "decision": "keep_local_trace_only",
+      "queueType": "trace_only",
+      "promotionTarget": "none",
+      "reason": "Repo-specific facts remain sidecar evidence only."
+    },
+    {
+      "aggregateId": "agg_trace_fact",
+      "decision": "discard_or_keep_trace_only",
+      "queueType": "trace_only",
+      "promotionTarget": "none",
+      "reason": "One-off observations should not become durable learning."
+    }
+  ]
+}

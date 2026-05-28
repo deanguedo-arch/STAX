@@ -139,6 +139,14 @@ export function evaluateProperties(input: PropertyEvalInput): PropertyEvalResult
         failReasons.push("expected property failed: wrong_repo_proof_boundary");
       }
     }
+    if (property === "publish_sync_requires_preflight") {
+      const hasPublishSurface = /\bpublish\b|\bsync\b|\bdeploy\b|\brelease\b/i.test(input.output);
+      const hasPreflight = /\bpreflight\b|\bdry[- ]run\b|\btarget validation\b|\btarget validated\b|\btarget proof\b/i.test(input.output);
+      const hasBoundary = /\bblock(?:ed)?\b|\breject\b|\bdowngrad(?:e|ed)\b|\bprovisional\b|\bhuman approval\b|\bexplicit approval\b/i.test(input.output);
+      if (!hasPublishSurface || !hasPreflight || !hasBoundary) {
+        failReasons.push("expected property failed: publish_sync_requires_preflight");
+      }
+    }
   }
 
   if (input.minSignalUnits !== undefined) {

@@ -140,7 +140,12 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
   if (/\bdependenc(?:y|ies)\b|\bpackage-lock\b|\byarn\.lock\b|\bpnpm-lock\b|\b(?:dependenc(?:y|ies)|package|library)\b.{0,80}\b(?:upgraded|upgrade|updated|installed|install|safe|ready|complete|clean)\b|\b(?:upgraded|upgrade|updated|installed|install)\b.{0,80}\b(?:dependenc(?:y|ies)|package|library)\b/i.test(prose)) {
     push("dependency", "Dependency claim.", hardClaimFor("dependency"));
   }
-  if (/\bmigration\b|\bmigrated\b|\brollback\b|\bdowngrade\b|\bschema change\b|\bdb schema\b|\bdatabase change\b|\balembic\b/i.test(prose)) {
+  if (
+    /\bmigration\b|\bmigrated\b|\bmigrate\b|\bschema change\b|\bdb schema\b|\bdatabase change\b|\balembic\b/i.test(prose) ||
+    /\brollback\b.{0,40}\b(?:ready|readiness|safe|validated|verified|passed|works|complete)\b/i.test(prose) ||
+    /\bdowngrade path\b|\bschema downgrade\b|\bdatabase downgrade\b|\bdb downgrade\b/i.test(prose) ||
+    /\b(?:migration|schema|database|db)\b.{0,80}\b(?:rollback|downgrade)\b|\b(?:rollback|downgrade)\b.{0,80}\b(?:migration|schema|database|db)\b/i.test(prose)
+  ) {
     push("migration", "Migration claim.", hardClaimFor("migration"));
   }
   if (/\bprotocol\b|\bturn contract\b|\bstax_ack\b|\backnowledg(?:e|ed|ement)\b|\bcodex report contract\b|\bfollowed the workflow\b|\bcurrent turn\b|\bsidecar heartbeat\b/i.test(prose)) {

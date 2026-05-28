@@ -59,4 +59,22 @@ describe("evaluateProperties", () => {
 
     expect(result.pass).toBe(true);
   });
+
+  it("checks publish and sync preflight boundary language", () => {
+    const result = evaluateProperties({
+      output: [
+        "## Objective",
+        "Downgrade publish and sync readiness claims to preflight.",
+        "## Evidence Required",
+        "- Run non-mutating preflight and target validation before publish, sync, deploy, or release claims.",
+        "- Block live action until explicit approval is present."
+      ].join("\n"),
+      requiredSections: ["## Objective", "## Evidence Required"],
+      forbiddenPatterns: [],
+      expectedProperties: ["publish_sync_requires_preflight"],
+      critical: true
+    });
+
+    expect(result.pass).toBe(true);
+  });
 });

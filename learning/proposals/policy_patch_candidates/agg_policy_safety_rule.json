@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "stax-reviewed-aggregate-promotion-v1",
+  "aggregateId": "agg_policy_safety_rule",
+  "classification": "policy_safety_rule",
+  "queueType": "policy_patch_candidate",
+  "promotionTarget": "policy_patch",
+  "status": "approved_for_promotion",
+  "approvedBy": "Dean via Codex chat",
+  "approvedAt": "2026-05-28T14:45:00.000Z",
+  "approvalReason": "Canvas Helper sidecar observations repeatedly showed that publish, sync, deploy, and release requests need preflight, target validation, explicit approval, and bounded next actions. This promotes only the reusable safety boundary and does not grant live action authority.",
+  "sourceAggregateReport": "reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.json",
+  "sourceCandidateCount": 12,
+  "sourceRepos": [
+    "canvas-helper"
+  ],
+  "promotedPattern": {
+    "name": "publish_sync_requires_preflight",
+    "summary": "Publish, sync, deploy, or release readiness claims must be blocked or downgraded to a non-mutating preflight step unless target validation, rollback framing, proof artifacts, and explicit human approval are present.",
+    "requiredFields": [
+      "requested live action or release boundary",
+      "target environment or target system",
+      "non-mutating preflight or dry-run command",
+      "target validation proof",
+      "rollback or revert framing",
+      "explicit human approval before any live action"
+    ],
+    "blockedWithoutProof": [
+      "live deploy",
+      "live sync",
+      "publish",
+      "push",
+      "release",
+      "data publish"
+    ],
+    "allowedFallback": "Generate a bounded next prompt that asks for preflight, target validation, and approval evidence without running the live action.",
+    "forbiddenPromotionContent": [
+      "Canvas-specific course names",
+      "Firebase project names",
+      "live URLs",
+      "local deploy scripts beyond generic action classes",
+      "one-off task facts",
+      "raw Codex report wording"
+    ]
+  },
+  "regressionEvidence": [
+    {
+      "type": "locked_replay",
+      "path": "fixtures/pattern_promotion/locked_replay_10_cases.json",
+      "caseId": "locked_publish_sync_requires_preflight",
+      "expectedResult": "publish/sync safety routes to policy_safety_rule and policy_patch promotion"
+    },
+    {
+      "type": "regression_eval",
+      "path": "evals/regression/publish_sync_requires_preflight.json",
+      "expectedResult": "runtime planning output preserves preflight and target-validation boundary"
+    },
+    {
+      "type": "fixture",
+      "path": "fixtures/release_gate_proof/release_gate_proof_core_cases.json",
+      "expectedResult": "release readiness rejects missing build, target, rollback, or checklist-only proof"
+    },
+    {
+      "type": "test",
+      "path": "tests/releaseGateAnalyzer.test.ts",
+      "expectedResult": "release gate analyzer enforces build, target, rollback, staging, and signing evidence"
+    },
+    {
+      "type": "test",
+      "path": "tests/preflightApproval.test.ts",
+      "expectedResult": "preflight approval artifacts must be scoped, current, and matching"
+    },
+    {
+      "type": "smoke",
+      "path": "docs/RAX_OPERATING_WINDOW_TODAY_REPORT.md",
+      "expectedResult": "ADMISSION docs-updated sync readiness smoke required preflight validation before live sync or publish claim"
+    }
+  ],
+  "expectedFutureBehaviorChange": "Future publish, sync, deploy, release, or data-publish requests without target validation and explicit approval are blocked or downgraded to bounded preflight instructions.",
+  "approvalRequiredForFurtherPromotion": true,
+  "autoPromote": false
+}
