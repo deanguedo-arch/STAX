@@ -682,6 +682,68 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.unverified.join("\n")).toContain("Visual/style claim lacks STAX-collected rendered visual proof.");
   });
 
+  it("does not downgrade non-visual sidecar updates because old screenshot proof is stale", async () => {
+    const repoPath = await createTempGitRepo("stax-sidecar-visual-proof-nonvisual-");
+    await attachStaxToRepo(repoPath);
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "config.json"),
+      `${JSON.stringify(
+        {
+          schemaVersion: "stax-sidecar-config-v1",
+          runtimeFreshnessMode: "manual",
+          turnComplianceMode: "manual"
+        },
+        null,
+        2
+      )}\n`,
+      "utf8"
+    );
+    await commitFile(repoPath, "projects/course/workspace/styles.css", ".card { color: red; }\n");
+    await commitFile(
+      repoPath,
+      "package.json",
+      `${JSON.stringify({ scripts: { test: "node -e \"console.log('note ok')\"" } }, null, 2)}\n`
+    );
+    await fs.writeFile(path.join(repoPath, "projects/course/workspace/styles.css"), ".card { color: green; }\n", "utf8");
+    await fs.writeFile(path.join(repoPath, ".stax", "manual-shot.png"), "fake screenshot bytes\n", "utf8");
+    await collectVisualEvidence({
+      repoPath,
+      screenshotPath: path.join(repoPath, ".stax", "manual-shot.png"),
+      description: "Course page screenshot after the green card visual update.",
+      checklistItems: ["Course page", "responsive"]
+    });
+    execFileSync("git", ["checkout", "--", "projects/course/workspace/styles.css"], { cwd: repoPath });
+    await fs.appendFile(path.join(repoPath, "AGENTS.md"), "\nSidecar protocol note.\n", "utf8");
+    const evidence = await collectCommandEvidence({
+      repoPath,
+      command: ["npm", "test"],
+      writeLearningEvent: false
+    });
+    await fs.writeFile(
+      path.join(repoPath, ".stax", "codex-report.md"),
+      [
+        "Objective: update sidecar note wording",
+        "Files changed: AGENTS.md",
+        "Tests added: none",
+        "Commands run: npm test",
+        `Command output summary with exit codes: ${evidence.evidenceId} exited 0`,
+        "What is verified: sidecar note was recorded with local command proof.",
+        "What is weak/provisional: none",
+        "What is unverified: none",
+        "Risks: none",
+        "One next action: stop"
+      ].join("\n"),
+      "utf8"
+    );
+
+    const status = await runStaxGate({ repoPath, writeLearningEvent: false });
+
+    expect(status.verdict).toBe("Accept");
+    expect(status.weak.join("\n")).not.toContain("stale_visual_proof");
+    expect(status.verified.join("\n")).toContain("Historical visual evidence ignored");
+    expect(status.proofStrength?.claimType).toBe("verification_run");
+  });
+
   it("does not let stale screenshot history downgrade newer current visual proof", async () => {
     const repoPath = await createTempGitRepo("stax-sidecar-visual-proof-current-over-stale-");
     await attachStaxToRepo(repoPath);

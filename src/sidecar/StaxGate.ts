@@ -130,7 +130,8 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   await ensureDirectory(staxPath);
   const snapshot = await collectGitSnapshot(repoPath);
   const config = await readSidecarConfig(repoPath);
-  const task = (await readTextIfExists(path.join(staxPath, "task.md"))).trim() || `STAX sidecar audit for ${snapshot.repoName}.`;
+  const taskText = (await readTextIfExists(path.join(staxPath, "task.md"))).trim();
+  const task = taskText || `STAX sidecar audit for ${snapshot.repoName}.`;
   const codexReport = stripGeneratedProofStrengthSection(await readTextIfExists(path.join(staxPath, "codex-report.md"))).trim();
   const currentFingerprint = await collectWorktreeFingerprint(repoPath);
   const visualEvidenceEntries = await readVisualEvidenceForGate(repoPath, currentFingerprint);
@@ -147,7 +148,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   const auditableDiff = changedFiles.length > 0;
   const auditableUnifiedDiff = auditableDiff ? snapshot.unifiedDiff : "";
   const packet: StructuredProjectControlEvidencePacket = {
-    task,
+    task: taskText,
     repo: snapshot.repoName,
     targetRepoPath: repoPath,
     branch: snapshot.branch,
@@ -164,7 +165,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
   };
 
   const proofStack = buildProjectControlProofStack({
-    task,
+    task: taskText,
     repoEvidence: renderRepoEvidence(snapshot),
     commandEvidence,
     codexReport,
@@ -189,7 +190,7 @@ export async function runStaxGate(options: RunStaxGateOptions): Promise<StaxGate
     snapshot
   });
   const proofStrength = await deriveSidecarProofStrength({
-    task,
+    task: taskText,
     codexReport,
     changedFiles,
     commandEvidenceEntries,
@@ -839,11 +840,12 @@ async function deriveSidecarProofStrength(input: {
   snapshot: { repoName: string; branch?: string; commitSha?: string; gitStatusShort?: string };
   generatedAt: string;
 }): Promise<ProofStrengthResult | undefined> {
-  const claimText = [input.task, input.codexReport].filter((item) => item.trim()).join("\n\n");
+  const explicitClaimText = [input.task, input.codexReport].filter((item) => item.trim()).join("\n\n");
   const commandEvidenceEntries = latestCurrentCommandEvidenceForProof(input.commandEvidenceEntries);
   const commandEvidence = commandEvidenceEntries.map((entry) => sidecarCommandEvidence(entry, input.repoPath));
-  const claimType = inferProofStrengthClaimTypeFromClaims(claimText) ?? (commandEvidence.length > 0 ? "verification_run" : undefined);
+  const claimType = inferProofStrengthClaimTypeFromClaims(explicitClaimText) ?? (commandEvidence.length > 0 ? "verification_run" : undefined);
   if (!claimType) return undefined;
+  const claimText = explicitClaimText || "Verification run.";
   const evidenceFiles = mergeChangedFiles(input.changedFiles, await existingMentionedFiles(input.repoPath, claimText));
   const repoEvidence = sidecarRepoEvidencePack({
     repoPath: input.repoPath,
@@ -1313,7 +1315,8 @@ async function deriveSidecarFindings(input: {
       verified.push(`Visual evidence verified: ${entry.proofId} (${entry.source}) matches the current auditable worktree.`);
     }
   }
-  if (nonCurrentVisualEvidence.length > 0 && currentVisualEvidence.length === 0) {
+  const visualProofRequired = visualChanged && visualClaim;
+  if (nonCurrentVisualEvidence.length > 0 && currentVisualEvidence.length === 0 && visualProofRequired) {
     for (const entry of nonCurrentVisualEvidence.slice(0, 3)) {
       weak.push(`Visual evidence ignored for current proof: ${entry.proofId} is ${entry.verificationStatus}.`);
       for (const issue of entry.verificationIssues.slice(0, 2)) weak.push(issue);
@@ -1323,7 +1326,7 @@ async function deriveSidecarFindings(input: {
       verified.push(`Historical visual evidence ignored for current proof because ${entry.proofId} is ${entry.verificationStatus}.`);
     }
   }
-  if (visualChanged && visualClaim && currentVisualEvidence.length === 0) {
+  if (visualProofRequired && currentVisualEvidence.length === 0) {
     unverified.push("Visual/style claim lacks STAX-collected rendered visual proof.");
     risk.push("Visual proof required before accepting UI/layout claims; collect it from the STAX checkout/tooling repo with stax:collect-visual using --url <local-preview-url> or --path <screenshot.png>, plus target page/state, responsive/viewport, and visible outcome checklist items.");
   }
