@@ -165,7 +165,11 @@ function normalizeClaimProse(text: string): string {
   return stripNegatedClaimLines(
     stripProofRuleLines(
       stripNegatedClaimBlocks(
-        stripCommandTokens(stripCodeAndPathTokens(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text)))))
+        stripCommandTokens(
+          stripCodeAndPathTokens(
+            normalizeWorkflowStatusLines(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))
+          )
+        )
       )
     )
   );
@@ -275,6 +279,24 @@ function stripNonClaimPrefixedLines(text: string): string {
     .split(/\r?\n/)
     .filter((line) => !/^\s*-?\s*(?:risk|risks|unverified|weak|weak\/provisional|missing proof|primary limiter|next proof action)\s*:/i.test(line))
     .join("\n");
+}
+
+function normalizeWorkflowStatusLines(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .map(normalizeWorkflowStatusLine)
+    .filter((line) => line !== undefined)
+    .join("\n");
+}
+
+function normalizeWorkflowStatusLine(line: string): string | undefined {
+  const normalized = line.trim();
+  if (!normalized) return line;
+  if (/\b(?:ci url records|records a green workflow run)\b/i.test(normalized)) return undefined;
+  const workflowContext = /\b(?:github actions|workflow|staxcore-strict|strict run|run\s+\d{5,})\b/i;
+  const completionReceipt = /\b(?:completed successfully|completed\s*\/\s*success|completed\/success)\b/i;
+  if (!workflowContext.test(normalized) || !completionReceipt.test(normalized)) return line;
+  return line.replace(completionReceipt, "succeeded");
 }
 
 function isSourceQualifiedClaim(text: string): boolean {

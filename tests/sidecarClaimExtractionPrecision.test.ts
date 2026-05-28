@@ -59,6 +59,25 @@ describe("sidecar claim extraction precision", () => {
     ).toEqual([]);
   });
 
+  it("does not convert workflow status receipts into implementation claims", () => {
+    expect(
+      decomposeClaimsFromReport(
+        [
+          "What is verified:",
+          "- GitHub Actions run 26591243938 completed successfully.",
+          "- staxcore-strict completed / success for b2eef94.",
+          "- The CI URL records a green workflow run."
+        ].join("\n")
+      )
+    ).toEqual([]);
+  });
+
+  it("still treats direct CI-green wording as a proof-bearing test claim", () => {
+    expect(decomposeClaimsFromReport("CI is green.")).toEqual([
+      { claimType: "test", claim: "Tests passed.", hardClaim: true }
+    ]);
+  });
+
   it("does not treat proof-rule wording as the claim being governed", () => {
     expect(
       decomposeClaimsFromReport(
