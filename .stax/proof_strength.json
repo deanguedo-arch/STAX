@@ -1,7 +1,7 @@
 {
   "schemaVersion": "proof-strength-v1",
-  "claimType": "verification_run",
-  "claimText": "Documentation/status handoff record update only: align ACTIVE_HANDOFF with current pushed STAX baseline, CI URL, Brightspace evidence import, and 14-bundle operating-window count.\n\nSTAX acknowledgement: STAX_ACK turn_2026-05-28T12-27-13-176Z_2c45 fec0f902 64587370\n\nObjective:\nDocumentation/status handoff record update only: align `docs/ACTIVE_HANDOFF.md` with the current pushed STAX baseline, CI URL, Brightspace evidence import, and 14-bundle operating-window count.\n\nFiles changed:\n- `docs/ACTIVE_HANDOFF.md`\n- `.stax/task.md`\n\nTests added:\n- None.\n\nCommands run:\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_28_15_892Z_982c1455e5e7`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_28_18_308Z_328e123c6385`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_28_38_974Z_092594e366f2`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_28_39_962Z_31b060f341fa`\n- `npm run stax:sidecar:refresh -- --repo /Users/deanguedo/Documents/GitHub/STAX`\n  - exitCode: 0\n\nCommand output summary with exit codes:\n- Typecheck exited 0 through STAX command evidence on the handoff-only diff.\n- Full `npm test` exited 0 through STAX command evidence on the handoff-only diff.\n- `npm run smoke:stax` exited 0 through STAX command evidence on the handoff-only diff.\n- `npm run rax -- eval` exited 0 through STAX command evidence on the handoff-only diff.\n- Sidecar refresh exited 0.\n\nWhat is verified:\n- Local `main` and `origin/main` pointed to `92855f5fa0bdbc08f7ffd10aa6e6e4411064b428` before this handoff-only diff.\n- GitHub Actions `staxcore-strict` has success status for `92855f5` at `https://github.com/deanguedo-arch/STAX/actions/runs/26574143890`.\n- The handoff record references the 14-bundle operating-window status from `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md`.\n- The handoff record references Brightspacequizexporter commit `dc3635ff79b346035f5e179a0c8a6a06fbe74359` and sidecar `Accept / Audit-grade`.\n\nWhat is weak/provisional:\n- GitHub Actions has not run for the upcoming handoff-record commit.\n\nWhat is unverified:\n- No new attached-repo task was run during this handoff record update.\n- No deploy, publish, sync, or live LMS action was run.\n\nRisks:\n- Do not treat the handoff record as product proof.\n- Do not treat STAX sidecar Accept as code correctness proof.\n\nOne next action:\nRun the STAX sidecar gate for the handoff record update; if it accepts, commit and push the handoff record.",
+  "claimType": "visual_behavior_verified",
+  "claimText": "Make visual proof collection easier for attached sidecars by advertising STAX self-capture with --url <local-preview-url> anywhere visual proof guidance currently only points to registering an existing screenshot path.\n\nSTAX acknowledgement: STAX_ACK turn_2026-05-28T12-31-19-113Z_c129 27434803 9b0fadc3\n\nObjective:\nMake visual proof collection easier for attached sidecars by advertising STAX self-capture with `--url <local-preview-url>` anywhere visual proof guidance previously pointed mainly at registering an existing screenshot path.\n\nFiles changed:\n- `src/projectControl/ProofSurfacePack.ts`\n- `src/sidecar/AttachStax.ts`\n- `src/sidecar/StaxGate.ts`\n- `src/sidecar/UpgradeSidecar.ts`\n- `tests/proofSurfacePack.test.ts`\n- `tests/sidecarAttachGate.test.ts`\n- `tests/sidecarUpgrade.test.ts`\n- `.stax/task.md`\n\nTests added:\n- Added assertions that proof-surface hints include `--url <local-preview-url>` and `--path <screenshot.png>`.\n- Added assertions that sidecar gate visual next-actions include both URL self-capture and path registration.\n- Added assertions that sidecar upgrade prompt contracts carry both visual proof paths.\n\nCommands run:\n- `npm run typecheck`\n  - exitCode: 0\n- `npm test -- tests/proofSurfacePack.test.ts tests/sidecarAttachGate.test.ts tests/sidecarUpgrade.test.ts`\n  - exitCode: 0\n  - result: 3 files, 36 tests passed\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run typecheck`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_38_21_384Z_982c1455e5e7`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/proofSurfacePack.test.ts tests/sidecarAttachGate.test.ts tests/sidecarUpgrade.test.ts`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_38_23_822Z_0d6f5885b76a`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_38_28_237Z_328e123c6385`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run smoke:stax`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_38_48_676Z_092594e366f2`\n- `npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run rax -- eval`\n  - exitCode: 0\n  - evidence: `cmd_2026-05-28T12_38_49_665Z_31b060f341fa`\n\nCommand output summary with exit codes:\n- Typecheck exited 0.\n- Targeted visual/sidecar tests exited 0 with 36 passing tests.\n- Full `npm test` exited 0.\n- `npm run smoke:stax` exited 0 through STAX command evidence.\n- `npm run rax -- eval` exited 0 through STAX command evidence.\n\nWhat is verified:\n- Visual proof hints now show the Codex-friendly URL self-capture path: `npm run stax:collect-visual -- --repo <repo> --url <local-preview-url> ...`.\n- Visual proof hints still show the fallback registration path: `--path <screenshot.png>`.\n- Sidecar attach and sidecar upgrade prompt contracts propagate the URL self-capture guidance to attached repos.\n- Sidecar gate next-actions for missing visual proof include both the URL self-capture path and existing-image registration path.\n\nWhat is weak/provisional:\n- This improves STAX guidance and protocol propagation; it does not prove any specific Canvas visual change.\n\nWhat is unverified:\n- No Canvas Helper live preview screenshot was captured in this STAX repo patch.\n- No deploy, publish, sync, or live LMS action was run.\n\nRisks:\n- Attached repos need sidecar upgrade before their local `.stax/prompt-contract.json` receives the updated wording.\n- A repo still needs a running local preview URL, or an existing screenshot file, for visual proof collection.\n\nOne next action:\nRun the STAX sidecar gate for this patch, then commit and push if it accepts.",
   "rawScore": 1,
   "finalScore": 1,
   "label": "Audit-grade",
@@ -11,22 +11,32 @@
   "missingProof": [],
   "weakProof": [
     "Weak command claim: npm run stax:collect -- --repo (Command is named, but no command output was cited.).",
-    "Weak command claim: npm run stax:sidecar:refresh -- --repo (Command is named, but no command output was cited.)."
+    "Weak command claim: npm run stax:collect-visual -- --repo (Command is named, but no command output was cited.)."
   ],
   "strongProof": [
-    "Grounded file_path claim: docs/ACTIVE_HANDOFF.md.",
-    "Grounded file_path claim: docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md.",
+    "Grounded file_path claim: src/projectControl/ProofSurfacePack.ts.",
+    "Grounded file_path claim: src/sidecar/AttachStax.ts.",
+    "Grounded file_path claim: src/sidecar/StaxGate.ts.",
+    "Grounded file_path claim: src/sidecar/UpgradeSidecar.ts.",
+    "Grounded file_path claim: tests/proofSurfacePack.test.ts.",
+    "Grounded file_path claim: tests/sidecarAttachGate.test.ts.",
+    "Grounded file_path claim: tests/sidecarUpgrade.test.ts.",
     "Grounded command claim: npm run typecheck.",
+    "Grounded command claim: npm test -- tests/proofsurfacepack.test.ts tests/sidecarattachgate.test.ts tests/sidecarupgrade.test.ts.",
     "Grounded command claim: npm test.",
     "Grounded command claim: npm run smoke:stax.",
     "Grounded command claim: npm run rax -- eval.",
+    "Grounded test_pass claim: - result: 3 files, 36 tests passed.",
     "Grounded completion claim: What is verified:.",
     "Grounded verification claim: What is verified:.",
     "Local STAX command evidence passed: npm run rax -- eval exited 0.",
     "Local STAX command evidence passed: npm run smoke:stax exited 0.",
     "Local STAX command evidence passed: npm test exited 0.",
+    "Local STAX command evidence passed: npm test -- tests/proofSurfacePack.test.ts tests/sidecarAttachGate.test.ts tests/sidecarUpgrade.test.ts exited 0.",
     "Local STAX command evidence passed: npm run typecheck exited 0.",
-    "Verified local STAX command provenance is present for this repo state."
+    "Repo evidence enumerated source files.",
+    "Repo evidence enumerated test files.",
+    "Rendered visual proof was supplied."
   ],
   "oneNextAction": "No proof-strength correction is needed for this claim."
 }

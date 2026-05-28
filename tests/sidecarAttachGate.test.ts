@@ -627,6 +627,8 @@ describe("STAX sidecar attach and gate", () => {
     expect(status.unverified.join("\n")).toContain("Visual/style claim lacks STAX-collected rendered visual proof.");
     expect(status.oneNextAction).toContain("stax:collect-visual");
     expect(status.oneNextAction).toContain("STAX checkout/tooling repo");
+    expect(status.oneNextAction).toContain("--url <local-preview-url>");
+    expect(status.oneNextAction).toContain("--path <screenshot.png>");
     expect(status.oneNextAction).toContain("responsive/viewport checked");
   });
 

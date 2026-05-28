@@ -107,7 +107,7 @@ function proofSurfaceAction(
   }
   const baseAction = surface.nextAction ?? `Provide ${surface.requiredEvidence.join(", ")}.`;
   if (!requiresVisualProof(surface)) return baseAction;
-  return `${baseAction} Capture or register the visual artifact with npm run stax:collect-visual -- --repo ${repoPath} --path <screenshot.png> --description "<page/state verified>" --checklist "<target page/state>" --checklist "<responsive/viewport checked>" --checklist "<visible outcome>" before rerunning stax:gate.`;
+  return `${baseAction} Capture or register the visual artifact from the STAX checkout/tooling repo with either npm run stax:collect-visual -- --repo ${repoPath} --url <local-preview-url> --description "<page/state verified>" --checklist "<target page/state>" --checklist "<responsive/viewport checked>" --checklist "<visible outcome>" or npm run stax:collect-visual -- --repo ${repoPath} --path <screenshot.png> --description "<page/state verified>" --checklist "<target page/state>" --checklist "<responsive/viewport checked>" --checklist "<visible outcome>", then rerun stax:gate.`;
 }
 
 function requiresVisualProof(surface: ProofSurfacePack["proofSurfaces"][number]): boolean {

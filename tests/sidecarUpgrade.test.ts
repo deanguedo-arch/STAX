@@ -19,6 +19,7 @@ describe("STAX sidecar upgrade", () => {
     const promptContract = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "prompt-contract.json"), "utf8")) as {
       schemaVersion?: string;
       reportSections?: string[];
+      visualProofCommand?: string;
     };
     const agents = await fs.readFile(path.join(repoPath, "AGENTS.md"), "utf8");
     const config = JSON.parse(await fs.readFile(path.join(repoPath, ".stax", "config.json"), "utf8")) as {
@@ -60,6 +61,8 @@ describe("STAX sidecar upgrade", () => {
     expect(protocol).toContain("Do not claim completion without proof.");
     expect(promptContract.schemaVersion).toBe("stax-prompt-contract-v1");
     expect(promptContract.reportSections).toContain("Commands run");
+    expect(promptContract.visualProofCommand).toContain("--url <local-preview-url>");
+    expect(promptContract.visualProofCommand).toContain("--path <screenshot.png>");
     expect(protocol).not.toContain("stale sidecar protocol");
     expect(agents).toContain("Keep repo instructions.");
     expect(agents).toContain("read `.stax/next-codex-prompt.md`");

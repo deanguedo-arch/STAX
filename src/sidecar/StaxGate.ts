@@ -1145,7 +1145,7 @@ function deriveNextAction(
   if (!codexReport.trim()) return "Ask Codex to write .stax/codex-report.md using the required STAX report fields.";
   if (proofSurfaceHint && (unverified.length > 0 || risk.length > 0)) return proofSurfaceHint;
   if (/visual|screenshot|rendered|layout|ui\/layout/i.test(combined)) {
-    return `From the STAX checkout/tooling repo, capture first-class visual proof with npm run stax:collect-visual -- --repo ${repoPath} --path <screenshot.png> --description "<page/state verified>" --checklist "<target page/state>" --checklist "<responsive/viewport checked>" --checklist "<visible outcome>", then rerun stax:gate.`;
+    return `From the STAX checkout/tooling repo, capture first-class visual proof with npm run stax:collect-visual -- --repo ${repoPath} --url <local-preview-url> --description "<page/state verified>" --checklist "<target page/state>" --checklist "<responsive/viewport checked>" --checklist "<visible outcome>", or register an existing image with --path <screenshot.png>, then rerun stax:gate.`;
   }
   if (commandEvidenceEntries.length === 0 && /test|command|proof|exit code|passed/i.test(combined)) {
     return `Run npm run stax:collect -- --repo ${repoPath} -- npm test, or collect the repo's canonical proof command.`;
@@ -1325,7 +1325,7 @@ async function deriveSidecarFindings(input: {
   }
   if (visualChanged && visualClaim && currentVisualEvidence.length === 0) {
     unverified.push("Visual/style claim lacks STAX-collected rendered visual proof.");
-    risk.push("Visual proof required before accepting UI/layout claims; collect it from the STAX checkout/tooling repo with stax:collect-visual and target page/state, responsive/viewport, and visible outcome checklist items.");
+    risk.push("Visual proof required before accepting UI/layout claims; collect it from the STAX checkout/tooling repo with stax:collect-visual using --url <local-preview-url> or --path <screenshot.png>, plus target page/state, responsive/viewport, and visible outcome checklist items.");
   }
   if (riskyRelease && !/\b(approval|rollback|dry run|preflight|build passed)\b/i.test(report)) {
     unverified.push("Deploy/publish/sync/release claim lacks approval, rollback, or preflight proof.");

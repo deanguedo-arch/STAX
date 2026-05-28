@@ -218,6 +218,8 @@ describe("repo proof-surface discovery", () => {
     expect(candidateHint).toContain("candidate-only");
     expect(candidateHint).toContain("npm run stax:collect-visual");
     expect(candidateHint).toContain("--repo");
+    expect(candidateHint).toContain("--url <local-preview-url>");
+    expect(candidateHint).toContain("--path <screenshot.png>");
     expect(candidateHint).toContain("--checklist \"<responsive/viewport checked>\"");
 
     await approveProofSurfaces(repoPath);
@@ -230,6 +232,7 @@ describe("repo proof-surface discovery", () => {
     expect(approvedHint).toContain("Approved proof surface");
     expect(approvedHint).not.toContain("candidate-only");
     expect(approvedHint).toContain("npm run stax:collect-visual");
+    expect(approvedHint).toContain("--url <local-preview-url>");
     expect(approvedHint).toContain("--path <screenshot.png>");
   });
 
@@ -271,6 +274,7 @@ describe("repo proof-surface discovery", () => {
     expect(hint).toContain("Approved proof surface for course_deploy_ready");
     expect(hint).toContain("capture rendered visual proof");
     expect(hint).toContain("npm run stax:collect-visual");
+    expect(hint).toContain("--url <local-preview-url>");
     expect(hint).toContain("--checklist \"<visible outcome>\"");
     expect(hint).not.toContain("Suggested command: npm run deploy:google-hosted");
   });
