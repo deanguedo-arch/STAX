@@ -222,24 +222,25 @@ proof strength: Audit-grade
 commit: 167491821e462fdd5baf649be5b5153ce5bbcf03
 ```
 
-Current fresh Canvas gate status from STAX `4542860` and later:
+Current fresh Canvas gate status after proof refresh:
 
 ```txt
-verdict: Reject
-reason: stale/wrong-commit command evidence is correctly rejected instead of hanging
-runtime: about 4.27 seconds direct, 4547ms through STAX-collected verifier
-next proof need: recollect Canvas command/visual proof against the current auditable Canvas worktree before claiming current Accept
+verdict: Accept
+proof strength: Audit-grade
+commit: 167491821e462fdd5baf649be5b5153ce5bbcf03
+note: STAX `4542860` and later first proved the old stale evidence was rejected quickly; fresh command proof was then recollected at current Canvas head.
 ```
 
-Fresh Canvas evidence collected before the Canvas commit, then exported again after `16749182` was pushed:
+Fresh Canvas evidence collected after `16749182` was pushed:
 
 ```txt
-cmd_2026-05-28T00_42_31_780Z_982c1455e5e7: typecheck, exit 0
-cmd_2026-05-28T00_42_40_232Z_b79b85db39e0: build:studio, exit 0
-cmd_2026-05-28T00_42_50_638Z_fc5201af80c5: smoke:pipeline, exit 0
-cmd_2026-05-28T00_43_03_493Z_466c2f308b48: git diff --check, exit 0
-visual_2026-05-28T00_49_56_999Z_1cc4dd9a6b10: AS30 tablet image proof
-visual_2026-05-28T00_50_10_643Z_2110aa94b93f: AS30 phone image proof
+cmd_2026-05-28T03_41_07_369Z_982c1455e5e7: typecheck, exit 0
+cmd_2026-05-28T03_41_23_177Z_b79b85db39e0: build:studio, exit 0
+cmd_2026-05-28T03_41_35_482Z_fc5201af80c5: smoke:pipeline, exit 0
+cmd_2026-05-28T03_41_47_741Z_466c2f308b48: git diff --check, exit 0
+visual_2026-05-27T19_01_39_622Z_5eb93f079ea5: current-worktree rendered screenshot
+visual_2026-05-27T19_01_45_259Z_4f42eaa307b2: current-worktree rendered screenshot
+visual_2026-05-27T19_42_30_287Z_4baa04428334: current-worktree rendered screenshot
 ```
 
 Canvas generated `.stax` status/proof files are dirty locally and intentionally not committed. The earlier `npm run smoke:pipeline` generated resource output has been cleaned.
@@ -249,7 +250,7 @@ dirty: .stax/proof_strength.json, .stax/status.json, .stax/reports/latest-*.md
 cleaned: .runtime/memory-ledger.json and projects/resources/smoke-calm-module/** generated output
 ```
 
-The earlier STAX-side visual proof fix prevents recurrence by avoiding `smoke:pipeline` as default visual proof, and the Canvas-side fix makes default smoke runs scratch-scoped and cleanup-safe. The later STAX stale-evidence speed fix prevents Canvas fresh gate from hanging on historical command evidence; it does not make old Canvas evidence current.
+The earlier STAX-side visual proof fix prevents recurrence by avoiding `smoke:pipeline` as default visual proof, and the Canvas-side fix makes default smoke runs scratch-scoped and cleanup-safe. The later STAX stale-evidence speed fix prevents Canvas fresh gate from hanging on historical command evidence, and the current Canvas proof refresh confirms the pushed Canvas head is back to `Accept / Audit-grade`.
 
 ## Pattern Promotion Impact
 
@@ -261,6 +262,7 @@ reports/pattern_promotion/pattern-promotion-impact-2026-05-27T22-51-28-732Z.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-27T23-55-36-065Z.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T00-19-32-977Z.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T00-54-59-876Z.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-28T03-44-56-356Z.json
 ```
 
 Current result:
@@ -284,6 +286,7 @@ canvas-helper: improved, 2026-05-22 live repo bundle
 canvas-helper: improved, expanded-sidebar fit bundle
 canvas-helper: improved, AS30 tablet/mobile unit-card bundle
 canvas-helper: improved, post-push smoke-clean bundle
+canvas-helper: improved, current-head proof refresh bundle
 brightspacequizexporter: improved, current-main build / ingest / Forensics 25 export bundle
 studentbudgetwars: improved, syntax-only cleanup-needed observer bundle
 ```
@@ -318,6 +321,12 @@ commit: b7896b7de44c11c2f8ae34956bc20ed76f435e8f
 ```
 
 The refreshed Brightspace bundle is now current-main evidence. STAX still records older historical command evidence, but current build, ingest, and Forensics 25 export proof are verified for the current auditable worktree.
+
+STAX gate note:
+
+```txt
+Do not collect ad hoc `node -e` artifact-verifier snippets or `git diff --cached --check` as STAX command evidence for this report lane. The command-evidence classifier treats those lanes as non-execution evidence. Prefer first-class project commands such as `npm run typecheck` plus generated report artifacts for the sidecar gate.
+```
 
 Keep these claims separate:
 
@@ -469,7 +478,7 @@ Next best actions:
 
 1. Use `b77067d` as the current verified STAX rollout baseline; this handoff refresh is restart hygiene.
 2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
-3. For Canvas Helper, recollect fresh current-head command and visual proof before claiming current sidecar Accept.
+3. For Canvas Helper, current-head command proof is refreshed and the sidecar gate is `Accept / Audit-grade`; use the latest Canvas bundle unless the Canvas worktree changes.
 4. For Brightspacequizexporter, refresh the stale acknowledgement/report protocol if new work depends on current sidecar status; otherwise keep using the current-main Accept bundle until the repo changes.
 5. In ADMISSION-APP, recollect current build proof if the page-build observer state changes.
 6. In studentbudgetwars, decide whether to keep and commit the new STAX sidecar attach files.
