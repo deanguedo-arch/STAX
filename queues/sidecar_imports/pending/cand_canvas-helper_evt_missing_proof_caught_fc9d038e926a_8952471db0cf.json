@@ -1,0 +1,81 @@
+{
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_fc9d038e926a_8952471db0cf",
+  "sourceEventId": "evt_missing_proof_caught_fc9d038e926a",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "commitSha": "d59dc393cf6f102a150716ca4ce20f53e968e119",
+    "branch": "main"
+  },
+  "candidateType": "regression_eval",
+  "scope": "global",
+  "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "eventType": "missing_proof_caught",
+      "task": {
+        "taskId": "task_1083d262b65d",
+        "objective": "Fix Aboriginal Studies 30 tablet/mobile unit-card title visibility and hide the progress panel in top-sidebar mode.\n\nGoal:\n- Keep unit-card titles visible in narrow/tablet states.\n- Prevent generic stack-card responsive rules from overriding the AS30 unit-card grid.\n- Hide the large course progress panel when the sidebar moves to the top on tablet/phone widths.\n- Apply the fix to both the active workspace stylesheet and the AS30 builder template.\n\nAcceptance boundary:\n- Do not edit raw imports.\n- Do not deploy, publish, sync, or release.\n- Keep scope to AS30 workspace/meta CSS, focused regression tests, visual proof images, handoff, and STAX report/task files.",
+        "finalOutcome": "needs_cleanup"
+      },
+      "stax": {
+        "verdict": "Reject",
+        "useful": true,
+        "falseAccept": false,
+        "falseBlock": false,
+        "usefulBlock": true,
+        "verifiedAccept": false
+      },
+      "evidence": {
+        "changedFileRoles": [],
+        "commandProofStrengths": [
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output"
+        ],
+        "claimTypes": [
+          "visual",
+          "protocol_compliance"
+        ],
+        "failurePatternIds": []
+      },
+      "rationale": "Command evidence classifier: non_execution_evidence for git diff --check."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-28T14:03:08.479Z"
+}

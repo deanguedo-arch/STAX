@@ -1,0 +1,81 @@
+{
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_6b6267651265_8952471db0cf",
+  "sourceEventId": "evt_missing_proof_caught_6b6267651265",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "commitSha": "d59dc393cf6f102a150716ca4ce20f53e968e119",
+    "branch": "main"
+  },
+  "candidateType": "regression_eval",
+  "scope": "global",
+  "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "eventType": "missing_proof_caught",
+      "task": {
+        "taskId": "task_03151cdff220",
+        "objective": "Refresh current-worktree STAX observer proof for the existing Aboriginal Studies 30 tablet/mobile unit-card title visibility work on Canvas Helper `main`.\n\nAcceptance boundary:\n- Do not edit source files.\n- Do not run protected external actions.\n- Use STAX-collected command evidence from the current `main` worktree.\n- Include local tablet and phone screenshot artifacts as visual proof.\n- Keep generated `.stax` runtime/status/proof files out of source commits.",
+        "finalOutcome": "needs_cleanup"
+      },
+      "stax": {
+        "verdict": "Reject",
+        "useful": true,
+        "falseAccept": false,
+        "falseBlock": false,
+        "usefulBlock": true,
+        "verifiedAccept": false
+      },
+      "evidence": {
+        "changedFileRoles": [],
+        "commandProofStrengths": [
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output",
+          "human_pasted_command_output"
+        ],
+        "claimTypes": [
+          "visual",
+          "protocol_compliance"
+        ],
+        "failurePatternIds": []
+      },
+      "rationale": "Command evidence provenance is not verified for npm run build:studio: wrong_worktree."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-28T14:03:08.477Z"
+}

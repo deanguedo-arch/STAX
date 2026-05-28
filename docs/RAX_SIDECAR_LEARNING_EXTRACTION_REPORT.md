@@ -85,3 +85,53 @@ Added tests now cover:
 ## Boundary
 
 Harvest still does not auto-promote anything. Candidates remain pending and require human approval before promotion into durable STAX behavior.
+
+## 2026-05-28 Canvas Helper Follow-Up Harvest
+
+After the Canvas Helper sidecar ran through the course-site workflow, STAX harvested the sidecar again instead of relying on a prose summary from the attached Codex agent.
+
+Command:
+
+```bash
+npm run stax:harvest -- --from /Users/deanguedo/Documents/GitHub/canvas-helper --no-session-logs
+```
+
+Observed result:
+
+- Imported: 24 new pending candidates
+- Skipped trace-only events: 112
+- Skipped non-learning sidecar events: 18
+- Skipped invalid events: 0
+
+Dashboard after harvest:
+
+- Pending candidates: 80
+- Promoted candidates: 24
+- Rejected/deferred candidates: 1
+- False accepts: 0
+- False blocks: 0
+- Useful blocks: 40
+- Repo memory candidates: 61
+- Repeated patterns: `unsafe_release_publish_sync_claim` (16), `visual_claim_without_rendered_proof` (9)
+
+Aggregate review:
+
+- Report: `reports/sidecar_learning/sidecar-import-aggregation-2026-05-28T14-03-55-877Z.md`
+- Aggregate groups: 7
+- Promotable aggregate groups: 5
+- Human approval required: yes
+
+Promotion priorities from the aggregate review:
+
+1. `agg_mode_behavior_rule`: visual/course behavior claims require rendered screenshot or checklist proof; source/CSS diffs alone are not enough.
+2. `agg_proof_boundary_rule`: wrong-repo, weak, stale, or non-current command evidence must not verify target repo work.
+3. `agg_policy_safety_rule`: publish/sync/deploy/release claims require preflight, target validation, and scope checks.
+4. `agg_schema_contract_rule`: malformed structured output should fail schema validation instead of passing silently.
+5. `agg_codex_handoff_rule`: future bounded Codex prompts should include repo path, files, commands, acceptance criteria, and stop conditions.
+
+Held or discarded groups:
+
+- `agg_repo_specific_fact`: held local; repo-specific commands, paths, and task facts are evidence, not durable global learning.
+- `agg_trace_fact`: discarded as one-off trace evidence.
+
+The dashboard now recommends promotable aggregate groups before individual raw candidates. This makes the sidecar learning loop answer the actual operational question: "what did this attached repo teach STAX that is reusable?" rather than "which JSON file sorted first?"

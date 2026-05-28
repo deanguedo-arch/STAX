@@ -1,9 +1,13 @@
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   aggregateSidecarImportCandidates,
   renderSidecarImportAggregation
 } from "../src/learning/SidecarImportAggregation.js";
 import type { SidecarImportCandidate } from "../src/learning/SidecarImportCandidate.js";
+import { buildSidecarLearningDashboard } from "../src/learning/SidecarLearningDashboard.js";
 
 describe("sidecar import aggregation", () => {
   it("turns repeated single-event sidecar evidence into promotable aggregate patterns", () => {
@@ -61,6 +65,33 @@ describe("sidecar import aggregation", () => {
     expect(report).toContain("Promotable: yes");
     expect(report).toContain("Requires human approval: yes");
     expect(report).not.toContain("approved");
+  });
+
+  it("dashboard recommends aggregate pattern review before noisy raw candidates", async () => {
+    const staxRoot = await fs.mkdtemp(path.join(os.tmpdir(), "stax-dashboard-aggregate-"));
+    const pendingDir = path.join(staxRoot, "queues", "sidecar_imports", "pending");
+    await fs.mkdir(pendingDir, { recursive: true });
+    const candidates = [
+      candidate("handoff-raw-first", "evt-1", "Codex handoff prompt should include repo path and exact commands."),
+      candidate("visual-1", "evt-2", "Visual/course behavior claims should require rendered screenshot proof; CSS diffs alone are not enough."),
+      candidate("visual-2", "evt-3", "Visual proof for layout fixes requires rendered evidence, not source diffs alone.")
+    ];
+    for (const item of candidates) {
+      await fs.writeFile(path.join(pendingDir, `${item.candidateId}.json`), `${JSON.stringify(item, null, 2)}\n`, "utf8");
+    }
+
+    const dashboard = await buildSidecarLearningDashboard(staxRoot);
+
+    expect(dashboard.pending).toBe(3);
+    expect(dashboard.promotableAggregateGroups).toBe(1);
+    expect(dashboard.topAggregateRecommendation).toMatchObject({
+      aggregateId: "agg_mode_behavior_rule",
+      classification: "mode_behavior_rule",
+      candidateCount: 2,
+      promotionTarget: "mode_contract_patch"
+    });
+    expect(dashboard.recommendedNextAction).toContain("agg_mode_behavior_rule");
+    expect(dashboard.recommendedNextAction).not.toContain("handoff-raw-first");
   });
 });
 

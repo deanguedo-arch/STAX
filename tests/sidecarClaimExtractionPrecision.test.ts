@@ -59,6 +59,19 @@ describe("sidecar claim extraction precision", () => {
     ).toEqual([]);
   });
 
+  it("does not treat proof-rule wording as the claim being governed", () => {
+    expect(
+      decomposeClaimsFromReport(
+        "Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough."
+      )
+    ).toEqual([]);
+    expect(
+      decomposeClaimsFromReport(
+        "Suggested regression eval: A visual fix report with only CSS diff evidence must be marked unverified."
+      )
+    ).toEqual([]);
+  });
+
   it("does not convert negative promotion-control wording into memory promotion claims", () => {
     expect(decomposeClaimsFromReport("Do not auto-promote learning candidates.")).toEqual([]);
     expect(decomposeClaimsFromReport("Candidates are pending review only; none were promoted.")).toEqual([]);

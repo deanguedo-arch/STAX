@@ -1,0 +1,43 @@
+{
+  "candidateId": "cand_canvas-helper_sidecar_status_b76b04e88ee9",
+  "sourceEventId": "sidecar_status_b76b04e88ee9",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "branch": "main",
+    "commitSha": "167491821e462fdd5baf649be5b5153ce5bbcf03"
+  },
+  "candidateType": "regression_eval",
+  "scope": "global",
+  "summary": "Sidecar status from canvas-helper: Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough. Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "sourceKind": "sidecar_status",
+      "sourcePath": ".stax/status.json",
+      "generatedAt": "2026-05-28T14:00:30.145Z",
+      "repo": "canvas-helper",
+      "verdict": "Accept",
+      "proofStrength": {
+        "claimType": "visual_behavior_verified",
+        "label": "Audit-grade",
+        "finalScore": 1,
+        "primaryLimiter": "Available proof is strong enough for this claim type.",
+        "capApplied": []
+      },
+      "protocolStatus": "ok",
+      "observedLessons": [
+        "Visual/course behavior claims should require rendered screenshot or checklist proof; source or CSS diffs alone are not enough.",
+        "Stale, wrong-worktree, or wrong-commit command evidence must stay historical and cannot prove the current task."
+      ],
+      "suggestedRegressionEval": "A rejected sidecar status with proof gaps must produce a bounded next proof action instead of being treated as accepted."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-28T14:03:08.492Z"
+}

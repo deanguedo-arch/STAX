@@ -1,0 +1,51 @@
+{
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_55e6d3b5c6ae_a564abd9fe2e",
+  "sourceEventId": "evt_missing_proof_caught_55e6d3b5c6ae",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "commitSha": "167491821e462fdd5baf649be5b5153ce5bbcf03",
+    "branch": "main"
+  },
+  "candidateType": "regression_eval",
+  "scope": "global",
+  "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "eventType": "missing_proof_caught",
+      "task": {
+        "taskId": "task_8dfed4ae46f8",
+        "objective": "Update the Canvas Helper STAX sidecar protocol wording so screenshot proof guidance includes STAX self-capture from a local preview URL as well as existing-image registration.",
+        "finalOutcome": "needs_cleanup"
+      },
+      "stax": {
+        "verdict": "Reject",
+        "useful": true,
+        "falseAccept": false,
+        "falseBlock": false,
+        "usefulBlock": true,
+        "verifiedAccept": false
+      },
+      "evidence": {
+        "changedFileRoles": [],
+        "commandProofStrengths": [
+          "local_stax_command_output"
+        ],
+        "claimTypes": [
+          "visual",
+          "protocol_compliance"
+        ],
+        "failurePatternIds": []
+      },
+      "rationale": "STAX acknowledgement is stale or does not match the current turn contract."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "clean",
+    "redactionNotes": []
+  },
+  "createdAt": "2026-05-28T14:03:08.477Z"
+}

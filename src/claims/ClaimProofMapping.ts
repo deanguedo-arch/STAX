@@ -158,7 +158,11 @@ export function decomposeClaimsFromReport(text: string): ClaimDecompositionItem[
 
 function normalizeClaimProse(text: string): string {
   return stripNegatedClaimLines(
-    stripNegatedClaimBlocks(stripCommandTokens(stripCodeAndPathTokens(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text))))))
+    stripProofRuleLines(
+      stripNegatedClaimBlocks(
+        stripCommandTokens(stripCodeAndPathTokens(stripNonClaimPrefixedLines(stripReportMetadataSections(stripGeneratedStaxBlocks(text)))))
+      )
+    )
   );
 }
 
@@ -216,6 +220,16 @@ function stripNegatedClaimLines(text: string): string {
       (line) =>
         !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete|none (?:was|were) promoted|no .* promoted|not promoted|instead of triggering|before any durable promotion)\b/i.test(line)
         && !/\b(?:prevent|prevents|preventing|blocked|blocks|blocking)\b.{0,80}\b(?:becoming|turning into|being treated as)\b.{0,80}\b(?:proof|claim|readiness|passed|acceptable)\b/i.test(line)
+    )
+    .join("\n");
+}
+
+function stripProofRuleLines(text: string): string {
+  return text
+    .split(/\r?\n/)
+    .filter(
+      (line) =>
+        !/\b(?:claims?|reports?|evidence|proof|regression eval|completion claims?)\b.{0,80}\b(?:require|requires|should require|must require|must be marked|must not|cannot|should not|not enough|alone (?:is|are) not enough|not proof|unverified|provisional)\b/i.test(line)
     )
     .join("\n");
 }

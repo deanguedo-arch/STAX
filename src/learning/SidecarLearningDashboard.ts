@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { readTextIfExists } from "../sidecar/SidecarRepo.js";
+import { aggregateSidecarImportCandidates, type SidecarImportAggregate } from "./SidecarImportAggregation.js";
 import { SidecarImportCandidateSchema, type SidecarImportCandidate } from "./SidecarImportCandidate.js";
 
 export type SidecarLearningDashboard = {
@@ -12,6 +13,17 @@ export type SidecarLearningDashboard = {
   usefulBlocks: number;
   repoMemoryCandidates: number;
   repeatedPatterns: Array<{ patternId: string; count: number }>;
+  aggregateGroups: number;
+  promotableAggregateGroups: number;
+  topAggregateRecommendation?: {
+    aggregateId: string;
+    classification: SidecarImportAggregate["classification"];
+    candidateCount: number;
+    promotionTarget: SidecarImportAggregate["promotionTarget"];
+    recommendedQueueType: SidecarImportAggregate["recommendedQueueType"];
+    strengthLabel: SidecarImportAggregate["strengthLabel"];
+    suggestedRegressionEval?: string;
+  };
   recommendedNextAction: string;
 };
 
@@ -43,6 +55,9 @@ export async function buildSidecarLearningDashboard(staxRoot = process.cwd()): P
     .map(([patternId, count]) => ({ patternId, count }))
     .filter((item) => item.count > 1)
     .sort((a, b) => b.count - a.count);
+  const aggregates = aggregateSidecarImportCandidates(pending);
+  const promotableAggregates = aggregates.filter((aggregate) => aggregate.promotable);
+  const topAggregate = chooseTopAggregateRecommendation(promotableAggregates);
 
   return {
     pending: pending.length,
@@ -53,8 +68,22 @@ export async function buildSidecarLearningDashboard(staxRoot = process.cwd()): P
     usefulBlocks,
     repoMemoryCandidates,
     repeatedPatterns,
-    recommendedNextAction:
-      pending[0]?.candidateType === "none"
+    aggregateGroups: aggregates.length,
+    promotableAggregateGroups: promotableAggregates.length,
+    topAggregateRecommendation: topAggregate
+      ? {
+          aggregateId: topAggregate.aggregateId,
+          classification: topAggregate.classification,
+          candidateCount: topAggregate.candidateCount,
+          promotionTarget: topAggregate.promotionTarget,
+          recommendedQueueType: topAggregate.recommendedQueueType,
+          strengthLabel: topAggregate.strengthLabel,
+          suggestedRegressionEval: topAggregate.suggestedRegressionEval
+        }
+      : undefined,
+    recommendedNextAction: topAggregate
+      ? `Review aggregate ${topAggregate.aggregateId} (${topAggregate.classification}, ${topAggregate.candidateCount} candidates) for ${topAggregate.promotionTarget}; add or confirm the regression eval before promotion.`
+      : pending[0]?.candidateType === "none"
         ? "Review pending sidecar candidates and reject or defer non-promotable items."
         : pending[0]
           ? `Review ${pending[0].candidateId} for ${pending[0].candidateType} promotion.`
@@ -80,8 +109,43 @@ export function renderSidecarLearningDashboard(dashboard: SidecarLearningDashboa
       ? dashboard.repeatedPatterns.map((item) => `- ${item.patternId}: ${item.count}`)
       : ["- none"]),
     "",
+    `Aggregate groups: ${dashboard.aggregateGroups}`,
+    `Promotable aggregate groups: ${dashboard.promotableAggregateGroups}`,
+    "Top aggregate recommendation:",
+    ...(dashboard.topAggregateRecommendation
+      ? [
+          `- ${dashboard.topAggregateRecommendation.aggregateId}: ${dashboard.topAggregateRecommendation.classification}`,
+          `- candidates: ${dashboard.topAggregateRecommendation.candidateCount}`,
+          `- target: ${dashboard.topAggregateRecommendation.promotionTarget}`,
+          `- queue: ${dashboard.topAggregateRecommendation.recommendedQueueType}`,
+          `- strength: ${dashboard.topAggregateRecommendation.strengthLabel}`,
+          `- regression: ${dashboard.topAggregateRecommendation.suggestedRegressionEval ?? "none"}`
+        ]
+      : ["- none"]),
+    "",
     `Recommended next action: ${dashboard.recommendedNextAction}`
   ].join("\n") + "\n";
+}
+
+function chooseTopAggregateRecommendation(aggregates: SidecarImportAggregate[]): SidecarImportAggregate | undefined {
+  const priority: Record<SidecarImportAggregate["classification"], number> = {
+    mode_behavior_rule: 0,
+    proof_boundary_rule: 1,
+    policy_safety_rule: 2,
+    schema_contract_rule: 3,
+    codex_handoff_rule: 4,
+    cross_repo_pattern: 5,
+    user_preference: 6,
+    repo_specific_fact: 7,
+    trace_fact: 8
+  };
+  return [...aggregates].sort((left, right) => {
+    const priorityDelta = priority[left.classification] - priority[right.classification];
+    if (priorityDelta !== 0) return priorityDelta;
+    const strengthDelta = right.strengthScore - left.strengthScore;
+    if (strengthDelta !== 0) return strengthDelta;
+    return right.candidateCount - left.candidateCount;
+  })[0];
 }
 
 async function readCandidates(dir: string): Promise<SidecarImportCandidate[]> {

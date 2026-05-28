@@ -1,0 +1,57 @@
+{
+  "candidateId": "cand_canvas-helper_evt_missing_proof_caught_1559d0faff8d_f308014f1a44",
+  "sourceEventId": "evt_missing_proof_caught_1559d0faff8d",
+  "sourceRepo": {
+    "name": "canvas-helper",
+    "pathHash": "bbaf35a51a559ba4cb47f82c9f1600cd1079de75eec76143485469339e1dc1f7",
+    "commitSha": "fff50f92da74e57d743bedad48de898d6a5eb3b2",
+    "branch": "main"
+  },
+  "candidateType": "regression_eval",
+  "scope": "global",
+  "summary": "missing_proof_caught from canvas-helper: needs_cleanup.",
+  "proposedArtifact": {
+    "destinationHint": "evals/candidates/",
+    "payload": {
+      "eventType": "missing_proof_caught",
+      "task": {
+        "taskId": "task_c2613340a83c",
+        "objective": "Record the current Canvas helper workstation state after committing and pushing the LS15 DOCX style-profile change and AS30 visual handoff proof artifacts.\n\nGoal:\n- Keep the pushed source history aligned with this workstation.\n- Prove the LS15 DOCX style-profile code path with focused tests and Python compilation.\n- Preserve generated LS15 export packages locally; do not commit large generated archives.\n- Keep AS30 visual handoff artifacts committed separately from LS15 code changes.\n\nAcceptance boundary:\n- Do not deploy, publish, sync, or release.\n- Do not commit generated `.stax` status/proof artifacts.\n- Do not commit Python bytecode caches.\n- Do not commit large generated LS15 export ZIPs.",
+        "finalOutcome": "needs_cleanup"
+      },
+      "stax": {
+        "verdict": "Reject",
+        "useful": true,
+        "falseAccept": false,
+        "falseBlock": false,
+        "usefulBlock": true,
+        "verifiedAccept": false
+      },
+      "evidence": {
+        "changedFileRoles": [
+          "script",
+          "unknown"
+        ],
+        "commandProofStrengths": [
+          "local_stax_command_output",
+          "local_stax_command_output"
+        ],
+        "claimTypes": [
+          "visual",
+          "protocol_compliance"
+        ],
+        "failurePatternIds": []
+      },
+      "rationale": "Command evidence classifier: non_execution_evidence for [REDACTED ABSOLUTE PATH] -m py_compile scripts/brightspace_zip_to_docx_upload_package.py scripts/tests/brightspace_docx_style_profile_test.py."
+    }
+  },
+  "requiresHumanApproval": true,
+  "status": "pending",
+  "privacy": {
+    "redactionStatus": "redacted",
+    "redactionNotes": [
+      "absolute path redacted"
+    ]
+  },
+  "createdAt": "2026-05-28T14:03:08.472Z"
+}
