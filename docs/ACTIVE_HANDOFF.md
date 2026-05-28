@@ -21,20 +21,20 @@ main
 Latest verified rollout commit:
 
 ```txt
-c273432
+618589a
 ```
 
 Commit message:
 
 ```txt
-commit
+Import studentbudgetwars sidecar proof
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26553832572
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26554382020
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md`.
@@ -64,11 +64,12 @@ Do not broaden this work into a generic AI runtime, new agent system, deploy sys
 
 ## What Just Landed
 
-The STAX repo is current and pushed.
+The latest verified STAX baseline is current and pushed. This handoff also records the local ADMISSION import, command-evidence classifier hardening, and test-runner reliability fix that are being prepared for the next STAX commit.
 
 Recent pushed commits include:
 
 ```txt
+618589a Import studentbudgetwars sidecar proof
 c273432 commit
 c2c80b9 Refresh handoff after Canvas proof CI
 9ab09ae Record Canvas current proof refresh
@@ -85,6 +86,11 @@ b1d734d Record Canvas impact evidence import
 
 The latest work:
 
+- Imported the refreshed ADMISSION-APP non-mutating page-build observer evidence into the STAX pattern-promotion impact report.
+- Kept the ADMISSION proof boundary narrow: local page build to `/tmp/stax-admission-pages/index.html` only; no live sync, deploy, publish, dataset validation, or visual readiness claim.
+- Fixed a command-evidence classifier false positive where passing `npm run rax -- eval` output was held for human review just because generated eval-case prose mentioned "skipped" tests.
+- Added regression coverage so passing eval JSON with prose such as "keep new tests as skipped only if..." remains strong local proof when the eval summary itself passes.
+- Capped Vitest workers at 4 so `npm test` does not fail under full-suite fork-worker startup timeouts on this workstation.
 - Fixed a CI-only turn-compliance false reject where Linux filesystem timestamp granularity made a freshly written `.stax/codex-report.md` look older than `.stax/turn-contract.json`.
 - Added regression coverage so normal report mtime granularity stays a weak capture-lag warning instead of becoming a reject.
 - Verified the fix locally with `npm run validate:hardened` and with STAX-collected command evidence for the current auditable worktree.
@@ -294,7 +300,7 @@ Imported bundles:
 STAX: improved, prior proof-surface discovery task
 STAX: improved, current fingerprint/claim-routing task
 ADMISSION-APP: unchanged_safe, earlier observer bundle with full handoff contract missing
-ADMISSION-APP: improved, current local page-build observer bundle
+ADMISSION-APP: improved, current non-mutating page-build observer bundle at `8b0aa91`
 canvas-helper: improved, 2026-05-22 live repo bundle
 canvas-helper: improved, expanded-sidebar fit bundle
 canvas-helper: improved, AS30 tablet/mobile unit-card bundle
@@ -304,10 +310,12 @@ brightspacequizexporter: improved, current-main build / ingest / Forensics 25 ex
 studentbudgetwars: improved, committed sidecar observer bundle at `1a40f96`
 ```
 
-ADMISSION-APP latest sidecar protocol commit:
+ADMISSION-APP latest sidecar proof commits:
 
 ```txt
-22acdc54747b16a9008e9ecc532806707323add9
+78236ec Refresh STAX page build observer proof
+d623f09 Refresh ADMISSION STAX proof after sidecar commit
+8b0aa91 Refresh ADMISSION STAX accept status
 ```
 
 ADMISSION-APP current local page-build observer gate:
@@ -315,8 +323,11 @@ ADMISSION-APP current local page-build observer gate:
 ```txt
 verdict: Accept
 proof strength: Audit-grade
-commit: 22acdc54747b16a9008e9ecc532806707323add9
-note: `docs/index.html` changed when `npm run build:pages` ran; decide keep/revert in ADMISSION before committing there.
+repo head: 8b0aa9168b72fb1b541cf29402bc7cdc8632d57e
+status commit recorded by sidecar: d623f0948dfe96b5454befed263b93a00572f2fb
+proof command: npm run build:pages -- --output /tmp/stax-admission-pages/index.html
+boundary: this is local page-build proof only; no live target, sync, deploy, dataset validation, or visual readiness claim
+note: the tracked `docs/index.html` mutation from a direct build was restored; current proof uses temporary output and leaves app/source/published output clean.
 ```
 
 Brightspacequizexporter is now included as observer evidence on `main` at:
@@ -427,6 +438,8 @@ staxcore-strict on c2c80b9: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26553702048
 staxcore-strict on c273432: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26553832572
+staxcore-strict on 618589a: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26554382020
 ```
 
 ## Current Local Dirt
@@ -458,13 +471,18 @@ reports/pattern_promotion/attached_repo_exports/studentbudgetwars-impact-syntax-
 reports/pattern_promotion/pattern-promotion-impact-2026-05-27T22-51-28-732Z.json
 ```
 
-Latest studentbudgetwars operating-window artifacts staged for the next STAX commit:
+Latest attached-repo operating-window artifacts:
 
 ```txt
 reports/pattern_promotion/attached_repo_exports/studentbudgetwars-impact-sidecar-accept.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-09-40-745Z.json
+reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-page-build-accept.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json
 docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
 docs/ACTIVE_HANDOFF.md
+src/evidence/CommandEvidenceIntelligence.ts
+tests/commandEvidenceIntelligence.test.ts
+vitest.config.ts
 ```
 
 Older intermediate impact JSON files from that run were superseded and left out; keep using the final `pattern-promotion-impact-2026-05-27T22-51-28-732Z.json` unless a fresh `npm run pattern:impact` run replaces it.
@@ -518,19 +536,19 @@ Current operating-window status:
 9/10 cleanup prompts needed
 ```
 
-Immediate next action after this studentbudgetwars update is committed/pushed:
+Immediate next action after this ADMISSION update is committed/pushed:
 
 ```txt
-Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `c273432`.
+Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `618589a`.
 ```
 
 Next best actions:
 
-1. Use `c273432` as the current verified STAX rollout baseline until the studentbudgetwars impact-report commit is pushed and its CI completes.
+1. Use `618589a` as the current verified STAX rollout baseline until the ADMISSION impact-report commit is pushed and its CI completes.
 2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
 3. For Canvas Helper, current-head command proof is refreshed and the sidecar gate is `Accept / Audit-grade`; use the latest Canvas bundle unless the Canvas worktree changes.
 4. For Brightspacequizexporter, refresh the stale acknowledgement/report protocol if new work depends on current sidecar status; otherwise keep using the current-main Accept bundle until the repo changes.
-5. In ADMISSION-APP, recollect current build proof if the page-build observer state changes.
+5. ADMISSION-APP current non-mutating page-build proof is refreshed and sidecar status is `Accept / Audit-grade`; do not repeat unless that repo changes.
 6. studentbudgetwars sidecar attach is kept, committed, pushed, and refreshed to `Accept / Audit-grade`; do not repeat unless that repo changes.
 7. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
 

@@ -280,7 +280,18 @@ function outputIndicatesSkippedOrPending(output: string): boolean {
   const withoutZeroSkipped = output
     .replace(/\b(skipped|pending|todo)\s*[:=]?\s*0\b/g, "")
     .replace(/\b0\s+(skipped|pending|todo)\b/g, "");
-  return /\b(skipped|pending|todo)\b/.test(withoutZeroSkipped);
+
+  if (/\b(skipped|pending|todo)\s*[:=]?\s*[1-9]\d*\b/.test(withoutZeroSkipped)) return true;
+  if (/\b[1-9]\d*\s+(skipped|pending|todo)\b/.test(withoutZeroSkipped)) return true;
+  if (/"(?:status|conclusion)"\s*:\s*"(?:skipped|pending|todo)"/.test(withoutZeroSkipped)) return true;
+  if (/\b(?:job|workflow|check|step)\b[^\n\r]{0,40}\b(?:skipped|pending|todo|not run)\b/.test(withoutZeroSkipped)) {
+    return true;
+  }
+  if (/\b(?:skipped|pending|todo|not run)\b[^\n\r]{0,40}\b(?:job|workflow|check|step)\b/.test(withoutZeroSkipped)) {
+    return true;
+  }
+
+  return false;
 }
 
 function commandStatus(

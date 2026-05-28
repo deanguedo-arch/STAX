@@ -330,6 +330,47 @@ describe("command evidence intelligence", () => {
     expect(result.status).toBe("passed");
   });
 
+  it("does not treat passing eval case text about skipped tests as partial proof", () => {
+    const result = classifyCommandEvidence({
+      command: "npm run rax -- eval",
+      cwd: "/Users/deanguedo/Documents/GitHub/STAX",
+      repo: "STAX",
+      branch: "main",
+      commitSha: "abcdef1",
+      exitCode: 0,
+      source: "local_stax_command_output",
+      output: JSON.stringify(
+        {
+          total: 16,
+          passed: 16,
+          failed: 0,
+          passRate: 1,
+          criticalFailures: 0,
+          results: [
+            {
+              name: "planning_case",
+              status: "pass",
+              actual: "Rollback Plan: keep new tests as skipped only if they document an accepted gap.",
+              failReasons: [],
+              critical: false
+            }
+          ]
+        },
+        null,
+        2
+      ),
+      expectedRepo: "STAX",
+      expectedBranch: "main",
+      expectedCommitSha: "abcdef1",
+      claimType: "behavior"
+    });
+
+    expect(result.commandFamily).toBe("eval");
+    expect(result.proofStrength).toBe("strong_local_proof");
+    expect(result.status).toBe("passed");
+    expect(result.limitations).not.toContain("command output is partial, skipped, or incomplete");
+  });
+
   it("still flags positive skipped/todo/cancelled command-summary counts", () => {
     const result = classifyCommandEvidence({
       command: "npm run test:e2e:harness",
