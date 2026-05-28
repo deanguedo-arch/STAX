@@ -1,6 +1,6 @@
 # STAX Rollout Phase Gate
 
-Generated: 2026-05-12T15:22:34.724Z
+Generated: 2026-05-28T17:13:46.654Z
 
 ## Summary
 

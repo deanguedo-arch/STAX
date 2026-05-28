@@ -41,8 +41,9 @@ STAX is strong for Codex/repo project-control:
 - zero STAX critical misses in promotion window
 - pattern promotion locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe
 - current operating-window impact imports: 14 bundles, 0 critical misses, full handoff contracts present for 14/14 bundles, proof artifacts requested for 14/14 bundles
+- RC current proof packet refreshed on 2026-05-28 at `994585538b29d96157e5fa67aba693114513c766`: `npm ci`, `npm run typecheck`, `npm test`, `npm run smoke:stax`, and `npm run rax -- eval` all exited 0
 
-## Implemented Since Current Baseline
+## Recorded Since Current Baseline
 
 - sidecar upgrade propagation
 - proof-surface candidate discovery
@@ -69,6 +70,7 @@ STAX is strong for Codex/repo project-control:
 - Canvas course-deploy next action now asks for approved/localized images or placeholder removal before trusting the deploy proof surface
 - normal-mode protocol compliance now accepts a current ACK in the Codex report when current-turn capture lags, while strict mode still rejects missing capture ACKs
 - `stax:status` now labels stored status as last-known and reports stale commit/branch or dirty-worktree possible staleness before pointing users to `stax:gate`
+- rollout phase gate artifacts refreshed on 2026-05-28 and report phases 0 through 6 passing their deterministic gates
 
 ## Current Technical Risks
 

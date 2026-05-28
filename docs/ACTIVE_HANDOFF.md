@@ -7,20 +7,20 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-54292bf
+9945855
 ```
 
 Commit message:
 
 ```txt
-Clarify stale sidecar status reads
+Refresh handoff after status staleness fix
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26589405921
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26589788843
 ```
 
 This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
@@ -43,6 +43,7 @@ abe74dd Add attached repo impact handoff
 36a6af7 Reduce sidecar ACK capture lag noise
 cb7882d Refresh handoff after ACK noise fix
 54292bf Clarify stale sidecar status reads
+9945855 Refresh handoff after status staleness fix
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -96,20 +97,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-54292bf
+9945855
 ```
 
 Commit message:
 
 ```txt
-Clarify stale sidecar status reads
+Refresh handoff after status staleness fix
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26589405921
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26589788843
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -144,6 +145,7 @@ The latest verified STAX baseline named at the top of this file is current and p
 Recent pushed commits include:
 
 ```txt
+9945855 Refresh handoff after status staleness fix
 54292bf Clarify stale sidecar status reads
 cb7882d Refresh handoff after ACK noise fix
 36a6af7 Reduce sidecar ACK capture lag noise
@@ -179,6 +181,14 @@ b1d734d Record Canvas impact evidence import
 
 The latest work:
 
+- Refreshed `docs/releases/STAX_RC_CURRENT/command_proof.md` against current pushed `main` at `994585538b29d96157e5fa67aba693114513c766`.
+- Re-ran the Phase 0 baseline commands on the current pushed checkout:
+  - `npm ci`, exit 0
+  - `npm run typecheck`, exit 0
+  - `npm test`, exit 0, 212 files and 1125 tests
+  - `npm run smoke:stax`, exit 0, run `run-2026-05-28T17-15-46-614Z-ko5gm1`
+  - `npm run rax -- eval`, exit 0, 16/16 evals
+- Refreshed the rollout phase gate artifacts; `npm run stax:rollout:gate` exited 0 and reports phases 0 through 6 passed their deterministic gates.
 - Clarified `stax:status` output so it explicitly says whether it is reading last-known stored status or generating a fresh audit because no status exists.
 - Added status freshness output for stored commit/branch mismatch and dirty-worktree possible staleness, with a direct prompt to run `stax gate --repo <path>` for current proof.
 - Added regression coverage in `tests/staxStatus.test.ts` for last-known status wording, stale commit detection, and dirty-worktree possible staleness.
@@ -605,6 +615,8 @@ staxcore-strict on cb7882d: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26588840537
 staxcore-strict on 54292bf: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26589405921
+staxcore-strict on 9945855: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26589788843
 ```
 
 ## Current Local Dirt
@@ -800,11 +812,11 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff refresh:
-- commit: 54292bf
-- short: 54292bf
-- commit message: Clarify stale sidecar status reads
+- commit: 994585538b29d96157e5fa67aba693114513c766
+- short: 9945855
+- commit message: Refresh handoff after status staleness fix
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26589405921
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26589788843
 
 Goal:
 Continue the attached-repo operating-window phase from the top Latest Restart Note baseline. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, Brightspace isolated ingest promotion benchmark issue, and raw sidecar-learning candidate queue closure are all covered in the current operating-window evidence.

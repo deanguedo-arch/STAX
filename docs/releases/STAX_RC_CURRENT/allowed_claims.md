@@ -27,10 +27,12 @@ These claims are allowed for the current RC when paired with the command proof i
 
 ## Baseline Validation Claims
 
-- On 2026-05-11, Phase 0 commands passed locally at
-  `8b6c8c139e1bf81bfc7e181d7487dca0b1dd9828`.
+- On 2026-05-28, Phase 0 commands passed locally at
+  `994585538b29d96157e5fa67aba693114513c766`.
 - `npm ci`, `npm run typecheck`, `npm test`, `npm run smoke:stax`, and
   `npm run rax -- eval` all completed with exit code 0 for this baseline.
+- The rollout phase gate reports that phases 0 through 6 passed their
+  deterministic gates for the tracked proof artifacts.
 
 ## Correct Accept Boundary
 
