@@ -1334,9 +1334,13 @@ async function deriveSidecarFindings(input: {
 
   const latestEntries = latestCommandEvidenceByCommand(input.commandEvidenceEntries);
   const verifiedCurrentEntries = latestEntries.filter(isVerifiedCurrentCommandEvidence);
+  const verifiedCurrentPassingEntries = latestEntries.filter(isPassingVerifiedCurrentCommandEvidence);
   const hasCurrentVerifiedEvidence = verifiedCurrentEntries.length > 0;
   const entriesForStrictFindings = hasCurrentVerifiedEvidence
-    ? latestEntries.filter((entry) => isVerifiedCurrentCommandEvidence(entry) || !isSupersededHistoricalEvidence(entry, verifiedCurrentEntries))
+    ? latestEntries.filter((entry) =>
+        !isSupersededFailedEvidence(entry, verifiedCurrentPassingEntries) &&
+        (isVerifiedCurrentCommandEvidence(entry) || !isSupersededHistoricalEvidence(entry, verifiedCurrentEntries))
+      )
     : latestEntries;
   for (const entry of entriesForStrictFindings) {
     if (entry.provenanceStatus === "verified_local_stax_command") {
@@ -1383,13 +1387,11 @@ async function deriveSidecarFindings(input: {
       verified.push(`Historical command evidence ignored for current proof because ${entry.command} is ${entry.provenanceStatus}.`);
     }
   }
-  const supersededFailures = input.commandEvidenceEntries.filter((entry) => {
-    if (entry.exitCode === 0) return false;
-    const latest = latestCommandEvidenceByCommand(input.commandEvidenceEntries).find((item) => item.command === entry.command);
-    return latest && latest !== entry && latest.exitCode === 0;
-  });
+  const supersededFailures = input.commandEvidenceEntries.filter((entry) =>
+    isSupersededFailedEvidence(entry, verifiedCurrentPassingEntries)
+  );
   for (const entry of supersededFailures.slice(0, 2)) {
-    const latest = latestCommandEvidenceByCommand(input.commandEvidenceEntries).find((item) => item.command === entry.command);
+    const latest = verifiedCurrentPassingEntries.find((item) => commandEvidenceProofLane(item.command) === commandEvidenceProofLane(entry.command));
     const message = `Earlier failed command evidence exists but is superseded by a later passing ${entry.command} run.`;
     if (latest && isVerifiedCurrentCommandEvidence(latest)) {
       verified.push(message);
@@ -1593,14 +1595,24 @@ function latestCurrentCommandEvidenceForProof<T extends SidecarCommandEvidenceEn
   entries: T[]
 ): T[] {
   const latest = latestCommandEvidenceByCommand(entries);
-  const verifiedCurrent = latest.filter(isVerifiedCurrentCommandEvidence);
-  return verifiedCurrent.length > 0 ? verifiedCurrent : latest;
+  const verifiedCurrentPassing = latest.filter(isPassingVerifiedCurrentCommandEvidence);
+  const effectiveLatest = verifiedCurrentPassing.length > 0
+    ? latest.filter((entry) => !isSupersededFailedEvidence(entry, verifiedCurrentPassing))
+    : latest;
+  const verifiedCurrent = effectiveLatest.filter(isVerifiedCurrentCommandEvidence);
+  return verifiedCurrent.length > 0 ? verifiedCurrent : effectiveLatest;
 }
 
 function isVerifiedCurrentCommandEvidence(
   entry: ProjectControlCommandEvidenceEntry
 ): boolean {
   return (entry as SidecarCommandEvidenceEntry).provenanceStatus === "verified_local_stax_command";
+}
+
+function isPassingVerifiedCurrentCommandEvidence(
+  entry: ProjectControlCommandEvidenceEntry
+): boolean {
+  return isVerifiedCurrentCommandEvidence(entry) && entry.exitCode === 0;
 }
 
 function isStaleHistoricalEvidence(
@@ -1627,7 +1639,21 @@ function isSupersededHistoricalEvidence(
   });
 }
 
-function commandEvidenceProofLane(command: string): string {
+function isSupersededFailedEvidence(
+  entry: ProjectControlCommandEvidenceEntry,
+  verifiedCurrentPassingEntries: ProjectControlCommandEvidenceEntry[]
+): boolean {
+  if (entry.exitCode === 0) return false;
+  const entryLane = commandEvidenceProofLane(entry.command);
+  const entryTime = commandEvidenceTime(entry);
+  return verifiedCurrentPassingEntries.some((current) => {
+    if (commandEvidenceProofLane(current.command) !== entryLane) return false;
+    const currentTime = commandEvidenceTime(current);
+    return currentTime === 0 || entryTime === 0 || currentTime >= entryTime;
+  });
+}
+
+export function commandEvidenceProofLane(command: string): string {
   const npmRun = command.match(/\bnpm\s+run(?:-script)?\s+([^\s]+)(?:\s+--\s+([^\s]+))?/i);
   if (npmRun) {
     const script = npmRun[1]?.toLowerCase() ?? "unknown";
@@ -1636,8 +1662,41 @@ function commandEvidenceProofLane(command: string): string {
   }
   const npmBuiltIn = command.match(/\bnpm\s+(test|build|ci)\b/i);
   if (npmBuiltIn) return `npm:${npmBuiltIn[1].toLowerCase()}`;
+  const pythonLane = pythonCommandProofLane(command);
+  if (pythonLane) return pythonLane;
   const family = commandFamilyFor(command);
   return family === "unknown" ? `exact:${command}` : `family:${family}`;
+}
+
+function pythonCommandProofLane(command: string): string | undefined {
+  const tokens = stripEnvWrapper(command.trim().split(/\s+/).filter(Boolean));
+  const pythonIndex = tokens.findIndex(isPythonInterpreterToken);
+  if (pythonIndex === -1) return undefined;
+  const args = tokens.slice(pythonIndex + 1);
+  if (args[0] === "-m" && args[1]) {
+    return `python-module:${args[1].toLowerCase()}:${normalizePythonModuleArgs(args.slice(2))}`;
+  }
+  const script = args.find((token) => /\.py$/i.test(token));
+  return script ? `python-script:${normalizeCommandPath(script)}` : "python";
+}
+
+function stripEnvWrapper(tokens: string[]): string[] {
+  if (!tokens[0] || !/(^|\/)env$/i.test(tokens[0])) return tokens;
+  let index = 1;
+  while (tokens[index] && /^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[index])) index += 1;
+  return tokens.slice(index);
+}
+
+function isPythonInterpreterToken(token: string): boolean {
+  return /(^|\/)python(?:\d+(?:\.\d+)?)?$/i.test(token);
+}
+
+function normalizePythonModuleArgs(args: string[]): string {
+  return args.map(normalizeCommandPath).join(" ");
+}
+
+function normalizeCommandPath(value: string): string {
+  return value.replace(/\\/g, "/").replace(/^\.?\//, "").toLowerCase();
 }
 
 function commandEvidenceTime(entry: ProjectControlCommandEvidenceEntry): number {

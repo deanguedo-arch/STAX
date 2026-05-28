@@ -17,7 +17,7 @@ import { canonicalCommandEvidenceHash } from "../src/sidecar/CommandEvidenceVeri
 import { externalCommandEvidenceStoreForRepo } from "../src/sidecar/ExternalCommandEvidenceStore.js";
 import { refreshSidecar } from "../src/sidecar/SidecarRefresh.js";
 import { sha256 } from "../src/sidecar/SidecarRepo.js";
-import { runStaxGate } from "../src/sidecar/StaxGate.js";
+import { commandEvidenceProofLane, runStaxGate } from "../src/sidecar/StaxGate.js";
 import { StaxWatcher } from "../src/sidecar/StaxWatcher.js";
 import { collectVisualEvidence } from "../src/sidecar/VisualEvidenceCollector.js";
 import { collectWorktreeFingerprint, stableHash } from "../src/sidecar/WorktreeFingerprint.js";
@@ -923,5 +923,17 @@ describe("STAX sidecar watch and collect", () => {
     expect(status.proofStrength?.label).not.toBe("Reject");
     expect(status.proofStrength?.capApplied.map((cap) => cap.id)).not.toContain("unverified_local_command_provenance");
     expect(status.proofStrength?.rejectReasons.join("\n") ?? "").not.toContain("Failed command evidence");
+  });
+
+  it("treats equivalent Python script reruns as the same proof lane", () => {
+    expect(commandEvidenceProofLane("python3 tools/validate_data.py")).toBe("python-script:tools/validate_data.py");
+    expect(commandEvidenceProofLane("/usr/bin/env PYTHONPATH=src python3 tools/validate_data.py")).toBe("python-script:tools/validate_data.py");
+    expect(commandEvidenceProofLane("/repo/.venv/bin/python tools/validate_data.py")).toBe("python-script:tools/validate_data.py");
+  });
+
+  it("does not treat a narrowed pytest rerun as the same proof lane as the full suite", () => {
+    expect(commandEvidenceProofLane("python3 -m pytest -q")).not.toBe(
+      commandEvidenceProofLane("python3 -m pytest -q --ignore=tests/test_desktop_windowing.py -k not ui")
+    );
   });
 });
