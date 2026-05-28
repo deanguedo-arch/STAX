@@ -116,6 +116,55 @@ describe("EvidenceGroundingGate", () => {
     expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("storage.googleapis.com/course-assets/unit/hero.png");
     expect(result.unsupportedClaims.map((claim) => claim.text).join("\n")).not.toContain("upload.wikimedia.org/wikipedia/commons/a/aa/example.svg");
   });
+
+  it("grounds basename-only file references when they uniquely map to a known repo path", () => {
+    const result = new EvidenceGroundingGate().evaluate({
+      output: [
+        "Files changed:",
+        "- docs/releases/ROLLOUT_PHASE_GATE/report.md",
+        "- docs/releases/ROLLOUT_PHASE_GATE/status.json",
+        "What is verified:",
+        "- report.md and status.json were refreshed."
+      ].join("\n"),
+      repoEvidence: {
+        ...repoEvidence,
+        docsFiles: [
+          "docs/releases/ROLLOUT_PHASE_GATE/report.md",
+          "docs/releases/ROLLOUT_PHASE_GATE/status.json"
+        ]
+      }
+    });
+
+    expect(result.unsupportedClaims.map((claim) => claim.text)).not.toContain("status.json");
+    expect(result.supportedClaims).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: "file_path",
+          text: "status.json",
+          support: "repo_evidence_pack_basename"
+        })
+      ])
+    );
+  });
+
+  it("keeps ambiguous basename-only file references unsupported", () => {
+    const result = new EvidenceGroundingGate().evaluate({
+      output: "index.ts was refreshed.",
+      repoEvidence: {
+        ...repoEvidence,
+        sourceFiles: ["src/index.ts", "packages/demo/index.ts"]
+      }
+    });
+
+    expect(result.unsupportedClaims).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          kind: "file_path",
+          text: "index.ts"
+        })
+      ])
+    );
+  });
 });
 
 function commandEvidence(source: CommandEvidence["source"]): CommandEvidence {

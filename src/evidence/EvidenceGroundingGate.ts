@@ -59,8 +59,13 @@ export class EvidenceGroundingGate {
       ...(repoEvidence.docsFiles ?? []),
       ...(repoEvidence.operationalFiles ?? [])
     ].map(normalizePath));
-    if (known.has(normalizePath(filePath))) {
+    const normalizedPath = normalizePath(filePath);
+    if (known.has(normalizedPath)) {
       return { kind: "file_path", text: filePath, status: "supported", support: "repo_evidence_pack" };
+    }
+    const uniqueBasenameSupport = uniqueKnownPathForBasename(normalizedPath, known);
+    if (uniqueBasenameSupport) {
+      return { kind: "file_path", text: filePath, status: "supported", support: "repo_evidence_pack_basename" };
     }
     return { kind: "file_path", text: filePath, status: "unsupported", reason: "File path was not present in the repo evidence pack." };
   }
@@ -145,6 +150,12 @@ function isLikelyCommandArgument(token: string): boolean {
 
 function normalizePath(filePath: string): string {
   return filePath.trim().replace(/\\/g, "/").replace(/^\.?\//, "");
+}
+
+function uniqueKnownPathForBasename(filePath: string, known: Set<string>): string | undefined {
+  if (filePath.includes("/")) return undefined;
+  const matches = [...known].filter((knownPath) => knownPath.split("/").at(-1) === filePath);
+  return matches.length === 1 ? matches[0] : undefined;
 }
 
 function isLikelyCommandToken(value: string): boolean {
