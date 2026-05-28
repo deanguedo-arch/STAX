@@ -4,26 +4,26 @@ Date: 2026-05-28
 
 ## Latest Restart Note
 
-Latest verified STAX commit:
+Latest verified STAX commit before this handoff refresh:
 
 ```txt
-66d5ced
+03561cf
 ```
 
 Commit message:
 
 ```txt
-Close reviewed sidecar candidates
+Refresh handoff after queue closure
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26584045755
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
 ```
 
-This supersedes the older `92855f5` baseline named below. The current local checkout is `main` and is aligned with `origin/main` after the raw sidecar-learning candidate queue closure.
+This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
 
 Latest completed sidecar-learning promotion and cleanup sequence:
 
@@ -33,6 +33,7 @@ a2591fe Promote proof boundary aggregate
 0343cf4 Promote policy safety aggregate
 461ee2b Refresh STAX rollout handoff
 66d5ced Close reviewed sidecar candidates
+03561cf Refresh handoff after queue closure
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -83,26 +84,26 @@ Branch:
 main
 ```
 
-Latest verified rollout commit:
+Latest verified rollout commit before this handoff refresh:
 
 ```txt
-92855f5
+03561cf
 ```
 
 Commit message:
 
 ```txt
-Record Brightspace ingest stabilization impact
+Refresh handoff after queue closure
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
 ```
 
-This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md`.
+This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
 
 ## Product Boundary
 
@@ -129,11 +130,17 @@ Do not broaden this work into a generic AI runtime, new agent system, deploy sys
 
 ## What Just Landed
 
-The latest verified STAX baseline is current and pushed. The Brightspace ingest stabilization impact import landed in `92855f5` and passed `staxcore-strict`.
+The latest verified STAX baseline named at the top of this file is current and pushed. The raw sidecar-learning queue closure and handoff/status refresh landed after the older Brightspace ingest stabilization baseline.
 
 Recent pushed commits include:
 
 ```txt
+03561cf Refresh handoff after queue closure
+66d5ced Close reviewed sidecar candidates
+461ee2b Refresh STAX rollout handoff
+0343cf4 Promote policy safety aggregate
+a2591fe Promote proof boundary aggregate
+738f23f Promote visual proof aggregate
 92855f5 Record Brightspace ingest stabilization impact
 6418a4d Refresh handoff after ADMISSION CI
 6850708 Import ADMISSION proof and stabilize validation
@@ -292,7 +299,7 @@ The latest work:
 - Committed and pushed STAX `9ab09ae Record Canvas current proof refresh`.
 - Verified GitHub Actions `staxcore-strict` completed successfully on `9ab09ae`.
 - Refreshed handoff/status artifacts through `c273432`; GitHub Actions `staxcore-strict` completed successfully on `c273432`.
-- Later verified baselines superseded `c273432`; use `92855f5` as the current verified STAX baseline until this handoff refresh is committed, pushed, and verified.
+- Later verified baselines superseded `c273432`; use the top Latest Restart Note as the current STAX baseline.
 
 ## Current Canvas Helper State
 
@@ -527,6 +534,8 @@ staxcore-strict on 6418a4d: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26566859092
 staxcore-strict on 92855f5: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
+staxcore-strict on 03561cf: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
 ```
 
 ## Current Local Dirt
@@ -628,12 +637,12 @@ Current operating-window status:
 Immediate next action after this handoff refresh is committed/pushed:
 
 ```txt
-Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `92855f5`.
+Continue attached-repo operating-window evidence and local dirt decisions from the verified STAX baseline named in the top Latest Restart Note.
 ```
 
 Next best actions:
 
-1. Use `92855f5` as the current verified STAX rollout baseline until this handoff refresh is committed, pushed, and verified.
+1. Use the top Latest Restart Note as the current verified STAX rollout baseline.
 2. Treat the Canvas smoke-path cleanup as already pushed; do not repeat the old cleanup decision.
 3. For Canvas Helper, current-head command proof is refreshed and the sidecar gate is `Accept / Audit-grade`; use the latest Canvas bundle unless the Canvas worktree changes.
 4. For Brightspacequizexporter, use pushed commit `dc3635f` and the `brightspacequizexporter-impact-ingest-stabilized-2026-05-28.json` bundle unless the repo changes.
@@ -722,14 +731,14 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff refresh:
-- commit: 92855f5fa0bdbc08f7ffd10aa6e6e4411064b428
-- short: 92855f5
-- commit message: Record Brightspace ingest stabilization impact
+- commit: 03561cf
+- short: 03561cf
+- commit message: Refresh handoff after queue closure
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
 
 Goal:
-Continue the attached-repo operating-window phase from green STAX baseline `92855f5`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, and Brightspace isolated ingest promotion benchmark issue are all covered in the current operating-window evidence.
+Continue the attached-repo operating-window phase from the top Latest Restart Note baseline. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, Brightspace isolated ingest promotion benchmark issue, and raw sidecar-learning candidate queue closure are all covered in the current operating-window evidence.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
