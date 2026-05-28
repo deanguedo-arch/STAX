@@ -21,20 +21,20 @@ main
 Latest verified rollout commit:
 
 ```txt
-6418a4d
+92855f5
 ```
 
 Commit message:
 
 ```txt
-Refresh handoff after ADMISSION CI
+Record Brightspace ingest stabilization impact
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26566859092
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md`.
@@ -64,11 +64,13 @@ Do not broaden this work into a generic AI runtime, new agent system, deploy sys
 
 ## What Just Landed
 
-The latest verified STAX baseline is current and pushed. The ADMISSION import, command-evidence classifier hardening, and test-runner reliability fix landed in `6850708` and passed `staxcore-strict`.
+The latest verified STAX baseline is current and pushed. The Brightspace ingest stabilization impact import landed in `92855f5` and passed `staxcore-strict`.
 
 Recent pushed commits include:
 
 ```txt
+92855f5 Record Brightspace ingest stabilization impact
+6418a4d Refresh handoff after ADMISSION CI
 6850708 Import ADMISSION proof and stabilize validation
 618589a Import studentbudgetwars sidecar proof
 c273432 commit
@@ -88,7 +90,7 @@ b1d734d Record Canvas impact evidence import
 The latest work:
 
 - Repaired and pushed Brightspacequizexporter `dc3635f Stabilize ingest promotion benchmarks`.
-- The Brightspace fix makes the ingest promotion gate run manual gold fixture evaluations as isolated Vitest invocations, preventing the AP35 OCR-heavy fixture from failing when all frozen manifests share one process.
+- The Brightspace pushed change records manual gold fixture evaluations as isolated Vitest invocations; the AP35 OCR-heavy fixture is covered by the pushed pre-push evidence.
 - Brightspace pre-push `ingest:ci` passed on `dc3635f`, including 232 focused ingest tests and 22 isolated manual gold fixture evaluations.
 - Recollected Brightspace current-commit STAX command proof after the push:
   - `cmd_2026-05-28T12_12_02_015Z_16c0e4305ac2`: `npm run build`, exit 0
@@ -221,11 +223,11 @@ The latest work:
   - current-head command evidence: typecheck, build:studio, smoke:pipeline, and git diff check all exited 0 through STAX command collection
   - exported bundle: `reports/pattern_promotion/attached_repo_exports/canvas-helper-impact-2026-05-28-current-proof-refresh.json`
   - regenerated impact report: `reports/pattern_promotion/pattern-promotion-impact-2026-05-28T03-44-56-356Z.json`
-  - current operating window remains 10 imported bundles, 0 critical misses, 10/10 full handoff contracts, and 10/10 proof artifacts requested
+  - current operating window was 10 imported bundles at that point, before later ADMISSION/Brightspace imports moved it to 14 imported bundles
 - Committed and pushed STAX `9ab09ae Record Canvas current proof refresh`.
 - Verified GitHub Actions `staxcore-strict` completed successfully on `9ab09ae`.
 - Refreshed handoff/status artifacts through `c273432`; GitHub Actions `staxcore-strict` completed successfully on `c273432`.
-- Treat `c273432` as the current verified STAX baseline until this studentbudgetwars impact-report update is committed and its CI completes.
+- Later verified baselines superseded `c273432`; use `92855f5` as the current verified STAX baseline until this handoff refresh is committed, pushed, and verified.
 
 ## Current Canvas Helper State
 
@@ -293,16 +295,18 @@ reports/pattern_promotion/pattern-promotion-impact-2026-05-27T23-55-36-065Z.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T00-19-32-977Z.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T00-54-59-876Z.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T03-44-56-356Z.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-28T12-15-17-138Z.json
 ```
 
 Current result:
 
 ```txt
 locked replay: 10 cases, 0 critical misses, 8 improved, 2 unchanged-safe, 0 regressed
-current operating window: 10 imported bundles, 0 critical misses
-full handoff contracts: 10/10
-proof artifacts requested: 10/10
-cleanup prompts needed: 9/10
+current operating window: 14 imported bundles, 0 critical misses
+full handoff contracts: 14/14
+proof artifacts requested: 14/14
+cleanup prompts needed: 13/14
 ```
 
 Imported bundles:
@@ -317,7 +321,8 @@ canvas-helper: improved, expanded-sidebar fit bundle
 canvas-helper: improved, AS30 tablet/mobile unit-card bundle
 canvas-helper: improved, post-push smoke-clean bundle
 canvas-helper: improved, current-head proof refresh bundle
-brightspacequizexporter: improved, current-main build / ingest / Forensics 25 export bundle
+brightspacequizexporter: improved, current-main build / ingest / Forensics 25 export bundle at `b7896b7`
+brightspacequizexporter: improved, isolated ingest promotion benchmark evidence and refreshed export bundle at `dc3635f`
 studentbudgetwars: improved, committed sidecar observer bundle at `1a40f96`
 ```
 
@@ -344,7 +349,7 @@ note: the tracked `docs/index.html` mutation from a direct build was restored; c
 Brightspacequizexporter is now included as observer evidence on `main` at:
 
 ```txt
-b7896b7de44c11c2f8ae34956bc20ed76f435e8f
+dc3635ff79b346035f5e179a0c8a6a06fbe74359
 ```
 
 Brightspace sidecar status after the follow-up patch:
@@ -352,10 +357,10 @@ Brightspace sidecar status after the follow-up patch:
 ```txt
 verdict: Accept
 proof strength: Audit-grade
-commit: b7896b7de44c11c2f8ae34956bc20ed76f435e8f
+commit: dc3635ff79b346035f5e179a0c8a6a06fbe74359
 ```
 
-The refreshed Brightspace bundle is now current-main evidence. STAX still records older historical command evidence, but current build, ingest, and Forensics 25 export proof are verified for the current auditable worktree.
+The refreshed Brightspace bundle is now current-main evidence. STAX still records older historical command evidence, but current build, ingest, and Forensics 25 export proof are verified for the current auditable worktree. The Brightspace repo commit is pushed as `dc3635f Stabilize ingest promotion benchmarks`.
 
 studentbudgetwars latest sidecar commits:
 
@@ -403,7 +408,7 @@ npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm run
 npm test -- tests/attachedRepoImpactExport.test.ts: pass, 3 tests
 npm run stax:attached-impact-export -- --dry-run --repo canvas-helper --repo ADMISSION-APP --repo brightspacequizexporter: pass
 npm run stax:attached-impact-export -- --confirm-current-repos --repo canvas-helper --repo ADMISSION-APP --repo brightspacequizexporter: pass, exported 3 bundles
-npm run pattern:impact -- --import <10 bundles>: pass, 10 imported bundles / 0 critical misses / 10 proof artifact requests
+npm run pattern:impact -- --import <14 validated bundles>: pass, 14 imported bundles / 0 critical misses / 14 proof artifact requests
 npm run typecheck: pass
 npm test -- tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts: pass, 64 tests
 npm run stax:collect -- --repo /Users/deanguedo/Documents/GitHub/STAX -- npm test -- tests/sidecarWatchCollect.test.ts tests/projectControlProofStackIntegration.test.ts tests/sidecarClaimExtractionPrecision.test.ts tests/claimProofMapping.test.ts: pass
@@ -453,6 +458,10 @@ staxcore-strict on 618589a: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26554382020
 staxcore-strict on 6850708: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26563991531
+staxcore-strict on 6418a4d: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26566859092
+staxcore-strict on 92855f5: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
 ```
 
 ## Current Local Dirt
@@ -491,6 +500,8 @@ reports/pattern_promotion/attached_repo_exports/studentbudgetwars-impact-sidecar
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-09-40-745Z.json
 reports/pattern_promotion/attached_repo_exports/ADMISSION-APP-impact-page-build-accept.json
 reports/pattern_promotion/pattern-promotion-impact-2026-05-28T04-45-19-743Z.json
+reports/pattern_promotion/attached_repo_exports/brightspacequizexporter-impact-ingest-stabilized-2026-05-28.json
+reports/pattern_promotion/pattern-promotion-impact-2026-05-28T12-15-17-138Z.json
 docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
 docs/ACTIVE_HANDOFF.md
 src/evidence/CommandEvidenceIntelligence.ts
@@ -542,25 +553,25 @@ cleanup prompts tracked
 Current operating-window status:
 
 ```txt
-10 imported bundles
+14 imported bundles
 0 critical misses
-10/10 full handoff contracts
-10/10 proof artifact requests
-9/10 cleanup prompts needed
+14/14 full handoff contracts
+14/14 proof artifact requests
+13/14 cleanup prompts needed
 ```
 
 Immediate next action after this handoff refresh is committed/pushed:
 
 ```txt
-Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `6850708`.
+Continue attached-repo operating-window evidence and local dirt decisions from verified STAX baseline `92855f5`.
 ```
 
 Next best actions:
 
-1. Use `6850708` as the current verified STAX rollout baseline.
-2. Treat the Canvas smoke-path cleanup as resolved and pushed; do not repeat the old cleanup decision.
+1. Use `92855f5` as the current verified STAX rollout baseline until this handoff refresh is committed, pushed, and verified.
+2. Treat the Canvas smoke-path cleanup as already pushed; do not repeat the old cleanup decision.
 3. For Canvas Helper, current-head command proof is refreshed and the sidecar gate is `Accept / Audit-grade`; use the latest Canvas bundle unless the Canvas worktree changes.
-4. For Brightspacequizexporter, refresh the stale acknowledgement/report protocol if new work depends on current sidecar status; otherwise keep using the current-main Accept bundle until the repo changes.
+4. For Brightspacequizexporter, use pushed commit `dc3635f` and the `brightspacequizexporter-impact-ingest-stabilized-2026-05-28.json` bundle unless the repo changes.
 5. ADMISSION-APP current non-mutating page-build proof is refreshed and sidecar status is `Accept / Audit-grade`; do not repeat unless that repo changes.
 6. studentbudgetwars sidecar attach is kept, committed, pushed, and refreshed to `Accept / Audit-grade`; do not repeat unless that repo changes.
 7. Keep updating `docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md` only through `npm run pattern:impact`.
@@ -645,15 +656,15 @@ Then verify:
 - git log -5 --oneline
 - git ls-remote origin refs/heads/main
 
-Current published baseline before this studentbudgetwars impact update:
-- commit: c273432eecb18983871b98527d44730c7697b5fa
-- short: c273432
-- commit message: commit
+Current published baseline before this handoff refresh:
+- commit: 92855f5fa0bdbc08f7ffd10aa6e6e4411064b428
+- short: 92855f5
+- commit message: Record Brightspace ingest stabilization impact
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26553832572
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
 
 Goal:
-Continue the attached-repo operating-window phase from green STAX baseline `c273432`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Canvas Helper's smoke proof path is fixed and pushed at `16749182`; the current-head Canvas impact bundle is imported into `pattern-promotion-impact-2026-05-28T03-44-56-356Z.json`. studentbudgetwars sidecar attach is now committed and pushed at `1a40f96`, with scoped observer proof refreshed to `Accept / Audit-grade` and imported into `pattern-promotion-impact-2026-05-28T04-09-40-745Z.json`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, and studentbudgetwars sidecar attach decision are fixed or resolved in the current operating-window evidence.
+Continue the attached-repo operating-window phase from green STAX baseline `92855f5`. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, and Brightspace isolated ingest promotion benchmark issue are all covered in the current operating-window evidence.
 
 Before claiming completion in STAX, run:
 - npm run typecheck
@@ -676,8 +687,8 @@ This handoff refresh is complete when:
 
 ```txt
 docs/ACTIVE_HANDOFF.md is committed and pushed
-docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md reflects the 10-bundle operating-window status
+docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md reflects the 14-bundle operating-window status
 origin/main equals local main
 GitHub staxcore-strict remains success on the pushed commit
-generated .stax proof files remain unstaged
+tracked .stax proof/status files either reflect the final gate or remain unchanged intentionally
 ```
