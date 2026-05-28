@@ -7,25 +7,25 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-03561cf
+565b795
 ```
 
 Commit message:
 
 ```txt
-Refresh handoff after queue closure
+Harden URL path grounding regression
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
 ```
 
 This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
 
-Latest completed sidecar-learning promotion and cleanup sequence:
+Latest completed sidecar-learning, handoff, and observed-regression cleanup sequence:
 
 ```txt
 738f23f Promote visual proof aggregate
@@ -34,6 +34,9 @@ a2591fe Promote proof boundary aggregate
 461ee2b Refresh STAX rollout handoff
 66d5ced Close reviewed sidecar candidates
 03561cf Refresh handoff after queue closure
+1a87f23 Refresh active handoff baseline guidance
+abe74dd Add attached repo impact handoff
+565b795 Harden URL path grounding regression
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -87,20 +90,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-03561cf
+565b795
 ```
 
 Commit message:
 
 ```txt
-Refresh handoff after queue closure
+Harden URL path grounding regression
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -130,11 +133,14 @@ Do not broaden this work into a generic AI runtime, new agent system, deploy sys
 
 ## What Just Landed
 
-The latest verified STAX baseline named at the top of this file is current and pushed. The raw sidecar-learning queue closure and handoff/status refresh landed after the older Brightspace ingest stabilization baseline.
+The latest verified STAX baseline named at the top of this file is current and pushed. The raw sidecar-learning queue closure, handoff/export handoff refresh, and hosted URL/prose slash grounding regression landed after the older Brightspace ingest stabilization baseline.
 
 Recent pushed commits include:
 
 ```txt
+565b795 Harden URL path grounding regression
+abe74dd Add attached repo impact handoff
+1a87f23 Refresh active handoff baseline guidance
 03561cf Refresh handoff after queue closure
 66d5ced Close reviewed sidecar candidates
 461ee2b Refresh STAX rollout handoff
@@ -536,6 +542,12 @@ staxcore-strict on 92855f5: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26574143890
 staxcore-strict on 03561cf: success
 run: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
+staxcore-strict on 1a87f23: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26585194796
+staxcore-strict on abe74dd: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26585690325
+staxcore-strict on 565b795: success
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
 ```
 
 ## Current Local Dirt
@@ -731,11 +743,11 @@ Then verify:
 - git ls-remote origin refs/heads/main
 
 Current published baseline before this handoff refresh:
-- commit: 03561cf
-- short: 03561cf
-- commit message: Refresh handoff after queue closure
+- commit: 565b795
+- short: 565b795
+- commit message: Harden URL path grounding regression
 - GitHub Actions strict run: success
-- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26584579089
+- CI URL: https://github.com/deanguedo-arch/STAX/actions/runs/26586591729
 
 Goal:
 Continue the attached-repo operating-window phase from the top Latest Restart Note baseline. STAX, ADMISSION-APP, Canvas Helper, Brightspacequizexporter, and studentbudgetwars are imported into the current impact report. Current operating-window status is 14 imported bundles, 0 critical misses, 14/14 full handoff contracts, 14/14 proof artifacts requested, and 13/14 cleanup prompts needed. Canvas Helper's smoke proof path is pushed at `16749182`; studentbudgetwars sidecar attach is committed and pushed at `1a40f96`; Brightspacequizexporter is pushed at `dc3635f` with sidecar `Accept / Audit-grade`. The CI-only turn-compliance mtime false reject, mutating visual proof recommendation, vague visual proof-surface prompt issue, Python command proof-lane normalization issue, Canvas stale-command-evidence gate stall, ignored-file worktree fingerprint slowdown, stale Canvas current-head proof, studentbudgetwars sidecar attach decision, Brightspace isolated ingest promotion benchmark issue, and raw sidecar-learning candidate queue closure are all covered in the current operating-window evidence.

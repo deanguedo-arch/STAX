@@ -63,6 +63,8 @@ STAX is strong for Codex/repo project-control:
 - policy-safety aggregate policy-patch candidate and publish/sync/deploy/release preflight regression
 - claim extraction guard so release rollback/downgrade framing does not route into the wrong proof lane
 - raw sidecar-learning candidate queue closure after aggregate review: 0 pending candidates, 96 promoted queue entries, 9 rejected/deferred queue entries
+- attached-repo impact evidence handoff for cross-workstation sidecar export/import
+- hosted URL and prose slash grounding regression coverage for sidecar report noise
 
 ## Current Technical Risks
 
