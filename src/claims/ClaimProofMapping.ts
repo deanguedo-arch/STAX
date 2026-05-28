@@ -200,14 +200,22 @@ function stripReportMetadataSections(text: string): string {
     "risks",
     "one next action"
   ]);
+  const headingOnlySections = new Set([
+    "objective",
+    "what is verified"
+  ]);
   const output: string[] = [];
   let skipping = false;
 
   for (const line of text.split(/\r?\n/)) {
     const heading = parseReportHeading(line);
     if (heading) {
-      skipping = skippedSections.has(heading);
-      if (!skipping) output.push(line);
+      if (skippedSections.has(heading)) {
+        skipping = true;
+        continue;
+      }
+      skipping = false;
+      if (!headingOnlySections.has(heading)) output.push(line);
       continue;
     }
     if (!skipping) output.push(line);
@@ -229,7 +237,7 @@ function stripNegatedClaimLines(text: string): string {
     .split(/\r?\n/)
     .filter(
       (line) =>
-        !/\b(?:does not|do not|did not|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete|none (?:was|were) promoted|no .* promoted|not promoted|instead of triggering|before any durable promotion)\b/i.test(line)
+        !/\b(?:does not|do not|did not|(?:was|were|is|are) not|not touched|untouched|not claim|not asserting|no claim|without claiming|not authorized|without enabling|not enabled|not ready|not complete|none (?:was|were) promoted|no .* promoted|not promoted|instead of triggering|before any durable promotion)\b/i.test(line)
         && !/\b(?:prevent|prevents|preventing|blocked|blocks|blocking)\b.{0,80}\b(?:becoming|turning into|being treated as)\b.{0,80}\b(?:proof|claim|readiness|passed|acceptable)\b/i.test(line)
     )
     .join("\n");

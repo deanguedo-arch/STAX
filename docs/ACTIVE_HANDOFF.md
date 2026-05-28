@@ -7,23 +7,23 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-5a8e487
+594a59f
 ```
 
-Commit message:
+Commit reference:
 
 ```txt
-See commit `5a8e487`.
+594a59f on origin/main
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26594645816
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26596198458
 ```
 
-This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
+This supersedes the older `5a8e487` verified source baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
 
 Latest completed sidecar-learning, handoff, and observed-regression cleanup sequence:
 
@@ -50,6 +50,8 @@ e4ca0ed Refresh handoff after basename grounding fix
 a6d38b6 Harden workflow status claim extraction
 8c3e042 Refresh handoff after workflow status claim fix
 5a8e487 Verified source patch
+c9915e5 Refresh handoff after visual fallback fix
+594a59f Source baseline
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -80,6 +82,7 @@ Next narrow STAX-only actions, if continuing without touching attached repos:
 2. Add additional adversarial proof-surface/claim-extraction cases only when they correspond to observed false positives or false negatives.
 3. Use `docs/handoffs/ATTACHED_REPO_IMPACT_EVIDENCE_HANDOFF.md` for the workstation that owns the live repos.
 4. Continue real observer runs only when the target repo is not being edited in another terminal.
+5. Do not touch Canvas Helper while the user is actively editing it in another terminal.
 ```
 
 Do not run Canvas Helper sidecar upgrade/gate while the user is actively editing Canvas Helper in another terminal unless explicitly asked.
@@ -103,20 +106,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-5a8e487
+594a59f
 ```
 
-Commit message:
+Commit reference:
 
 ```txt
-See commit `5a8e487`.
+594a59f on origin/main
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26594645816
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26596198458
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -151,6 +154,8 @@ The latest verified STAX baseline named at the top of this file is current and p
 Recent pushed commits include:
 
 ```txt
+594a59f Source baseline
+c9915e5 Refresh handoff after visual fallback fix
 5a8e487 Verified source patch
 8c3e042 Refresh handoff after workflow status claim fix
 a6d38b6 Harden workflow status claim extraction
@@ -194,17 +199,19 @@ b1d734d Record Canvas impact evidence import
 The latest verified source commit recorded by this handoff is:
 
 ```txt
-5a8e487
+594a59f
 ```
 
 Local proof evidence recorded during that source-patch turn:
 
-  - `cmd_2026-05-28T18_34_21_599Z_982c1455e5e7`: `npm run typecheck`, exit 0
-  - `cmd_2026-05-28T18_34_36_350Z_328e123c6385`: `npm test`, exit 0
-  - `cmd_2026-05-28T18_35_06_901Z_092594e366f2`: `npm run smoke:stax`, exit 0
-  - `cmd_2026-05-28T18_35_11_501Z_31b060f341fa`: `npm run rax -- eval`, exit 0
+  - `cmd_2026-05-28T19_02_28_342Z_3d4d174ab3b3`: `npm test -- tests/sidecarClaimExtractionPrecision.test.ts -t "visual-proof tooling"`, exit 0
+  - `cmd_2026-05-28T19_02_38_064Z_982c1455e5e7`: `npm run typecheck`, exit 0
+  - `cmd_2026-05-28T19_02_53_176Z_328e123c6385`: `npm test`, exit 0
+  - `cmd_2026-05-28T19_03_23_829Z_092594e366f2`: `npm run smoke:stax`, exit 0
+  - `cmd_2026-05-28T19_03_31_087Z_31b060f341fa`: `npm run rax -- eval`, exit 0
   - STAX sidecar gate: `Accept / Audit-grade`
-- GitHub Actions `staxcore-strict`: completed / success at https://github.com/deanguedo-arch/STAX/actions/runs/26594645816
+- GitHub Actions `staxcore-strict`: completed / success at https://github.com/deanguedo-arch/STAX/actions/runs/26596198458
+- Restart baseline: `594a59f`; use the commit and CI link above for source-patch details.
 - Hardened claim extraction so workflow or CI status receipt lines such as GitHub Actions run receipts do not become implementation claims.
 - Kept direct `CI is green` wording proof-bearing as a test claim, so Codex cannot use that phrase to dodge proof.
 - Regenerated the Phase 3 claim-evasion result/report artifacts after the extractor change.

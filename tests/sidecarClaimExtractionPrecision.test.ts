@@ -35,8 +35,34 @@ describe("sidecar claim extraction precision", () => {
     ).toEqual([]);
   });
 
+  it("does not treat required report headings as completion claims", () => {
+    expect(
+      decomposeClaimsFromReport([
+        "Objective:",
+        "Update STAX restart docs to point at commit 594a59f.",
+        "",
+        "What is verified:",
+        "- docs/ACTIVE_HANDOFF.md points restart readers at commit 594a59f.",
+        "",
+        "What is unverified:",
+        "- Canvas Helper observer runs were not inspected."
+      ].join("\n"))
+    ).toEqual([]);
+  });
+
+  it("still extracts real claims inside non-skipped report sections", () => {
+    expect(
+      decomposeClaimsFromReport([
+        "What is verified:",
+        "- All tests passed."
+      ].join("\n"))
+    ).toEqual([{ claimType: "test", claim: "Tests passed.", hardClaim: true }]);
+  });
+
   it("keeps explicit negative claims negative", () => {
     expect(decomposeClaimsFromReport("This does not enable live blocking.")).toEqual([]);
+    expect(decomposeClaimsFromReport("Canvas Helper was not touched while the user works there in another terminal.")).toEqual([]);
+    expect(decomposeClaimsFromReport("Canvas Helper stays untouched.")).toEqual([]);
   });
 
   it("keeps do-not bullet lists negative", () => {
