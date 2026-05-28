@@ -62,6 +62,7 @@ STAX is strong for Codex/repo project-control:
 - proof-boundary aggregate eval candidate and wrong-repo proof-boundary regression
 - policy-safety aggregate policy-patch candidate and publish/sync/deploy/release preflight regression
 - claim extraction guard so release rollback/downgrade framing does not route into the wrong proof lane
+- raw sidecar-learning candidate queue closure after aggregate review: 0 pending candidates, 96 promoted queue entries, 9 rejected/deferred queue entries
 
 ## Current Technical Risks
 
@@ -82,4 +83,5 @@ STAX is strong for Codex/repo project-control:
 - docs/RAX_PROOF_SURFACE_MATCHER_ADVERSARIAL_REPORT.md
 - docs/RAX_REAL_SIDECAR_UPGRADE_TRIAL_REPORT.md
 - docs/RAX_PATTERN_PROMOTION_IMPACT_REPORT.md
+- reports/sidecar_learning/sidecar-raw-candidate-closure-2026-05-28T15-12-00Z.md
 - reports/sidecar_learning/canvas-helper-learning-pull-2026-05-22.md

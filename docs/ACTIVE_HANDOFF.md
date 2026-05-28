@@ -7,39 +7,44 @@ Date: 2026-05-28
 Latest verified STAX commit:
 
 ```txt
-0343cf4
+66d5ced
 ```
 
 Commit message:
 
 ```txt
-Promote policy safety aggregate
+Close reviewed sidecar candidates
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26582660188
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26584045755
 ```
 
-This supersedes the older `92855f5` baseline named below. The current local checkout is `main` and is aligned with `origin/main` after the policy-safety promotion.
+This supersedes the older `92855f5` baseline named below. The current local checkout is `main` and is aligned with `origin/main` after the raw sidecar-learning candidate queue closure.
 
-Latest completed sidecar-learning promotion sequence:
+Latest completed sidecar-learning promotion and cleanup sequence:
 
 ```txt
 738f23f Promote visual proof aggregate
 a2591fe Promote proof boundary aggregate
 0343cf4 Promote policy safety aggregate
+461ee2b Refresh STAX rollout handoff
+66d5ced Close reviewed sidecar candidates
 ```
 
 The STAX sidecar learning dashboard now reports:
 
 ```txt
-Promotable aggregate groups: 5
-Reviewed aggregate groups: 5
+Pending candidates: 0
+Promoted candidates: 96
+Rejected/deferred candidates: 9
+Promotable aggregate groups: 0
+Reviewed aggregate groups: 0
 Top aggregate recommendation: none
-Recommended next action: review raw pending candidates or close/defer non-promotable items
+Recommended next action: No pending sidecar learning action.
 ```
 
 Current operating-window proof remains:
@@ -54,10 +59,10 @@ Current operating-window proof remains:
 Next narrow STAX-only actions, if continuing without touching attached repos:
 
 ```txt
-1. Update stale status/handoff/docs surfaces.
-2. Review raw pending sidecar candidates and explicitly defer repo-specific or trace-only observations.
-3. Add additional adversarial proof-surface/claim-extraction cases only when they correspond to observed false positives or false negatives.
-4. Prepare attached-repo export/import handoff for the workstation that owns the live repos.
+1. Keep docs/current-status surfaces aligned with the latest verified commit after each pushed STAX closure.
+2. Add additional adversarial proof-surface/claim-extraction cases only when they correspond to observed false positives or false negatives.
+3. Prepare attached-repo export/import handoff for the workstation that owns the live repos.
+4. Continue real observer runs only when the target repo is not being edited in another terminal.
 ```
 
 Do not run Canvas Helper sidecar upgrade/gate while the user is actively editing Canvas Helper in another terminal unless explicitly asked.
