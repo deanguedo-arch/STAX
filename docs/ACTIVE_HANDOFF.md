@@ -7,20 +7,20 @@ Date: 2026-05-28
 Latest verified STAX commit before this handoff refresh:
 
 ```txt
-a6d38b6
+5a8e487
 ```
 
 Commit message:
 
 ```txt
-Harden workflow status claim extraction
+See commit `5a8e487`.
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26593643758
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26594645816
 ```
 
 This supersedes the older `92855f5` historical baseline named below. If this file is part of a newer handoff-only commit, verify that newer commit's `staxcore-strict` run before treating it as the restart baseline.
@@ -48,6 +48,8 @@ b6244f8 Refresh current RC proof packet
 b2eef94 Ground unique basename file claims
 e4ca0ed Refresh handoff after basename grounding fix
 a6d38b6 Harden workflow status claim extraction
+8c3e042 Refresh handoff after workflow status claim fix
+5a8e487 Verified source patch
 ```
 
 The STAX sidecar learning dashboard now reports:
@@ -101,20 +103,20 @@ main
 Latest verified rollout commit before this handoff refresh:
 
 ```txt
-a6d38b6
+5a8e487
 ```
 
 Commit message:
 
 ```txt
-Harden workflow status claim extraction
+See commit `5a8e487`.
 ```
 
 GitHub Actions proof:
 
 ```txt
 staxcore-strict: completed / success
-run: https://github.com/deanguedo-arch/STAX/actions/runs/26593643758
+run: https://github.com/deanguedo-arch/STAX/actions/runs/26594645816
 ```
 
 This verified rollout commit is pushed to `origin/main`. Note: `docs/ACTIVE_HANDOFF 2.md` is now present on `main` as a tracked historical duplicate; do not use it as the active restart source unless the user explicitly asks to reconcile or remove it. Use `docs/ACTIVE_HANDOFF.md` and the top Latest Restart Note.
@@ -149,6 +151,8 @@ The latest verified STAX baseline named at the top of this file is current and p
 Recent pushed commits include:
 
 ```txt
+5a8e487 Verified source patch
+8c3e042 Refresh handoff after workflow status claim fix
 a6d38b6 Harden workflow status claim extraction
 e4ca0ed Refresh handoff after basename grounding fix
 b2eef94 Ground unique basename file claims
@@ -187,8 +191,20 @@ d1c51d7 Tolerate sidecar report mtime granularity
 b1d734d Record Canvas impact evidence import
 ```
 
-The latest work:
+The latest verified source commit recorded by this handoff is:
 
+```txt
+5a8e487
+```
+
+Local proof evidence recorded during that source-patch turn:
+
+  - `cmd_2026-05-28T18_34_21_599Z_982c1455e5e7`: `npm run typecheck`, exit 0
+  - `cmd_2026-05-28T18_34_36_350Z_328e123c6385`: `npm test`, exit 0
+  - `cmd_2026-05-28T18_35_06_901Z_092594e366f2`: `npm run smoke:stax`, exit 0
+  - `cmd_2026-05-28T18_35_11_501Z_31b060f341fa`: `npm run rax -- eval`, exit 0
+  - STAX sidecar gate: `Accept / Audit-grade`
+- GitHub Actions `staxcore-strict`: completed / success at https://github.com/deanguedo-arch/STAX/actions/runs/26594645816
 - Hardened claim extraction so workflow or CI status receipt lines such as GitHub Actions run receipts do not become implementation claims.
 - Kept direct `CI is green` wording proof-bearing as a test claim, so Codex cannot use that phrase to dodge proof.
 - Regenerated the Phase 3 claim-evasion result/report artifacts after the extractor change.
