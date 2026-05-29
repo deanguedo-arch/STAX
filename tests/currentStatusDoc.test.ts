@@ -31,4 +31,15 @@ describe("current STAX status docs", () => {
     expect(promotion).toContain("Historical report. Current status lives in [CURRENT_STATUS.md](./CURRENT_STATUS.md).");
     expect(realUse).toContain("Historical report. Current status lives in [CURRENT_STATUS.md](./CURRENT_STATUS.md).");
   });
+
+  it("keeps archive-index markdown links resolvable from docs", async () => {
+    const docsRoot = path.join(process.cwd(), "docs");
+    const archiveIndex = await fs.readFile(path.join(docsRoot, "ARCHIVE_INDEX.md"), "utf8");
+    const links = [...archiveIndex.matchAll(/\[[^\]]+\]\((\.\/[^)]+)\)/g)].map((match) => match[1]);
+
+    expect(links.length).toBeGreaterThan(0);
+    for (const link of links) {
+      await expect(fs.access(path.join(docsRoot, link))).resolves.toBeUndefined();
+    }
+  });
 });
